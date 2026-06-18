@@ -3,17 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>【深夜水】南门外支巷新开的那家数据恢复店，是不是有点邪门？ - 南江大学溯源BBS</title>
-    <style>
-        /* 古早 BBS 经典样式重置 */
-        body { font-family: 'SimSun', '宋体', Arial, sans-serif; background-color: #e9ecef; color: #333; font-size: 13px; margin: 0; padding: 0; }
-        a { color: #0055aa; text-decoration: none; }
-        a:hover { text-decoration: underline; }
-        
-        /* 顶部导航与框架 */
-        .header { background: #f2f6f8 url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAAWCAYAAAABxvaqAAAABmJLR0QA/wD/AP+gvaeTAAAAKUlEQVQImWNgYGBgYGBg+M/AwMDwH4oZkEhmBiaGEAcYI1KLUg3jCwgAY0sEBTc+mC4AAAAASUVORK5CYII=') repeat-x; border-bottom: 1px solid #cddde4; padding: 10px 20px; }
-        .logo { font-size: 22px; font-weight: bold; color: #0055aa; font-family: 'Microsoft YaHei', sans-serif; }
-        .nav-links { margin-top: 10px; font-weight: bold; }
-        .wrap { width: 980px; margin: 15px auto; display: table; }
+    /* --- 从这里开始替换 --- */
+        .wrap { width: 980px; margin: 15px auto; overflow: hidden; } /* 去掉 table，改用 hidden 清除浮动 */
         .main { width: 730px; float: left; }
         .sidebar { width: 235px; float: right; }
 
@@ -22,9 +13,9 @@
         .post-list { background: #fff; border: 1px solid #cddde4; border-top: 2px solid #0055aa; margin-bottom: 15px; }
         
         /* 楼层样式（核心古早感） */
-        .post-row { border-bottom: 1px solid #cddde4; display: table; width: 100%; }
-        .post-left { width: 140px; background: #fbfbfb; border-right: 1px solid #cddde4; padding: 15px 10px; text-align: center; display: table-cell; vertical-align: top; }
-        .post-right { padding: 15px; display: table-cell; vertical-align: top; position: relative; }
+        .post-row { border-bottom: 1px solid #cddde4; display: table; width: 100%; table-layout: fixed; } /* 增加 table-layout: fixed 锁死宽度，防止内容撑爆 */
+        .post-left { width: 120px; background: #fbfbfb; border-right: 1px solid #cddde4; padding: 15px 10px; text-align: center; display: table-cell; vertical-align: top; }
+        .post-right { padding: 15px; display: table-cell; vertical-align: top; word-wrap: break-word; overflow: hidden; }
         
         .username { font-weight: bold; font-size: 14px; margin-bottom: 5px; display: block; }
         .avatar { width: 100px; height: 100px; border: 1px solid #ccc; background: #fff; padding: 2px; margin: 5px auto; font-size: 12px; color: #999; line-height: 100px; }
@@ -34,20 +25,11 @@
         .floor-num { float: right; font-weight: bold; color: #ff6600; font-family: Arial; }
         
         .content { font-size: 14px; line-height: 1.8; color: #000; min-height: 150px; }
-        /* 楼主直接展示的图片 */
-        .content img { max-width: 650px; border: 1px solid #ccc; padding: 2px; margin: 10px 0; background: #fff; }
+        /* 核心修复点：让图片宽度自适应，绝不超出父容器 */
+        .content img { max-width: 100%; height: auto; border: 1px solid #ccc; padding: 2px; margin: 10px 0; background: #fff; box-sizing: border-box; }
         
         .signature { border-top: 1px dashed #ccc; margin-top: 30px; padding-top: 10px; color: #999; font-size: 12px; }
-
-        /* 侧边栏伪装 */
-        .side-box { background: #fff; border: 1px solid #cddde4; margin-bottom: 15px; }
-        .side-title { background: #f2f6f8; border-bottom: 1px solid #cddde4; padding: 8px 10px; font-weight: bold; }
-        .side-content { padding: 10px; list-style: none; margin: 0; }
-        .side-content li { border-bottom: 1px dotted #ccc; padding: 6px 0; padding-left: 15px; background: url('data:image/gif;base64,R0lGODlhBQAKAIABAAAAAP///yH5BAEAAAEALAAAAAAFAAoAAAIIjI+pG8HwnCgAOw==') no-repeat left center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-
-        /* 隐藏进度条 */
-        #arg-progress { position: fixed; bottom: 5px; right: 5px; font-family: Terminal, monospace; font-size: 9px; color: #999; opacity: 0.3; }
-    </style>
+        /* --- 替换到这里结束 --- */
 </head>
 <body>
 
