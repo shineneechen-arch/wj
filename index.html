@@ -2,265 +2,225 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>【深夜水】南门外“文一西路”支巷新开的那家数据恢复店，是不是有点邪门？ - 求是水汇BBS</title>
+    <title>【深夜水】南门外支巷新开的那家数据恢复店，是不是有点邪门？ - 南江大学溯源BBS</title>
     <style>
-        :root {
-            --primary-blue: #005A9E;
-            --bg-gray: #F3F4F6;
-            --text-main: #333333;
-            --text-muted: #888888;
-            --border-color: #E5E7EB;
-            --card-bg: #FFFFFF;
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background-color: var(--bg-gray); color: var(--text-main); line-height: 1.6; }
-
-        /* 导航栏 */
-        .navbar { background-color: var(--card-bg); box-shadow: 0 1px 3px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; }
-        .nav-content { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; height: 60px; padding: 0 20px; }
-        .logo { font-size: 20px; font-weight: bold; color: var(--primary-blue); display: flex; align-items: center; gap: 10px; }
-        .nav-links { display: flex; gap: 20px; }
-        .nav-links a { text-decoration: none; color: var(--text-main); font-size: 15px; font-weight: 500; }
-        .nav-links a:hover { color: var(--primary-blue); }
-        .user-menu { display: flex; align-items: center; gap: 15px; font-size: 14px; color: var(--text-muted); }
-
-        /* 主体布局 */
-        .container { max-width: 1200px; margin: 20px auto; display: grid; grid-template-columns: 3fr 1fr; gap: 20px; padding: 0 20px; }
-
-        /* 左侧主贴区 */
-        .main-content { background: var(--card-bg); border-radius: 8px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); overflow: hidden; }
-        .breadcrumb { padding: 15px 20px; border-bottom: 1px solid var(--border-color); font-size: 13px; color: var(--text-muted); }
-        .breadcrumb a { color: var(--primary-blue); text-decoration: none; }
+        /* 古早 BBS 经典样式重置 */
+        body { font-family: 'SimSun', '宋体', Arial, sans-serif; background-color: #e9ecef; color: #333; font-size: 13px; margin: 0; padding: 0; }
+        a { color: #0055aa; text-decoration: none; }
+        a:hover { text-decoration: underline; }
         
-        .post-header { padding: 20px; border-bottom: 1px solid var(--border-color); }
-        .post-title { font-size: 22px; font-weight: 600; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
-        .tag { background: #fee2e2; color: #ef4444; padding: 2px 8px; border-radius: 4px; font-size: 12px; font-weight: normal; }
-        .post-meta { display: flex; align-items: center; justify-content: space-between; font-size: 13px; color: var(--text-muted); }
-        .author-info { display: flex; align-items: center; gap: 10px; }
-        .avatar { width: 36px; height: 36px; background-color: #E5E7EB; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #9CA3AF; }
-        .stats span { margin-left: 15px; }
+        /* 顶部导航与框架 */
+        .header { background: #f2f6f8 url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAAWCAYAAAABxvaqAAAABmJLR0QA/wD/AP+gvaeTAAAAKUlEQVQImWNgYGBgYGBg+M/AwMDwH4oZkEhmBiaGEAcYI1KLUg3jCwgAY0sEBTc+mC4AAAAASUVORK5CYII=') repeat-x; border-bottom: 1px solid #cddde4; padding: 10px 20px; }
+        .logo { font-size: 22px; font-weight: bold; color: #0055aa; font-family: 'Microsoft YaHei', sans-serif; }
+        .nav-links { margin-top: 10px; font-weight: bold; }
+        .wrap { width: 980px; margin: 15px auto; display: table; }
+        .main { width: 730px; float: left; }
+        .sidebar { width: 235px; float: right; }
 
-        .post-body { padding: 25px 20px; font-size: 16px; color: #1f2937; }
-        .post-body p { margin-bottom: 15px; }
-        .post-image { max-width: 100%; border-radius: 6px; margin: 15px 0; border: 1px solid var(--border-color); cursor: pointer; transition: opacity 0.2s; }
-        .post-image:hover { opacity: 0.9; }
-        .image-caption { font-size: 12px; color: var(--text-muted); text-align: center; margin-top: -10px; margin-bottom: 15px; }
+        /* 帖子列表与面包屑 */
+        .breadcrumbs { border-bottom: 1px solid #ccc; padding-bottom: 5px; margin-bottom: 10px; }
+        .post-list { background: #fff; border: 1px solid #cddde4; border-top: 2px solid #0055aa; margin-bottom: 15px; }
+        
+        /* 楼层样式（核心古早感） */
+        .post-row { border-bottom: 1px solid #cddde4; display: table; width: 100%; }
+        .post-left { width: 140px; background: #fbfbfb; border-right: 1px solid #cddde4; padding: 15px 10px; text-align: center; display: table-cell; vertical-align: top; }
+        .post-right { padding: 15px; display: table-cell; vertical-align: top; position: relative; }
+        
+        .username { font-weight: bold; font-size: 14px; margin-bottom: 5px; display: block; }
+        .avatar { width: 100px; height: 100px; border: 1px solid #ccc; background: #fff; padding: 2px; margin: 5px auto; font-size: 12px; color: #999; line-height: 100px; }
+        .user-title { color: #0055aa; margin-top: 5px; }
+        
+        .post-info { border-bottom: 1px dashed #ccc; padding-bottom: 5px; margin-bottom: 15px; color: #666; font-size: 12px; }
+        .floor-num { float: right; font-weight: bold; color: #ff6600; font-family: Arial; }
+        
+        .content { font-size: 14px; line-height: 1.8; color: #000; min-height: 150px; }
+        /* 楼主直接展示的图片 */
+        .content img { max-width: 650px; border: 1px solid #ccc; padding: 2px; margin: 10px 0; background: #fff; }
+        
+        .signature { border-top: 1px dashed #ccc; margin-top: 30px; padding-top: 10px; color: #999; font-size: 12px; }
 
-        .post-footer { padding: 15px 20px; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; gap: 15px; font-size: 13px; color: var(--text-muted); }
-        .post-footer span { cursor: pointer; }
-        .post-footer span:hover { color: var(--primary-blue); }
+        /* 侧边栏伪装 */
+        .side-box { background: #fff; border: 1px solid #cddde4; margin-bottom: 15px; }
+        .side-title { background: #f2f6f8; border-bottom: 1px solid #cddde4; padding: 8px 10px; font-weight: bold; }
+        .side-content { padding: 10px; list-style: none; margin: 0; }
+        .side-content li { border-bottom: 1px dotted #ccc; padding: 6px 0; padding-left: 15px; background: url('data:image/gif;base64,R0lGODlhBQAKAIABAAAAAP///yH5BAEAAAEALAAAAAAFAAoAAAIIjI+pG8HwnCgAOw==') no-repeat left center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-        /* 回复区 */
-        .reply-box { border-top: 5px solid var(--bg-gray); }
-        .reply-item { padding: 20px; border-bottom: 1px solid var(--border-color); display: flex; gap: 15px; }
-        .reply-avatar { width: 32px; height: 32px; background-color: #DBEAFE; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; color: var(--primary-blue); flex-shrink: 0; }
-        .reply-content { flex-grow: 1; }
-        .reply-header { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 13px; }
-        .reply-author { font-weight: 600; color: #374151; }
-        .reply-text { font-size: 15px; margin-bottom: 10px; }
-        .reply-action { font-size: 12px; color: var(--text-muted); text-align: right; cursor: pointer; }
-
-        /* 右侧边栏 */
-        .sidebar { display: flex; flex-direction: column; gap: 20px; }
-        .widget { background: var(--card-bg); border-radius: 8px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); padding: 20px; }
-        .widget-title { font-size: 16px; font-weight: 600; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid var(--border-color); }
-        .hot-list { list-style: none; }
-        .hot-list li { margin-bottom: 12px; font-size: 14px; display: flex; flex-direction: column; gap: 3px; }
-        .hot-list a { color: var(--text-main); text-decoration: none; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        .hot-list a:hover { color: var(--primary-blue); }
-        .hot-meta { font-size: 12px; color: var(--text-muted); }
-
-        /* ARG 隐藏进度条 */
-        #arg-progress { position: fixed; bottom: 15px; right: 15px; width: 120px; font-family: 'Courier New', Courier, monospace; z-index: 9999; opacity: 0.15; transition: opacity 0.3s; pointer-events: none; }
-        #arg-progress:hover { opacity: 0.8; }
-        .progress-text { font-size: 10px; color: #666; margin-bottom: 2px; text-align: right; }
-        .progress-bar-bg { width: 100%; height: 2px; background: rgba(0,0,0,0.1); }
-        .progress-bar-fill { height: 100%; background: #ef4444; width: 3.3%; }
-
-        @media (max-width: 768px) {
-            .container { grid-template-columns: 1fr; }
-            .nav-links { display: none; }
-        }
+        /* 隐藏进度条 */
+        #arg-progress { position: fixed; bottom: 5px; right: 5px; font-family: Terminal, monospace; font-size: 9px; color: #999; opacity: 0.3; }
     </style>
 </head>
 <body>
 
-    <!-- 顶部导航 -->
-    <nav class="navbar">
-        <div class="nav-content">
-            <div class="logo">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
-                求是水汇 BBS
-            </div>
-            <div class="nav-links">
-                <a href="#">首页</a>
-                <a href="#" style="color: var(--primary-blue); font-weight: bold;">校园轶事</a>
-                <a href="#">技术极客</a>
-                <a href="#">跳蚤市场</a>
-                <a href="#">考研/法考</a>
-            </div>
-            <div class="user-menu">
-                <span>访客模式</span>
-                <a href="#" style="color: var(--primary-blue); text-decoration: none;">登录/注册</a>
-            </div>
-        </div>
-    </nav>
-
-    <div class="container">
-        <!-- 左侧主贴区 -->
-        <main class="main-content">
-            <div class="breadcrumb">
-                <a href="#">求是水汇</a> > <a href="#">校园轶事</a> > 正文
-            </div>
-            
-            <div class="post-header">
-                <h1 class="post-title"><span class="tag">奇闻</span>【深夜水】南门外“文一西路”支巷新开的那家数据恢复店，是不是有点邪门？</h1>
-                <div class="post-meta">
-                    <div class="author-info">
-                        <div class="avatar">楼</div>
-                        <div>
-                            <span style="font-weight: 600; color: #374151;">失眠的极客 (UID: 88301)</span>
-                            <br>
-                            <span>发布于 2026-06-18 02:14:22</span>
-                        </div>
-                    </div>
-                    <div class="stats">
-                        <span>👁️ 1,402 阅读</span>
-                        <span>💬 38 回复</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="post-body">
-                <p>家人们，今晚做实验搞到凌晨2点才回宿舍。路过南门外那条平时都没什么人的破巷子，发现新开了一家店。</p>
-                <p>门头连个招牌都没有，只有门牌号旁边挂着个极其突兀的白底黑字小灯箱，上面写着：<strong>【未济：数据回收与硬件超度】</strong>。</p>
-                <p>最阴间的是，店门是全透明的玻璃。我往里瞅了一眼，当场冷汗就下来了……感觉完全不像个修电脑的地方，更像是在搞什么邪门阵法。</p>
-                
-                <!-- 替换为你实际的图片路径 -->
-                <a href="image_d5f1e2.jpg" target="_blank" title="点击查看大图">
-                    <img src="image_d5f1e2.jpg" alt="文一西路诡异店铺实拍" class="post-image">
-                </a>
-                <div class="image-caption">（图太大了论坛压缩过，将就看吧）</div>
-
-                <p>地上的紫铜线根本不是正常的弱电走线，中间那个水冷排一阴一阳的，机柜上面还全是闪烁的墨水屏。你们帮我看看，这玩意儿到底是什么路数？是我熬夜写代码产生幻觉了吗？</p>
-            </div>
-
-            <div class="post-footer">
-                <span>👍 赞 (42)</span>
-                <span>⭐ 收藏</span>
-                <span>⚠️ 举报</span>
-            </div>
-
-            <!-- 回复列表 -->
-            <div class="reply-box">
-                
-                <div class="reply-item">
-                    <div class="reply-avatar">1楼</div>
-                    <div class="reply-content">
-                        <div class="reply-header">
-                            <span class="reply-author">西溪咸鱼 (UID: 4102)</span>
-                            <span style="color: var(--text-muted);">2026-06-18 02:18:05</span>
-                        </div>
-                        <div class="reply-text">大半夜不睡觉去那种地方干嘛，这灯光看着像鬼屋体验馆，估计是商家的噱头吧。</div>
-                        <div class="reply-action">回复</div>
-                    </div>
-                </div>
-
-                <div class="reply-item">
-                    <div class="reply-avatar">2楼</div>
-                    <div class="reply-content">
-                        <div class="reply-header">
-                            <span class="reply-author">Node核心玩家 (UID: 12055)</span>
-                            <span style="color: var(--text-muted);">2026-06-18 02:35:12</span>
-                        </div>
-                        <div class="reply-text">有点意思，那根本不是修电脑的吧？看那个走线和水冷排的规模，像是在跑什么高并发的私有边缘节点。而且那八个机柜排布有点讲究，像是个八卦阵？楼主别是被网上的图钓鱼了。</div>
-                        <div class="reply-action">回复</div>
-                    </div>
-                </div>
-
-                <!-- 这个回复是引导玩家去查看 EXIF 数据的关键“托儿” -->
-                <div class="reply-item" style="background-color: #F9FAFB;">
-                    <div class="reply-avatar" style="background-color: #F3F4F6; color: #4B5563;">3楼</div>
-                    <div class="reply-content">
-                        <div class="reply-header">
-                            <span class="reply-author">列文虎克 (UID: 9942)</span>
-                            <span style="color: var(--text-muted);">2026-06-18 08:10:44</span>
-                        </div>
-                        <div class="reply-text">
-                            楼主图糊成这样是故意的吧？现在论坛发图都自带压缩，把底层数据都抹掉了。<br>
-                            有种把原图打包发出来，大家保存到手机相册里上滑看看 <b>EXIF 底层信息</b>，看看坐标是不是真在南门文一西路那边。别是拿网图随便编的故事来水经验。
-                        </div>
-                        <div class="reply-action">回复</div>
-                    </div>
-                </div>
-
-                <!-- 楼主放出带 EXIF 的原图链接 -->
-                <div class="reply-item">
-                    <div class="reply-avatar" style="background-color: #FEE2E2; color: #EF4444;">楼主</div>
-                    <div class="reply-content">
-                        <div class="reply-header">
-                            <span class="reply-author" style="color: #EF4444;">失眠的极客 (UID: 88301)</span>
-                            <span style="color: var(--text-muted);">2026-06-18 09:05:11</span>
-                        </div>
-                        <div class="reply-text">
-                            回复 3楼：骗人是小狗！原图15MB论坛传不上，我传个人服务器了。<br>
-                            懂哥自己去查底细，用苹果手机的直接保存原图看坐标：<a href="image_d5f1e2.jpg" target="_blank" style="color: var(--primary-blue); font-weight: bold; text-decoration: underline;">[点击下载未压缩原图.jpg]</a><br>
-                            查完赶紧回来道歉！
-                        </div>
-                        <div class="reply-action">回复</div>
-                    </div>
-                </div>
-
-            </div>
-        </main>
-
-        <!-- 右侧边栏：用于埋设背景彩蛋 -->
-        <aside class="sidebar">
-            <div class="widget">
-                <div class="widget-title">🔥 24小时热帖榜</div>
-                <ul class="hot-list">
-                    <li>
-                        <a href="#">【求助】谁有Vercel部署国内加速的教程？</a>
-                        <span class="hot-meta">45 回复 · 技术极客</span>
-                    </li>
-                    <li>
-                        <a href="#">【出二手】Han Shuo 4.2寸墨水屏及烧录器，9新</a>
-                        <span class="hot-meta">12 回复 · 跳蚤市场</span>
-                    </li>
-                    <li>
-                        <a href="#">【吐槽】丙午年法考客观题报名系统又崩了，不让人活了？</a>
-                        <span class="hot-meta">188 回复 · 考研/法考</span>
-                    </li>
-                    <li>
-                        <a href="#">文一西路新开的那家猪脚饭有人去吃过吗？</a>
-                        <span class="hot-meta">34 回复 · 校园轶事</span>
-                    </li>
-                    <li>
-                        <a href="#">接私活：出海电商独立站搭建，只接杭州本地当面聊</a>
-                        <span class="hot-meta">8 回复 · 跳蚤市场</span>
-                    </li>
-                </ul>
-            </div>
-
-            <div class="widget">
-                <div class="widget-title">📢 论坛公告</div>
-                <div style="font-size: 13px; color: var(--text-muted); line-height: 1.8;">
-                    1. 严禁发布任何未经证实的校园都市传说，以免引起恐慌。<br>
-                    2. 服务器近期将在凌晨 2:00-3:00 进行例行维护，届时可能出现短暂的数据访问异常，请各位同学合理安排时间。
-                </div>
-            </div>
-        </aside>
-    </div>
-
-    <!-- ARG 隐藏进度追踪 UI -->
-    <div id="arg-progress">
-        <div class="progress-text">TRACKING: 1/30</div>
-        <div class="progress-bar-bg">
-            <div class="progress-bar-fill"></div>
+<div class="header">
+    <div class="wrap" style="margin: 0 auto;">
+        <div class="logo">南江大学 - 溯源BBS (Since 2004)</div>
+        <div class="nav-links">
+            <a href="#">首页</a> | <a href="#">版块列表</a> | <a href="#">校内资讯</a> | <a href="#">跳蚤市场</a> | <a href="#">灌水乐园</a> | <a href="#">控制面板</a>
         </div>
     </div>
+</div>
+
+<div class="wrap">
+    <div class="main">
+        <div class="breadcrumbs">
+            <a href="#">溯源BBS</a> &raquo; <a href="#">校内交流区</a> &raquo; <a href="#">灌水乐园</a> &raquo; <strong>【深夜水】南门外支巷新开的那家数据恢复店，是不是有点邪门？</strong>
+        </div>
+
+        <div class="post-list">
+            <div class="post-row">
+                <div class="post-left">
+                    <span class="username">熬夜掉头发</span>
+                    <div class="avatar">[自定义头像]</div>
+                    <div class="user-title">版主 / 核心水怪</div>
+                    <div style="color:#999; margin-top:5px;">积分: 4521<br>注册: 2023-09</div>
+                </div>
+                <div class="post-right">
+                    <div class="post-info">
+                        发表于 2026-06-18 02:14:22 <span class="floor-num">楼主</span>
+                    </div>
+                    <div class="content">
+                        家人们，今晚做实验搞到凌晨2点才回宿舍。路过南门外那条平时都没什么人的破巷子，发现新开了一家店。<br><br>
+                        门头连个招牌都没有，只有门牌号旁边挂着个极其突兀的白底黑字小灯箱，上面写着：<strong>【未济：数据回收与硬件超度】</strong>。<br><br>
+                        最阴间的是，店门是全透明的玻璃。我往里瞅了一眼，当场冷汗就下来了……感觉完全不像个修电脑的地方，更像是在搞什么邪门阵法。<br>
+                        
+                        <img src="forum_preview.jpg" alt="南门诡异店铺照片"><br><br>
+
+                        地上的紫铜线根本不是正常的弱电走线，中间那个水冷排一阴一阳的，机柜上面还全是闪烁的墨水屏。你们帮我看看，这玩意儿到底是什么路数？是我熬夜写代码产生幻觉了吗？
+                        
+                        <div class="signature">-- Bug写不完，头发掉光光。--</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="post-row">
+                <div class="post-left">
+                    <span class="username">路人甲007</span>
+                    <div class="avatar">[系统头像]</div>
+                    <div class="user-title">新手上路</div>
+                </div>
+                <div class="post-right">
+                    <div class="post-info">发表于 2026-06-18 02:17:10 <span class="floor-num">沙发</span></div>
+                    <div class="content">沙发！楼主大半夜不睡觉当gai溜子？</div>
+                </div>
+            </div>
+
+            <div class="post-row">
+                <div class="post-left">
+                    <span class="username">考研狗不认输</span>
+                    <div class="avatar">[系统头像]</div>
+                    <div class="user-title">中级会员</div>
+                </div>
+                <div class="post-right">
+                    <div class="post-info">发表于 2026-06-18 02:25:33 <span class="floor-num">板凳</span></div>
+                    <div class="content">图看着像搞比特币挖矿的私有矿场吧？不过挖矿的敢开在全透明的街铺？不怕被学校保卫处一锅端了？</div>
+                </div>
+            </div>
+
+            <div class="post-row">
+                <div class="post-left">
+                    <span class="username">西区宿舍管理员</span>
+                    <div class="avatar">[系统头像]</div>
+                    <div class="user-title">高级会员</div>
+                </div>
+                <div class="post-right">
+                    <div class="post-info">发表于 2026-06-18 07:12:05 <span class="floor-num">地板</span></div>
+                    <div class="content">等等，南门外那条支巷？那地方不是去年因为消防问题全封了吗？连路灯都是断电的，哪来的新店面？？楼主你确定没走错路？</div>
+                </div>
+            </div>
+
+            <div class="post-row">
+                <div class="post-left">
+                    <span class="username">摸鱼大师</span>
+                    <div class="avatar">[系统头像]</div>
+                    <div class="user-title">初级会员</div>
+                </div>
+                <div class="post-right">
+                    <div class="post-info">发表于 2026-06-18 08:30:41 <span class="floor-num">4楼</span></div>
+                    <div class="content">卧槽，仔细看地上的线，这是按照先天八卦排的服务器阵列啊。有点东西。</div>
+                </div>
+            </div>
+
+            <div class="post-row">
+                <div class="post-left">
+                    <span class="username">出售二手电动车</span>
+                    <div class="avatar">[系统头像]</div>
+                    <div class="user-title">广告专员</div>
+                </div>
+                <div class="post-right">
+                    <div class="post-info">发表于 2026-06-18 08:45:12 <span class="floor-num">5楼</span></div>
+                    <div class="content">借楼出大四二手小电驴，电池刚换的，带两把锁，有意私聊。</div>
+                </div>
+            </div>
+
+            <div class="post-row" style="background-color: #fdfdfd;">
+                <div class="post-left">
+                    <span class="username" style="color:red;">技术宅拯救世界</span>
+                    <div class="avatar">[自定义头像]</div>
+                    <div class="user-title">技术大牛</div>
+                </div>
+                <div class="post-right">
+                    <div class="post-info">发表于 2026-06-18 09:10:22 <span class="floor-num">6楼</span></div>
+                    <div class="content">
+                        楼主这图糊成马赛克了，论坛传图自动压缩抹除底层数据。这年头造谣成本真低。<br><br>
+                        有种把没压缩的原图甩个网盘链接出来，我直接扒 <b>EXIF 底层数据</b>，看看到底是不是在南门拍的。发帖不发原图，一律当水贴举报。
+                        <div class="signature">-- Talk is cheap, show me the code. --</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="post-row">
+                <div class="post-left">
+                    <span class="username">熬夜掉头发</span>
+                    <div class="avatar">[自定义头像]</div>
+                    <div class="user-title">版主 / 核心水怪</div>
+                </div>
+                <div class="post-right">
+                    <div class="post-info">发表于 2026-06-18 09:35:01 <span class="floor-num">7楼</span></div>
+                    <div class="content">
+                        <strong>回复 6# 的帖子</strong><br><br>
+                        你瞎叫唤什么？论坛附件限制单张 2M 你不知道？原图十几兆怎么传？<br>
+                        我传我自己的网盘了，懂哥自己下原图看坐标。别怪我没提醒你，看完别尿裤子。<br><br>
+                        👉 <b><a href="original_source.jpg" target="_blank" style="color: blue; text-decoration: underline; font-size: 15px;">【点击下载 15MB 原始相片文件.jpg】</a></b><br>
+                        <i>(提示：苹果手机用户保存后直接上滑查看照片信息)</i>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div style="text-align: right; padding-bottom: 20px;">
+            <span style="border:1px solid #ccc; padding:3px 8px; background:#fff;">1</span>
+            <a href="#" style="border:1px solid #ccc; padding:3px 8px; background:#fff;">2</a>
+            <a href="#" style="border:1px solid #ccc; padding:3px 8px; background:#fff;">下一页</a>
+        </div>
+    </div>
+
+    <div class="sidebar">
+        <div class="side-box">
+            <div class="side-title">最新校园热门</div>
+            <ul class="side-content">
+                <li><a href="#">食堂三楼的阿姨手又抖了，排骨全掉锅里</a></li>
+                <li><a href="#">求一份历年《高数（上）》期末卷子，救急！</a></li>
+                <li><a href="#">表白墙：昨天在图书馆二楼靠窗穿白裙子的女生</a></li>
+                <li><a href="#">吐槽！本学期关于晚归断电的新规定太坑了</a></li>
+                <li><a href="#">急出大四考研资料，半卖半送</a></li>
+                <li><a href="#">寻找今天早上在南门丢了校卡同学：王伟</a></li>
+                <li><a href="#">寝室空调一直漏水，报修三天了没人管？</a></li>
+            </ul>
+        </div>
+        
+        <div class="side-box">
+            <div class="side-title">论坛公告板</div>
+            <div style="padding: 10px; line-height: 1.6; color: #666;">
+                1. 严禁发布未经证实的小道消息。<br>
+                2. 交易区请警惕网络诈骗。<br>
+                3. 本周末机房维护，BBS 将在凌晨 2:00-5:00 暂停访问。
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="arg-progress">TRACK_NODE: 1/30 (INIT)</div>
 
 </body>
 </html>
