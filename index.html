@@ -57,20 +57,8 @@
         .side-content li { border-bottom: 1px dotted #9CB8CC; padding: 4px 0; padding-left: 12px; background: url('data:image/gif;base64,R0lGODlhBQAKAIABAAAAAP///yH5BAEAAAEALAAAAAAFAAoAAAIIjI+pG8HwnCgAOw==') no-repeat left center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 12px; }
 
         /* 伪造的附件下载样式 */
-        .attachment-box {
-            background: #FFFFCC;
-            border: 1px dashed #FF9900;
-            padding: 10px;
-            margin-top: 15px;
-            font-size: 12px;
-            display: inline-block;
-        }
-        .attachment-link {
-            color: #FF0000;
-            font-weight: bold;
-            text-decoration: underline;
-            font-size: 14px;
-        }
+        .attachment-box { background: #FFFFCC; border: 1px dashed #FF9900; padding: 10px; margin-top: 15px; font-size: 12px; display: inline-block; }
+        .attachment-link { color: #FF0000; font-weight: bold; text-decoration: underline; font-size: 14px; }
 
         /* 隐藏进度条 */
         #arg-progress { position: fixed; bottom: 5px; right: 5px; font-family: Terminal, monospace; font-size: 9px; color: #000; opacity: 0.4; }
@@ -231,18 +219,65 @@
 
             <div class="post-row">
                 <div class="post-left">
+                    <span class="username">汉语言文学一姐</span>
+                    <div class="avatar"><img src="wrong.png" alt="头像"></div>
+                    <div class="user-title">中级会员</div>
+                    <div class="user-stats">积分: 410</div>
+                </div>
+                <div class="post-right">
+                    <div class="post-info">发表于 2026-06-18 09:42:15 <span class="floor-num">8楼</span></div>
+                    <div class="content">
+                        纯血文科生路过... 14MB的照片是什么概念？里面是塞了一整篇毕业论文吗？我点开看就是一张长得像马赛克的照片啊，你们到底在吵什么[笑哭]
+                    </div>
+                </div>
+            </div>
+
+            <div class="post-row">
+                <div class="post-left">
+                    <span class="username">今天不吃外卖</span>
+                    <div class="avatar"><img src="wrong.png" alt="头像"></div>
+                    <div class="user-title">初级会员</div>
+                    <div class="user-stats">积分: 155</div>
+                </div>
+                <div class="post-right">
+                    <div class="post-info">发表于 2026-06-18 09:55:30 <span class="floor-num">9楼</span></div>
+                    <div class="content">
+                        下载了，确实有14.2M，巨离谱！我是苹果，safari下载后从文件保存到相册，显示的定位确实是我们学校啊？但是拍摄日期为什么是2007年，楼主你别搞我啊幸好我不是昨天晚上刷到！!直觉有猫腻你，毕竟相机型号都没有，这图绝对有问题！<br>
+                        @技术宅拯救世界 呼叫大佬，这题超纲了，求带带。
+                    </div>
+                </div>
+            </div>
+
+            <div class="post-row">
+                <div class="post-left">
+                    <span class="username">计科院发际线保护协会</span>
+                    <div class="avatar"><img src="wrong.png" alt="头像"></div>
+                    <div class="user-title">高级会员</div>
+                    <div class="user-stats">积分: 1850</div>
+                </div>
+                <div class="post-right">
+                    <div class="post-info">发表于 2026-06-18 10:05:11 <span class="floor-num">10楼</span></div>
+                    <div class="content">
+                        卧槽，我刚把这图发给我导（搞信安的），他扫了一眼直接让我把网断了。他说这图的文件头严重不匹配，尾部被人用特殊的二进制协议强行缝合了溢出数据... <br>
+                        楼主你到底下的是个什么鬼东西？！千万别乱搞啊！
+                    </div>
+                </div>
+            </div>
+
+            <div class="post-row">
+                <div class="post-left">
                     <span class="username">参数党</span>
                     <div class="avatar"><img src="wrong.png" alt="头像"></div>
                     <div class="user-title">资深鉴图师</div>
                     <div class="user-stats">积分: 2890</div>
                 </div>
                 <div class="post-right" style="background-color: #FFFFE0;"> 
-                    <div class="post-info">发表于 2026-06-18 10:12:45 <span class="floor-num">8楼</span></div>
+                    <div class="post-info">发表于 2026-06-18 10:12:45 <span class="floor-num">11楼</span></div>
                     <div class="content">
-                        看楼上好多小白不知道怎么看图片底层数据，我当个课代表科普一下：<br><br>
-                        1. <b>PC电脑端</b>：保存原图后，右键点击属性即可看基本信息，但是具体的完整信息需要把图片拖进在线 EXIF 嗅探器，或者用文本编辑器/十六进制工具强行打开。<br>
-                        2. <b>苹果手机</b>：最简单，相册里直接把照片往上一滑，看“说明”栏，但是也只能看最基础的，不过看拍摄日期和定位就知道楼主说谎了没。<br><br>
-                        这图有十几兆确实诡异。兄弟们我都教到这了，大家自己去查。
+                        看楼上好多小白不知道怎么看底层数据，这图的结构被刻意污染了，Windows自带的属性面板读不出来太多东西。我当个课代表科普一下：<br><br>
+                        1. <b>PC电脑端</b>：必须把图片拖进类似 <code>jimpl.com</code> 这种“在线 EXIF 嗅探器”强行解析；要想看10楼说的尾部异常数据，得用文本编辑器（比如记事本）或者十六进制工具打开，直接拉到最底。<br>
+                        2. <b>苹果手机</b>：苹果相册的权限很高，保存后在相册里直接把照片往上一滑，能看见基本信息，全部解密应该是要下载专业的EXIF软件吧。<br><br>
+                        这图底层塞的东西确实诡异，我嗅探出了一串不知道是不是乱码的东西。兄弟们我都教到这了，大家自己去查。
                     </div>
                 </div>
             </div>
