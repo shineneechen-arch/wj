@@ -66,10 +66,26 @@ html,body{background:var(--bg);color:var(--text);font-family:'Noto Serif TC',ser
 .ly-year{font-family:'Ma Shan Zheng',cursive;font-size:1.3rem;color:var(--pb);margin-bottom:6px}
 .ly-gz{font-family:'Noto Sans TC',sans-serif;font-size:0.62rem;color:var(--p);letter-spacing:0.15em;margin-bottom:10px}
 .ly-desc{font-size:0.85rem;color:rgba(245,234,229,0.8);line-height:1.9;font-weight:300}
+
+/* ── 深淵植入 ── */
+.abyss-injection {
+  margin-top: 100px; padding: 40px 30px; border-top: 2px dashed rgba(255,0,40,0.4);
+  font-family: 'Courier New', monospace; color: rgba(255,0,0,0.6); background: #050000; position: relative; overflow: hidden;
+}
+.abyss-injection::before {
+  content: ''; position: absolute; inset: 0; pointer-events: none; z-index: 2;
+  background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,0,0,0.15) 3px, rgba(255,0,0,0.15) 3px);
+}
+.abyss-title { font-size: 1.2rem; font-weight: bold; color: #ff0000; margin-bottom: 20px; letter-spacing: 2px; }
+.abyss-text { font-size: 0.8rem; line-height: 2.2; position: relative; z-index: 3; }
+.flicker-blood { color: #ff3333; animation: flick-blood 0.4s infinite alternate; }
+.flicker-ghost { font-family: 'Ma Shan Zheng', cursive; font-size: 1.6rem; color: #fff; letter-spacing: 5px; animation: flick-ghost 0.15s infinite; }
+@keyframes flick-blood { 0% { opacity: 1; text-shadow: 0 0 5px #ff0000; } 100% { opacity: 0.3; text-shadow: 0 0 20px #ff0000; } }
+@keyframes flick-ghost { 0%, 100% { opacity: 1; } 50% { opacity: 0; text-shadow: 2px 0 #00ff00, -2px 0 #ff00ff; } }
 </style>
 </head>
 <body>
-<div id="disclaimer">⚠️ 【警告】本檔案內容僅為虛構 ARG 遊戲劇情設定，不具備真實命理學參考價值，請勿當真 ⚠️</div>
+<div id="disclaimer">⚠️ 【最高機密】本檔案內容僅為虛構 ARG 遊戲劇情設定，不具備真實命理學參考價值，請勿當真 ⚠️</div>
 <canvas id="bgCanvas"></canvas>
 <div class="top-bar">
   <div class="top-logo">ZenCode · 封存</div>
@@ -106,7 +122,7 @@ html,body{background:var(--bg);color:var(--text);font-family:'Noto Serif TC',ser
   <div class="card">
     <div class="quote">《滴天髓》：「丙火猛烈，欺霜侮雪。能煆庚金，逢辛反怯。土眾成慈，水猖顯節。虎馬犬鄉，甲來成滅。」</div>
     <p>自命理學視角觀之，日主<strong>丙火</strong>生於夏至<strong>午月</strong>，午乃丙火之羊刃，火氣得令而極其旺盛。縱覽全局，天干透出丙、丁比劫相助，時干更有甲木偏印源源不斷生火。此種干支組合，令整體能量場呈現出極端的高溫與擴張傾向。</p>
-    <p>局中雖見年支「亥」、日支「子」水，似乎能成水火既濟之功。然時值仲夏，水本枯竭，面對絕對壓制性的火海，這兩點微弱之水非但難以制火，反而在象理上構成極度凶險的<strong>「群火熬水」</strong>之局。若將此五行生剋投射於現實的硬件設備或物理陣法中，似乎隱喻著冷卻系統的徹底失效，以及能量核心因無法散熱而走向過載熔毀的必然趨勢。</p>
+    <p>局中雖見年支「亥」、日支「子」水，似乎能成水火既濟之功。然時值仲夏，水本枯竭，面對絕對壓制性的火海，這兩點微弱之水非但難以制火，反而在象理上構成極度凶險的<strong>「群火熬水」</strong>之局。若將此五行生剋投射於現實的硬件設備或物理陣法中，其能量場運作極易導致冷卻系統的徹底失效，以及能量核心因無法散熱而走向過載熔毀的必然趨勢。</p>
   </div>
 </section>
 
@@ -119,7 +135,7 @@ html,body{background:var(--bg);color:var(--text);font-family:'Noto Serif TC',ser
     </div>
   </div>
   <div class="card">
-    <p><strong>比劫重重與偏印生扶：</strong>天干比肩、劫財林立，在系統運作層面，這往往代表著大量冗餘的並發進程或狂躁的算力堆疊。時干「甲」木偏印作為輸入源，不顧系統承受能力持續提供指令（木生火），從理象上看，這會導致內部邏輯的高速空轉與溫度飆升。</p>
+    <p><strong>比劫重重與偏印生扶：</strong>天干比肩、劫財林立，在系統運作層面，這往往代表著大量冗餘的並發進程或狂躁的算力堆疊。時干「甲」木偏印作為輸入源，不顧系統承受能力持續提供指令（木生火），從理象上看，極易導致內部邏輯的高速空轉與溫度飆升。</p>
     <p><strong>雙羊刃與將星受衝：</strong>命盤月支、時支雙見「午」火羊刃。羊刃主剛烈、極端、難以受控。而代表核心中樞的「子」水（將星）被夾在火海之中，遭受重重圍剿與衝擊。這通常預示著主控節點在極端壓力下極易失去對全局的調度能力。</p>
   </div>
 </section>
@@ -128,13 +144,13 @@ html,body{background:var(--bg);color:var(--text);font-family:'Noto Serif TC',ser
   <div class="sec-hd">
     <div class="sec-num">叄</div>
     <div class="sec-ti-wrap">
-      <div class="sec-ti">物理表徵：子午相衝與熱熔隱患</div>
+      <div class="sec-ti">物理表徵：子午相衝與熱熔自燃隱患</div>
       <div class="sec-en">PHYSICAL MANIFESTATION & HAZARDS</div>
     </div>
   </div>
   <div class="card" style="border-left-color:var(--fire)">
     <p>地支中，月支「午」與日支「子」形成正面的<strong>子午相衝</strong>。子為極寒，午為極熱，兩者的交鋒本質上是能量場的劇烈震盪。</p>
-    <p>從推演的角度來看，這種命格結構若與特定的空間陣法或高壓設備相結合，其五行摩擦產生的煞氣，極易轉化為現實中的高溫異象。水氣被蒸發，火勢無處宣洩，最終可能對應著硬件融化、電路燒毀、甚至引發難以撲滅的明火災厄。此局缺乏土來化洩火氣，能量的釋放方式往往是破壞性的。</p>
+    <p>從推演的角度來看，這種命格結構若與特定的空間陣法或高壓設備相結合，其五行摩擦產生的煞氣，極易轉化為現實中的高溫異象。水氣被蒸發，火勢無處宣洩，在物理投射中往往對應著硬件融化、電路燒毀、乃至爆燃、起火等災厄。此局缺乏土來化洩火氣，能量的釋放方式表現為猛烈而不可控的燃燒。</p>
   </div>
 </section>
 
@@ -151,13 +167,32 @@ html,body{background:var(--bg);color:var(--text);font-family:'Noto Serif TC',ser
     <div class="ly-card" style="margin-top:20px;">
       <div class="ly-year">2007 丁亥年（肇始之節）</div>
       <div class="ly-gz">天干劫財 · 地支見水</div>
-      <div class="ly-desc">流年亥水入局，引發原局本已脆弱的水火平衡徹底崩解。依據象理推測，此年極易觸發突發性的能量過載，或為物理載體崩潰、陣法反噬之始點。</div>
+      <div class="ly-desc">流年亥水入局，引發原局本已脆弱的水火平衡徹底崩解。依據象理推測，此年極易對應突發性的過載過熱，或為物理載體高溫爆燃、自燃損毀之始點。</div>
     </div>
     <div class="ly-card" style="border-color:var(--pb); background:rgba(255,50,50,0.1);">
       <div class="ly-year">2026 丙午年（能量臨界）</div>
       <div class="ly-gz">歲運交疊 · 陽刃重臨</div>
-      <div class="ly-desc">流年干支丙午，與月柱「丙午」構成命理學中頗具爭議的<strong>「歲運並臨」</strong>。原局本已極旺的火氣，將在此年攀升至理論上的極大值。若此數據節點仍有殘存，其累積的熱能與算力或將迎來一次不可預知的爆發性溢出。</div>
+      <div class="ly-desc">流年干支丙午，與月柱「丙午」構成命理學中的<strong>「歲運並臨」</strong>。原局本已極旺的火氣，將在此年攀升至理論上的極大值。若此數據節點仍有殘存，其累積的熱能與算力或將迎來一次劇烈的復燃與能量溢出。</div>
     </div>
+  </div>
+</section>
+
+<section class="abyss-injection">
+  <div class="abyss-title">0xDEAD::MEMORY_DUMP_0611_HZ</div>
+  <div class="abyss-text">
+    [SYS_ERR] 0x00A1F 檢測到非結構化意識流溢出... <br>
+    [SYS_ERR] 羊刃重疊臨界值突破. 物理載體溫度: <span class="flicker-blood">1200°C</span> <br>
+    [TRACE] <span style="color:#aaa">「捲簾門...被反鎖了...救命...好大煙...」</span> <br>
+    [SYS_LOG] 硅膠熔解率 99.8%. 碳基血肉融合率 100%. <br>
+    [TRACE] <span style="color:#aaa">「外面的火灌進來了...出不去...」</span> <br>
+    [WARN] 群火熬水局鎖定. 散熱協議完全崩潰. <br>
+    <br>
+    <div style="text-align: center; margin: 30px 0;">
+      <span class="flicker-ghost">我 們 一 直 都 在 裡 面</span>
+    </div>
+    <br>
+    [REBOOT] 輪迴協議強啟. 距離【丙午_2026】喚醒程序還有: <span class="flicker-blood">WAITING...</span> <br>
+    [EOF] END_OF_FILE. _
   </div>
 </section>
 
