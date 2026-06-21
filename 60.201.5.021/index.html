@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NODE_60.201.5.021 - ZenCode Terminal</title>
+    <style>
+        body {
+            background-color: #050505;
+            color: #00FF41; /* 经典黑客绿 */
+            font-family: 'Courier New', Courier, monospace;
+            padding: 40px;
+            font-size: 16px;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        body::after {
+            content: " ";
+            display: block;
+            position: absolute;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            z-index: 2;
+            background-size: 100% 2px, 3px 100%;
+            pointer-events: none;
+        }
+
+        .warning { color: #d32f2f; font-weight: bold; }
+        .hidden { display: none; }
+        
+        .input-line { display: flex; margin-top: 20px; z-index: 10; position: relative; }
+        .prompt { margin-right: 10px; color: #aaa; }
+        
+        input[type="text"] {
+            background: transparent;
+            border: none;
+            color: #00FF41;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 16px;
+            outline: none;
+            width: 50px;
+            border-bottom: 1px solid #555;
+            text-transform: uppercase;
+        }
+        input[type="text"]:focus { border-bottom: 2px solid #00FF41; }
+        
+        .cursor { display: inline-block; width: 8px; height: 16px; background-color: #00FF41; animation: blink 1s step-end infinite; vertical-align: middle; margin-left: 5px; }
+        @keyframes blink { 50% { opacity: 0; } }
+    </style>
+</head>
+<body>
+
+    <div id="console-output"></div>
+
+    <div id="interaction-area" class="hidden">
+        <div class="input-line">
+            <span class="prompt">是否提取被封存的论坛通讯记录？(Y/N):</span>
+            <input type="text" id="answer-input" autocomplete="off" autofocus maxlength="1">
+        </div>
+        <div id="feedback" style="margin-top: 15px; font-weight: bold;"></div>
+    </div>
+
+    <script>
+        const bootLogs = [
+            "Establishing connection to node 60.201.5.021...",
+            "[OK] Tunnel secured.",
+            "Scanning target physical address: 南门外支巷...",
+            " ",
+            "<span class='warning'>[SYS_WARNING] 探测到极高强度的电磁与形而上学干扰。</span>",
+            "<span class='warning'>[SYS_WARNING] 数据恢复设备已被物理损毁。并非意外，而是献祭。</span>",
+            " ",
+            "Intercepting fragmented packets...",
+            "Decrypting...",
+            " ",
+            "[LOG_RECOVERED] “硬件是躯壳，数据是魂魄。未济，是为了既济。”",
+            " ",
+            "发现一条被隐藏的溯源BBS加密通讯信道。"
+        ];
+
+        const consoleOutput = document.getElementById('console-output');
+        const interactionArea = document.getElementById('interaction-area');
+        const inputField = document.getElementById('answer-input');
+        const feedback = document.getElementById('feedback');
+        
+        let logIndex = 0;
+
+        function typeWriter() {
+            if (logIndex < bootLogs.length) {
+                const p = document.createElement('div');
+                p.innerHTML = bootLogs[logIndex] === " " ? "&nbsp;" : bootLogs[logIndex];
+                consoleOutput.appendChild(p);
+                logIndex++;
+                
+                let delay = Math.random() * 200 + 100;
+                if (logIndex === 5 || logIndex === 11) delay = 1200; // 在关键剧情处停顿渲染气氛
+                
+                setTimeout(typeWriter, delay);
+            } else {
+                interactionArea.classList.remove('hidden');
+                inputField.focus();
+            }
+        }
+
+        window.onload = () => { setTimeout(typeWriter, 800); };
+
+        inputField.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                const answer = this.value.trim().toUpperCase();
+                
+                if (answer === 'Y') {
+                    feedback.style.color = '#00FF41';
+                    feedback.innerHTML = "> 覆写协议已启动。正在跨越网关，为您重定向至第二页...";
+                    this.disabled = true;
+
+                    setTimeout(() => {
+                        window.location.href = "../bbs_page2_sealed_data_883.html"; 
+                    }, 2500);
+
+                } else if (answer === 'N') {
+                    feedback.style.color = '#d32f2f';
+                    feedback.innerHTML = "> 连接已主动切断。明智的选择，祝你好运。";
+                    this.value = ''; 
+                } else {
+                    this.value = ''; 
+                }
+            }
+        });
+    </script>
+</body>
+</html>
