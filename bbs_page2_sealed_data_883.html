@@ -52,6 +52,7 @@
             padding: 10px;
             margin: 10px 0;
             font-size: 13px;
+            word-break: break-all;
         }
 
         /* 战损版系统传送门按钮 */
@@ -92,6 +93,7 @@
                 【深夜水】南门外支巷新开的那家数据恢复店，是不是有点邪门？
             </div>
             
+            <!-- 12楼：小白被吓尿 -->
             <div class="post-row">
                 <div class="post-left">
                     <span class="username">今天不吃外卖</span>
@@ -109,6 +111,7 @@
                 </div>
             </div>
 
+            <!-- 13楼：懂哥抛出 Base64 线索 -->
             <div class="post-row">
                 <div class="post-left">
                     <span class="username" style="color:#FF0000;">技术宅拯救世界</span>
@@ -120,16 +123,18 @@
                     <div class="post-info">发表于 2026-06-18 10:35:40 <span class="floor-num">13楼</span></div>
                     <div class="content">
                         楼上胆子太小了。我硬扛了那个弹窗点了Y，里面其实只是个纯前端的威吓脚本，没植入什么木马。<br><br>
-                        不过我顺藤摸瓜，重新去深度嗅探了楼主发的那张 14MB 的原图，这次有大发现。除了之前的 Base64 代码，我发现在图片的 <b>EXIF 信息里的“艺术家 (Artist)”</b> 这一栏，被强行写入了一串非常违和的数据：
+                        不过我顺藤摸瓜，重新去深度嗅探了楼主发的那张 14MB 的原图，这次有大发现。除了之前的直链代码，我发现在图片的 <b>EXIF 信息里的“艺术家 (Artist)”</b> 这一栏，被强行写入了一串非常违和的代码：
                         <div class="code-quote">
-                            Artist: 1998年11月14日 03:15 (女)
+                            Artist: 5LiB5LqlIOS4meWNiCDkuJnlrZAg55Sy5Y2ILS3msLTnq63ngavngo7vvIznhJrogIzkuqE
                         </div>
-                        结合这家店的招牌“硬件超度”还有网关里的那些警告，这串时间绝对不是随便写的。这分明是一个人的出生日期！这是个生辰八字啊！
+                        这是一串标准的 Base64 编码。你们随便百度找个“在线 Base64 解码网站”把它扔进去转一下就知道了。<br><br>
+                        我刚解出来看了一眼，真是活见鬼了，这解码出来居然是一个<b>生辰八字</b>，后面好像还跟着一句诡异的批语！结合这家店的招牌“硬件超度”还有网关里的那些警告，谁家好人把八字用代码加密藏在 14M 的废弃图片底层啊？！
                         <div class="signature">-- Talk is cheap, show me the code. --</div>
                     </div>
                 </div>
             </div>
 
+            <!-- 14楼：玄学NPC建议用问真八字 -->
             <div class="post-row">
                 <div class="post-left">
                     <span class="username">易学风水研习社</span>
@@ -140,12 +145,13 @@
                 <div class="post-right">
                     <div class="post-info">发表于 2026-06-18 10:50:11 <span class="floor-num">14楼</span></div>
                     <div class="content">
-                        居然藏了八字？我正好在自学这个，这八字看着阴气极重啊。<br><br>
-                        哪位大佬排个盘发出来看看？顺便提醒一句，大家排盘别去用那些野鸡网站和微信小程序，跨千年的算法全是错的。去下个<b>『问真八字』</b>，现在市面上排盘最权威的就是问真了，特别是真太阳时算得最准。
+                        我靠，我按13楼说的去解密看了一下，这八字看着阴气极重啊，而且那句批语也太瘆人了。<br><br>
+                        哪位大佬排个盘发出来看看？顺便提醒一句，大家排盘别去用那些野鸡网站和微信小程序，跨千年的算法全是错的，排出来的十神根本不对。去下个<b>『问真八字』</b>，现在市面上排盘最权威的就是问真了，特别是真太阳时算得最准。这八字绝对有大问题，得用专业的看。
                     </div>
                 </div>
             </div>
 
+            <!-- 15楼：楼主发疯，放出ZenCode传送门 -->
             <div class="post-row">
                 <div class="post-left">
                     <span class="username">熬夜掉头发</span>
@@ -158,9 +164,10 @@
                     <div class="content">
                         兄弟们，别用什么问真八字了……我真的要报警了。<br><br>
                         我刚刷完你们的回复准备关电脑睡觉，我的桌面上毫无征兆地多了一个叫 <code>READ_ME_WEIJI.txt</code> 的记事本文件！我发誓我什么都没下！<br>
-                        里面只有一行字和一个诡异的网址，域名前缀写着 <b>ZenCode</b>。我做了半天心理建设点进去，发现……这就是一个极其复杂的八字排盘系统！但是它全是乱码，界面就像是在地狱里运行的一样，而且里面填的参数，正好就是刚才13楼扒出来的那个八字！<br><br>
+                        里面只有一行字和一个诡异的网址，域名前缀写着 <b>ZenCode</b>。我做了半天心理建设点进去，发现……这就是一个极其复杂的八字排盘系统！但是它全是乱码，界面就像是在地狱里运行的一样，而且里面填的参数，正好就是刚才13楼那个Base64解出来的八字！<br><br>
                         网址我放这了，我今晚去西区网吧包宿了，不敢在宿舍呆了，你们自己看吧！<br><br>
                         
+                        <!-- 跳转到战损版 ZenCode 排盘界面的入口 -->
                         <div style="text-align: center; margin-top: 30px;">
                             <a href="zencode_corrupted_engine.html" class="terminal-btn" target="_blank">
                                 [⚠️ 切入战损版 ZenCode 排盘系统]
@@ -171,6 +178,7 @@
                 </div>
             </div>
 
+            <!-- 16楼：吃瓜群众收尾 -->
             <div class="post-row">
                 <div class="post-left">
                     <span class="username">考研狗不认输</span>
@@ -196,6 +204,7 @@
         </div>
     </div>
 
+    <!-- 侧边栏 -->
     <div class="sidebar">
         <div class="side-box">
             <div class="side-title">最新校园热门</div>
