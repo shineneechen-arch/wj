@@ -38,6 +38,11 @@ html,body{background:var(--bg);color:var(--text);font-family:'Noto Serif TC',ser
   animation:scan 4s linear infinite;}
 @keyframes scan{0%{top:-4px}100%{top:100vh}}
 
+/* 修复：补回表单浮现的动画关键帧 */
+@keyframes fsd{from{opacity:0;transform:translateY(-14px)}to{opacity:1;transform:none}}
+@keyframes fsu{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+@keyframes fi{from{opacity:0}to{opacity:1}}
+
 .page{position:relative;z-index:10;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:48px 24px 80px;width:100%;}
 .header{text-align:center;margin-bottom:52px;width:100%;max-width:860px;display:flex;flex-direction:column;align-items:center;}
 .h-tag{display:inline-flex;align-items:center;gap:12px;font-family:'Noto Sans TC',sans-serif;font-size:0.63rem;letter-spacing:0.55em;color:var(--gold);text-transform:uppercase;margin-bottom:20px;opacity:0;animation:fsd .8s ease .2s forwards;}
@@ -291,14 +296,6 @@ function lunarToSolar(ly,lm,ld){
 const TG=['甲','乙','丙','丁','戊','己','庚','辛','壬','癸'];
 const DZ=['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
 function jdn(y,m,d){const a=Math.floor((14-m)/12),yr=y+4800-a,mo=m+12*a-3;return d+Math.floor((153*mo+2)/5)+365*yr+Math.floor(yr/4)-Math.floor(yr/100)+Math.floor(yr/400)-32045;}
-
-const JQTBL_PRECISE={
-  2007:[[5,23,43],[4,6,18],[5,23,8],[5,17,4],[6,11,56],[6,7,56],[7,3,20],[7,0,31],[8,16,8],[8,20,7],[8,0,50],[7,17,14]]
-};
-function getJQPrecise(year, mIdx){
-  const r=(JQTBL_PRECISE[year]||[[4,12,0],[4,12,0],[5,12,0],[5,12,0],[6,12,0],[6,12,0],[7,12,0],[7,12,0],[8,12,0],[8,12,0],[7,12,0],[7,12,0]])[mIdx];
-  return{day:r[0],hour:r[1],minute:r[2]};
-}
 
 function calcBazi(year,month,day,hour){
   // 年柱 (简易)
