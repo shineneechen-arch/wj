@@ -44,16 +44,14 @@
         .side-content { padding: 8px; list-style: none; margin: 0; }
         .side-content li { border-bottom: 1px dotted #9CB8CC; padding: 4px 0; padding-left: 12px; background: url('data:image/gif;base64,R0lGODlhBQAKAIABAAAAAP///yH5BAEAAAEALAAAAAAFAAoAAAIIjI+pG8HwnCgAOw==') no-repeat left center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 12px; }
 
-        /* 特殊引用框，用于凸显硬核解密内容 */
+        /* 特殊引用框，用于凸显关键线索 */
         .code-quote {
-            background-color: #000;
-            color: #00FF00;
-            font-family: 'Courier New', monospace;
+            background-color: #E8F0F8;
+            color: #333;
+            border-left: 4px solid #0055AA;
             padding: 10px;
-            border-left: 4px solid #FF0000;
             margin: 10px 0;
-            font-size: 12px;
-            overflow-x: auto;
+            font-size: 13px;
         }
 
         /* 战损版系统传送门按钮 */
@@ -96,25 +94,37 @@
             
             <div class="post-row">
                 <div class="post-left">
+                    <span class="username">今天不吃外卖</span>
+                    <div class="avatar"><img src="wrong.png" alt="头像"></div>
+                    <div class="user-title">初级会员</div>
+                    <div class="user-stats">积分: 155</div>
+                </div>
+                <div class="post-right">
+                    <div class="post-info">发表于 2026-06-18 10:22:15 <span class="floor-num">12楼</span></div>
+                    <div class="content">
+                        Woc！刚才上一页那个 60.201.5.021 的网址你们谁点进去了？！<br><br>
+                        我好奇点了一下，全屏突然爆红开始疯狂震动，电脑里还传出那种像主板短路一样的尖叫警报声！还问我要不要被下载！！我SAN值直接清零了！大半夜的差点把电脑从桌子上砸下去！<br>
+                        那里面弹出来的红字太精神污染了，这到底是个什么鬼东西啊？！
+                    </div>
+                </div>
+            </div>
+
+            <div class="post-row">
+                <div class="post-left">
                     <span class="username" style="color:#FF0000;">技术宅拯救世界</span>
                     <div class="avatar"><img src="wrong.png" alt="头像"></div>
                     <div class="user-title">技术大牛</div>
                     <div class="user-stats">积分: 3340</div>
                 </div>
                 <div class="post-right">
-                    <div class="post-info">发表于 2026-06-18 10:45:12 <span class="floor-num">12楼</span></div>
+                    <div class="post-info">发表于 2026-06-18 10:35:40 <span class="floor-num">13楼</span></div>
                     <div class="content">
-                        我收回我6楼的话。楼主发的那张14MB的原图我下下来了，用Hex（十六进制编辑器）拆了底层。
-                        <br><br>
-                        这根本不是什么数据损坏，这是极其恶劣的二进制文件缝合！那张图真正的画面数据只有200多KB，剩下的14MB全是用ASCII码强行写进去的系统日志！
-                        我拉到底部，发现了一段被封装的代码区：
+                        楼上胆子太小了。我硬扛了那个弹窗点了Y，里面其实只是个纯前端的威吓脚本，没植入什么木马。<br><br>
+                        不过我顺藤摸瓜，重新去深度嗅探了楼主发的那张 14MB 的原图，这次有大发现。除了之前的 Base64 代码，我发现在图片的 <b>EXIF 信息里的“艺术家 (Artist)”</b> 这一栏，被强行写入了一串非常违和的数据：
                         <div class="code-quote">
-                            > [ARCHIVE_NODE_SEALED] UNAUTHORIZED ACCESS DETECTED.<br>
-                            > PARAM_MONTH_BRANCH_WEIGHT: 3.5 (OVERLOAD_MAX)<br>
-                            > SYS_TARGET: SEVEN_LUMINARIES_ARRAY<br>
-                            > CELESTIAL_ANCHOR_SOUTH_NODE: LUO_HOU
+                            Artist: 1998年11月14日 03:15 (女)
                         </div>
-                        楼主，你去那家店外面瞎转悠的时候，是不是碰了不该碰的东西？这家店绝对在用巨大的算力跑某种非法的阵列程序。
+                        结合这家店的招牌“硬件超度”还有网关里的那些警告，这串时间绝对不是随便写的。这分明是一个人的出生日期！这是个生辰八字啊！
                         <div class="signature">-- Talk is cheap, show me the code. --</div>
                     </div>
                 </div>
@@ -128,28 +138,10 @@
                     <div class="user-stats">积分: 1205</div>
                 </div>
                 <div class="post-right">
-                    <div class="post-info">发表于 2026-06-18 10:52:40 <span class="floor-num">13楼</span></div>
+                    <div class="post-info">发表于 2026-06-18 10:50:11 <span class="floor-num">14楼</span></div>
                     <div class="content">
-                        等一下，12楼发出来的那些代码......这根本不是普通程序！<br><br>
-                        <code>MONTH_BRANCH_WEIGHT: 3.5</code> 这是八字排盘里地支的能量权重参数，把月支权重直接拉满到3.5是最凶险的极端排法。还有那个 <code>SOUTH_NODE: LUO_HOU</code>！在七政四余的星盘系统里，南交点就是“罗睺”！这是大凶之星啊！<br><br>
-                        这组合根本不是在算命，这是在借用计算机底层的算力强制锁死某人的命宫！这叫“必死之局”！这家数据恢复店到底是在恢复硬盘，还是在……超度什么东西？！
-                    </div>
-                </div>
-            </div>
-
-            <div class="post-row">
-                <div class="post-left">
-                    <span class="username">全栈秃头翁</span>
-                    <div class="avatar"><img src="wrong.png" alt="头像"></div>
-                    <div class="user-title">中级会员</div>
-                    <div class="user-stats">积分: 580</div>
-                </div>
-                <div class="post-right">
-                    <div class="post-info">发表于 2026-06-18 11:05:15 <span class="floor-num">14楼</span></div>
-                    <div class="content">
-                        细思极恐。<br>
-                        我看了一下那段代码前段的八字换算逻辑，它的年柱跳转卡在一个很奇怪的节点上。正常网站的排盘在这块都有跨千年的算法bug，但这个系统完美绕开了。它在“立春”交节的那一毫秒做了一个极其精准的截断。<br>
-                        这需要极高的算力和算法优化能力。结合楼主说店里一阴一阳的水冷排机柜……他们真的是在用服务器当法器布阵。
+                        居然藏了八字？我正好在自学这个，这八字看着阴气极重啊。<br><br>
+                        哪位大佬排个盘发出来看看？顺便提醒一句，大家排盘别去用那些野鸡网站和微信小程序，跨千年的算法全是错的。去下个<b>『问真八字』</b>，现在市面上排盘最权威的就是问真了，特别是真太阳时算得最准。
                     </div>
                 </div>
             </div>
@@ -164,31 +156,33 @@
                 <div class="post-right">
                     <div class="post-info">发表于 2026-06-18 11:13:50 <span class="floor-num">15楼</span></div>
                     <div class="content">
-                        别分析了兄弟们……我有点慌了。<br><br>
-                        我刚把捡回来的那块硬盘插到电脑上，试图强制解包。结果我的显示器现在一直闪烁红光，系统防火墙被完全击穿了，桌面上自动生成了一个叫 <b>ZenCode</b> 的网页入口。<br>
-                        点进去全是被污染的命理报告面板，里面的地理和人际关系模块一直在报出奇怪的坐标。<br><br>
-                        我感觉我的电脑被某种“东西”顺着网线逆向感染了。我把这个 ZenCode 系统的直链扔在这里，懂网安和玄学的兄弟赶紧进去看看，能不能想办法从外部重置它的星系代码把这阵法关了！我要拔电源了！<br><br>
+                        兄弟们，别用什么问真八字了……我真的要报警了。<br><br>
+                        我刚刷完你们的回复准备关电脑睡觉，我的桌面上毫无征兆地多了一个叫 <code>READ_ME_WEIJI.txt</code> 的记事本文件！我发誓我什么都没下！<br>
+                        里面只有一行字和一个诡异的网址，域名前缀写着 <b>ZenCode</b>。我做了半天心理建设点进去，发现……这就是一个极其复杂的八字排盘系统！但是它全是乱码，界面就像是在地狱里运行的一样，而且里面填的参数，正好就是刚才13楼扒出来的那个八字！<br><br>
+                        网址我放这了，我今晚去西区网吧包宿了，不敢在宿舍呆了，你们自己看吧！<br><br>
                         
                         <div style="text-align: center; margin-top: 30px;">
                             <a href="zencode_corrupted_engine.html" class="terminal-btn" target="_blank">
-                                [⚠️ 警告：切入战损版 ZenCode 排盘系统]
+                                [⚠️ 切入战损版 ZenCode 排盘系统]
                             </a>
                         </div>
+                        <div class="signature">-- Bug写不完，头发掉光光。--</div>
                     </div>
                 </div>
             </div>
 
             <div class="post-row">
                 <div class="post-left">
-                    <span class="username">今天不吃外卖</span>
+                    <span class="username">考研狗不认输</span>
                     <div class="avatar"><img src="wrong.png" alt="头像"></div>
-                    <div class="user-title">初级会员</div>
-                    <div class="user-stats">积分: 155</div>
+                    <div class="user-title">中级会员</div>
+                    <div class="user-stats">积分: 350</div>
                 </div>
                 <div class="post-right">
-                    <div class="post-info">发表于 2026-06-18 11:15:02 <span class="floor-num">16楼</span></div>
+                    <div class="post-info">发表于 2026-06-18 11:20:05 <span class="floor-num">16楼</span></div>
                     <div class="content">
-                        卧槽楼主你别吓我，我刚在第一页手贱点了一个什么弹窗，电脑音响疯狂惨叫，我还以为我中了病毒。我不玩了，你们这些懂哥慢慢拆吧，我退网了。
+                        卧槽，隔空给电脑投送记事本？楼主你这是被对面的阵法系统物理锁定了啊！<br>
+                        这帖子太邪门了，不敢点那个红色的按钮，我先马为敬，明天白天阳气重了再来看。
                     </div>
                 </div>
             </div>
