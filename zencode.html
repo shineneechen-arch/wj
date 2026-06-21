@@ -476,17 +476,47 @@ function odc(){
     document.getElementById('bprev').classList.remove('show');
   }
 }
-
+/* 核心：逻辑跳转分流函数 */
 function submitCorrupted() {
+    // 获取当前排出来的八字结果 (baziStr) 和 地点 (bp)
+    const pillars = calcBazi(
+        parseInt(document.getElementById('by').value),
+        parseInt(document.getElementById('bm').value),
+        parseInt(document.getElementById('bd').value),
+        parseInt(document.getElementById('bh').value),
+        parseInt(document.getElementById('bmin').value),
+        document.getElementById('ubp').value.trim()
+    );
+    const baziStr = pillars.map(p=>p.tg+p.dz).join(' ');
+    const bp = document.getElementById('ubp').value.trim();
+
+    // 逻辑判定：谁触发的跳谁
+    let targetFile = '';
+    if (baziStr === '丁亥 丙午 丙子 甲午' && bp.includes('杭州')) {
+        targetFile = 'archive_hz_v1_stable.html';
+    } else if (baziStr === '丁亥 丙午 丙子 癸巳' && bp.includes('四川')) {
+        targetFile = 'archive_sc_v1_critical.html';
+    }
+
+    // 视觉反馈：执行“阵法锚定”动画
     document.body.innerHTML = `
         <div style="height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#000;color:#ff003c;font-family:'Ma Shan Zheng',cursive;">
-            <h1 style="font-size:4rem;animation:glitch-anim 0.1s infinite;">數據已連接</h1>
-            <p style="font-size:1.5rem;font-family:'Noto Sans TC',sans-serif;margin-top:20px;">陣法覆寫中... 正在開啟深淵信道...</p>
+            <h1 style="font-size:4rem;animation:glitch-anim 0.1s infinite;">陣法錨定成功</h1>
+            <p style="font-size:1.5rem;font-family:'Noto Sans TC',sans-serif;margin-top:20px;">正在提取獻祭者檔案：${targetFile}...</p>
+            <div style="width:200px; height:2px; background:#330000; margin-top:20px;">
+                <div id="loading-bar" style="height:100%; width:0%; background:#ff003c; transition: width 2s;"></div>
+            </div>
         </div>
     `;
+
+    // 启动进度条并跳转
     setTimeout(() => {
-        alert('【系統解鎖】恭喜你，成功突破 ZenCode 戰損中控台！');
-    }, 2000);
+        document.getElementById('loading-bar').style.width = '100%';
+    }, 100);
+
+    setTimeout(() => {
+        window.location.href = targetFile; // 真正的跳转
+    }, 2500);
 }
 </script>
 </body>
