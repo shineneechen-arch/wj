@@ -120,6 +120,33 @@ select.inp option{background:#0C0000;color:var(--text);}
 
 /* 禁用原生DST行 */
 .dst-row, .dst-panel, #roc { display: none !important; }
+
+/* 📱 移动端战损布局适配：防止法器图标挡住核心阵法 */
+@media (max-width: 768px) {
+  .floating-right-group { 
+    right: 12px; 
+    top: auto; 
+    bottom: 25px; 
+    transform: none; 
+  }
+  .floating-astrolabe { 
+    left: 12px !important; 
+    top: auto !important; 
+    bottom: 25px !important; 
+    transform: none !important; 
+  }
+  .yinyang-wrapper, .astrolabe-wrapper { 
+    width: 42px; 
+    height: 42px; 
+  }
+  .liuyao-text, .astrolabe-text { 
+    font-size: 0.55rem; 
+    letter-spacing: 0.3em;
+  }
+  .form-card {
+    padding: 30px 20px 25px;
+  }
+}
 </style>
 </head>
 <body>
@@ -217,7 +244,7 @@ select.inp option{background:#0C0000;color:var(--text);}
     <div class="field" style="margin-top:4px;">
       <div class="flbl">地理經緯錨點</div>
       <div class="iw">
-        <input type="text" id="ubp" class="inp" placeholder="如：杭州 或 **" autocomplete="off" oninput="odc()">
+        <input type="text" id="ubp" class="inp" placeholder="如：杭州 或 四川" autocomplete="off" oninput="odc()">
       </div>
       <div class="solar-hint show" id="solar-hint"></div>
     </div>
@@ -476,9 +503,11 @@ function odc(){
     document.getElementById('bprev').classList.remove('show');
   }
 }
-/* 核心：逻辑跳转分流函数 */
+
+/* ═══════════════════════════════════════════════════════
+   跳转分流逻辑
+═══════════════════════════════════════════════════════ */
 function submitCorrupted() {
-    // 获取当前排出来的八字结果 (baziStr) 和 地点 (bp)
     const pillars = calcBazi(
         parseInt(document.getElementById('by').value),
         parseInt(document.getElementById('bm').value),
@@ -490,7 +519,6 @@ function submitCorrupted() {
     const baziStr = pillars.map(p=>p.tg+p.dz).join(' ');
     const bp = document.getElementById('ubp').value.trim();
 
-    // 逻辑判定：谁触发的跳谁
     let targetFile = '';
     if (baziStr === '丁亥 丙午 丙子 甲午' && bp.includes('杭州')) {
         targetFile = 'archive_hz_v1_stable.html';
@@ -498,7 +526,6 @@ function submitCorrupted() {
         targetFile = 'archive_sc_v1_critical.html';
     }
 
-    // 视觉反馈：执行“阵法锚定”动画
     document.body.innerHTML = `
         <div style="height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#000;color:#ff003c;font-family:'Ma Shan Zheng',cursive;">
             <h1 style="font-size:4rem;animation:glitch-anim 0.1s infinite;">陣法錨定成功</h1>
@@ -509,13 +536,12 @@ function submitCorrupted() {
         </div>
     `;
 
-    // 启动进度条并跳转
     setTimeout(() => {
         document.getElementById('loading-bar').style.width = '100%';
     }, 100);
 
     setTimeout(() => {
-        window.location.href = targetFile; // 真正的跳转
+        window.location.href = targetFile;
     }, 2500);
 }
 </script>
