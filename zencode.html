@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Z̸e̸n̸C̸o̸d̸e̸ · 命̸運̸封̸存̸</title>
+<link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+TC:wght@300;400;500;700;900&family=Noto+Sans+TC:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+/* 战损版暗黑配色替换 */
+:root{
+  --gold:#d32f2f; --gold-b:#ff003c; --gold-dim:rgba(211,47,47,0.18);
+  --bg:#030000; --text:#e0e0e0; --text-d:rgba(255,100,100,0.52); --text-f:rgba(255,0,60,0.4);
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html,body{background:var(--bg);color:var(--text);font-family:'Noto Serif TC',serif;overflow-x:hidden;min-height:100vh;}
+
+/* 诡异的随机屏幕震动与故障效果 */
+@keyframes glitch-anim {
+  0% { transform: translate(0) }
+  20% { transform: translate(-2px, 1px) }
+  40% { transform: translate(-1px, -1px) }
+  60% { transform: translate(2px, 1px) }
+  80% { transform: translate(1px, -1px) }
+  100% { transform: translate(0) }
+}
+.glitch-active { 
+    animation: glitch-anim 0.1s infinite; 
+    color: #ff003c !important; 
+    text-shadow: -2px 0 #00ff00, 2px 0 #0000ff !important; 
+}
+
+#bg-canvas{position:fixed;inset:0;z-index:0;pointer-events:none; filter: contrast(1.5) saturate(1.2);}
+.grid-ov{position:fixed;inset:0;z-index:1;pointer-events:none;
+  background-image:linear-gradient(rgba(211,47,47,0.05) 1px,transparent 1px),linear-gradient(90deg,rgba(211,47,47,0.05) 1px,transparent 1px);
+  background-size:64px 64px;mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black 20%,transparent 100%);}
+.scan{position:fixed;top:0;left:0;right:0;height:4px;z-index:2;pointer-events:none;
+  background:linear-gradient(90deg,transparent,rgba(255,0,0,0.2),rgba(255,0,0,0.6),rgba(255,0,0,0.2),transparent);
+  animation:scan 4s linear infinite;}
+@keyframes scan{0%{top:-4px}100%{top:100vh}}
+
+.page{position:relative;z-index:10;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:48px 24px 80px;width:100%;}
+.header{text-align:center;margin-bottom:52px;width:100%;max-width:860px;display:flex;flex-direction:column;align-items:center;}
+.h-tag{display:inline-flex;align-items:center;gap:12px;font-family:'Noto Sans TC',sans-serif;font-size:0.63rem;letter-spacing:0.55em;color:var(--gold);text-transform:uppercase;margin-bottom:20px;opacity:0;animation:fsd .8s ease .2s forwards;}
+.h-tag::before,.h-tag::after{content:'';width:30px;height:1px;background:linear-gradient(90deg,transparent,var(--gold));}
+.h-tag::after{transform:scaleX(-1);}
+.t-wrap{position:relative;display:block;width:100%;text-align:center;margin-bottom:14px;opacity:0;animation:fsd .9s ease .35s forwards;}
+.t-main{font-family:'Ma Shan Zheng',cursive;font-size:clamp(3rem,6.5vw,5rem);line-height:1;letter-spacing:0.1em;display:block;width:100%;
+  background:linear-gradient(160deg,#8b0000 0%,#ff003c 38%,#4a0000 68%,#d32f2f 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  filter:drop-shadow(0 0 25px rgba(255,0,0,0.6));}
+.t-glow{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 65%,rgba(255,0,0,0.2) 0%,transparent 70%);filter:blur(22px);pointer-events:none;}
+.t-sub{font-size:0.82rem;letter-spacing:0.38em;color:var(--text-d);font-family:'Noto Sans TC',sans-serif;opacity:0;animation:fsd 1s ease .5s forwards;}
+.hdiv{width:280px;height:1px;margin:30px auto 40px;background:linear-gradient(90deg,transparent,var(--gold),transparent);position:relative;opacity:0;animation:fi 1s ease .6s forwards;}
+.hdiv::before{content:'✦';position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:0.65rem;color:var(--gold);background:var(--bg);padding:0 8px;}
+
+.form-card{width:100%;max-width:460px;background:rgba(10,0,0,0.88);border:1px solid var(--gold-dim);padding:44px 40px 40px;position:relative;backdrop-filter:blur(24px);
+  box-shadow:0 0 0 1px rgba(255,0,0,0.2),0 32px 64px rgba(0,0,0,0.9),0 0 80px rgba(255,0,0,0.1),inset 0 1px 0 rgba(255,0,0,0.15);
+  opacity:0;animation:fsu .9s ease .5s forwards;}
+.c-tl,.c-tr,.c-bl,.c-br{position:absolute;width:16px;height:16px;border-color:rgba(255,0,0,0.45);border-style:solid;}
+.c-tl{top:10px;left:10px;border-width:1px 0 0 1px;}.c-tr{top:10px;right:10px;border-width:1px 1px 0 0;}
+.c-bl{bottom:10px;left:10px;border-width:0 0 1px 1px;}.c-br{bottom:10px;right:10px;border-width:0 1px 1px 0;}
+.cal-tog{display:flex;margin-bottom:28px;border:1px solid var(--gold-dim);overflow:hidden;}
+.cal-btn{flex:1;padding:11px 0;background:transparent;border:none;font-family:'Noto Sans TC',sans-serif;font-size:0.8rem;letter-spacing:0.2em;color:var(--text-d);cursor:pointer;transition:all .3s;position:relative;}
+.cal-btn.active{background:rgba(255,0,0,0.15);color:var(--gold-b);}
+.cal-btn.active::after{content:'';position:absolute;bottom:0;left:20%;right:20%;height:1px;background:var(--gold);}
+
+.field{display:flex;flex-direction:column;gap:7px;margin-bottom:22px;}
+.flbl{font-family:'Noto Sans TC',sans-serif;font-size:0.64rem;letter-spacing:0.38em;color:var(--gold);text-transform:uppercase;padding-left:1px;display:flex;align-items:center;gap:8px;}
+.flbl::before{content:'';width:3px;height:3px;background:var(--gold);transform:rotate(45deg);flex-shrink:0;}
+.iw{position:relative;}
+.iw::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);transform:scaleX(0);opacity:0;transition:all .4s;}
+.iw:focus-within::after{transform:scaleX(1);opacity:1;}
+.inp{width:100%;padding:13px 16px;background:rgba(20,0,0,0.5);border:1px solid rgba(255,0,0,0.15);color:var(--text);font-family:'Noto Serif TC',serif;font-size:0.97rem;letter-spacing:0.06em;outline:none;transition:all .3s;-webkit-appearance:none;appearance:none;border-radius:2px;}
+.inp::placeholder{color:rgba(150,150,150,0.4);font-size:0.83rem;}
+.inp:focus{background:rgba(255,0,0,0.1);border-color:rgba(255,0,0,0.5);box-shadow:0 0 24px rgba(255,0,0,0.2);color:#fff;}
+select.inp option{background:#0C0000;color:var(--text);}
+.dg3{display:grid;grid-template-columns:2fr 1.2fr 1.2fr;gap:8px;}
+.dg2{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.sl3{display:grid;grid-template-columns:2fr 1.2fr 1.2fr;gap:8px;margin-bottom:5px;}
+.sl2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:5px;margin-top:10px;}
+.slbl{font-family:'Noto Sans TC',sans-serif;font-size:0.58rem;letter-spacing:0.25em;color:var(--text-f);text-align:center;}
+.inp.c{text-align:center;padding-left:8px;padding-right:8px;}
+.lunar-h{font-family:'Noto Sans TC',sans-serif;font-size:0.68rem;color:rgba(180,50,50,0.65);letter-spacing:0.1em;margin-top:5px;display:none;}
+.solar-hint{font-family:'Noto Sans TC',sans-serif;font-size:0.67rem;color:rgba(255,0,0,0.55);letter-spacing:0.08em;margin-top:6px;padding:7px 10px;background:rgba(255,0,0,0.05);border-left:2px solid rgba(255,0,0,0.3);display:none;}
+
+/* 战损按钮：默认禁用样式 */
+.sbtn{width:100%;padding:17px;background:#222;color:#666;border:1px solid #444;border-radius:2px;font-family:'Ma Shan Zheng',cursive;font-size:1.15rem;letter-spacing:5px;cursor:not-allowed;position:relative;overflow:hidden;transition:all .3s;}
+/* 战损按钮：解锁样式 */
+.sbtn.unlocked{
+    background:linear-gradient(135deg,#5A0A0A 0%,#ff003c 55%,#8B0000 100%);
+    color:#fff;
+    cursor:pointer;
+    border:1px solid #ff003c;
+    box-shadow:0 6px 32px rgba(255,0,0,0.5);
+    animation:pulse-red 1.5s infinite;
+}
+.sbtn.unlocked:hover{transform:translateY(-2px);box-shadow:0 12px 40px rgba(255,0,0,0.8);}
+@keyframes pulse-red { 0% {box-shadow: 0 0 10px #8b0000;} 50% {box-shadow: 0 0 30px #ff003c;} 100% {box-shadow: 0 0 10px #8b0000;} }
+
+.bazi-prev{margin:18px 0;background:rgba(255,0,0,0.05);border:1px solid rgba(255,0,0,0.2);padding:18px 16px 14px;display:none;}
+.bazi-prev.show{display:block;}
+.bp-hd{text-align:center;font-family:'Noto Sans TC',sans-serif;font-size:0.58rem;letter-spacing:0.45em;color:var(--gold-b);margin-bottom:14px;display:flex;align-items:center;gap:10px;}
+.bp-p{display:flex;flex-direction:column;align-items:center;background:rgba(0,0,0,0.8);border:1px solid rgba(255,0,0,0.3);padding:10px 14px 8px;min-width:62px;}
+.bp-l{font-family:'Noto Sans TC',sans-serif;font-size:0.53rem;color:var(--text-f);letter-spacing:0.2em;margin-bottom:7px;}
+.bp-t, .bp-d{font-family:'Ma Shan Zheng',cursive;font-size:1.75rem;line-height:1; color:#ff003c;}
+.bp-g{font-family:'Noto Sans TC',sans-serif;font-size:0.51rem;color:#888;margin-top:7px;}
+
+/* 悬浮图标战损配色 */
+.floating-right-group { position: fixed; right: 40px; top: 50%; transform: translateY(-50%); z-index: 90; display: flex; flex-direction: column; gap: 36px; align-items: center; }
+.floating-liuyao, .floating-astrolabe { position: relative; display: flex; flex-direction: column; align-items: center; text-decoration: none; gap: 14px; cursor: pointer; transition: all 0.5s; }
+.yinyang-wrapper, .astrolabe-wrapper { width: 58px; height: 58px; border-radius: 50%; box-shadow: 0 0 20px rgba(255,0,0,0.3); display: flex; align-items: center; justify-content: center; background: rgba(20,0,0,0.8); border: 1px solid rgba(255,0,0,0.4); }
+.liuyao-text, .astrolabe-text { font-family: 'Noto Sans TC', sans-serif; font-size: 0.65rem; letter-spacing: 0.4em; color: #ff003c; writing-mode: vertical-lr; text-shadow: 0 0 8px rgba(255,0,0,0.5); }
+.astro-orbit { animation: spin-orbit 12s linear infinite; }
+.astro-orbit-reverse { animation: spin-orbit 18s linear infinite reverse; }
+@keyframes spin-orbit { 100% { transform: rotate(360deg); } }
+
+/* 隐藏不必要的原生UI */
+.dst-row, .dst-panel { display: none !important; }
+</style>
+</head>
+<body>
+<canvas id="bg-canvas"></canvas>
+<div class="grid-ov"></div>
+<div class="scan"></div>
+
+<div class="floating-right-group">
+  <a href="#" class="floating-liuyao" onclick="alert('數據鏈接丟失。');return false;">
+    <div class="yinyang-wrapper">
+      <svg viewBox="0 0 100 100" class="yinyang-svg" style="width:82%;height:82%;animation:spin-orbit 16s linear infinite; filter: drop-shadow(0 0 4px #ff003c);">
+        <path d="M50,2 A48,48 0 0,1 50,98 A24,24 0 0,1 50,50 A24,24 0 0,0 50,2 Z" fill="#8b0000"/>
+        <path d="M50,2 A48,48 0 0,0 50,98 A24,24 0 0,0 50,50 A24,24 0 0,1 50,2 Z" fill="#030000"/>
+        <circle cx="50" cy="26" r="6" fill="#030000"/>
+        <circle cx="50" cy="74" r="6" fill="#ff003c"/>
+        <circle cx="50" cy="50" r="49" fill="none" stroke="#ff003c" stroke-width="1" opacity="0.6"/>
+      </svg>
+    </div>
+    <span class="liuyao-text">六爻排盤</span>
+  </a>
+</div>
+
+<a href="#" class="floating-astrolabe" onclick="alert('坐標系已被未知算力劫持。');return false;" style="position:fixed;left:40px;top:50%;transform:translateY(-50%);">
+  <div class="astrolabe-wrapper">
+    <svg viewBox="0 0 100 100" width="82%" height="82%" style="filter: drop-shadow(0 0 4px #ff003c);">
+      <circle cx="50" cy="50" r="46" fill="none" stroke="#ff003c" stroke-width="0.5" stroke-dasharray="2 4"/>
+      <ellipse cx="50" cy="50" rx="42" ry="14" fill="none" stroke="#ff003c" stroke-width="1.5" class="astro-orbit" transform="rotate(30 50 50)"/>
+      <ellipse cx="50" cy="50" rx="42" ry="14" fill="none" stroke="#8b0000" stroke-width="1.5" class="astro-orbit-reverse" transform="rotate(-45 50 50)"/>
+      <circle cx="50" cy="50" r="8" fill="#ff003c"/>
+    </svg>
+  </div>
+  <span class="astrolabe-text">立體天球儀</span>
+</a>
+
+<div id="ifc" class="page">
+  <div class="header">
+    <div class="h-tag">Z̸e̸n̸C̸o̸d̸e̸ · 命̸運̸封̸存̸</div>
+    <div class="t-wrap">
+      <div class="t-glow"></div>
+      <h1 class="t-main">讀取殘缺檔案</h1>
+    </div>
+    <div class="t-sub">警告：底層算力已被劫持...</div>
+  </div>
+  <div class="hdiv"></div>
+
+  <div class="form-card">
+    <div class="c-tl"></div><div class="c-tr"></div><div class="c-bl"></div><div class="c-br"></div>
+
+    <div class="cal-tog">
+      <button class="cal-btn active" id="bsol" onclick="setCalType('solar')">公曆</button>
+      <button class="cal-btn" id="blun" onclick="setCalType('lunar')">農曆</button>
+    </div>
+
+    <div class="field">
+      <div class="flbl">祭品標識 (姓名)</div>
+      <div class="iw"><input type="text" id="un" class="inp" placeholder="輸入..." autocomplete="off"></div>
+    </div>
+    <div class="field">
+      <div class="flbl">陰陽屬性</div>
+      <div class="iw">
+        <select id="ug" class="inp">
+          <option value="女">陰 (女)</option>
+          <option value="男">陽 (男)</option>
+        </select>
+      </div>
+    </div>
+    <div class="field">
+      <div class="flbl">入局節點 (出生日期)</div>
+      <div class="lunar-h show" id="lh" style="display:none;">✦ 農曆換算模塊已損壞，強制回落公曆</div>
+      <div class="sl3">
+        <div class="slbl" id="lby">年</div>
+        <div class="slbl" id="lbm">月</div>
+        <div class="slbl" id="lbd">日</div>
+      </div>
+      <div class="dg3">
+        <div class="iw"><input type="number" id="by" class="inp c" placeholder="1998" oninput="odc()"></div>
+        <div class="iw"><input type="number" id="bm" class="inp c" placeholder="11" oninput="odc()"></div>
+        <div class="iw"><input type="number" id="bd" class="inp c" placeholder="14" oninput="odc()"></div>
+      </div>
+      <div class="sl2">
+        <div class="slbl">時（24h）</div>
+        <div class="slbl">分</div>
+      </div>
+      <div class="dg2">
+        <div class="iw"><input type="number" id="bh" class="inp c" placeholder="12" oninput="odc()"></div>
+        <div class="iw"><input type="number" id="bmin" class="inp c" placeholder="00" oninput="odc()"></div>
+      </div>
+    </div>
+
+    <div class="field" style="margin-top:4px;">
+      <div class="flbl">地理經緯錨點</div>
+      <div class="iw">
+        <input type="text" id="ubp" class="inp" placeholder="如：杭州 或 四川" autocomplete="off" oninput="odc()">
+      </div>
+      <div class="solar-hint show" style="color:#d32f2f;border-left-color:#d32f2f;background:rgba(255,0,0,0.05);margin-top:4px;display:block;">✦ 真太陽時模塊受損，時區鎖定強制啟用。</div>
+    </div>
+
+    <div class="bazi-prev" id="bprev">
+      <div class="bp-hd">陣法能量解譯中...</div>
+      <div class="bp-ps" id="bpps"></div>
+      <div class="bp-ex" id="bpex" style="text-align:center;margin-top:10px;font-size:0.65rem;color:#888;"></div>
+    </div>
+
+    <div class="btn-row">
+      <button class="sbtn" id="sbtn" disabled onclick="submitCorrupted()">陣法錨點缺失...</button>
+    </div>
+
+  </div>
+</div>
+
+<script>
+/* --- 随机故障脚本 --- */
+setInterval(() => {
+    const els = document.querySelectorAll('.flbl, .slbl, .t-main');
+    if(!els.length) return;
+    const target = els[Math.floor(Math.random() * els.length)];
+    const orig = target.innerText;
+    target.classList.add('glitch-active');
+    target.innerText = '死亡死亡'.slice(0, orig.length);
+    setTimeout(() => {
+        target.classList.remove('glitch-active');
+        target.innerText = orig;
+    }, 150);
+}, 2500);
+
+/* --- 背景绘制 --- */
+const c=document.getElementById('bg-canvas'),ctx=c.getContext('2d');
+let W,H,stars=[];
+function resize(){W=c.width=innerWidth;H=c.height=innerHeight;}
+resize();addEventListener('resize',resize);
+for(let i=0;i<100;i++) stars.push({x:Math.random()*W,y:Math.random()*H,r:Math.random()*1.5,sp:Math.random()*0.02});
+function draw(){
+  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle='rgba(255,0,0,0.02)';
+  ctx.fillRect(0,0,W,H);
+  stars.forEach(s=>{
+    ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+    ctx.fillStyle=Math.random()>0.9?'#ff0000':'#440000';
+    ctx.fill();
+  });
+  requestAnimationFrame(draw);
+}
+draw();
+
+let calType='solar';
+function setCalType(t){ calType=t; document.getElementById('bsol').classList.toggle('active',t==='solar'); document.getElementById('blun').classList.toggle('active',t==='lunar'); document.getElementById('lh').style.display=t==='lunar'?'block':'none'; odc(); }
+
+/* --- 核心八字算法 (保留用于排盘判断) --- */
+const LD=(function(){
+  const raw=[ [131,0x4BD,8],[219,0x4AE,0],[208,0xA57,0],[129,0x54D,5],[216,0xD26,0],[204,0xD95,0],[125,0x655,4],[213,0x56A,0],[202,0x9AD,0],[122,0x55D,2],
+    [210,0x4AE,0],[130,0xA5B,6],[218,0xA4D,0],[206,0xD25,0],[126,0xD29,5],[214,0xB55,0],[204,0x56A,0],[123,0xADA,2],[211,0x95B,0],[201,0x497,7],
+    [220,0x49B,0],[208,0xA4B,0],[128,0xB4B,5],[216,0x6A5,0],[205,0x6D4,0],[124,0xAB5,4],[213,0x2B6,0],[202,0x957,0],[123,0x52F,2],[210,0x497,0],
+    [130,0x656,6],[217,0xD4A,0],[206,0xEA5,0],[126,0x6A9,5],[214,0x5AD,0],[204,0x2B6,0],[124,0x86E,3],[211,0x92E,0],[131,0xC8D,7],[219,0xC95,0],
+    [208,0xD4A,0],[127,0xD8A,6],[215,0xB55,0],[205,0x56A,0],[125,0xA5B,4],[213,0x25D,0],[202,0x92D,0],[122,0xD2B,2],[210,0xA95,0],[129,0xB55,7],
+    [217,0x6CA,0],[206,0xB55,0],[127,0x535,5],[214,0x4DA,0],[203,0xA5B,0],[124,0x457,3],[212,0x52B,0],[131,0xA9A,8],[218,0xE95,0],[208,0x6AA,0],
+    [128,0xAEA,6],[215,0xAB5,0],[205,0x4B6,0],[125,0xAAE,4],[213,0xA57,0],[202,0x526,0],[121,0xF26,3],[209,0xD95,0],[130,0x5B5,7],[217,0x56A,0],
+    [206,0x96D,0],[127,0x4DD,5],[215,0x4AD,0],[203,0xA4D,0],[123,0xD4D,4],[211,0xD25,0],[131,0xD55,8],[218,0xB54,0],[207,0xB6A,0],[128,0x95A,6],
+    [216,0x95B,0],[205,0x49B,0],[125,0xA97,4],[213,0xA4B,0],[202,0xB27,10],[220,0x6A5,0],[209,0x6D4,0],[129,0xAF4,6],[217,0xAB6,0],[206,0x957,0],
+    [127,0x4AF,5],[215,0x497,0],[204,0x64B,0],[123,0x74A,3],[210,0xEA5,0],[131,0x6B5,8],[219,0x5AC,0],[207,0xAB6,0],[128,0x96D,5],[216,0x92E,0],
+    [205,0xC96,0],[124,0xD95,4],[212,0xD4A,0],[201,0xDA5,0],[122,0x755,2],[209,0x56A,0],[129,0xABB,7],[218,0x25D,0],[207,0x92D,0],[126,0xCAB,5],
+    [214,0xA95,0],[203,0xB4A,0],[123,0xBAA,4],[210,0xAD5,0],[131,0x55D,9],[219,0x4BA,0],[208,0xA5B,0],[128,0x517,6],[216,0x52B,0],[205,0xA93,0],
+    [125,0x795,4],[212,0x6AA,0],[201,0xAD5,0],[122,0x5B5,2],[210,0x4B6,0],[129,0xA6E,6],[217,0xA4E,0],[206,0xD26,0],[126,0xEA6,5],[213,0xD53,0],
+    [203,0x5AA,0] ];
+  const m={};raw.forEach((d,i)=>{m[1900+i]=d;});return m;
+})();
+function lunarToSolar(ly,lm,ld){
+  const d=LD[ly];if(!d)return null; const[smmd,bits,leapM]=d; const sm=Math.floor(smmd/100),sd=smmd%100;
+  let off=0; for(let m=1;m<lm;m++) off+=((bits>>(11-(m-1)))&1)?30:29; off+=ld-1;
+  const base=new Date(ly,sm-1,sd); base.setDate(base.getDate()+off);
+  return{year:base.getFullYear(),month:base.getMonth()+1,day:base.getDate()};
+}
+
+const TG=['甲','乙','丙','丁','戊','己','庚','辛','壬','癸'];
+const DZ=['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
+function jdn(y,m,d){const a=Math.floor((14-m)/12),yr=y+4800-a,mo=m+12*a-3;return d+Math.floor((153*mo+2)/5)+365*yr+Math.floor(yr/4)-Math.floor(yr/100)+Math.floor(yr/400)-32045;}
+
+const JQTBL_PRECISE={
+  2007:[[5,23,43],[4,6,18],[5,23,8],[5,17,4],[6,11,56],[6,7,56],[7,3,20],[7,0,31],[8,16,8],[8,20,7],[8,0,50],[7,17,14]]
+};
+function getJQPrecise(year, mIdx){
+  const r=(JQTBL_PRECISE[year]||[[4,12,0],[4,12,0],[5,12,0],[5,12,0],[6,12,0],[6,12,0],[7,12,0],[7,12,0],[8,12,0],[8,12,0],[7,12,0],[7,12,0]])[mIdx];
+  return{day:r[0],hour:r[1],minute:r[2]};
+}
+
+function calcBazi(year,month,day,hour){
+  // 年柱 (简易)
+  let yTg = (year - 4) % 10; if(yTg<0)yTg+=10;
+  let yDz = (year - 4) % 12; if(yDz<0)yDz+=12;
+  
+  // 月柱 (简易)
+  let mTg = (yTg%5 * 2 + month) % 10;
+  let mDz = (month + 1 + 12) % 12;
+
+  // 日柱 (简易)
+  const diff=jdn(year,month,day)-jdn(2000,1,7);
+  let dTg = ((diff%10)+10)%10;
+  let dDz = ((diff%12)+12)%12;
+
+  // 时柱 (简易)
+  const dz=Math.floor((hour+1)/2)%12;
+  const base=[0,2,4,6,8][dTg%5];
+  let hTg = (base+dz)%10;
+
+  return [
+    {label:'年', tg:TG[yTg], dz:DZ[yDz]},
+    {label:'月', tg:TG[mTg], dz:DZ[mDz]},
+    {label:'日', tg:TG[dTg], dz:DZ[dDz]},
+    {label:'時', tg:TG[hTg], dz:DZ[dz]}
+  ];
+}
+
+/* --- 核心监听器：条件锁判断 --- */
+function odc(){
+  let y=parseInt(document.getElementById('by').value)||0;
+  let m=parseInt(document.getElementById('bm').value)||0;
+  let d=parseInt(document.getElementById('bd').value)||0;
+  let h=parseInt(document.getElementById('bh').value)||0;
+  const bp=document.getElementById('ubp').value.trim();
+  const btn = document.getElementById('sbtn');
+
+  if(calType==='lunar'&&y&&m&&d){
+    const s=lunarToSolar(y,m,d);
+    if(s){y=s.year;m=s.month;d=s.day;}
+  }
+
+  if(!y||!m||!d) { document.getElementById('bprev').classList.remove('show'); return; }
+
+  const pillars = calcBazi(y,m,d,h);
+  const baziStr = pillars.map(p=>p.tg+p.dz).join(' ');
+
+  // 渲染排盘
+  document.getElementById('bpps').innerHTML=pillars.map(p=>`
+    <div class="bp-p">
+      <div class="bp-l">${p.label}</div>
+      <div class="bp-t">${p.tg}</div>
+      <div class="bp-d">${p.dz}</div>
+    </div>`).join('');
+  document.getElementById('bpex').textContent=baziStr;
+  document.getElementById('bprev').classList.add('show');
+
+  // --- 关键判断逻辑 ---
+  const condA = baziStr === '丁亥 丙午 丙子 甲午' && bp.includes('杭州');
+  const condB = baziStr === '丁亥 丙午 丙子 癸巳' && bp.includes('四川');
+
+  if (condA || condB) {
+      btn.disabled = false;
+      btn.classList.add('unlocked');
+      btn.textContent = '【 警告：提取獻祭者檔案 】';
+  } else {
+      btn.disabled = true;
+      btn.classList.remove('unlocked');
+      btn.textContent = '陣法錨點缺失...';
+  }
+}
+
+/* 触发成功后的跳转逻辑 */
+function submitCorrupted() {
+    document.body.innerHTML = `
+        <div style="height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#000;color:#ff003c;font-family:'Ma Shan Zheng',cursive;">
+            <h1 style="font-size:4rem;animation:glitch-anim 0.1s infinite;">數據已連接</h1>
+            <p style="font-size:1.5rem;font-family:'Noto Sans TC',sans-serif;margin-top:20px;">陣法覆寫中... 準備開啟深淵...</p>
+        </div>
+    `;
+    // 这里留给你跳转到下一关的页面
+    setTimeout(() => {
+        // window.location.href = 'next_level.html';
+        alert('【系统提示】恭喜你，解锁了下一层剧情节点！（请在后续部署真实下一页链接）');
+    }, 2500);
+}
+</script>
+</body>
+</html>
