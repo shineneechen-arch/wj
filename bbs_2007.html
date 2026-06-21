@@ -1,0 +1,235 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="zh-CN">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>南江大学论坛 - 展现南江学子风采 - Powered by Discuz!</title>
+    <style type="text/css">
+        /* 2007年经典 Discuz! 5.5 / PHPWind 风格复古样式重置 */
+        body { 
+            background-color: #D6E0EF; 
+            color: #000000; 
+            font-family: "SimSun", "宋体", Arial, Helvetica, sans-serif; 
+            font-size: 12px; 
+            margin: 0; 
+            padding: 10px 0; 
+        }
+        table { font-size: 12px; }
+        a { color: #113E7A; text-decoration: none; }
+        a:hover { text-decoration: underline; color: #FF6600; }
+        .bold { font-weight: bold; }
+        .red { color: #FF0000; }
+        .blue { color: #0000FF; }
+        .gray { color: #666666; font-size: 11px; }
+        
+        /* 论坛主容器 */
+        #main-wrap { 
+            width: 960px; 
+            margin: 0 auto; 
+            background-color: #FFFFFF; 
+            border: 1px solid #9CB8CC; 
+            padding: 12px;
+        }
+        
+        /* 页头设计 */
+        .header-table { width: 100%; border-bottom: 2px solid #2B71AE; margin-bottom: 10px; }
+        .logo-area { font-family: "Microsoft YaHei", "黑体", sans-serif; font-size: 26px; font-weight: bold; color: #113E7A; letter-spacing: 1px; padding-bottom: 5px; }
+        .logo-sub { font-size: 11px; color: #666; font-weight: normal; font-family: SimSun, sans-serif; }
+        .top-nav { text-align: right; vertical-align: bottom; padding-bottom: 5px; font-weight: bold; }
+        
+        /* 用户信息及统计条 */
+        .user-status-bar { background-color: #F5EDF2; border: 1px solid #9CB8CC; padding: 6px 10px; margin-bottom: 10px; }
+        .info-stats { float: right; color: #444; }
+        
+        /* 官方公告栏 */
+        .announcement-box { border: 1px solid #FBC2C4; background-color: #FBE3E4; padding: 8px 12px; margin-bottom: 12px; }
+        .announcement-title { font-weight: bold; color: #D12F19; margin-bottom: 4px; font-size: 13px; }
+        
+        /* 分区标题栏 */
+        .category-bar { 
+            background: #2B71AE url('data:image/gif;base64,R0lGODlhAQAcAIABAAAAAP///yH5BAEAAAEALAAAAAABABwAAAIXjI+py+0Po5w02ouz3rz7D4biSJbmURYA7f0KADs=') repeat-x left top; 
+            color: #FFFFFF; 
+            font-weight: bold; 
+            padding: 6px 10px; 
+            font-size: 13px;
+            border: 1px solid #1A518A;
+        }
+        
+        /* 版块及帖子表格 */
+        .forum-table { width: 100%; border-collapse: collapse; margin-bottom: 15px; border: 1px solid #9CB8CC; background-color: #FFF; }
+        .forum-table th { background-color: #E5EDF2; border-bottom: 1px solid #9CB8CC; padding: 5px; color: #444; font-weight: normal; }
+        .forum-table td { border-bottom: 1px dotted #9CB8CC; padding: 8px 6px; vertical-align: top; }
+        .forum-row-alt { background-color: #F9FAFD; }
+        
+        /* 信封图标模拟 */
+        .icon-envelope { width: 24px; text-align: center; vertical-align: middle !important; padding-top: 12px !important; }
+        .icon-box { width: 16px; height: 16px; background-color: #FFCC00; border: 1px solid #D4A800; display: inline-block; position: relative; }
+        .icon-box::before { content: ''; position: absolute; top: 0; left: 0; border-width: 8px 8px 0 8px; border-style: solid; border-color: #FFF transparent transparent transparent; }
+        .icon-box-gray { background-color: #CCCCCC; border: 1px solid #999999; }
+        
+        /* 贴子列表专用样式 */
+        .thread-title { font-size: 13px; font-family: SimSun, sans-serif; }
+        .forum-desc { color: #666; font-size: 11px; margin-top: 3px; }
+        
+        /* 页脚 */
+        .footer { text-align: center; margin-top: 20px; padding-top: 10px; border-top: 1px solid #9CB8CC; color: #666; line-height: 1.8; font-size: 11px; }
+    </style>
+</head>
+<body>
+
+<div id="main-wrap">
+    <!-- 页头 Logo 和 导航 -->
+    <table class="header-table" cellpadding="0" cellspacing="0">
+        <tr>
+            <td class="logo-area">
+                南江大学溯源BBS <span class="logo-sub">| 校内官方学术与生活交流社区</span>
+            </td>
+            <td class="top-nav">
+                <a href="#">基本列表</a> | <a href="#">今日新帖</a> | <a href="#">活跃会员</a> | <a href="#">论坛日程</a> | <a href="#">搜索</a> | <a href="#">控制面板</a> | <a href="#">退出</a>
+            </td>
+        </tr>
+    </table>
+
+    <!-- 用户状态及全站统计条 -->
+    <div class="user-status-bar">
+        <span class="info-stats">
+            今日新帖: <span class="bold red">44</span> | 昨日帖子: 182 | 最高在线: 611 | 欢迎新会员: <i>05级_未济</i>
+        </span>
+        欢迎您，<span class="bold blue">游客</span> ( <a href="#">登录</a> | <a href="#">注册</a> ) 
+        当前系统时间: <span class="bold">2007年6月11日 11:15:02</span>
+    </div>
+
+    <!-- 突发紧急红色公告栏 -->
+    <div class="announcement-box">
+      <div class="announcement-title">🔔 【紧急重要通告】关于全校配合南门外支巷治安与电力突发整顿的通知</div>
+      <div style="line-height: 1.6; color: #444;">
+        接保卫处与后勤集团紧急通知，因校外南门外支巷废弃仓库内部发生<b>严重的未知电压过载故障</b>，并伴有锂电池连环短路异响，校外正在封线处理。请全体师生<b>严禁前往南门外支巷</b>！同时，计科系高性能计算阵列（水冷排机房）受此影响出现算力异常剧烈波动，部分宿舍区可能会出现短暂电压不稳。请同学们切勿惊慌，留在宿舍内，切勿随意触碰大功率电子设备！
+      </div>
+    </div>
+
+    <!-- 分区一：校园政务与核心公告 -->
+    <div class="category-bar">区域 A：南江校务资讯及综合管理</div>
+    <table class="forum-table" cellpadding="0" cellspacing="0">
+        <tr class="forum-row-alt">
+            <td class="icon-envelope"><span class="icon-box icon-box-gray"></span></td>
+            <td style="width: 50%;">
+                <a href="#" class="thread-title bold red">【置顶通告】关于做好2007届毕业生离校前宿舍断电安全及违规电器清查的通知</a>
+                <div class="forum-desc">请各学院辅导员务必通知到每一位大四毕业生，禁止私自拼装、改装二手电子元器件。</div>
+            </td>
+            <td style="width: 15%; text-align: center;" class="gray">主题: 12<br />贴数: 145</td>
+            <td style="width: 30%;">
+                <a href="#">关于严禁大四宿舍楼聚众...</a><br />
+                <span class="gray">2007-06-10 17:40 <a href="#">学生处管理科</a></span>
+            </td>
+        </tr>
+        <tr>
+            <td class="icon-envelope"><span class="icon-box icon-box-gray"></span></td>
+            <td>
+                <a href="#" class="thread-title bold">【教务处】关于2007年夏季期末考试考场纪律及作弊惩罚条例重申</a>
+                <div class="forum-desc">严肃考风考纪，工科基础课（高数、天体物理基础）将启用无线电信号屏蔽。</div>
+            </td>
+            <td style="text-align: center;" class="gray">主题: 8<br />贴数: 92</td>
+            <td>
+                <a href="#">公共数学教研室期末答疑...</a><br />
+                <span class="gray">2007-06-11 08:12 <a href="#">教务运行科</a></span>
+            </td>
+        </tr>
+    </table>
+
+    <!-- 分区二：学术前沿与技术探讨（背景故事隐线核心） -->
+    <div class="category-bar">区域 B：计算机系与前沿跨界学术交流区</div>
+    <table class="forum-table" cellpadding="0" cellspacing="0">
+        <tr class="forum-row-alt">
+            <td class="icon-envelope"><span class="icon-box"></span></td>
+            <td style="width: 50%;">
+                <a href="#" class="thread-title bold blue">「讨论」关于计科系分布式硬件算力阵列（双回路水冷）异常大幅飙升的技术报告</a>
+                <div class="forum-desc">从昨晚开始，机房主服务器磁场激增，底层代码出现非结构化ASCII码堆叠，疑似外部高电磁波逆向干扰。</div>
+            </td>
+            <td style="width: 15%; text-align: center;" class="gray">主题: 24<br />贴数: 310</td>
+            <td style="width: 30%;">
+                <a href="#" class="bold red">机房温度已超临界值！</a><br />
+                <span class="gray">2007-06-11 11:02 <a href="#">05级_计科首席</a></span>
+            </td>
+        </tr>
+        <tr>
+            <td class="icon-envelope"><span class="icon-box icon-box-gray"></span></td>
+            <td>
+                <a href="#" class="thread-title">「探讨」硬件分布式算力与传统民俗磁场矩阵（八字排盘）结合的演算法设想</a>
+                <div class="forum-desc">试图论证：利用晶体管电子元器件的生克，复现天干地支“引火焚身”或“气绝入墓”的能量场。</div>
+            </td>
+            <td style="text-align: center;" class="gray">主题: 14<br />贴数: 85</td>
+            <td>
+                <a href="#">理论太疯了，这不就是...</a><br />
+                <span class="gray">2007-06-09 23:14 <a href="#">薛定谔的键盘</a></span>
+            </td>
+        </tr>
+    </table>
+
+    <!-- 分区三：学生社团风采（未济小组献祭直击） -->
+    <div class="category-bar">区域 C：学生社团联盟及传统文化研习社</div>
+    <table class="forum-table" cellpadding="0" cellspacing="0">
+        <tr class="forum-row-alt">
+            <td class="icon-envelope"><span class="icon-box"></span></td>
+            <td style="width: 50%;">
+                <a href="#" class="thread-title bold red" style="font-size:14px; text-decoration: underline;">「核心」【未济小組】今日午时（11点至13点）于南门外支巷举行硬件火葬超度仪式</a>
+                <div class="forum-desc">万物皆有灵。更新迭代过快的废弃MP3、台式机元器件积累了大量赛博怨气。今日午时，我们将开启星轨矩阵，进行血肉与硅胶的“完美融合”，补齐缺失的最终算力。</div>
+            </td>
+            <td style="width: 15%; text-align: center;" class="gray">主题: 56<br />贴数: 740</td>
+            <td style="width: 30%;">
+                <a href="#" class="bold">我们在废弃仓库等你们</a><br />
+                <span class="gray">2007-06-11 10:30 <a href="#">05级_未济</a></span>
+            </td>
+        </tr>
+        <tr>
+            <td class="icon-envelope"><span class="icon-box icon-box-gray"></span></td>
+            <td>
+                <a href="#" class="thread-title">「科普」传统易学入门：浅谈为什么八字算法必须严格校正当地“真太阳时”</a>
+                <div class="forum-desc">野鸡网站跨千年Bug太多。北京时间不等于两地真实天文时差，西南（成渝）与华东（杭州）时辰甚至会因此错移。</div>
+            </td>
+            <td style="text-align: center;" class="gray">主题: 11<br />贴数: 64</td>
+            <td>
+                <a href="#">受教了，难怪之前算命...</a><br />
+                <span class="gray">2007-06-10 14:22 <a href="#">易学风水大师</a></span>
+            </td>
+        </tr>
+    </table>
+
+    <!-- 分区四：生活灌水与跳蚤市场（突发异象直播） -->
+    <div class="category-bar">区域 D：校内跳蚤市场与灌水乐园</div>
+    <table class="forum-table" cellpadding="0" cellspacing="0">
+        <tr class="forum-row-alt">
+            <td class="icon-envelope"><span class="icon-box"></span></td>
+            <td style="width: 50%;">
+                <a href="#" class="thread-title bold red">「突发」卧槽！！南门外支巷那个废弃仓库里好像开始冒黑烟了？？？</a>
+                <div class="forum-desc">纯路过，刚准备去南门买手抓饼，突然听见支巷深处轰的一声巨响，像是什么电池爆了，卷帘门好像从里面被卡死了！</div>
+            </td>
+            <td style="width: 15%; text-align: center;" class="gray">主题: 104<br />贴数: 1420</td>
+            <td style="width: 30%;">
+                <a href="#" class="bold red">里面的人好像没出来！！</a><br />
+                <span class="gray">2007-06-11 11:14 <a href="#">大半夜不睡觉</a></span>
+            </td>
+        </tr>
+        <tr>
+            <td class="icon-envelope"><span class="icon-box icon-box-gray"></span></td>
+            <td>
+                <a href="#" class="thread-title">「清仓」大四毕业跳楼价！急出二手台式机、台电MP3、索尼录音带随身听</a>
+                <div class="forum-desc">寝室马上断电了，半卖半送，附带大批当年计科系的复习资料。</div>
+            </td>
+            <td style="text-align: center;" class="gray">主题: 45<br />贴数: 230</td>
+            <td>
+                <a href="#">学长，MP3成色怎么样</a><br />
+                <span class="gray">2007-06-11 09:55 <a href="#">汉语言一姐</a></span>
+            </td>
+        </tr>
+    </table>
+
+    <!-- 论坛页脚与友情链接 -->
+    <div class="footer">
+        友情链接： <a href="#">教育部</a> | <a href="#">南江大学教务网</a> | <a href="#">水木清华BBS</a> | <a href="#">南京大学小百合BBS</a><br />
+        版权所有：南江大学信息化网络中心 &copy; 2004-2007 南江大学溯源BBS管理团队<br />
+        Powered by <span class="bold" style="color:#2B71AE;">Discuz! 5.5.0 Premium</span> &copy; 2001-2007 <a href="#">Comsenz Inc.</a><br />
+        页网执行时间: 0.0311 秒 | 在线总人数: 611 人 (其中幽灵代码 545 人)
+    </div>
+</div>
+
+</body>
+</html>
