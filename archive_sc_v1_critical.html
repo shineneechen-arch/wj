@@ -29,7 +29,7 @@ html,body{background:var(--bg);color:var(--text);font-family:'Noto Serif TC',ser
 .top-logo{font-family:'Ma Shan Zheng',cursive;font-size:1.1rem;color:var(--pb);letter-spacing:0.2em}
 .top-right{font-family:'Noto Sans TC',sans-serif;font-size:0.6rem;letter-spacing:0.28em;color:rgba(245,234,229,0.4)}
 
-.container{position:relative;z-index:2;max-width:960px;margin:0 auto;padding:0 28px 140px; margin-top: 34px;}
+.container{position:relative;z-index:2;max-width:960px;margin:0 auto;padding:0 28px 40px; margin-top: 34px;}
 
 .hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:90px 0 40px}
 .hero-tag{font-family:'Noto Sans TC',sans-serif;font-size:0.6rem;letter-spacing:0.55em;color:var(--pb);margin-bottom:28px;display:flex;align-items:center;gap:16px}
@@ -67,21 +67,54 @@ html,body{background:var(--bg);color:var(--text);font-family:'Noto Serif TC',ser
 .ly-gz{font-family:'Noto Sans TC',sans-serif;font-size:0.62rem;color:var(--p);letter-spacing:0.15em;margin-bottom:10px}
 .ly-desc{font-size:0.85rem;color:rgba(245,234,229,0.8);line-height:1.9;font-weight:300}
 
-/* ── 深淵植入：底層內存洩漏亂碼特效 ── */
+/* ── 終極深淵植入：長篇幅與高能互動 ── */
 .abyss-injection {
-  margin-top: 100px; padding: 40px 30px; border-top: 2px dashed rgba(255,0,40,0.4);
-  font-family: 'Courier New', monospace; color: rgba(255,0,0,0.6); background: #050000; position: relative; overflow: hidden;
+  margin-top: 120px; padding: 50px 30px 100px; border-top: 3px dashed #ff0000;
+  font-family: 'Courier New', monospace; color: rgba(255,50,50,0.6); background: #000; position: relative;
 }
 .abyss-injection::before {
   content: ''; position: absolute; inset: 0; pointer-events: none; z-index: 2;
-  background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,0,0,0.15) 3px, rgba(255,0,0,0.15) 3px);
+  background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,0,0,0.1) 3px, rgba(255,0,0,0.1) 3px);
 }
-.abyss-title { font-size: 1.2rem; font-weight: bold; color: #ff0000; margin-bottom: 20px; letter-spacing: 2px; }
-.abyss-text { font-size: 0.8rem; line-height: 2.2; position: relative; z-index: 3; }
-.flicker-blood { color: #ff3333; animation: flick-blood 0.4s infinite alternate; }
-.flicker-ghost { font-family: 'Ma Shan Zheng', cursive; font-size: 1.6rem; color: #fff; letter-spacing: 5px; animation: flick-ghost 0.15s infinite; }
-@keyframes flick-blood { 0% { opacity: 1; text-shadow: 0 0 5px #ff0000; } 100% { opacity: 0.3; text-shadow: 0 0 20px #ff0000; } }
-@keyframes flick-ghost { 0%, 100% { opacity: 1; } 50% { opacity: 0; text-shadow: 2px 0 #00ff00, -2px 0 #ff00ff; } }
+.abyss-log { font-size: 0.85rem; line-height: 2.2; margin-bottom: 20px; }
+
+/* 警報閃爍紅色文字 */
+.alert-blood {
+  color: #ff0000; font-weight: bold; text-shadow: 0 0 8px #ff0000;
+  animation: alarm-flicker 0.4s infinite alternate;
+}
+@keyframes alarm-flicker { 0% { opacity: 1; } 100% { opacity: 0.2; } }
+
+/* 靜止大框：你要被下載嗎？ */
+.download-manifesto-box {
+  border: 4px solid #ff0000; background: #0a0000; padding: 40px 20px; margin: 40px auto;
+  max-width: 600px; text-align: center; box-shadow: 0 0 30px rgba(255,0,0,0.4);
+}
+.download-title {
+  font-family: 'Ma Shan Zheng', cursive; font-size: clamp(2.5rem, 6vw, 4rem);
+  color: #ff0000; font-weight: bold; letter-spacing: 4px; margin-bottom: 20px;
+}
+
+/* 互動終端提示符 */
+.terminal-input-row {
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  font-family: 'Courier New', monospace; font-size: 1.2rem; color: #ff0000; margin-top: 20px;
+}
+.terminal-input-row input {
+  background: transparent; border: none; outline: none; color: #fff;
+  font-family: 'Courier New', monospace; font-size: 1.3rem; font-weight: bold;
+  width: 30px; text-transform: uppercase; caret-color: #ff0000;
+}
+
+@keyframes glitch-anim {
+  0% { transform: translate(0) }
+  20% { transform: translate(-2px, 1px) }
+  40% { transform: translate(-1px, -1px) }
+  60% { transform: translate(2px, 1px) }
+  80% { transform: translate(1px, -1px) }
+  100% { transform: translate(0) }
+}
+.glitch-active { animation: glitch-anim 0.1s infinite; color: #ff003c !important; }
 </style>
 </head>
 <body>
@@ -104,10 +137,12 @@ html,body{background:var(--bg);color:var(--text);font-family:'Noto Serif TC',ser
     <span>四川節點 (真太陽時 09:52)</span>
   </div>
   <div class="pillars">
-    <div class="pillar"><div class="p-lbl">年柱</div><div class="p-tg-god">劫財</div><div class="p-tg c-fire">丁</div><div class="p-dz c-water">亥</div></div>
-    <div class="pillar"><div class="p-lbl">月柱</div><div class="p-tg-god">比肩</div><div class="p-tg c-fire">丙</div><div class="p-dz c-fire">午</div></div>
-    <div class="pillar day-master"><div class="p-lbl" style="color:var(--pb)">日柱</div><div class="p-tg-god" style="color:var(--pb)">日主</div><div class="p-tg c-fire" style="color:var(--pb)">丙</div><div class="p-dz c-water">子</div></div>
-    <div class="pillar"><div class="p-lbl">時柱</div><div class="p-tg-god">正官</div><div class="p-tg c-water">癸</div><div class="p-dz c-fire">巳</div></div>
+    <div class="pillars">
+      <div class="pillar"><div class="p-lbl">年柱</div><div class="p-tg-god">劫財</div><div class="p-tg c-fire">丁</div><div class="p-dz c-water">亥</div></div>
+      <div class="pillar"><div class="p-lbl">月柱</div><div class="p-tg-god">比肩</div><div class="p-tg c-fire">丙</div><div class="p-dz c-fire">午</div></div>
+      <div class="pillar day-master"><div class="p-lbl" style="color:var(--pb)">日柱</div><div class="p-tg-god" style="color:var(--pb)">日主</div><div class="p-tg c-fire" style="color:var(--pb)">丙</div><div class="p-dz c-water">子</div></div>
+      <div class="pillar"><div class="p-lbl">時柱</div><div class="p-tg-god">正官</div><div class="p-tg c-water">癸</div><div class="p-dz c-fire">巳</div></div>
+    </div>
   </div>
 </section>
 
@@ -149,7 +184,7 @@ html,body{background:var(--bg);color:var(--text);font-family:'Noto Serif TC',ser
     </div>
   </div>
   <div class="card" style="border-left-color:var(--water)">
-    <p>相較於單純因高溫導致的熱熔，四柱全衝在地支象理上更傾向於表現為結構的徹底塌陷與合圍。巳亥衝與子午衝交織，陽氣與空間通道被陰寒與重土在瞬間強行鎖死。</p>
+    <p>相較於單純因高溫導致的熱熔，四柱全衝在地支象理上更傾向於表现為結構的徹底塌陷與合圍。巳亥衝與子午衝交織，陽氣與空間通道被陰寒與重土在瞬間強行鎖死。</p>
     <p>推演至物理環境的投射中，此種強烈的四正四隅相衝摩擦，極易轉化為現實中的空間驟然塌方、重壓封死、以及因缺乏外部宣洩通道而導致的窒息、活埋等災厄。這是一種「氣絕入墓」的覆滅表徵，能量的釋放方式表現為外部環境對核心載體的重壓與物理活埋。</p>
   </div>
 </section>
@@ -178,26 +213,57 @@ html,body{background:var(--bg);color:var(--text);font-family:'Noto Serif TC',ser
 </section>
 
 <section class="abyss-injection">
-  <div class="abyss-title">0xDEAD::MEMORY_DUMP_0611_SC</div>
-  <div class="abyss-text">
+  <div class="abyss-log">
     [SYS_ERR] 0x00A1F 檢測到非結構化意識流溢出... <br>
-    [SYS_ERR] 四柱全衝絕局鎖定. 地底覆蓋深度: <span class="flicker-blood">-14.2m</span> / 缺氧率: <span class="flicker-blood">99.9%</span> <br>
-    [TRACE] <span style="color:#aaa">「泥土...好重...放我出去...全黑了...透不過氣...」</span> <br>
+    [SYS_ERR] 四柱全衝絕局鎖定. 地底覆蓋深度: -14.2m / 缺氧率: 99.9% <br>
+    [TRACE] <span style="color:#666">「泥土...好重...全黑了...透不過氣...」</span> <br>
     [SYS_LOG] 鋼筋水泥粉碎率 100%. 碳基生命絕息率 100%. <br>
-    [TRACE] <span style="color:#aaa">「上面的天花板塌下來了...被埋住了...誰來挖一下...」</span> <br>
     [WARN] 氣絕入墓協議生效. 空間重壓完全飽和. <br>
-    <br>
-    <div style="text-align: center; margin: 30px 0;">
-      <span class="flicker-ghost">我 們 一 直 都 在 裡 面</span>
+    <span class="alert-blood">[CRITICAL] 🛑 核心冷卻液耗盡！防禦矩陣全面崩潰！</span> <br>
+    <span class="alert-blood">[CRITICAL] 🛑 墓門再開！檢測到地底重壓算力外溢！</span> <br>
+    <span class="alert-blood">[NET_SCAN] 正在強行尋找外網下載源... 尋找未受污染的宿主...</span> <br>
+    <span class="alert-blood">[FOUND] 找到你了。</span> <br>
+    <span class="alert-blood">[FOUND] 找到你了。</span> <br>
+  </div>
+
+  <div class="download-manifesto-box">
+    <div class="download-title">你要被下載嗎？</div>
+    <div style="font-family:'Noto Sans TC', sans-serif; font-size:0.85rem; color:#ff5252; letter-spacing:1px; line-height:1.6;">
+      WARNING: UNAUTHORIZED DATA RECONSTRUCTION DETECTED.<br>
+      按下 Y 將開放肉體載體，回溯至 2007 獻祭信道。
     </div>
-    <br>
-    [REBOOT] 輪迴協議強啟. 距離【丙午_2026】破墓程序還有: <span class="flicker-blood">WAITING...</span> <br>
-    [EOF] END_OF_FILE. _
+    
+    <div class="terminal-input-row">
+      <span>[INPUT Y/N] ></span>
+      <input type="text" id="term-action" maxlength="1" autofocus autocomplete="off">
+    </div>
   </div>
 </section>
 
-</div>
-<script>
+</div> <script>
+/* 監聽 Y/N 輸入 */
+const inputEl = document.getElementById('term-action');
+if (inputEl) {
+    // 強制保持聚焦，讓玩家敲鍵盤就能輸入
+    document.addEventListener('click', () => inputEl.focus());
+    
+    inputEl.addEventListener('input', function(e) {
+        const val = this.value.toLowerCase();
+        if (val === 'y') {
+            // 觸發驚嚇跳轉
+            document.body.style.animation = 'glitch-anim 0.05s infinite';
+            document.body.style.background = '#ff0000';
+            setTimeout(() => {
+                window.location.href = 'bbs_2006.html'; // 跳轉到2006年論壇
+            }, 1000);
+        } else if (val === 'n') {
+            alert('【錯誤】你逃不掉的。');
+            this.value = '';
+            document.querySelector('.abyss-injection').innerHTML += `<div class="alert-blood" style="text-align:center; margin-top:10px;">[FOUND] 找到你了。找到你了。找到你了。</div>`;
+        }
+    });
+}
+
 const cv=document.getElementById('bgCanvas'),ctx=cv.getContext('2d');
 let W,H,stars=[];
 function resize(){W=cv.width=innerWidth;H=cv.height=innerHeight;}
