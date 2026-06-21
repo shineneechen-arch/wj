@@ -121,19 +121,21 @@ select.inp option{background:#0C0000;color:var(--text);}
 /* 禁用原生DST行 */
 .dst-row, .dst-panel, #roc { display: none !important; }
 
-/* 📱 移动端战损布局适配：防止法器图标挡住核心阵法 */
+/* 📱 移动端战损布局适配：防止法器图标挡住核心阵法，并修复被遮盖的 Bug */
 @media (max-width: 768px) {
   .floating-right-group { 
     right: 12px; 
     top: auto; 
     bottom: 25px; 
     transform: none; 
+    z-index: 999 !important; /* 强制提层级 */
   }
   .floating-astrolabe { 
     left: 12px !important; 
     top: auto !important; 
     bottom: 25px !important; 
     transform: none !important; 
+    z-index: 999 !important; /* 强制提层级，防止躲在表单后面 */
   }
   .yinyang-wrapper, .astrolabe-wrapper { 
     width: 42px; 
@@ -244,7 +246,7 @@ select.inp option{background:#0C0000;color:var(--text);}
     <div class="field" style="margin-top:4px;">
       <div class="flbl">地理經緯錨點</div>
       <div class="iw">
-        <input type="text" id="ubp" class="inp" placeholder="如：杭州 或 四川" autocomplete="off" oninput="odc()">
+        <input type="text" id="ubp" class="inp" placeholder="如：杭州 或 **" autocomplete="off" oninput="odc()">
       </div>
       <div class="solar-hint show" id="solar-hint"></div>
     </div>
@@ -362,13 +364,12 @@ function getJQPrecise(year, mIdx){
   return{day:r[0],hour:r[1],minute:r[2]};
 }
 
-/* 根据地名获取精准坐标（集成真太阳时锁） */
+/* 根据地名获取精准坐标（集成模糊匹配与真太阳时锁） */
 function getLng(birthplace){
   if(!birthplace)return null;
-  if(birthplace.includes('杭州')) return 120.21;
-  if(birthplace.includes('四川')) return 102.50;
+  if(/杭州|浙江/.test(birthplace)) return 120.21;
+  if(/四川|成都/.test(birthplace)) return 102.50;
   if(birthplace.includes('北京')) return 116.4;
-  if(birthplace.includes('成都')) return 104.1;
   return 120.0; // 默认北京时间经度
 }
 
@@ -453,12 +454,12 @@ function odc(){
     y=s.year; m=s.month; d=s.day;
   }
 
-  // 2. 动态展示要求的真太阳时校正文本
+  // 2. 动态展示要求的真太阳时校正文本（使用正则模糊匹配）
   if(bp){
-    if(bp.includes('杭州')){
+    if(/杭州|浙江/.test(bp)){
       stHint.textContent = `✦ 經度 120.21° → 真太陽時偏差 +1 分`;
       stHint.style.display = 'block';
-    } else if(bp.includes('四川')){
+    } else if(/四川|成都/.test(bp)){
       stHint.textContent = `✦ 經度 102.50° → 真太陽時偏差 -70 分`;
       stHint.style.display = 'block';
     } else {
@@ -486,9 +487,9 @@ function odc(){
     document.getElementById('bpex').textContent = baziStr;
     document.getElementById('bprev').classList.add('show');
 
-    // 4. 精准比对解谜密码锁
-    const condA = baziStr === '丁亥 丙午 丙子 甲午' && bp.includes('杭州');
-    const condB = baziStr === '丁亥 丙午 丙子 癸巳' && bp.includes('四川');
+    // 4. 精准比对解谜密码锁（应用正则模糊匹配）
+    const condA = baziStr === '丁亥 丙午 丙子 甲午' && /杭州|浙江/.test(bp);
+    const condB = baziStr === '丁亥 丙午 丙子 癸巳' && /四川|成都/.test(bp);
 
     if (condA || condB) {
         btn.disabled = false;
@@ -520,9 +521,10 @@ function submitCorrupted() {
     const bp = document.getElementById('ubp').value.trim();
 
     let targetFile = '';
-    if (baziStr === '丁亥 丙午 丙子 甲午' && bp.includes('杭州')) {
+    // 同样套用正则模糊匹配来进行跳转分流
+    if (baziStr === '丁亥 丙午 丙子 甲午' && /杭州|浙江/.test(bp)) {
         targetFile = 'archive_hz_v1_stable.html';
-    } else if (baziStr === '丁亥 丙午 丙子 癸巳' && bp.includes('四川')) {
+    } else if (baziStr === '丁亥 丙午 丙子 癸巳' && /四川|成都/.test(bp)) {
         targetFile = 'archive_sc_v1_critical.html';
     }
 
