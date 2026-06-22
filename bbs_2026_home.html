@@ -16,20 +16,24 @@
 
         /* ================= 容器与图层堆叠 ================= */
         #app-container { position: relative; width: 100%; min-height: 100vh; }
+        /* 2026图层撑开高度，2007图层绝对定位覆盖，保证排版不跳动 */
         .layer { width: 100%; transition: opacity 0.1s ease; }
         #layer-2026 { position: relative; z-index: 10; opacity: 1; }
-        #layer-2007 { position: absolute; top: 0; left: 0; z-index: 20; opacity: 0; pointer-events: none; filter: contrast(1.2) sepia(0.3) hue-rotate(-10deg); }
+        #layer-2007 { position: absolute; top: 0; left: 0; z-index: 20; opacity: 0; pointer-events: none; filter: contrast(1.1) sepia(0.2) hue-rotate(-10deg); }
 
         /* ================= 顶部 Header 设计 ================= */
         .header-bg { background-color: #2B618E; padding: 25px 30px 20px 30px; border-bottom: 2px solid #1A4265; }
         .header-wrap { width: 96%; min-width: 980px; margin: 0 auto; }
         
-        /* 2026 / 2007 头复刻 */
-        .logo-text { font-family: "Microsoft YaHei", "黑体", sans-serif; font-size: 32px; font-weight: bold; color: #FFFFFF; text-shadow: 1px 1px 3px rgba(0,0,0,0.6); margin-bottom: 15px; letter-spacing: 1px; }
-        .nav-links { font-family: "Microsoft YaHei", "黑体", sans-serif; font-size: 15px; color: #FFFFFF; }
-        .nav-links a { color: #FFFFFF; margin: 0 12px; }
-        .nav-links span.divider { color: #FFFFFF; margin: 0 2px; font-weight: normal; }
-        .logo-sub { font-size: 16px; font-weight: normal; font-family: SimSun, sans-serif; letter-spacing: 0; margin-left: 10px; }
+        /* 2026 头 */
+        .logo-2026 { font-family: "Microsoft YaHei", "黑体", sans-serif; font-size: 32px; font-weight: bold; color: #FFFFFF; text-shadow: 1px 1px 3px rgba(0,0,0,0.6); margin-bottom: 15px; letter-spacing: 1px; }
+        .nav-2026 { font-family: "Microsoft YaHei", "黑体", sans-serif; font-size: 15px; color: #FFFFFF; }
+        .nav-2026 a { color: #FFFFFF; margin: 0 12px; }
+        .nav-2026 span.divider { color: #FFFFFF; margin: 0 2px; font-weight: normal; }
+
+        /* 2007 头 */
+        .logo-2007 { font-family: "Microsoft YaHei", "黑体", sans-serif; font-size: 32px; font-weight: bold; color: #FFFFFF; text-shadow: 1px 1px 3px rgba(0,0,0,0.6); margin-bottom: 15px; letter-spacing: 2px; }
+        .logo-sub-2007 { font-size: 16px; font-weight: normal; font-family: SimSun, sans-serif; letter-spacing: 0; color: #D0E0F0; margin-left: 10px; }
 
         /* ================= 主体内容区 ================= */
         .main-wrap { width: 96%; min-width: 980px; margin: 15px auto; background-color: #FFFFFF; border: 1px solid #A6CBE7; padding: 18px; box-sizing: border-box; }
@@ -73,7 +77,7 @@
         /* ================= 物理撕裂特效 ================= */
         #glitch-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9000; background: repeating-linear-gradient( 0deg, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1) 1px, transparent 1px, transparent 2px ); opacity: 0; transition: opacity 0.1s; }
 
-        /* ================= 登录弹窗 ================= */
+        /* ================= 登录弹窗 (极致干净) ================= */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 9999; }
         .login-box { width: 380px; margin: 200px auto; background: #FFF; border: 1px solid #2B618E; box-shadow: 0 0 20px rgba(0,0,0,0.5); }
         .modal-header { background: #2B618E; color: #FFF; padding: 10px 15px; font-weight: bold; font-size: 14px; display: flex; justify-content: space-between; }
@@ -83,7 +87,7 @@
         .login-btn:hover { background: #1A4265; }
         #login-err { color: #D32F2F; font-size: 13px; font-weight: bold; text-align: center; margin-top: 15px; display: none; }
 
-        .hack-transition { position: fixed; inset: 0; background: #000; color: #0F0; display: flex; flex-direction: column; justify-content: center; align-items: center; font-family: 'Courier New', monospace; z-index: 10000; text-align: center; animation: glitch-bg 0.1s infinite; }
+        .hack-transition { position: fixed; inset: 0; background: #000; color: #0F0; display: flex; flex-direction: column; justify-content: center; align-items: center; font-family: 'Courier New', Courier, monospace; z-index: 10000; text-align: center; animation: glitch-bg 0.1s infinite; }
         @keyframes glitch-bg { 0%{transform:translate(0)} 20%{transform:translate(-2px,2px)} 40%{transform:translate(2px,-2px)} 60%{transform:translate(-2px,-2px)} 80%{transform:translate(2px,2px)} 100%{transform:translate(0)} }
     </style>
 </head>
@@ -95,20 +99,20 @@
     <div id="layer-2026" class="layer">
         <div class="header-bg">
             <div class="header-wrap">
-                <div class="logo-text">南江大学 - 溯源BBS (Since 2004)</div>
-                <div class="nav-links">
+                <div class="logo-2026">南江大学 - 溯源BBS (Since 2004)</div>
+                <div class="nav-2026">
                     <a href="#">首 页</a> <span class="divider">|</span>
                     <a href="#">版块列表</a> <span class="divider">|</span>
                     <a href="#">校内资讯</a> <span class="divider">|</span>
                     <a href="#">跳蚤市场</a> <span class="divider">|</span>
                     <a href="#">灌水乐园</a> <span class="divider">|</span>
-                    <a href="#" onclick="showLogin()" style="cursor:pointer;">控制面板</a>
+                    <a href="#" id="nav-control-panel" onclick="showLogin()" style="cursor:pointer;">控制面板</a>
                 </div>
             </div>
         </div>
 
-        <div class="main-wrap">
-            <div class="user-status-bar">
+        <div class="main-wrap" id="main-content-2026">
+            <div class="user-status-bar" id="status-bar-2026">
                 <span class="info-stats">今日新帖: <span class="bold blue">1,024</span> | 在线人数: 8,452</span>
                 欢迎您，<span class="bold blue">游客</span> ( <a href="#" onclick="showLogin()">登录</a> | <a href="#">免费注册</a> ) 
                 &nbsp;&nbsp;&nbsp;系统时间: <span class="bold time-display"></span>
@@ -133,7 +137,7 @@
             <div class="category-bar">区域 A：校园综合交流与校务区</div>
             <table class="forum-table">
                 <tr>
-                    <th style="width: 60%;">版块主题</th>
+                    <th style="width: 60%; padding-left: 15px;">版块主题</th>
                     <th style="width: 15%; text-align: center;">统计</th>
                     <th style="width: 25%;">最后发表</th>
                 </tr>
@@ -260,12 +264,12 @@
     <div id="layer-2007" class="layer horror-theme">
         <div class="header-bg" style="background-color:#1A2233; border-bottom: 2px solid #F00;">
             <div class="header-wrap">
-                <div class="logo-text" style="color:#F00;">南江大学星火BBS <span class="logo-sub" style="color:#F00; font-weight:bold;">| 救救我们！！！</span></div>
-                <div class="nav-links" style="color:#F00;">
+                <div class="logo-2007" style="color:#F00;">南江大学星火BBS <span class="logo-sub-2007" style="color:#F00; font-weight:bold;">| 救救我们！！！</span></div>
+                <div class="nav-2026" style="color:#F00;">
                     <a href="#" style="color:#F00;">首 页</a> <span class="divider" style="color:#F00;">|</span>
                     <a href="#" style="color:#F00;">星火导读</a> <span class="divider" style="color:#F00;">|</span>
                     <a href="#" style="color:#F00;">今日新帖</a> <span class="divider" style="color:#F00;">|</span>
-                    <a href="#" style="color:#F00; font-weight:bold;">[ 控制面板 ]</a>
+                    <a href="#" style="color:#F00; font-weight:bold;">[ SYSTEM FAILURE ]</a>
                 </div>
             </div>
         </div>
@@ -403,14 +407,14 @@
                 <tr class="forum-row-alt">
                     <td>
                         <a href="#" class="thread-title bold red">[系统] 等待未来纪元的算力锚点注入</a>
-                        <div class="forum-desc" style="color:#F00; font-weight:bold;">AWAITING EXTERNAL UPLINK... 看着你... 我们在深网看着你...</div>
+                        <div class="forum-desc" style="color:#F00; font-weight:bold;">AWAITING EXTERNAL UPLINK... 我们在深网看着你...</div>
                     </td>
                     <td style="text-align: center;" class="gray">等待<br />等待</td>
                     <td><span class="gray" style="color:#D32F2F;">2007-06-11 11:12</span></td>
                 </tr>
             </table>
 
-            <div class="footer" style="color:#D32F2F;">
+            <div class="footer">
                 <b>时空通道：</b> <a href="#" style="color:#D32F2F;">深渊节点</a> | <a href="#" style="color:#D32F2F;">废弃机房</a> | <a href="#" style="color:#D32F2F;">无尽轮回</a><br /><br />
                 版权所有：南江大学异常研究处理中心 &copy; 2007 南江死局<br />
                 Powered by <span class="bold" style="color:#FF0000;">WeiJi_Array_Protocol</span> &copy; <a href="#" style="color:#D32F2F;">System Halt</a><br />
@@ -455,17 +459,18 @@
 
 <script type="text/javascript">
     // ================= 真实时间同步 =================
-    setInterval(() => {
+    function updateTime() {
         const now = new Date();
-        const displays = document.querySelectorAll('.time-display');
         const timeStr = now.getFullYear() + "-" + 
                         (now.getMonth() + 1).toString().padStart(2, '0') + "-" + 
                         now.getDate().toString().padStart(2, '0') + " " + 
                         now.getHours().toString().padStart(2, '0') + ":" + 
                         now.getMinutes().toString().padStart(2, '0') + ":" + 
                         now.getSeconds().toString().padStart(2, '0');
-        displays.forEach(d => d.innerText = timeStr);
-    }, 1000);
+        document.querySelectorAll('.time-display').forEach(d => d.innerText = timeStr);
+    }
+    setInterval(updateTime, 1000);
+    updateTime();
 
     // ================= 均等循环时间频闪逻辑 (绝对对齐) =================
     const layer2026 = document.getElementById('layer-2026');
@@ -473,6 +478,7 @@
     const glitchOverlay = document.getElementById('glitch-overlay');
     let is2026 = true;
     let flashInterval;
+    let isGlitching = true;
 
     function toggleTimeLayer() {
         if (!isGlitching) return;
@@ -482,7 +488,7 @@
         setTimeout(() => { glitchOverlay.style.opacity = '0'; }, 150);
 
         if (is2026) {
-            // 切到 2007 (完全遮盖)
+            // 切到 2007
             layer2026.style.opacity = '0';
             layer2026.style.pointerEvents = 'none';
             layer2007.style.opacity = '1';
@@ -495,11 +501,10 @@
         is2026 = !is2026;
     }
 
-    let isGlitching = true;
-    // 均等时间：严格每隔 4 秒进行一次图层翻转
+    // 均等时间：每隔 4 秒进行一次图层翻转
     flashInterval = setInterval(toggleTimeLayer, 4000);
 
-    // ================= 登录验证 =================
+    // ================= 登录接管逻辑 =================
     function showLogin() {
         document.getElementById('error').style.display = 'none';
         document.getElementById('login-modal').style.display = 'block';
@@ -510,18 +515,52 @@
         const user = document.getElementById('login-user').value.trim();
         const pwd = document.getElementById('login-pwd').value.trim();
         
-        // 必须推理出 26_既济 和 101010
+        // 核心密码：26_既济 / 101010
         if(user === '26_既济' && pwd === '101010') {
+            // 1. 停止闪烁，清理定时器
             isGlitching = false;
             clearInterval(flashInterval);
             document.getElementById('login-modal').style.display = 'none';
             
+            // 2. 强制回归并定格在 2026 图层
+            layer2007.style.display = 'none';
+            layer2026.style.opacity = '1';
+            layer2026.style.pointerEvents = 'auto';
+            glitchOverlay.style.opacity = '0';
+            
+            // 3. 展现接管动画
             const overlay = document.createElement('div');
             overlay.className = 'hack-transition';
-            overlay.innerHTML = '<h1 style="font-size:36px; margin-bottom:10px;">[ TIME PARADOX CONNECTED ]</h1><p style="font-size:18px;">阵列逆转完成。<br>实体覆盖为：26_既济</p><p style="color:#d32f2f; font-size:24px; font-weight:bold; margin-top:30px;">正在穿透时空，接管 2007 年系统控制面板...</p>';
+            overlay.innerHTML = '<h1 style="font-size:36px; margin-bottom:10px;">[ TIME PARADOX STABILIZED ]</h1><p style="font-size:18px;">阵列逆转完成。<br>实体覆盖为：26_既济</p><p style="color:#0f0; font-size:24px; font-weight:bold; margin-top:30px;">正在接管 2026 年当前维度节点...</p>';
             document.body.appendChild(overlay);
             
-            setTimeout(() => { window.location.href = "bbs_admin.html"; }, 3000);
+            // 4. 定格更新界面（不跳转，直接在 2026 页面显示接管成功）
+            setTimeout(() => { 
+                document.body.removeChild(overlay);
+                
+                // 更新状态栏
+                document.getElementById('status-bar-2026').innerHTML = `
+                    <span class="info-stats" style="color:#D32F2F; font-weight:bold;">SYS_OVERRIDE: 维度已锚定</span>
+                    欢迎回来，<span class="bold red" style="font-size:16px;">26_既济 (高维观测者)</span> 
+                    &nbsp;&nbsp;&nbsp;现实时间: <span class="bold time-display"></span>
+                `;
+                // 重新触发一次时间更新填充空白
+                updateTime();
+                
+                // 注入终局系统广播
+                const mainWrap = document.getElementById('main-content-2026');
+                const successMsg = document.createElement('div');
+                successMsg.style.cssText = "background: #E8F5E9; border: 1px solid #4CAF50; padding: 15px; margin-bottom: 20px; color: #2E7D32; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 0 10px rgba(76, 175, 80, 0.3);";
+                successMsg.innerHTML = "【系统广播】权限覆盖完毕。19年前的散逸算力已被安全重定向。<br>时空死局已解，南江大学节点恢复正常运转。感谢您的介入。";
+                mainWrap.insertBefore(successMsg, mainWrap.children[1]);
+                
+                // 解锁控制面板提示
+                const cpLink = document.getElementById('nav-control-panel');
+                cpLink.innerHTML = "控制面板 (已解锁)";
+                cpLink.style.color = "#FF0000";
+                cpLink.onclick = function() { alert('【终端提示】高维后台已接管，所有异常线程已关闭。游戏结束。'); };
+                
+            }, 3000);
         } else {
             document.getElementById('error').style.display = 'block';
         }
