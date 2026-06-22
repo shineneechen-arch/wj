@@ -532,8 +532,8 @@
         const user = document.getElementById('login-user').value.trim();
         const pwd = document.getElementById('login-pwd').value.trim();
         
-        // 核心密码：26_既济 / 101010
-        if(user === '26_既济' && pwd === '101010') {
+        // 核心密码：26级_既济 / 101010
+        if(user === '26级_既济' && pwd === '101010') {
             // 写入本地存储，实现状态持久化
             localStorage.setItem('njdx_bbs_override', 'true');
             
@@ -560,7 +560,7 @@
         const doUpdateUI = () => {
             document.getElementById('status-bar-2026').innerHTML = `
                 <span class="info-stats" style="color:#D32F2F; font-weight:bold;">SYS_OVERRIDE: 维度已锚定</span>
-                欢迎回来，<span class="bold red" style="font-size:16px;">26_既济 (高维观测者)</span> 
+                欢迎回来，<span class="bold red" style="font-size:16px;">26级_既济 (高维观测者)</span> 
                 &nbsp;&nbsp;&nbsp;现实时间: <span class="bold time-display"></span>
             `;
             updateTime();
