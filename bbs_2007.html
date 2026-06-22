@@ -4,7 +4,6 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>南江大学星火BBS - 青春与梦想的集散地 - Powered by Discuz!</title>
     <style type="text/css">
-        /* 基础复古样式 */
         body { background-color: #E2E8F1; color: #333333; font-family: "SimSun", "宋体", Arial, sans-serif; font-size: 14px; margin: 0; padding: 10px 0; }
         table { font-size: 14px; }
         a { color: #004499; text-decoration: none; }
@@ -12,6 +11,7 @@
         .bold { font-weight: bold; }
         .red { color: #FF0000; }
         .blue { color: #0000FF; }
+        .green { color: #008000; }
         .gray { color: #888888; font-size: 12px; }
         
         #main-wrap { width: 96%; min-width: 980px; margin: 0 auto; background-color: #FFFFFF; border: 1px solid #A6CBE7; padding: 18px; }
@@ -46,30 +46,19 @@
         .icon-box::before { content: ''; position: absolute; top: 0; left: 0; border-width: 9px 10px 0 10px; border-style: solid; border-color: #FFF transparent transparent transparent; }
         .icon-box-gray { background-color: #E0E0E0; border: 1px solid #A0A0A0; }
         .icon-box-hot { background-color: #FF6600; border: 1px solid #CC3300; }
+        .icon-box-lock { background-color: #666; border: 1px solid #333; }
         
         .thread-title { font-size: 16px; font-family: SimSun, sans-serif; cursor: pointer; }
         .forum-desc { color: #666; font-size: 13px; margin-top: 6px; line-height: 1.6; }
         .footer { text-align: center; margin-top: 30px; padding-top: 15px; border-top: 1px solid #A6CBE7; color: #666; line-height: 2; font-size: 12px; font-family: Arial, sans-serif; }
 
-        /* 弹窗共用遮罩 */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 9999; }
-        
-        /* 登录弹窗 */
         .login-box { width: 420px; margin: 150px auto; background: #FFF; border: 1px solid #2B71AE; box-shadow: 0 0 20px rgba(0,0,0,0.8); }
-        .modal-header { background: #2B71AE; color: #FFF; padding: 10px 15px; font-weight: bold; font-size: 14px; display: flex; justify-content: space-between; }
+        .modal-header { background: #2B71AE; color: #FFF; padding: 10px 15px; font-weight: bold; font-size: 14px; display: flex; justify-content: space-between; align-items: center; }
         .modal-body { padding: 25px; }
         #error { color: red; display: none; margin-top: 15px; text-align: center; font-weight: bold; }
 
-        /* 系统缓存提取器 (帖子查看器) */
-        .cache-box { width: 700px; margin: 80px auto; background: #050505; border: 2px solid #336699; box-shadow: 0 0 30px rgba(0,0,0,0.9); color: #b3b3b3; font-family: "SimSun", monospace; }
-        .cache-header { background: #111; color: #0f0; padding: 10px 15px; font-weight: bold; font-family: 'Courier New', Courier, monospace; display: flex; justify-content: space-between; border-bottom: 1px dashed #336699; }
-        .cache-body { padding: 20px; max-height: 500px; overflow-y: auto; }
-        .cache-post { border-bottom: 1px dashed #333; padding-bottom: 15px; margin-bottom: 15px; line-height: 1.8; }
-        .cache-user { color: #5a8aba; font-weight: bold; margin-bottom: 5px; }
-        .cache-time { color: #666; font-size: 12px; margin-left: 10px; }
-        .cache-sys { color: #ff0000; font-family: 'Courier New', Courier, monospace; font-weight: bold; text-align: center; margin-top: 20px; padding: 10px; border: 1px solid #ff0000; background: rgba(255,0,0,0.1); }
-        
-        .hack-transition { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; color: #0f0; display: flex; flex-direction: column; justify-content: center; align-items: center; font-family: 'Courier New', Courier, monospace; z-index: 10000; text-align: center; animation: glitch-bg 0.1s infinite; }
+        .hack-transition { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; color: #0f0; display: flex; flex-direction: column; justify-content: center; align-items: center; font-family: 'Courier New', Courier, monospace; z-index: 10000; text-align: center; animation: glitch-bg 0.05s infinite; }
         @keyframes glitch-bg { 0% { transform: translate(0) } 20% { transform: translate(-2px, 2px) } 40% { transform: translate(-2px, -2px) } 60% { transform: translate(2px, 2px) } 80% { transform: translate(2px, -2px) } 100% { transform: translate(0) } }
     </style>
 </head>
@@ -105,48 +94,64 @@
         <div class="top10-title">🔥 今日星火十大热门话题 (Top 10)</div>
         <div class="top10-list">
             <div class="top10-item"><span class="rank rank-hot">1</span> <a href="#" class="bold red locked-link" data-tid="1">[突发] 晕死！南门支巷废弃仓库冒浓烟了！保卫处的车都过去了！</a></div>
-            <div class="top10-item"><span class="rank">6</span> <a href="#">[求助] 四级答案有人买了吗？那个叫“诚信助考”的QQ群靠谱吗？</a></div>
-            <div class="top10-item"><span class="rank rank-hot">2</span> <a href="#">[游戏] 魔兽世界TBC（燃烧的远征）国服到底什么时候开啊？</a></div>
-            <div class="top10-item"><span class="rank">7</span> <a href="#">[活动] 今晚大操场吉他社露天送毕晚会，不见不散！</a></div>
-            <div class="top10-item"><span class="rank rank-hot">3</span> <a href="#">[股神] 今天大盘冲击4000点！拿生活费满仓中石油，年底买车！</a></div>
-            <div class="top10-item"><span class="rank">8</span> <a href="#">[八卦] 惊天大瓜！生科系系花跟弹吉他的学长分手了？</a></div>
-            <div class="top10-item"><span class="rank">4</span> <a href="#">[影视] 听说《变形金刚》真人版电影下个月引进？组团去看！</a></div>
-            <div class="top10-item"><span class="rank">9</span> <a href="#">[吐槽] 二食堂二楼那个打菜阿姨，手抖得像帕金森！</a></div>
-            <div class="top10-item"><span class="rank">5</span> <a href="#">[求助] C++期末大作业求大神捞一把，有偿请吃大盘鸡！</a></div>
+            <div class="top10-item"><span class="rank">6</span> <a href="#" onclick="alert('游客权限不足。')">[求助] 四级答案有人买了吗？那个叫“诚信助考”的QQ群靠谱吗？</a></div>
+            <div class="top10-item"><span class="rank rank-hot">2</span> <a href="#" onclick="alert('帖子已被版主转移。')">[游戏] 魔兽世界TBC（燃烧的远征）国服到底什么时候开啊？</a></div>
+            <div class="top10-item"><span class="rank">7</span> <a href="#" onclick="alert('帖子已过期。')">[活动] 今晚大操场吉他社露天送毕晚会，不见不占！</a></div>
+            <div class="top10-item"><span class="rank rank-hot">3</span> <a href="#" onclick="alert('该贴已关闭回复。')">[股神] 今天大盘冲击4000点！拿生活费满仓中石油，年底买车！</a></div>
+            <div class="top10-item"><span class="rank">8</span> <a href="#" onclick="alert('涉及个人隐私，帖子已被隐藏。')">[八卦] 惊天大瓜！生科系系花跟弹吉他的学长分手了？</a></div>
+            <div class="top10-item"><span class="rank">4</span> <a href="#" onclick="alert('此板块正在维护。')">[影视] 听说《变形金刚》真人版电影下个月引进？组团去看！</a></div>
+            <div class="top10-item"><span class="rank">9</span> <a href="#" onclick="alert('已被灌水淹没。')">[吐槽] 二食堂二楼那个打菜阿姨，手抖得像帕金森！</a></div>
+            <div class="top10-item"><span class="rank">5</span> <a href="#" onclick="alert('楼主已结贴。')">[求助] C++期末大作业求大神捞一把，有偿请吃大盘鸡！</a></div>
             <div class="top10-item"><span class="rank">10</span> <a href="#" class="locked-link" data-tid="3">[讨论] 计科系机房CPU负载异常监控报告：底层代码乱码溢出分析</a></div>
         </div>
     </div>
 
-    <div class="category-bar">区域 B：技术流与前沿探索</div>
-    <table class="forum-table">
+    <div class="category-bar">区域 A：星火站务与校园综合公告栏</div>
+    <table class="forum-table" cellpadding="0" cellspacing="0">
+        <tr class="forum-row-alt">
+            <td class="icon-envelope"><span class="icon-box icon-box-gray"></span></td>
+            <td>
+                <a href="#" onclick="alert('日常公告区。')" class="thread-title bold">【图书馆】关于2007年暑假期间开馆时间及自习室安排的通知</a>
+                <div class="forum-desc">暑期留校考研的同学请注意，二楼自习室冷气开放时间调整为上午8点至晚上10点。</div>
+            </td>
+            <td style="text-align: center;" class="gray">主题: 12<br />贴数: 145</td>
+            <td><span class="gray">2007-06-10 17:40 <br><a href="#">考研狗一枚</a></span></td>
+        </tr>
+        <tr>
+            <td class="icon-envelope"><span class="icon-box icon-box-gray"></span></td>
+            <td>
+                <a href="#" onclick="alert('日常公告区。')" class="thread-title bold">【学生处】关于做好2007届毕业生离校前宿舍安全清查的最后通牒</a>
+                <div class="forum-desc">严查大四宿舍私接电线、违章使用热得快，以及私自拆解拼装废旧电脑主板等危险行为！</div>
+            </td>
+            <td style="text-align: center;" class="gray">主题: 8<br />贴数: 92</td>
+            <td><span class="gray">2007-06-11 08:12 <br><a href="#">宿管处李老师</a></span></td>
+        </tr>
+    </table>
+
+    <div class="category-bar">区域 B：技术流与前沿探索 (硬核玩家集散地)</div>
+    <table class="forum-table" cellpadding="0" cellspacing="0">
         <tr class="forum-row-alt">
             <td class="icon-envelope"><span class="icon-box icon-box-hot"></span></td>
             <td>
                 <a href="#" class="thread-title bold blue locked-link" data-tid="3">「求助」主楼机房的集群服务器是不是中病毒了？底层一直弹乱码！</a>
-                <div class="forum-desc">昨晚在机房通宵跑算法，突然节点温度飙升，控制台全是非结构化ASCII码，散热风扇嗡嗡作响，感觉机房都要炸了。</div>
+                <div class="forum-desc">昨晚在机房通宵跑模型，突然节点温度飙升，控制台全是非结构化ASCII码，散热风扇嗡嗡作响。</div>
             </td>
             <td style="text-align: center;" class="gray">主题: 24<br />贴数: 310</td>
-            <td>
-                <a href="#" class="bold red locked-link" data-tid="3">机房温度报警了！！</a><br />
-                <span class="gray">2007-06-11 11:02 <a href="#">05级_计科首席</a></span>
-            </td>
+            <td><a href="#" class="bold red locked-link" data-tid="3">机房温度报警了！！</a><br /><span class="gray">2007-06-11 11:02 <a href="#">05级_计科首席</a></span></td>
         </tr>
         <tr>
             <td class="icon-envelope"><span class="icon-box"></span></td>
             <td>
-                <a href="thread_hexagram.html" class="thread-title" style="color:#008000; font-weight:bold;">「脑洞」如果把高低电平（0和1）定义为阴阳，主板会变成八卦阵吗？</a>
-                <div class="forum-desc">设想：利用晶体管电子元器件的二进制状态，完美映射《易经》的六爻。我写了个排盘小工具，你们跑跑看。</div>
+                <a href="thread_hexagram.html" class="thread-title bold green">「脑洞」如果把高低电平（0和1）定义为阴阳，主板会变成八卦阵吗？</a>
+                <div class="forum-desc">设想：利用晶体管电子元器件的二进制状态，完美映射《易经》的六爻。我写了个排盘小工具。</div>
             </td>
             <td style="text-align: center;" class="gray">主题: 14<br />贴数: 85</td>
-            <td>
-                <a href="#">楼主小说看多了吧...</a><br />
-                <span class="gray">2007-06-09 23:14 <a href="#">薛定谔的键盘</a></span>
-            </td>
+            <td><span class="gray">2007-06-09 23:14 <br><a href="#">薛定谔的键盘</a></span></td>
         </tr>
     </table>
 
-    <div class="category-bar">区域 C：跳蚤市场与灌水乐园</div>
-    <table class="forum-table">
+    <div class="category-bar">区域 C：跳蚤市场与灌水乐园 (潜水与强势围观阵地)</div>
+    <table class="forum-table" cellpadding="0" cellspacing="0">
         <tr>
             <td class="icon-envelope"><span class="icon-box icon-box-hot"></span></td>
             <td>
@@ -154,22 +159,25 @@
                 <div class="forum-desc">听见支巷深处轰的一声巨响，像是什么大电池爆了！最恐怖的是，卷帘门好像从里面被反锁卡死了！</div>
             </td>
             <td style="text-align: center;" class="gray">主题: 104<br />贴数: 1420</td>
-            <td>
-                <a href="#" class="bold red locked-link" data-tid="1">里面有惨叫声！！</a><br />
-                <span class="gray">2007-06-11 11:14 <a href="#">大半夜不睡觉</a></span>
-            </td>
+            <td><a href="#" class="bold red locked-link" data-tid="1">里面有惨叫声！！</a><br /><span class="gray">2007-06-11 11:14 <a href="#">大半夜不睡觉</a></span></td>
         </tr>
         <tr class="forum-row-alt">
-            <td class="icon-envelope"><span class="icon-box"></span></td>
+            <td class="icon-envelope"><span class="icon-box icon-box-lock"></span></td>
             <td>
-                <a href="#" class="thread-title bold locked-link" style="color: #660066;" data-tid="2">「招募」【传统民俗研习社】大四另类行为艺术：废旧主板“火葬”仪式</a>
-                <div class="forum-desc">大四了，带不走的主板怎么处理？今晚午时来废弃仓库搞个硬核超度仪式，顺便跑一下分布式星轨测试。带上电子垃圾不见不散。</div>
+                <a href="#" class="thread-title bold locked-link" style="color: #660066;" data-tid="2">「招募」【未济小組】大四先锋行为艺术：废旧主板“火葬”仪式</a>
+                <div class="forum-desc">大四了，带不走的主板怎么处理？今晚午时来废弃仓库搞个硬核超度仪式，顺便跑一下分布式星轨测试。</div>
             </td>
             <td style="text-align: center;" class="gray">主题: 56<br />贴数: 740</td>
+            <td><a href="#" class="bold locked-link" data-tid="2">我们在废弃仓库等你们</a><br /><span class="gray">2007-06-11 10:30 <a href="#">05级_未济</a></span></td>
+        </tr>
+        <tr>
+            <td class="icon-envelope"><span class="icon-box icon-box-gray"></span></td>
             <td>
-                <a href="#" class="bold locked-link" data-tid="2">我们在废弃仓库等你们</a><br />
-                <span class="gray">2007-06-11 10:30 <a href="#">05级_未济</a></span>
+                <a href="#" onclick="alert('该贴已无意义。')" class="thread-title">「情感」今晚在二食堂门口借给我半把伞的那个穿白裙子的女生，我想认识你</a>
+                <div class="forum-desc">雨下得好大，你把透明雨伞往我这边倾斜了一大半。你的MP3里放着《不能说的秘密》，请联系我。</div>
             </td>
+            <td style="text-align: center;" class="gray">主题: 88<br />贴数: 512</td>
+            <td><span class="gray">2007-06-09 21:05 <br><a href="#">相信缘分</a></span></td>
         </tr>
     </table>
 
@@ -206,120 +214,30 @@
     </div>
 </div>
 
-<div id="cache-modal" class="modal-overlay">
-    <div class="cache-box">
-        <div class="cache-header">
-            <span>[SYS_CACHE_SNAPSHOT] 档案代号：<span id="cache-tid"></span></span>
-            <span onclick="closeModal('cache-modal')" style="cursor:pointer; color:#ff0000;">[关闭连接]</span>
-        </div>
-        <div class="cache-body" id="cache-content">
-            </div>
-    </div>
-</div>
-
 <script type="text/javascript">
-    // --- 存放三个帖子的剧本内容 ---
-    const threadData = {
-        "1": `
-            <div class="cache-post">
-                <div class="cache-user">1楼 [大半夜不睡觉] <span class="cache-time">(11:05)</span></div>
-                刚买完手抓饼，吓死爹了！支巷深处“嗡”的一声巨响，像高压电箱炸了！卷帘门从里面锁得死死的，怎么踹都没反应！
-            </div>
-            <div class="cache-post">
-                <div class="cache-user">12楼 [路人甲] <span class="cache-time">(11:08)</span></div>
-                估计是哪几个大四的在里面烧书或者烤串吧，别大惊小怪的。
-            </div>
-            <div class="cache-post">
-                <div class="cache-user">27楼 [大半夜不睡觉] <span class="cache-time">(11:10)</span></div>
-                <b style="color:#ffaaaa;">不对劲！！兄弟们不对劲！！</b>那烟不是往天上飘的，是贴着地面往地底钻的！而且火光是幽蓝色的！
-            </div>
-            <div class="cache-post">
-                <div class="cache-user">45楼 [大半夜不睡觉] <span class="cache-time">(11:12)</span></div>
-                我操我操我操！我刚把耳朵贴在卷帘门上听……里面的人没有在喊救命……他们好像在整齐划一地背诵什么东西，听起来像是二进制代码，又像是在念经！
-            </div>
-            <div class="cache-post">
-                <div class="cache-user">58楼 [大半夜不睡觉] <span class="cache-time">(11:14)</span></div>
-                保卫处的大叔来了，拿电锯在切门锁。<b style="color:#ffaaaa;">切不动！！</b>电锯的火星子全被门缝给“吸”进去了！我的手机屏幕开始闪屏了，摄像头打开全是被拉长的人脸……我不敢看了我先撤了！！
-            </div>
-            <div class="cache-sys">[SYS_AUTO 提示]：该主题涉及违规敏感信息，已被系统防御机制强制屏蔽。</div>
-        `,
-        "2": `
-            <div class="cache-post">
-                <div class="cache-user" style="color:#ff0000;">1楼 [05级_未济] <span class="cache-time">(09:30)</span></div>
-                大四了，带不走的主板怎么处理？今晚午时（11点-13点）来南门外支巷废弃仓库，搞个硬核超度仪式。带上电子垃圾，不见不散。
-            </div>
-            <div class="cache-post">
-                <div class="cache-user" style="color:#ff0000;">14楼 [05级_未济] <span class="cache-time">(10:45)</span></div>
-                【阵法更新】384个主板节点已全部串联完毕。六十四卦矩阵底层逻辑已写入。感谢老四赞助的高压电缆。准备在 11:00 准时接通物理回路。
-            </div>
-            <div class="cache-post">
-                <div class="cache-user" style="color:#ff0000;">18楼 [05级_未济] <span class="cache-time">(11:01)</span></div>
-                有点奇怪。校园网为什么在封杀我们的本地 IP？不管了，切断外网，转入本地编译。
-            </div>
-            <div class="cache-post">
-                <div class="cache-user" style="color:#ff0000;">22楼 [05级_未济] <span class="cache-time">(11:08)</span></div>
-                温度降下去了。不符合热力学定律。水冷液结冰了，但电容在融化。
-            </div>
-            <div class="cache-post">
-                <div class="cache-user" style="color:#ff0000;">23楼 [05级_未济] <span class="cache-time">(11:11)</span></div>
-                <span style="font-family:monospace; color:#888;">烫烫烫... 门... 门打不开... 方向反了... 它在往下...</span>
-            </div>
-            <div class="cache-post">
-                <div class="cache-user" style="color:#ff0000;">24楼 [05级_未济] <span class="cache-time">(11:13)</span></div>
-                <b style="color:#ff0000; font-size:16px;">010101 不是钥匙是锚点！别算！别算！</b>
-            </div>
-            <div class="cache-sys">[SYS_AUTO 提示]：检测到发帖终端的生命体征信号消失，强行终止线程。</div>
-        `,
-        "3": `
-            <div class="cache-post">
-                <div class="cache-user">1楼 [05级_计科首席] <span class="cache-time">(11:02)</span></div>
-                有人在机房吗？我这边两排机柜的服务器突然全功率满载！CPU占用率100%，但我用 root 查了，根本没有任何进程在跑！
-            </div>
-            <div class="cache-post">
-                <div class="cache-user">5楼 [网络中心网管] <span class="cache-time">(11:05)</span></div>
-                别慌，可能是陷入死循环了，你强行重启一下节点。
-            </div>
-            <div class="cache-post">
-                <div class="cache-user">12楼 [05级_计科首席] <span class="cache-time">(11:10)</span></div>
-                <b style="color:#ffaaaa;">重启不了！</b>我进了底层终端，发现有一个来自内网的超级请求正在疯狂抽取我们机房的算力，目标地址指向了……四川的一个深地IP节点？！
-            </div>
-            <div class="cache-post">
-                <div class="cache-user">18楼 [05级_计科首席] <span class="cache-time">(11:14)</span></div>
-                疯了。我直接拔了机柜的物理电源线。你们猜怎么着？<br><b style="color:#ff5555;">拔了电源，服务器还在转！！</b>
-            </div>
-            <div class="cache-post">
-                <div class="cache-user">25楼 [05级_计科首席] <span class="cache-time">(11:18)</span></div>
-                服务器的指示灯在按照一种奇怪的规律闪烁。长亮、短闪、短闪、长亮、短闪、短闪……学过易经的哥们，这TM是不是某个卦象的代码？！机房里有股死老鼠的味道，我顶不住了我要跑了！
-            </div>
-            <div class="cache-sys">[SYS_AUTO 提示]：物理机组离线，缓存写入失败。</div>
-        `
-    };
-
-    // --- 页面初始化：检测登录状态 ---
     window.onload = function() {
         if (localStorage.getItem('weiji_logged_in') === 'true') {
-            // 登录态 UI 替换
             document.getElementById('user-bar').innerHTML = `
-                <span class="info-stats">今日新帖: <span class="bold red">2,144</span> | <span style="color:#ff0000; font-weight:bold; animation:blink 1s infinite;">SYS_WARN: 数据溢出</span></span>
+                <span class="info-stats">今日新帖: <span class="bold red">2,144</span> | <span style="color:#ff0000; font-weight:bold;">SYS_WARN: 数据溢出</span></span>
                 欢迎您，<span class="bold red">05级_未济 (系统管理员)</span>
                 &nbsp;&nbsp;&nbsp;当前系统时间: <span class="bold">2007年6月11日 11:20:00</span>
             `;
             document.getElementById('nav-logout').style.display = 'inline';
             
-            // 改变链接行为：从弹登录框变成弹缓存阅读器，或者直接跳转后台
+            // 🌟 登录态：点击直接跳转至全新、完整的帖子详情页
             document.querySelectorAll('.locked-link').forEach(el => {
                 el.onclick = function(e) {
                     e.preventDefault();
                     let tid = this.getAttribute('data-tid');
-                    if (tid && threadData[tid]) {
-                        openCache(tid);
-                    } else if (this.id === 'nav-admin' || this.innerText.includes('控制面板')) {
+                    if (tid) {
+                        window.location.href = "thread_view.html?tid=" + tid;
+                    } else {
                         window.location.href = 'bbs_admin.html';
                     }
                 }
             });
         } else {
-            // 游客态：所有锁定的链接弹登录框
+            // 游客态：弹窗拦截
             document.querySelectorAll('.locked-link').forEach(el => {
                 el.onclick = function(e) {
                     e.preventDefault();
@@ -332,27 +250,15 @@
 
     function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
-    // 打开缓存阅读器
-    function openCache(tid) {
-        document.getElementById('cache-tid').innerText = '0x' + (Math.random()*100000).toString(16).substring(0,6).toUpperCase();
-        document.getElementById('cache-content').innerHTML = threadData[tid];
-        document.getElementById('cache-modal').style.display = 'block';
-    }
-
-    // 骇入逻辑
     function checkHackPwd() {
         const pwd = document.getElementById('hack-pwd').value;
         if(pwd === '010101') {
-            // 设置钢印
             localStorage.setItem('weiji_logged_in', 'true');
-            
             document.getElementById('login-modal').style.display = 'none';
             const overlay = document.createElement('div');
             overlay.className = 'hack-transition';
             overlay.innerHTML = '<h1 style="font-size:40px;">ACCESS GRANTED<br><br><span style="font-size:24px; font-weight:normal;">身份覆写：05级_未济...</span></h1>';
             document.body.appendChild(overlay);
-            
-            // 跳转后台
             setTimeout(() => { window.location.href = "bbs_admin.html"; }, 2000);
         } else {
             document.getElementById('error').style.display = 'block';
@@ -363,12 +269,10 @@
         if(e.key === 'Enter') checkHackPwd();
     });
 
-    // 退出登录清除状态 (方便你测试)
     function logout() {
         localStorage.removeItem('weiji_logged_in');
         location.reload();
     }
 </script>
-
 </body>
 </html>
