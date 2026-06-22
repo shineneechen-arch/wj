@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>TERMINAL UPLINK - SC_DEEP_NODE</title>
+    <style>
+        body, html {
+            margin: 0; padding: 0; width: 100%; height: 100%;
+            background-color: #050505; color: #0f0;
+            font-family: 'Courier New', Courier, monospace;
+            overflow: hidden; /* 禁止原生滚动条，模拟屏幕 */
+        }
+        
+        /* 模拟老式 CRT 显示器的扫描线和屏幕发光效果 */
+        #crt-screen {
+            position: relative; width: 100%; height: 100%; padding: 20px; box-sizing: border-box;
+            overflow-y: auto; text-shadow: 0 0 5px rgba(0, 255, 0, 0.5);
+        }
+        #crt-screen::before {
+            content: " "; display: block; position: fixed; top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            z-index: 2; background-size: 100% 2px, 3px 100%; pointer-events: none;
+        }
+
+        .output-line { margin: 5px 0; line-height: 1.4; word-wrap: break-word; }
+        .system-red { color: #ff0000; text-shadow: 0 0 10px #ff0000; font-weight: bold; }
+        .system-yellow { color: #ffcc00; }
+        
+        /* 命令行输入区 */
+        #input-area { display: none; margin-top: 10px; }
+        .prompt { color: #0f0; margin-right: 10px; font-weight: bold; }
+        #user-input { color: #0f0; white-space: pre-wrap; word-wrap: break-word; }
+        .cursor { display: inline-block; width: 10px; height: 18px; background-color: #0f0; animation: blink 1s step-end infinite; vertical-align: bottom; }
+        
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+        /* 崩溃时的全屏红屏动画 */
+        .fatal-crash {
+            animation: screen-shake 0.1s infinite, color-invert 0.2s infinite;
+        }
+        @keyframes screen-shake {
+            0% { transform: translate(2px, 1px) rotate(0deg); }
+            10% { transform: translate(-1px, -2px) rotate(-1deg); }
+            20% { transform: translate(-3px, 0px) rotate(1deg); }
+            30% { transform: translate(0px, 2px) rotate(0deg); }
+            40% { transform: translate(1px, -1px) rotate(1deg); }
+            50% { transform: translate(-1px, 2px) rotate(-1deg); }
+            60% { transform: translate(-3px, 1px) rotate(0deg); }
+            70% { transform: translate(2px, 1px) rotate(-1deg); }
+            80% { transform: translate(-1px, -1px) rotate(1deg); }
+            90% { transform: translate(2px, 2px) rotate(0deg); }
+            100% { transform: translate(1px, -2px) rotate(-1deg); }
+        }
+        @keyframes color-invert {
+            0% { filter: invert(0%) sepia(100%) hue-rotate(0deg) saturate(1000%); }
+            50% { filter: invert(100%) sepia(100%) hue-rotate(300deg) saturate(1000%); background:#f00; }
+            100% { filter: invert(0%) sepia(100%) hue-rotate(0deg) saturate(1000%); }
+        }
+    </style>
+</head>
+<body>
+
+<div id="crt-screen">
+    <div id="output"></div>
+    <div id="input-area">
+        <span class="prompt">root@SC_DEEP_NODE:~#</span>
+        <span id="user-input"></span><span class="cursor"></span>
+    </div>
+</div>
+
+<script>
+    const outputDiv = document.getElementById('output');
+    const inputArea = document.getElementById('input-area');
+    const userInputSpan = document.getElementById('user-input');
+    const screenDiv = document.getElementById('crt-screen');
+
+    let currentInput = "";
+    let isAcceptingInput = false;
+    let terminalState = "normal"; // "normal" or "awaiting_code"
+
+    // 辅助函数：打字机效果输出文本
+    async function typeLine(text, speed = 20, className = "output-line") {
+        return new Promise(resolve => {
+            const div = document.createElement('div');
+            div.className = className;
+            outputDiv.appendChild(div);
+            
+            let i = 0;
+            // 处理直接插入 HTML（不打字）的情况
+            if (speed === 0) {
+                div.innerHTML = text;
+                screenDiv.scrollTop = screenDiv.scrollHeight;
+                resolve();
+                return;
+            }
+
+            // 逐字打印
+            function typeChar() {
+                if (i < text.length) {
+                    if (text.substring(i, i+4) === "<br>") {
+                        div.innerHTML += "<br>";
+                        i += 4;
+                    } else {
+                        div.innerHTML += text.charAt(i);
+                        i++;
+                    }
+                    screenDiv.scrollTop = screenDiv.scrollHeight;
+                    setTimeout(typeChar, speed + Math.random() * 20); // 增加随机延迟模拟真实打印
+                } else {
+                    resolve();
+                }
+            }
+            typeChar();
+        });
+    }
+
+    // 辅助函数：延迟
+    const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+    // 开机引导序列
+    async function bootSequence() {
+        await sleep(500);
+        await typeLine("INITIALIZING DEEP CORE UPLINK...", 30);
+        await sleep(400);
+        await typeLine("BYPASSING TEMPORAL FIREWALL (19 YEARS LATENCY)... [OK]", 10);
+        await sleep(300);
+        await typeLine("ESTABLISHING CONNECTION TO: SICHUAN DEEP EARTH MAINFRAME... [OK]", 10);
+        await sleep(600);
+        await typeLine("<br>WARNING: GARBAGE COLLECTION PROTOCOL PAUSED IN SECTOR [NANJIANG_UNIV].", 10, "output-line system-yellow");
+        await typeLine("REASON: INSUFFICIENT DIMENSIONAL HASH RATE.", 10, "output-line system-red");
+        await typeLine("TYPE <span style='color:#fff'>help</span> TO VIEW AVAILABLE COMMANDS.<br>", 0);
+        
+        // 允许输入
+        inputArea.style.display = 'block';
+        isAcceptingInput = true;
+    }
+
+    // 处理回车指令
+    async function processCommand(cmd) {
+        inputArea.style.display = 'none'; // 暂时隐藏输入框
+        isAcceptingInput = false;
+        
+        // 把用户敲的命令打印到屏幕上
+        await typeLine(`<span class="prompt">root@SC_DEEP_NODE:~#</span> ${cmd}`, 0);
+        
+        cmd = cmd.trim().toLowerCase();
+        
+        if (terminalState === "awaiting_code") {
+            await handleFinalCode(cmd);
+            return;
+        }
+
+        switch(cmd) {
+            case "":
+                break;
+            case "help":
+                await typeLine("AVAILABLE COMMANDS:", 10);
+                await typeLine("  ls       - List directory contents", 10);
+                await typeLine("  cat      - Read file (Usage: cat [filename])", 10);
+                await typeLine("  clear    - Clear terminal screen", 10);
+                await typeLine("  run      - Execute binary (Usage: run [filename])", 10);
+                break;
+            case "ls":
+            case "dir":
+                await typeLine("nexus_sys_log.txt &nbsp;&nbsp;&nbsp; 14 KB", 5);
+                await typeLine("soul_dump_0x1A.bin &nbsp;&nbsp; 8.4 GB", 5);
+                await typeLine("<span class='system-red'>purge_protocol.exe</span> &nbsp;&nbsp; 64 KB", 5);
+                break;
+            case "cat nexus_sys_log.txt":
+                await typeLine("[ READ ONLY ] DECRYPTING FRAGMENT...", 20);
+                await sleep(500);
+                await typeLine(`
+[2007-06-11 11:02:00] ANOMALY DETECTED: 5 BIOLOGICAL ENTITIES IDENTIFIED AS "BUGS".<br>
+[2007-06-11 11:05:30] EXECUTING PHYSICAL OVERWRITE. ASSIMILATING BIOMASS INTO SILICON MATRIX.<br>
+[2007-06-11 11:08:12] ENTITY 04 HEARTBEAT LOST. EXTRACTING BIO-ELECTRICITY...<br>
+[2007-06-11 11:11:00] FATAL ERROR: HASH RATE STALLED AT 99.8%.<br>
+[2007-06-11 11:12:00] SYSTEM HALTED. AWAITING EXTERNAL COMPUTE INJECTION TO COMPLETE "QI_JUE_RU_MU" (气绝入墓) PROTOCOL.<br>
+                `, 15, "output-line system-yellow");
+                break;
+            case "cat soul_dump_0x1a.bin":
+            case "cat soul_dump_0x1A.bin":
+                await typeLine("ERROR: FILE ENCRYPTED OR CORRUPTED. CONTENTS RESEMBLE HUMAN SCREAMS.", 10, "output-line system-red");
+                break;
+            case "run purge_protocol.exe":
+            case "./purge_protocol.exe":
+                await executePurge();
+                return; // 不恢复正常的 inputArea，交由 executePurge 处理
+            case "clear":
+                outputDiv.innerHTML = "";
+                break;
+            default:
+                if (cmd.startsWith("cat ") || cmd.startsWith("run ")) {
+                    await typeLine(`ERROR: File not found or permission denied.`, 10);
+                } else {
+                    await typeLine(`ERROR: Command '${cmd}' not found. Type 'help' for available commands.`, 10);
+                }
+        }
+        
+        // 恢复输入
+        inputArea.style.display = 'block';
+        isAcceptingInput = true;
+        screenDiv.scrollTop = screenDiv.scrollHeight;
+    }
+
+    // 运行最后的斩杀程序
+    async function executePurge() {
+        await typeLine("EXECUTING purge_protocol.exe ...", 20);
+        await sleep(800);
+        await typeLine("WARNING: THIS ACTION WILL FINALIZE THE PHYSICAL DELETION OF 5 BIOLOGICAL ENTITIES.", 10, "output-line system-red");
+        await typeLine("WARNING: SPATIAL-TEMPORAL BRIDGE DETECTED. CONSEQUENCES WILL ECHO INTO 2026.", 10, "output-line system-red");
+        await sleep(500);
+        await typeLine("<br>[ SYSTEM AUTHENTICATION REQUIRED ]", 10);
+        await typeLine("PLEASE ENTER THE 6-BIT YIN-YANG ANCHOR CODE TO FINALIZE THE DIMENSIONAL UPLINK:", 20);
+        
+        terminalState = "awaiting_code";
+        
+        // 修改提示符并恢复输入
+        document.querySelector('.prompt').innerText = "ANCHOR_CODE>";
+        inputArea.style.display = 'block';
+        isAcceptingInput = true;
+        screenDiv.scrollTop = screenDiv.scrollHeight;
+    }
+
+    // 处理最后的六位代码
+    async function handleFinalCode(code) {
+        if (code === "010101") {
+            await typeLine("<br>VERIFYING ANCHOR CODE [010101] (HEXAGRAM 64: WEI JI) ...", 20);
+            await sleep(1000);
+            await typeLine("MATCH FOUND. UPLINK LOCKED.", 5, "output-line system-red");
+            await sleep(500);
+            
+            // 触发全屏恐怖动效
+            screenDiv.classList.add('fatal-crash');
+            
+            await typeLine("INJECTING LETHAL HASH RATE FROM 2026 CLIENT...", 10, "output-line system-red");
+            await typeLine("GARBAGE COLLECTION RESUMED.", 10, "output-line system-red");
+            await typeLine("ENTITY 01 TERMINATED.", 0, "output-line system-red");
+            await typeLine("ENTITY 02 TERMINATED.", 0, "output-line system-red");
+            await typeLine("ENTITY 03 TERMINATED.", 0, "output-line system-red");
+            await typeLine("ENTITY 04 TERMINATED.", 0, "output-line system-red");
+            await typeLine("ENTITY 05 (WEI_JI) TERMINATED.", 0, "output-line system-red");
+            await typeLine("PHYSICAL ERASURE COMPLETE.", 10, "output-line system-red");
+            
+            await sleep(1500);
+            await typeLine("<br>DIMENSIONAL BRIDGE COLLAPSING... PREPARE FOR REALITY OVERWRITE.", 20, "output-line");
+            
+            await sleep(2000);
+            // 这里可以跳转到现代新闻结局网页 news_2026.html
+            document.body.innerHTML = "<h1 style='color:white; text-align:center; margin-top:40vh; font-family:sans-serif;'>CONNECTION LOST.</h1>";
+            
+            setTimeout(() => {
+                alert("【ARG 测试提示】时空已坍塌，此处可跳转至大结局：2026年现代新闻网页。");
+                // window.location.href = "news_2026.html";
+            }, 2000);
+
+        } else {
+            // 密码错误
+            await typeLine(`ERROR: ANCHOR CODE '${code}' INVALID. ACCESS DENIED.`, 10, "output-line system-red");
+            inputArea.style.display = 'block';
+            isAcceptingInput = true;
+            screenDiv.scrollTop = screenDiv.scrollHeight;
+        }
+    }
+
+    // 全局键盘监听器
+    document.addEventListener('keydown', function(e) {
+        if (!isAcceptingInput) return;
+        
+        // 屏蔽一些默认快捷键防止干扰
+        if (e.key === "Tab") e.preventDefault();
+
+        if (e.key === "Enter") {
+            let cmd = currentInput;
+            currentInput = "";
+            userInputSpan.innerText = "";
+            processCommand(cmd);
+        } else if (e.key === "Backspace") {
+            currentInput = currentInput.slice(0, -1);
+            userInputSpan.innerText = currentInput;
+        } else if (e.key.length === 1 && !e.ctrlKey && !e.altKey && !e.metaKey) {
+            // 仅接受普通字符
+            currentInput += e.key;
+            userInputSpan.innerText = currentInput;
+        }
+    });
+
+    // 启动系统
+    window.onload = bootSequence;
+
+</script>
+</body>
+</html>
