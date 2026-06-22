@@ -16,24 +16,20 @@
 
         /* ================= 容器与图层堆叠 ================= */
         #app-container { position: relative; width: 100%; min-height: 100vh; }
-        /* 2026图层撑开高度，2007图层绝对定位覆盖，保证排版不跳动 */
         .layer { width: 100%; transition: opacity 0.1s ease; }
         #layer-2026 { position: relative; z-index: 10; opacity: 1; }
-        #layer-2007 { position: absolute; top: 0; left: 0; z-index: 20; opacity: 0; pointer-events: none; filter: contrast(1.1) sepia(0.2) hue-rotate(-10deg); }
+        #layer-2007 { position: absolute; top: 0; left: 0; z-index: 20; opacity: 0; pointer-events: none; filter: contrast(1.2) sepia(0.3) hue-rotate(-10deg); }
 
         /* ================= 顶部 Header 设计 ================= */
         .header-bg { background-color: #2B618E; padding: 25px 30px 20px 30px; border-bottom: 2px solid #1A4265; }
         .header-wrap { width: 96%; min-width: 980px; margin: 0 auto; }
         
-        /* 2026 头 */
-        .logo-2026 { font-family: "Microsoft YaHei", "黑体", sans-serif; font-size: 32px; font-weight: bold; color: #FFFFFF; text-shadow: 1px 1px 3px rgba(0,0,0,0.6); margin-bottom: 15px; letter-spacing: 1px; }
-        .nav-2026 { font-family: "Microsoft YaHei", "黑体", sans-serif; font-size: 15px; color: #FFFFFF; }
-        .nav-2026 a { color: #FFFFFF; margin: 0 12px; }
-        .nav-2026 span.divider { color: #FFFFFF; margin: 0 2px; font-weight: normal; }
-
-        /* 2007 头 */
-        .logo-2007 { font-family: "Microsoft YaHei", "黑体", sans-serif; font-size: 32px; font-weight: bold; color: #FFFFFF; text-shadow: 1px 1px 3px rgba(0,0,0,0.6); margin-bottom: 15px; letter-spacing: 2px; }
-        .logo-sub-2007 { font-size: 16px; font-weight: normal; font-family: SimSun, sans-serif; letter-spacing: 0; color: #D0E0F0; margin-left: 10px; }
+        /* 2026 / 2007 头复刻 */
+        .logo-text { font-family: "Microsoft YaHei", "黑体", sans-serif; font-size: 32px; font-weight: bold; color: #FFFFFF; text-shadow: 1px 1px 3px rgba(0,0,0,0.6); margin-bottom: 15px; letter-spacing: 1px; }
+        .nav-links { font-family: "Microsoft YaHei", "黑体", sans-serif; font-size: 15px; color: #FFFFFF; }
+        .nav-links a { color: #FFFFFF; margin: 0 12px; }
+        .nav-links span.divider { color: #FFFFFF; margin: 0 2px; font-weight: normal; }
+        .logo-sub { font-size: 16px; font-weight: normal; font-family: SimSun, sans-serif; letter-spacing: 0; margin-left: 10px; }
 
         /* ================= 主体内容区 ================= */
         .main-wrap { width: 96%; min-width: 980px; margin: 15px auto; background-color: #FFFFFF; border: 1px solid #A6CBE7; padding: 18px; box-sizing: border-box; }
@@ -50,14 +46,17 @@
         .top10-item span.rank-hot { background: #FF6600; }
 
         /* 版块列表 */
-        .category-bar { background: #4A81B0; color: #FFFFFF; font-weight: bold; padding: 8px 14px; font-size: 15px; border: 1px solid #2B5E8A; border-bottom: none; }
-        .forum-table { width: 100%; border-collapse: collapse; margin-bottom: 22px; border: 1px solid #A6CBE7; background-color: #FFF; table-layout: fixed; }
+        .category-bar { background: #4A81B0; color: #FFFFFF; font-weight: bold; padding: 8px 14px; font-size: 15px; border: 1px solid #2B5E8A; border-bottom: none; margin-top: 15px; }
+        .forum-table { width: 100%; border-collapse: collapse; margin-bottom: 0; border: 1px solid #A6CBE7; background-color: #FFF; table-layout: fixed; }
         .forum-table th { background-color: #F0F5FA; border-bottom: 1px solid #A6CBE7; padding: 8px 15px; color: #333; font-weight: normal; text-align: left; }
         .forum-table td { border-bottom: 1px solid #E2E8F1; padding: 15px; vertical-align: top; }
         .forum-row-alt { background-color: #F9FBFE; }
         
         .thread-title { font-size: 16px; font-family: SimSun, sans-serif; cursor: pointer; }
         .forum-desc { color: #666; font-size: 13px; margin-top: 6px; line-height: 1.6; }
+
+        /* 页脚 */
+        .footer { text-align: center; margin-top: 30px; padding: 20px 0; border-top: 1px solid #A6CBE7; color: #666; line-height: 2; font-size: 12px; font-family: Arial, sans-serif; }
 
         /* ================= 2007 恐怖样式覆写 ================= */
         .horror-theme .main-wrap { background-color: #FFF0F0; border-color: #D32F2F; }
@@ -69,11 +68,12 @@
         .horror-theme .forum-table th { background: #FFCCCC; border-color: #D32F2F; color: #D32F2F; font-weight: bold; }
         .horror-theme td { border-color: #FFCCCC; }
         .horror-theme .rank { background: #D32F2F !important; }
+        .horror-theme .footer { border-color: #D32F2F; color: #D32F2F; }
 
         /* ================= 物理撕裂特效 ================= */
         #glitch-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9000; background: repeating-linear-gradient( 0deg, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1) 1px, transparent 1px, transparent 2px ); opacity: 0; transition: opacity 0.1s; }
 
-        /* ================= 登录弹窗 (极致干净) ================= */
+        /* ================= 登录弹窗 ================= */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 9999; }
         .login-box { width: 380px; margin: 200px auto; background: #FFF; border: 1px solid #2B618E; box-shadow: 0 0 20px rgba(0,0,0,0.5); }
         .modal-header { background: #2B618E; color: #FFF; padding: 10px 15px; font-weight: bold; font-size: 14px; display: flex; justify-content: space-between; }
@@ -91,24 +91,25 @@
 
 <div id="app-container">
     
+    <!-- ================= 2026 溯源服 (常规图层) ================= -->
     <div id="layer-2026" class="layer">
         <div class="header-bg">
             <div class="header-wrap">
-                <div class="logo-2026">南江大学 - 溯源BBS (Since 2004)</div>
-                <div class="nav-2026">
+                <div class="logo-text">南江大学 - 溯源BBS (Since 2004)</div>
+                <div class="nav-links">
                     <a href="#">首 页</a> <span class="divider">|</span>
                     <a href="#">版块列表</a> <span class="divider">|</span>
                     <a href="#">校内资讯</a> <span class="divider">|</span>
                     <a href="#">跳蚤市场</a> <span class="divider">|</span>
                     <a href="#">灌水乐园</a> <span class="divider">|</span>
-                    <a href="#" onclick="showLogin()">控制面板</a>
+                    <a href="#" onclick="showLogin()" style="cursor:pointer;">控制面板</a>
                 </div>
             </div>
         </div>
 
         <div class="main-wrap">
             <div class="user-status-bar">
-                <span class="info-stats">今日新帖: <span class="bold blue">1,024</span> | 驻站幽灵: 5</span>
+                <span class="info-stats">今日新帖: <span class="bold blue">1,024</span> | 在线人数: 8,452</span>
                 欢迎您，<span class="bold blue">游客</span> ( <a href="#" onclick="showLogin()">登录</a> | <a href="#">免费注册</a> ) 
                 &nbsp;&nbsp;&nbsp;系统时间: <span class="bold time-display"></span>
             </div>
@@ -129,7 +130,7 @@
                 </div>
             </div>
 
-            <div class="category-bar">区域 A：溯源交流与校园水区</div>
+            <div class="category-bar">区域 A：校园综合交流与校务区</div>
             <table class="forum-table">
                 <tr>
                     <th style="width: 60%;">版块主题</th>
@@ -162,7 +163,7 @@
                 </tr>
             </table>
 
-            <div class="category-bar">区域 B: 技术与前沿探索</div>
+            <div class="category-bar">区域 B: 技术与前沿探索区</div>
             <table class="forum-table">
                 <tr class="forum-row-alt">
                     <td>
@@ -182,24 +183,88 @@
                 </tr>
                 <tr class="forum-row-alt">
                     <td>
-                        <a href="#" class="thread-title">【分享】2026届毕业照高清无码大图网盘链接</a>
-                        <div class="forum-desc">自己找自己学院的，压缩包有点大，限时分享7天，抓紧存。</div>
+                        <a href="#" class="thread-title">【资源】2026届计科系毕业合影原图压缩包下载</a>
+                        <div class="forum-desc">附件比较大，大家自己下。限时分享7天，抓紧存。</div>
                     </td>
                     <td style="text-align: center;" class="gray">主题: 188<br />贴数: 3402</td>
                     <td><span class="gray">2026-06-18 09:15 <br><a href="#">摄影社社长</a></span></td>
                 </tr>
             </table>
+
+            <div class="category-bar">区域 C: 灌水乐园与二手跳蚤</div>
+            <table class="forum-table">
+                <tr class="forum-row-alt">
+                    <td>
+                        <a href="#" class="thread-title">【拼车】国庆节有没有回成都的，拼个顺风车</a>
+                        <div class="forum-desc">本人老司机，车内空间大。找三个同学拼车平摊路费。</div>
+                    </td>
+                    <td style="text-align: center;" class="gray">主题: 56<br />贴数: 231</td>
+                    <td><span class="gray">2026-06-21 14:22 <br><a href="#">秋名山车神</a></span></td>
+                </tr>
+                <tr>
+                    <td>
+                        <a href="#" class="thread-title">【灌水】室友半夜说梦话在敲电子木鱼，我该怎么提醒他？</a>
+                        <div class="forum-desc">每天晚上准时咚咚咚，太折磨了。</div>
+                    </td>
+                    <td style="text-align: center;" class="gray">主题: 104<br />贴数: 562</td>
+                    <td><span class="gray">2026-06-20 08:33 <br><a href="#">黑眼圈拯救者</a></span></td>
+                </tr>
+                <tr class="forum-row-alt">
+                    <td>
+                        <a href="#" class="thread-title">【出物】考研政治肖秀荣全套，九成新低价出</a>
+                        <div class="forum-desc">成功上岸，资料全出。只要50块，南区自提。</div>
+                    </td>
+                    <td style="text-align: center;" class="gray">主题: 18<br />贴数: 44</td>
+                    <td><span class="gray">2026-06-19 19:40 <br><a href="#">上岸的锦鲤</a></span></td>
+                </tr>
+            </table>
+
+            <div class="category-bar">区域 D: 校园社团与活动区</div>
+            <table class="forum-table">
+                <tr class="forum-row-alt">
+                    <td>
+                        <a href="#" class="thread-title">【活动】电竞社《英雄联盟》校内争霸赛报名开启！</a>
+                        <div class="forum-desc">冠军奖励五百元网费，各路大神速速组队。</div>
+                    </td>
+                    <td style="text-align: center;" class="gray">主题: 33<br />贴数: 210</td>
+                    <td><span class="gray">2026-06-22 09:12 <br><a href="#">电竞社长</a></span></td>
+                </tr>
+                <tr>
+                    <td>
+                        <a href="#" class="thread-title">【招新】天文社带你去看狮子座流星雨</a>
+                        <div class="forum-desc">本周末天气晴朗，组织去西山观星，名额有限先到先得。</div>
+                    </td>
+                    <td style="text-align: center;" class="gray">主题: 21<br />贴数: 99</td>
+                    <td><span class="gray">2026-06-21 21:05 <br><a href="#">追星者</a></span></td>
+                </tr>
+                <tr class="forum-row-alt">
+                    <td>
+                        <a href="#" class="thread-title">【闲聊】二食堂旁边的流浪猫生小猫啦，速来吸！</a>
+                        <div class="forum-desc">橘猫妈妈生了四只小可爱，目前在纸箱里很安全。大家带点火腿肠来看看呀。</div>
+                    </td>
+                    <td style="text-align: center;" class="gray">主题: 156<br />贴数: 1205</td>
+                    <td><span class="gray">2026-06-20 16:30 <br><a href="#">爱猫人士</a></span></td>
+                </tr>
+            </table>
+
+            <div class="footer">
+                <b>友情链接：</b> <a href="#">南江大学教务网</a> | <a href="#">水木清华BBS</a> | <a href="#">北大未名BBS</a><br /><br />
+                版权所有：南江大学信息化网络中心 &copy; 2026 南江大学星火BBS管理团队<br />
+                Powered by <span class="bold" style="color:#336699;">Discuz! 溯源镜像服</span> &copy; 2001-2026 <a href="#">Comsenz Inc.</a><br />
+                Gzip enabled | 页面执行时间: 0.0121 秒 | 数据库查询: 8 次 | 在线总人数: 8,452 人
+            </div>
         </div>
     </div>
 
+    <!-- ================= 2007 远古惊悚图层 (绝对对等高度) ================= -->
     <div id="layer-2007" class="layer horror-theme">
         <div class="header-bg" style="background-color:#1A2233; border-bottom: 2px solid #F00;">
             <div class="header-wrap">
-                <div class="logo-2007">南江大学星火BBS <span class="logo-sub-2007">| 展现南江学子风采的纯真年代</span></div>
-                <div class="nav-2026" style="color:#F00;">
-                    <a href="#" style="color:#F00;">首 页</a> <span class="divider">|</span>
-                    <a href="#" style="color:#F00;">星火导读</a> <span class="divider">|</span>
-                    <a href="#" style="color:#F00;">今日新帖</a> <span class="divider">|</span>
+                <div class="logo-text" style="color:#F00;">南江大学星火BBS <span class="logo-sub" style="color:#F00; font-weight:bold;">| 救救我们！！！</span></div>
+                <div class="nav-links" style="color:#F00;">
+                    <a href="#" style="color:#F00;">首 页</a> <span class="divider" style="color:#F00;">|</span>
+                    <a href="#" style="color:#F00;">星火导读</a> <span class="divider" style="color:#F00;">|</span>
+                    <a href="#" style="color:#F00;">今日新帖</a> <span class="divider" style="color:#F00;">|</span>
                     <a href="#" style="color:#F00; font-weight:bold;">[ 控制面板 ]</a>
                 </div>
             </div>
@@ -216,95 +281,174 @@
                 <div class="top10-title">🩸 绝密监控：他们正在被抹杀</div>
                 <div class="top10-list">
                     <div class="top10-item"><span class="rank">1</span> <a href="#" class="bold red">[突发] 晕死！南门支巷废弃仓库冒浓烟了！保卫处的车都过去了！</a></div>
-                    <div class="top10-item"><span class="rank">6</span> <a href="#" class="bold">[求助] 四级答案有人买了吗？那个叫“诚信助考”的QQ群靠谱吗？</a></div>
-                    <div class="top10-item"><span class="rank">2</span> <a href="#" class="bold">[游戏] 魔兽世界TBC国服到底什么时候开啊？等到心碎！</a></div>
-                    <div class="top10-item"><span class="rank">7</span> <a href="#" class="bold">[活动] 今晚大操场吉他社露天送毕晚会，不见不散！</a></div>
-                    <div class="top10-item"><span class="rank">3</span> <a href="#" class="bold">[股神] 今天大盘冲击4000点！拿生活费满仓中石油，年底买车！</a></div>
-                    <div class="top10-item"><span class="rank">8</span> <a href="#" class="bold">「八卦」深扒计科系那个神出鬼没的“未济小组”：水火不交的疯子们</a></div>
-                    <div class="top10-item"><span class="rank">4</span> <a href="#" class="bold">[影视] 听说《变形金刚》真人版电影下个月引进？组团去看！</a></div>
-                    <div class="top10-item"><span class="rank">9</span> <a href="#" class="bold">[吐槽] 二食堂二楼那个打菜阿姨，手抖得像帕金森，肉全抖没了！</a></div>
-                    <div class="top10-item"><span class="rank">5</span> <a href="#" class="bold">[求助] C++期末大作业求大神捞一把，有偿请吃南门大盘鸡！</a></div>
-                    <div class="top10-item"><span class="rank">10</span> <a href="#" class="bold">[讨论] 计科系机房CPU负载异常监控报告：底层代码乱码溢出分析</a></div>
+                    <div class="top10-item"><span class="rank">6</span> <a href="#" class="bold">[警报] 温度超过临界值！液冷管爆裂了！</a></div>
+                    <div class="top10-item"><span class="rank">2</span> <a href="#" class="bold">[绝命] 卷帘门打不开了！门把手是通电的！老四在抽搐！</a></div>
+                    <div class="top10-item"><span class="rank">7</span> <a href="#" class="bold">[求救] 谁在外面听见了吗？！帮我们砸门！</a></div>
+                    <div class="top10-item"><span class="rank">3</span> <a href="#" class="bold">[警报] 为什么主板算力会飙到 99.8%？是谁在外面传数据？！</a></div>
+                    <div class="top10-item"><span class="rank">8</span> <a href="#" class="bold">[系统] 检测到非结构化算力注入。</a></div>
+                    <div class="top10-item"><span class="rank">4</span> <a href="#" class="bold">断电啊！快断电！求求你们拔了插头！！</a></div>
+                    <div class="top10-item"><span class="rank">9</span> <a href="#" class="bold">[系统] 正在抽离实体生物特征...</a></div>
+                    <div class="top10-item"><span class="rank">5</span> <a href="#" class="bold">温度1200度... 我们出不去了...</a></div>
+                    <div class="top10-item"><span class="rank">10</span> <a href="#" class="bold">终止阵法！终止阵法！救命啊！！！</a></div>
                 </div>
             </div>
 
-            <div class="category-bar">区域 A：星火站务与校园综合公告栏</div>
+            <div class="category-bar">区域 A：物理破坏报告 (SYS_CRASH)</div>
             <table class="forum-table">
                 <tr>
-                    <th style="width: 60%; padding-left: 15px;">版块主题</th>
-                    <th style="width: 15%; text-align: center;">统计</th>
-                    <th style="width: 25%;">最后发表</th>
+                    <th style="width: 60%; padding-left: 15px;">进程报告</th>
+                    <th style="width: 15%; text-align: center;">状态</th>
+                    <th style="width: 25%;">最后信号</th>
                 </tr>
                 <tr class="forum-row-alt">
                     <td>
-                        <a href="#" class="thread-title bold">【图书馆】关于2007年暑假期间图书馆开馆时间及自习室安排的通知</a>
-                        <div class="forum-desc">暑期留校考研的同学请注意，二楼自习室冷气开放时间调整为上午8点至晚上10点。</div>
+                        <a href="#" class="thread-title bold red">[警报] 核心算力单元过载熔毁</a>
+                        <div class="forum-desc" style="color:#F00;">硅基阵列已完全失效，正在寻找替代生物质载体。</div>
                     </td>
-                    <td style="text-align: center;" class="gray">主题: 12<br />贴数: 145</td>
-                    <td><span class="gray" style="color:#D32F2F;">2007-06-10 17:40</span></td>
+                    <td style="text-align: center;" class="gray">丢失<br />丢失</td>
+                    <td><span class="gray" style="color:#D32F2F;">2007-06-11 11:05</span></td>
                 </tr>
                 <tr>
                     <td>
-                        <a href="#" class="thread-title bold">【学生处】关于做好2007届毕业生离校前宿舍安全清查的最后通牒</a>
-                        <div class="forum-desc">请各学院辅导员注意，严查大四宿舍私接电线、违章使用热得快，以及私自拆解！</div>
+                        <a href="#" class="thread-title bold red">[警报] 防火墙物理结构断裂</a>
+                        <div class="forum-desc" style="color:#F00;">高维空间隔离失败，局域网与外部节点强行接通。</div>
                     </td>
-                    <td style="text-align: center;" class="gray">主题: 8<br />贴数: 92</td>
-                    <td><span class="gray" style="color:#D32F2F;">2007-06-11 08:12</span></td>
+                    <td style="text-align: center;" class="gray">熔毁<br />熔毁</td>
+                    <td><span class="gray" style="color:#D32F2F;">2007-06-11 11:08</span></td>
                 </tr>
                 <tr class="forum-row-alt">
                     <td>
-                        <a href="#" class="thread-title">[失物招领] 食堂二楼丢了一张饭卡，里面还有三百多块钱啊！急！</a>
-                        <div class="forum-desc">卡套是周杰伦《依然范特西》的卡贴。捡到的同学请联系宿舍3栋402！</div>
+                        <a href="#" class="thread-title bold red">[警报] 空间坐标锁定失败</a>
+                        <div class="forum-desc" style="color:#F00;">当前维度正在坍塌，正在构建跨时空通信桥梁...</div>
                     </td>
-                    <td style="text-align: center;" class="gray">主题: 2<br />贴数: 15</td>
-                    <td><span class="gray" style="color:#D32F2F;">2007-06-10 12:30</span></td>
+                    <td style="text-align: center;" class="gray">失败<br />失败</td>
+                    <td><span class="gray" style="color:#D32F2F;">2007-06-11 11:09</span></td>
                 </tr>
             </table>
 
-            <div class="category-bar">区域 B: 核心异常警告 (SYS_FAILURE)</div>
+            <div class="category-bar">区域 B: 生物特征消亡 (ENTITY_LOST)</div>
             <table class="forum-table">
                 <tr class="forum-row-alt">
                     <td>
-                        <a href="#" class="thread-title bold red">[绝命] 卷帘门打不开了！门把手是通电的！老四在抽搐！</a>
-                        <div class="forum-desc" style="color:#F00;">救命！谁在外面把局域网切断了！快帮我们断掉主电闸！！！</div>
+                        <a href="#" class="thread-title bold red">[实体01] 生命体征消失</a>
+                        <div class="forum-desc" style="color:#F00;">碳化进度：100%。已剥离。</div>
                     </td>
-                    <td style="text-align: center;" class="gray">主题: --<br />贴数: --</td>
-                    <td><span class="bold red">2007-06-11 11:02</span></td>
+                    <td style="text-align: center;" class="gray">终止<br />终止</td>
+                    <td><span class="gray" style="color:#D32F2F;">2007-06-11 11:10</span></td>
                 </tr>
                 <tr>
                     <td>
-                        <a href="#" class="thread-title bold red">[警报] 为什么主板算力会飙到 99.8%？是谁在外面传数据？！</a>
-                        <div class="forum-desc" style="color:#F00;">物理屏障正在熔毁，五行生克阵法失控。有来自未来的节点介入了运算！</div>
+                        <a href="#" class="thread-title bold red">[实体02] 生命体征消失</a>
+                        <div class="forum-desc" style="color:#F00;">碳化进度：100%。已剥离。</div>
                     </td>
-                    <td style="text-align: center;" class="gray">主题: --<br />贴数: --</td>
-                    <td><span class="bold red">2007-06-11 11:10</span></td>
+                    <td style="text-align: center;" class="gray">终止<br />终止</td>
+                    <td><span class="gray" style="color:#D32F2F;">2007-06-11 11:10</span></td>
                 </tr>
                 <tr class="forum-row-alt">
                     <td>
-                        <a href="#" class="thread-title bold red">终止阵法！终止阵法！救命啊！！！</a>
-                        <div class="forum-desc" style="color:#F00;">好热... 救命... 我们出不去了...</div>
+                        <a href="#" class="thread-title bold red">[实体03] 心跳信号中断</a>
+                        <div class="forum-desc" style="color:#F00;">躯体与机柜支架已发生物理融合。提取剩余生物电...</div>
                     </td>
-                    <td style="text-align: center;" class="gray">主题: --<br />贴数: --</td>
-                    <td><span class="bold red">2007-06-11 11:12</span></td>
+                    <td style="text-align: center;" class="gray">终止<br />终止</td>
+                    <td><span class="gray" style="color:#D32F2F;">2007-06-11 11:11</span></td>
                 </tr>
             </table>
+
+            <div class="category-bar">区域 C: 绝望录音 (AUDIO_DUMP)</div>
+            <table class="forum-table">
+                <tr class="forum-row-alt">
+                    <td>
+                        <a href="#" class="thread-title bold red">"门打不开啊！！救命！！！"</a>
+                        <div class="forum-desc" style="color:#F00;">[音频波形解析失败：高频惨叫夹杂电流声]</div>
+                    </td>
+                    <td style="text-align: center;" class="gray">无<br />无</td>
+                    <td><span class="gray" style="color:#D32F2F;">2007-06-11 11:11</span></td>
+                </tr>
+                <tr>
+                    <td>
+                        <a href="#" class="thread-title bold red">"老四没呼吸了！他在烧！"</a>
+                        <div class="forum-desc" style="color:#F00;">[音频波形解析失败：重物砸门声]</div>
+                    </td>
+                    <td style="text-align: center;" class="gray">无<br />无</td>
+                    <td><span class="gray" style="color:#D32F2F;">2007-06-11 11:11</span></td>
+                </tr>
+                <tr class="forum-row-alt">
+                    <td>
+                        <a href="#" class="thread-title bold red">"为什么... 卦象算错了..."</a>
+                        <div class="forum-desc" style="color:#F00;">[音频波形解析失败：极低频死寂]</div>
+                    </td>
+                    <td style="text-align: center;" class="gray">无<br />无</td>
+                    <td><span class="gray" style="color:#D32F2F;">2007-06-11 11:12</span></td>
+                </tr>
+            </table>
+
+            <div class="category-bar">区域 D: 系统终局日志 (END_OF_LINE)</div>
+            <table class="forum-table">
+                <tr class="forum-row-alt">
+                    <td>
+                        <a href="#" class="thread-title bold red">[系统] 垃圾回收协议已完全接管进程</a>
+                        <div class="forum-desc" style="color:#F00;">清理多余变量中...</div>
+                    </td>
+                    <td style="text-align: center;" class="gray">--<br />--</td>
+                    <td><span class="gray" style="color:#D32F2F;">2007-06-11 11:12</span></td>
+                </tr>
+                <tr>
+                    <td>
+                        <a href="#" class="thread-title bold red">[系统] 算力卡死 99.8%：未济</a>
+                        <div class="forum-desc" style="color:#F00;">阵法停滞。无法完成闭环。</div>
+                    </td>
+                    <td style="text-align: center;" class="gray">挂起<br />挂起</td>
+                    <td><span class="gray" style="color:#D32F2F;">2007-06-11 11:12</span></td>
+                </tr>
+                <tr class="forum-row-alt">
+                    <td>
+                        <a href="#" class="thread-title bold red">[系统] 等待未来纪元的算力锚点注入</a>
+                        <div class="forum-desc" style="color:#F00; font-weight:bold;">AWAITING EXTERNAL UPLINK... 看着你... 我们在深网看着你...</div>
+                    </td>
+                    <td style="text-align: center;" class="gray">等待<br />等待</td>
+                    <td><span class="gray" style="color:#D32F2F;">2007-06-11 11:12</span></td>
+                </tr>
+            </table>
+
+            <div class="footer" style="color:#D32F2F;">
+                <b>时空通道：</b> <a href="#" style="color:#D32F2F;">深渊节点</a> | <a href="#" style="color:#D32F2F;">废弃机房</a> | <a href="#" style="color:#D32F2F;">无尽轮回</a><br /><br />
+                版权所有：南江大学异常研究处理中心 &copy; 2007 南江死局<br />
+                Powered by <span class="bold" style="color:#FF0000;">WeiJi_Array_Protocol</span> &copy; <a href="#" style="color:#D32F2F;">System Halt</a><br />
+                Firewall Disabled | 页面执行时间: 永远 | 数据库查询: 溢出 | 被困亡魂: 5 人
+            </div>
         </div>
     </div>
     
+    <!-- 物理撕裂滤镜 -->
     <div id="glitch-overlay"></div>
 </div>
 
+<!-- ================= 无提示硬核登录验证 ================= -->
 <div id="login-modal" class="modal-overlay">
     <div class="login-box">
         <div class="modal-header">
-            <span>系统授权 (Security Override)</span>
+            <span>系统安全校验 (Security Override)</span>
             <span onclick="document.getElementById('login-modal').style.display='none'" style="cursor:pointer;">X</span>
         </div>
         <div class="modal-body">
-            <input type="text" id="login-user" class="login-input" placeholder="Account" autocomplete="off">
-            <input type="password" id="login-pwd" class="login-input" placeholder="Password" maxlength="6" autocomplete="off">
-            <button class="login-btn" onclick="checkHackPwd()">授 权 接 入</button>
-            <div id="error">[ERR] 实体不匹配或凭证错误。</div>
+            <div style="color: #336699; font-weight: bold; margin-bottom: 20px; font-size: 14px; line-height: 1.5; border-bottom: 1px dashed #CCC; padding-bottom: 15px;">
+                溯源底层访问受限。请验证物理实体身份符与执行阵列码。
+            </div>
+            <table style="width: 100%; line-height: 2.5; font-size: 14px;">
+                <tr>
+                    <td style="width: 30%; text-align: right; padding-right: 10px;">授权账户：</td>
+                    <td><input type="text" id="login-user" style="border:1px solid #ccc; padding:6px; color:#333; font-weight:bold; width: 180px; outline:none;" autocomplete="off"></td>
+                </tr>
+                <tr>
+                    <td style="text-align: right; padding-right: 10px;">验证密钥：</td>
+                    <td><input type="password" id="login-pwd" maxlength="6" style="border:1px solid #ccc; padding:6px; width: 180px; outline:none;" autocomplete="off"></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td><button onclick="checkHackPwd()" style="margin-top:15px; padding:8px 25px; background:#2B71AE; color:#FFF; border:none; cursor:pointer; font-weight:bold; font-size:14px;">覆 写 (OVERRIDE)</button></td>
+                </tr>
+            </table>
+            <div id="error">[ERR] 实体身份未匹配或阵列错误。</div>
         </div>
     </div>
 </div>
@@ -323,7 +467,7 @@
         displays.forEach(d => d.innerText = timeStr);
     }, 1000);
 
-    // ================= 均等循环时间频闪逻辑 =================
+    // ================= 均等循环时间频闪逻辑 (绝对对齐) =================
     const layer2026 = document.getElementById('layer-2026');
     const layer2007 = document.getElementById('layer-2007');
     const glitchOverlay = document.getElementById('glitch-overlay');
@@ -338,7 +482,7 @@
         setTimeout(() => { glitchOverlay.style.opacity = '0'; }, 150);
 
         if (is2026) {
-            // 切到 2007
+            // 切到 2007 (完全遮盖)
             layer2026.style.opacity = '0';
             layer2026.style.pointerEvents = 'none';
             layer2007.style.opacity = '1';
@@ -352,7 +496,7 @@
     }
 
     let isGlitching = true;
-    // 均等时间：每隔 4 秒进行一次图层翻转
+    // 均等时间：严格每隔 4 秒进行一次图层翻转
     flashInterval = setInterval(toggleTimeLayer, 4000);
 
     // ================= 登录验证 =================
@@ -366,7 +510,7 @@
         const user = document.getElementById('login-user').value.trim();
         const pwd = document.getElementById('login-pwd').value.trim();
         
-        // 核心密码：26_既济 / 101010
+        // 必须推理出 26_既济 和 101010
         if(user === '26_既济' && pwd === '101010') {
             isGlitching = false;
             clearInterval(flashInterval);
