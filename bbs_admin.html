@@ -178,6 +178,39 @@
     </div>
 </div>
 
+<div id="auth-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); z-index: 9999; flex-direction: column; justify-content: center; align-items: center;">
+    <div style="width: 420px; background: #FFF; border: 1px solid #2B71AE; box-shadow: 0 0 20px rgba(0,0,0,0.8);">
+        <div style="background: #2B71AE; color: #FFF; padding: 10px 15px; font-weight: bold; font-size: 14px; display: flex; justify-content: space-between;">
+            <span>[ 系统二次验证 ]</span>
+            <span onclick="document.getElementById('auth-modal').style.display='none'" style="cursor:pointer;">X</span>
+        </div>
+        <div style="padding: 25px;">
+            <div style="color: #FF0000; font-weight: bold; margin-bottom: 15px; font-size: 16px;">⚠️ 警告：正在试图唤醒核心进程！</div>
+            <p style="font-size: 13px; color: #666; margin-bottom: 20px; line-height: 1.6;">
+                未济在底层设置了物理锁。<br>
+                只有补齐完整的阴阳阵列（逆转生克），方可取得执行权限。
+            </p>
+            <table style="width: 100%; font-size: 14px; line-height: 2.5;">
+                <tr>
+                    <td style="width: 35%; text-align: right; padding-right: 10px; color:#333;">校验标识：</td>
+                    <td style="font-weight: bold; color: #004499; font-family: monospace; font-size: 18px; letter-spacing: 2px;">42</td>
+                </tr>
+                <tr>
+                    <td style="text-align: right; padding-right: 10px; color:#333;">运行密钥：</td>
+                    <td><input type="text" id="auth-pwd" placeholder="请输入6位指令" maxlength="6" style="border:1px solid #ccc; padding:8px; width: 130px; font-family: monospace; font-size: 16px;"></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>
+                        <button id="btn-auth-verify" style="margin-top:15px; padding:8px 20px; background:#2B71AE; color:#FFF; border:none; cursor:pointer; font-weight:bold;">解 除 (UNLOCK)</button>
+                    </td>
+                </tr>
+            </table>
+            <div id="auth-error" style="color: red; display: none; margin-top: 15px; text-align: center; font-weight: bold;">[ERR] 密钥错误，生克未逆转。</div>
+        </div>
+    </div>
+</div>
+
 <div id="fatal-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(10, 0, 0, 0.95); z-index: 10000; flex-direction: column; justify-content: center; align-items: center;">
     <div style="width: 550px; border: 2px solid #FF0000; background: #050000; color: #FFF; font-family: 'Courier New', Courier, monospace; padding: 30px; box-shadow: 0 0 60px rgba(255,0,0,0.6);">
         <h2 style="color: #FF0000; text-align: center; border-bottom: 1px dashed #FF0000; padding-bottom: 15px; margin-top: 0; animation: blink-bg 0.5s infinite;">[ FATAL ERROR : DIMENSION BREACH ]</h2>
@@ -252,12 +285,36 @@
         });
     });
 
-    // 点击强制运行，弹出终极致命警告框
+    // ================= 新增：弹出二次验证框 =================
     document.getElementById('btn-run-core').addEventListener('click', function() {
-        document.getElementById('fatal-modal').style.display = 'flex';
+        document.getElementById('auth-pwd').value = '';
+        document.getElementById('auth-error').style.display = 'none';
+        document.getElementById('auth-modal').style.display = 'flex';
+        // 自动聚焦输入框
+        setTimeout(() => document.getElementById('auth-pwd').focus(), 100);
     });
 
-    // 终极红框：点击确认执行，进入命令行
+    // ================= 新增：处理验证逻辑 =================
+    document.getElementById('btn-auth-verify').addEventListener('click', function() {
+        const pwd = document.getElementById('auth-pwd').value.trim();
+        // 密码为既济卦：101010
+        if(pwd === '101010') {
+            document.getElementById('auth-modal').style.display = 'none';
+            // 验证通过，弹出终极红框
+            document.getElementById('fatal-modal').style.display = 'flex';
+        } else {
+            document.getElementById('auth-error').style.display = 'block';
+        }
+    });
+
+    // 支持回车键提交密码
+    document.getElementById('auth-pwd').addEventListener('keydown', function(e) {
+        if(e.key === 'Enter') {
+            document.getElementById('btn-auth-verify').click();
+        }
+    });
+
+    // 终极红框：点击确认执行，进入终端
     document.getElementById('btn-final-execute').addEventListener('click', function() {
         // 隐藏弹窗
         document.getElementById('fatal-modal').style.display = 'none';
