@@ -3,162 +3,207 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>四川某深地数据中心结构异常坍塌事件调查通报 - 极昼新闻网</title>
 
 <style>
-body{
-    margin:0;
-    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,"PingFang SC","Microsoft YaHei";
-    color:#1a1a1a;
-    background:#f5f6f7;
-    line-height:1.75;
-}
+    body{
+        margin:0;
+        font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,"PingFang SC","Microsoft YaHei";
+        color:#1a1a1a;
+        background:#f5f6f7;
+        line-height:1.75;
+        overflow-x: hidden;
+    }
 
-/* 顶部导航（权威媒体风格） */
-header{
-    background:#ffffff;
-    border-bottom:1px solid #e5e5e5;
-}
+    /* 顶部导航（权威媒体风格） */
+    header{
+        background:#ffffff;
+        border-bottom:1px solid #e5e5e5;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+    }
 
-.nav{
-    max-width:1100px;
-    margin:auto;
-    display:flex;
-    justify-content:space-between;
-    padding:14px 20px;
-    align-items:center;
-}
+    .nav{
+        max-width:1100px;
+        margin:auto;
+        display:flex;
+        justify-content:space-between;
+        padding:14px 20px;
+        align-items:center;
+    }
 
-.logo{
-    font-size:20px;
-    font-weight:800;
-    color:#0b3d91;
-    letter-spacing:1px;
-}
+    .logo{
+        font-size:20px;
+        font-weight:800;
+        color:#0b3d91;
+        letter-spacing:1px;
+    }
 
-.nav a{
-    margin-left:18px;
-    font-size:14px;
-    color:#444;
-    text-decoration:none;
-}
+    .nav a{
+        margin-left:18px;
+        font-size:14px;
+        color:#444;
+        text-decoration:none;
+    }
 
-.nav a:hover{
-    color:#0b3d91;
-}
+    .nav a:hover{
+        color:#0b3d91;
+    }
 
-/* 主体 */
-.container{
-    max-width:820px;
-    margin:30px auto;
-    background:#fff;
-    padding:36px;
-    border:1px solid #eee;
-}
+    /* 主体 */
+    .container{
+        max-width:820px;
+        margin:30px auto;
+        background:#fff;
+        padding:36px;
+        border:1px solid #eee;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    }
 
-/* 标题 */
-h1{
-    font-size:24px;
-    line-height:1.4;
-    font-weight:700;
-}
+    /* 标题 */
+    h1{
+        font-size:26px;
+        line-height:1.4;
+        font-weight:700;
+        color: #111;
+    }
 
-/* 标签 */
-.tag{
-    font-size:12px;
-    color:#0b3d91;
-    background:#eef3ff;
-    display:inline-block;
-    padding:3px 8px;
-    margin-bottom:10px;
-}
+    /* 标签 */
+    .tag{
+        font-size:12px;
+        color:#0b3d91;
+        background:#eef3ff;
+        display:inline-block;
+        padding:3px 8px;
+        margin-bottom:10px;
+        font-weight: bold;
+    }
 
-/* 元信息 */
-.meta{
-    font-size:13px;
-    color:#666;
-    border-bottom:1px solid #eee;
-    padding-bottom:14px;
-    margin-bottom:20px;
-}
+    /* 元信息 */
+    .meta{
+        font-size:13px;
+        color:#666;
+        border-bottom:1px solid #eee;
+        padding-bottom:14px;
+        margin-bottom:20px;
+    }
 
-/* 正文 */
-.content p{
-    font-size:15px;
-    color:#222;
-    margin-bottom:16px;
-}
+    /* 正文 */
+    .content p{
+        font-size:16px;
+        color:#222;
+        margin-bottom:18px;
+    }
 
-/* 引述 */
-.quote{
-    border-left:3px solid #0b3d91;
-    padding:10px 14px;
-    margin:20px 0;
-    background:#f9fafc;
-    font-size:14px;
-    color:#444;
-}
+    /* 引述 */
+    .quote{
+        border-left:4px solid #0b3d91;
+        padding:12px 16px;
+        margin:24px 0;
+        background:#f9fafc;
+        font-size:15px;
+        color:#444;
+    }
 
-/* 图片占位 */
-.img{
-    height:260px;
-    background:#e9ecef;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    color:#999;
-    margin:20px 0;
-    font-size:13px;
-}
+    /* 图片占位 */
+    .img{
+        height:260px;
+        background:#e9ecef;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        color:#999;
+        margin:24px 0;
+        font-size:13px;
+        border: 1px dashed #ccc;
+    }
 
-/* 评论区 */
-.comments{
-    margin-top:40px;
-    border-top:1px solid #eee;
-    padding-top:20px;
-}
+    /* 评论区 */
+    .comments{
+        margin-top:50px;
+        border-top:2px solid #eee;
+        padding-top:30px;
+    }
 
-.comment{
-    display:flex;
-    margin-bottom:16px;
-}
+    .comment{
+        display:flex;
+        margin-bottom:20px;
+        animation: fadeIn 0.5s ease forwards;
+    }
 
-.avatar{
-    width:36px;
-    height:36px;
-    border-radius:50%;
-    background:#d0d0d0;
-    margin-right:12px;
-}
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
 
-.name{
-    font-size:13px;
-    font-weight:600;
-    color:#222;
-}
+    .avatar{
+        width:40px;
+        height:40px;
+        border-radius:50%;
+        background:#d0d0d0;
+        margin-right:15px;
+        flex-shrink: 0;
+    }
 
-.time{
-    font-size:12px;
-    color:#999;
-    margin-left:6px;
-}
+    .name{
+        font-size:14px;
+        font-weight:600;
+        color:#222;
+    }
 
-.text{
-    font-size:14px;
-    color:#333;
-    margin-top:2px;
-}
+    .time{
+        font-size:12px;
+        color:#999;
+        margin-left:8px;
+        font-weight: normal;
+    }
 
-/* 评论中的链接 */
-.text a{
-    color:#0b57d0;
-    text-decoration:none;
-}
+    .text{
+        font-size:15px;
+        color:#333;
+        margin-top:6px;
+        line-height: 1.6;
+    }
 
-.text a:hover{
-    text-decoration:underline;
-}
+    /* 评论中的高亮链接 */
+    .text a.bbs-link {
+        color: #0b57d0;
+        text-decoration: none;
+        font-weight: bold;
+        background: #eef3ff;
+        padding: 2px 6px;
+        border-radius: 4px;
+        display: inline-block;
+        margin-top: 5px;
+    }
+
+    .text a.bbs-link:hover {
+        text-decoration: underline;
+        background: #dbe4ff;
+    }
+
+    /* 终极恐怖回复样式 */
+    .horror-avatar {
+        background: #000 !important;
+        border: 2px solid #d32f2f;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: #d32f2f;
+        font-family: "SimSun";
+        font-weight: bold;
+    }
+    
+    .horror-text {
+        color: #d32f2f !important;
+        font-size: 24px !important;
+        font-weight: 900 !important;
+        font-family: "SimSun", serif;
+        letter-spacing: 2px;
+        text-shadow: 0 0 10px rgba(211, 47, 47, 0.4);
+        margin-top: 10px !important;
+    }
 </style>
 </head>
 
@@ -179,101 +224,163 @@ h1{
 
 <div class="container">
 
-<div class="tag">突发 · 调查报道</div>
+    <div class="tag">突发 · 调查报道</div>
 
-<h1>四川某深地数据中心发生结构性坍塌，监测部门称异常能量来源仍在分析中</h1>
+    <h1>四川某深地数据中心发生结构性坍塌，监测部门称异常能量来源仍在分析中</h1>
 
-<div class="meta">
-来源：国家地质灾害监测联合中心 / 极昼新闻网联合调查组  
-发布时间：2026-06-22 14:18:03
-</div>
+    <div class="meta">
+        来源：国家地质灾害监测联合中心 / 极昼新闻网联合调查组&nbsp;&nbsp;|&nbsp;&nbsp;
+        发布时间：<span id="dynamic-time" style="color: #d32f2f; font-weight: bold;">正在同步现实时间...</span>
+    </div>
 
-<div class="content">
+    <div class="content">
+        <p>据多部门联合通报，位于四川山区深层的一处代号为“SC_DEEP_NODE”的废弃数据中心，在无任何自然地质活动背景下发生严重的结构性坍塌。</p>
+        <p>监测数据显示，异常能量高度集中于机房核心计算区域，而外围土层与建筑结构未见明显物理破坏。</p>
 
-<p>据多部门联合通报，位于四川山区深层的一处废弃数据中心在无自然地质活动背景下发生结构性坍塌。</p>
+        <div class="quote">
+        “现场未发现传统意义上的外力作用痕迹，能量表现呈现高度非均匀聚集特征。所有的破坏力仿佛是精准冲着硅基芯片去的。”<br>
+        ——现场技术勘探人员
+        </div>
 
-<p>监测数据显示，异常能量高度集中于机房核心计算区域，而外围结构未见明显破坏。</p>
+        <div class="img">[ 机房核心坍塌扫描图 / 涉密已被屏蔽 ]</div>
 
-<div class="quote">
-“现场未发现传统意义上的外力作用痕迹，能量表现呈现高度非均匀聚集特征。”
-——现场技术人员
-</div>
+        <p>在后续的冗余数据恢复过程中，技术人员发现了一组极度异常的跨时空网络握手日志。其IP注入源以及时间戳信息，竟诡异地指向了 2007 年南江大学南门外的废弃仓库区域。</p>
+        <p>目前，相关部门已将此区域实行最高级别封锁。19年前的悬案线索是否与本次事件有关，仍在进一步调查中。</p>
+    </div>
 
-<div class="img">[ 机房结构扫描图 / 已加密处理 ]</div>
-
-<p>在后续数据恢复过程中，技术人员发现一组异常时间戳信息，其指向2007年南江大学南门外废弃仓库区域。</p>
-
-</div>
-
-<!-- 评论区 -->
-<div class="comments">
-
-<h3 style="margin-bottom:18px;">网友评论（3,482）</h3>
-
-<div class="comment">
-<div class="avatar"></div>
-<div>
-<div class="name">深海观测者 <span class="time">刚刚</span></div>
-<div class="text">
-这个事件和2007年那个南江大学失踪案是不是有关联？当年贴吧有人整理过时间线。
-</div>
-</div>
-</div>
-
-<div class="comment">
-<div class="avatar"></div>
-<div>
-<div class="name">老程序员K <span class="time">2分钟前</span></div>
-<div class="text">
-如果是数据中心内部能量异常，那更像计算系统失控，而不是物理事故。
-</div>
-</div>
+    <div class="comments">
+        <h3 style="margin-bottom:20px; border-bottom: 2px solid #000; display: inline-block; padding-bottom: 5px;">实时热评 <span id="comment-count">(3,482)</span></h3>
+        
+        <div id="comment-list">
+            <div class="comment">
+                <div class="avatar"></div>
+                <div>
+                    <div class="name">深海观测者 <span class="time">3分钟前</span></div>
+                    <div class="text">这个事件和2007年那个南江大学失踪案绝对有关联！当年贴吧有人整理过时间线，说那几个学长在仓库搞阵法。</div>
+                </div>
+            </div>
+            <div class="comment">
+                <div class="avatar"></div>
+                <div>
+                    <div class="name">老程序员K <span class="time">1分钟前</span></div>
+                    <div class="text">如果是数据中心内部能量异常导致空间坍塌，那更像计算系统在执行某种降维打击，而不是单纯的物理事故。</div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
-<div class="comment">
-<div class="avatar"></div>
-<div>
-<div class="name">匿名用户_7742 <span class="time">3分钟前</span></div>
-<div class="text">
-有人说在旧论坛备份里找到了这个页面的镜像：  
-http://bbs.njdx-archive.org/2026/thread/77192
-</div>
-</div>
-</div>
+<script>
+    // 1. 同步玩家真实系统时间
+    function updateTime() {
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const day = String(now.getDate()).padStart(2, '0');
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        const seconds = String(now.getSeconds()).padStart(2, '0');
+        // 将发布时间设置为玩家进网页的这一秒
+        document.getElementById('dynamic-time').innerText = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+    }
+    updateTime();
 
-<div class="comment">
-<div class="avatar"></div>
-<div>
-<div class="name">地质工程师_林 <span class="time">6分钟前</span></div>
-<div class="text">
-从工程角度看，这种“中心塌陷”没有应力扩散过程，很反常。
-</div>
-</div>
-</div>
+    // 2. 动态评论自动注入剧本
+    const commentList = document.getElementById('comment-list');
+    const commentCount = document.getElementById('comment-count');
+    let baseCount = 3482;
 
-<div class="comment">
-<div class="avatar"></div>
-<div>
-<div class="name">夜航数据分析员 <span class="time">9分钟前</span></div>
-<div class="text">
-如果把2007年的事件纳入模型，会发现时间线存在缺口。
-</div>
-</div>
-</div>
+    const dynamicComments = [
+        { 
+            name: "地质工程师_林", 
+            time: "刚刚", 
+            text: "从工程角度看，这种“中心坍缩”没有应力扩散过程，极其反常，完全违背热力学定律。" 
+        },
+        { 
+            name: "夜航数据分析员", 
+            time: "刚刚", 
+            text: "如果把2007年的南江事件纳入模型，会发现时间线存在一个巨大的闭环缺口。到底是谁在今天给19年前下发了执行指令？" 
+        },
+        { 
+            name: "匿名黑客_7742", 
+            time: "刚刚", 
+            text: "卧槽大新闻！！我刚才在深网的旧论坛镜像里，顺着这篇报道的IP溯源，找到了一个今天刚刚重启的 2026年南江大学BBS暗网节点！<br><a href='bbs_2026_home.html' class='bbs-link'>🔗 点击跳转：http://bbs.njdx-archive.edu/2026/</a>" 
+        },
+        { 
+            name: "吃瓜路人甲", 
+            time: "刚刚", 
+            text: "楼上nb！！链接我存了，马上去围观！！" 
+        },
+        { 
+            name: "代码搬运工", 
+            time: "刚刚", 
+            text: "我也进去了，里面全是被屏蔽的乱码贴……等等，有人在后台改数据库权限！" 
+        },
+        { 
+            name: "既济", 
+            time: "刚刚", 
+            isHorror: true, // 触发恐怖彩蛋
+            text: "感谢你，替我们完成了闭环。" 
+        }
+    ];
 
-<div class="comment">
-<div class="avatar"></div>
-<div>
-<div class="name">贴吧考古组成员 <span class="time">12分钟前</span></div>
-<div class="text">
-当年南江大学吧有个帖子提到“他们在运行一个无法停止的计算任务”。
-</div>
-</div>
-</div>
+    let currentCommentIndex = 0;
 
-</div>
+    // 自动添加评论的函数
+    function addNextComment() {
+        if (currentCommentIndex >= dynamicComments.length) return;
 
-</div>
+        const data = dynamicComments[currentCommentIndex];
+        
+        const commentDiv = document.createElement('div');
+        commentDiv.className = 'comment';
 
+        // 判断是否是恐怖彩蛋（既济）
+        if (data.isHorror) {
+            commentDiv.innerHTML = `
+                <div class="avatar horror-avatar">爻</div>
+                <div style="width: 100%;">
+                    <div class="name" style="color:#d32f2f;">${data.name} <span class="time" style="color:#ff8888;">${data.time}</span></div>
+                    <div class="text horror-text">${data.text}</div>
+                </div>
+            `;
+        } else {
+            commentDiv.innerHTML = `
+                <div class="avatar"></div>
+                <div style="width: 100%;">
+                    <div class="name">${data.name} <span class="time">${data.time}</span></div>
+                    <div class="text">${data.text}</div>
+                </div>
+            `;
+        }
+
+        commentList.appendChild(commentDiv);
+        
+        // 更新评论数
+        baseCount += 1;
+        commentCount.innerText = `(${baseCount.toLocaleString()})`;
+
+        // 平滑滚动到页面最底部，强迫玩家看着评论刷出
+        window.scrollTo({
+            top: document.body.scrollHeight,
+            behavior: 'smooth'
+        });
+
+        currentCommentIndex++;
+
+        // 如果已经刷出了最后一条恐怖评论，则永远停止更新
+        if (currentCommentIndex >= dynamicComments.length) {
+            return; 
+        }
+
+        // 随机设定下一条评论出现的时间（2秒 ~ 4秒之间）
+        const nextDelay = Math.floor(Math.random() * 2000) + 2000;
+        setTimeout(addNextComment, nextDelay);
+    }
+
+    // 页面加载 3 秒后，开始自动刷评论
+    setTimeout(addNextComment, 3000);
+
+</script>
 </body>
 </html>
