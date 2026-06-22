@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>六十四卦大全 - ZenCode</title>
+    <style>
+        :root {
+            --zc-bg-main: #050505;
+            --zc-bg-panel: #0d0c11;
+            --zc-gold-light: #e6c587;
+            --zc-gold-dark: #8a7342;
+            --zc-text-main: #b3b3b3;
+            --zc-text-muted: #666666;
+            --zc-border: #2a2a35;
+        }
+
+        body {
+            background-color: var(--zc-bg-main);
+            color: var(--zc-text-main);
+            font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+            margin: 0; padding: 0;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        #bg-canvas {
+            position: fixed; inset: 0; z-index: -2; pointer-events: none;
+            background-color: var(--zc-bg-main);
+        }
+
+        .top-nav {
+            position: absolute; top: 20px; left: 20px; z-index: 100;
+        }
+        .back-btn {
+            background: rgba(13, 12, 17, 0.6); border: 1px solid var(--zc-gold-dark);
+            color: var(--zc-gold-light); padding: 8px 16px; border-radius: 4px;
+            font-size: 0.95rem; cursor: pointer; transition: all 0.3s;
+            backdrop-filter: blur(4px); text-decoration: none; display: inline-block; letter-spacing: 1px;
+        }
+        .back-btn:hover { background: var(--zc-gold-dark); color: var(--zc-bg-main); }
+
+        .page-header { text-align: center; padding: 4rem 0 2rem; position: relative; z-index: 10; }
+        .page-title { color: var(--zc-gold-light); font-size: 2.5rem; font-family: "STZhongsong", serif; letter-spacing: 6px; margin: 0 0 10px 0; text-shadow: 0 0 15px rgba(212, 168, 67, 0.4); }
+        .page-subtitle { color: var(--zc-gold-dark); font-size: 0.9rem; letter-spacing: 4px; }
+
+        .dict-container {
+            max-width: 1000px; margin: 0 auto 4rem; padding: 0 20px;
+            position: relative; z-index: 10;
+        }
+
+        .palace-block {
+            background: rgba(13, 12, 17, 0.65);
+            border: 1px solid rgba(138, 115, 66, 0.3);
+            border-radius: 4px; padding: 1.5rem; margin-bottom: 2rem;
+            backdrop-filter: blur(8px);
+        }
+        .palace-title {
+            color: var(--zc-gold-dark); font-size: 1.2rem; font-weight: bold; letter-spacing: 2px;
+            border-bottom: 1px dashed rgba(138, 115, 66, 0.4); padding-bottom: 10px; margin-bottom: 20px;
+        }
+
+        .hex-grid {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 12px;
+        }
+
+        .hex-card {
+            background: rgba(0, 0, 0, 0.4); border: 1px solid var(--zc-border);
+            padding: 15px 5px; text-align: center; cursor: pointer; transition: all 0.3s ease;
+            border-radius: 2px;
+        }
+        .hex-card:hover {
+            border-color: var(--zc-gold-light); background: rgba(138, 115, 66, 0.1);
+            box-shadow: 0 5px 15px rgba(212, 168, 67, 0.15); transform: translateY(-3px);
+        }
+        .hex-card-name { color: var(--zc-gold-light); font-size: 1.05rem; font-weight: bold; margin-bottom: 4px; letter-spacing: 1px; white-space: nowrap; }
+        .hex-card-seq { font-size: 0.72rem; color: var(--zc-gold-dark); margin-bottom: 4px; letter-spacing: 1px; opacity: 0.7; white-space: nowrap; }
+        .hex-card-binary { font-family: "Courier New", Courier, monospace; font-size: 0.75rem; color: var(--zc-gold-dark); margin-bottom: 8px; letter-spacing: 2px; opacity: 0.8; }
+
+        .mini-gua { display: flex; flex-direction: column; align-items: center; gap: 3px; }
+        .mini-yao { height: 4px; width: 30px; display: flex; justify-content: space-between; }
+        .mini-yao-yang { background: var(--zc-gold-dark); width: 100%; height: 100%; }
+        .mini-yao-yin { background: var(--zc-text-muted); width: 42%; height: 100%; }
+
+        /* === 弹窗 === */
+        .modal-overlay {
+            position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(6px);
+            z-index: 1000; display: none; overflow-y: auto; padding: 20px 10px;
+            opacity: 0; transition: opacity 0.3s ease;
+        }
+        .modal-overlay.active { display: block; opacity: 1; }
+
+        .modal-content {
+            max-width: 620px; margin: 40px auto; background: var(--zc-bg-panel);
+            border: 1px solid var(--zc-gold-dark); padding: 30px 40px; position: relative;
+            box-shadow: 0 10px 50px rgba(0,0,0,0.9);
+        }
+        .modal-content::before, .modal-content::after { content: ''; position: absolute; width: 15px; height: 15px; border: 1px solid var(--zc-gold-dark); }
+        .modal-content::before { top: -1px; left: -1px; border-right: none; border-bottom: none; }
+        .modal-content::after  { bottom: -1px; right: -1px; border-left: none; border-top: none; }
+
+        .btn-close {
+            position: absolute; top: 15px; right: 20px; background: none; border: none;
+            color: var(--zc-text-muted); font-size: 1.8rem; cursor: pointer; transition: 0.3s;
+        }
+        .btn-close:hover { color: var(--zc-gold-light); transform: rotate(90deg); }
+
+        .detail-header { text-align: center; border-bottom: 1px dashed rgba(138, 115, 66, 0.4); padding-bottom: 20px; margin-bottom: 20px; }
+        .detail-title { color: var(--zc-gold-light); font-size: 2rem; font-family: "STZhongsong", serif; letter-spacing: 4px; margin: 0 0 5px; }
+        .detail-subtitle { color: var(--zc-gold-dark); font-size: 0.9rem; letter-spacing: 2px; }
+
+        /* 排盘主体 */
+        .gua-panel { display: flex; justify-content: center; gap: 0; margin-bottom: 28px; }
+        .gua-col { display: flex; flex-direction: column; gap: 2px; }
+
+        /* 修复排版换行问题的核心代码 */
+        .yao-row {
+            display: flex; align-items: center; height: 28px; gap: 8px;
+            font-family: "Courier New", Courier, monospace; font-size: 0.85rem;
+            white-space: nowrap; /* 强制所有内容在一行，绝对不串行 */
+        }
+        
+        .yr-k    { color: var(--zc-gold-dark); width: 32px; font-size: 0.8rem; text-align: right; flex-shrink: 0; }
+        .yr-tg   { color: var(--zc-text-main); width: 85px; flex-shrink: 0; }
+        .yr-sym  { width: 60px; height: 8px; display: flex; justify-content: space-between; flex-shrink: 0; }
+        .yr-pos  { color: var(--zc-gold-dark); width: 22px; text-align: center; font-weight: bold; font-size: 0.8rem; flex-shrink: 0; }
+        .yr-sw   { color: var(--zc-gold-light); width: 20px; font-size: 0.8rem; font-weight: bold; text-align: center; flex-shrink: 0; }
+        
+        .yr-sym.yang .line { width: 100%; height: 100%; background-color: var(--zc-gold-light); box-shadow: 0 0 4px rgba(212,168,67,0.35); }
+        .yr-sym.yin  .line { width: 42%;  height: 100%; background-color: var(--zc-text-main); }
+        
+        .yr-sw.shi { color: #e6c587; } 
+        .yr-sw.ying { color: #8ec4e0; }
+
+        .detail-section { margin-bottom: 22px; }
+        .section-title { color: var(--zc-gold-dark); font-size: 1.0rem; font-weight: bold; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+        .section-title::before { content:''; display:inline-block; width:4px; height:14px; background:var(--zc-gold-dark); }
+        .section-content { color: var(--zc-text-main); font-size: 0.92rem; line-height: 1.85; text-align: justify; }
+
+        .yaoci-item { margin-bottom: 9px; border-left: 1px solid rgba(138, 115, 66, 0.2); padding-left: 10px; }
+        .yaoci-name { color: var(--zc-gold-light); font-weight: bold; margin-right: 6px; white-space: nowrap; }
+
+        @media (max-width: 768px) {
+            .hex-grid { grid-template-columns: repeat(4, 1fr); gap: 8px; }
+            .palace-block { padding: 1rem; }
+            .hex-card { padding: 10px 2px; }
+            .hex-card-name { font-size: 0.9rem; margin-bottom: 2px; }
+            .hex-card-seq { font-size: 0.62rem; margin-bottom: 2px; }
+            .hex-card-binary { font-size: 0.65rem; margin-bottom: 6px; letter-spacing: 1px; }
+            .modal-content { padding: 20px 15px; margin: 20px auto; }
+            .detail-title { font-size: 1.6rem; }
+            .yao-row { font-size: 0.78rem; gap: 5px; }
+            .yr-sym { width: 44px; }
+            .yr-tg { width: 75px; }
+        }
+    </style>
+</head>
+<body>
+
+<canvas id="bg-canvas"></canvas>
+
+<div class="top-nav">
+    <a href="liuyao.html" class="back-btn">← 返回排盘</a>
+</div>
+
+<div class="page-header">
+    <h1 class="page-title">六十四卦大全</h1>
+    <div class="page-subtitle">· 易经义理与排盘字典 ·</div>
+</div>
+
+<div class="dict-container" id="dict-root"></div>
+
+<div class="modal-overlay" id="detail-modal">
+    <div class="modal-content">
+        <button class="btn-close" onclick="closeModal()">×</button>
+        <div class="detail-header">
+            <h2 class="detail-title" id="m-name">乾为天</h2>
+            <div class="detail-subtitle" id="m-palace">乾宫 · 金 · 本宫卦</div>
+        </div>
+        <div class="gua-panel" id="m-gua-panel"></div>
+        <div class="detail-section">
+            <div class="section-title">卦意解析</div>
+            <div class="section-content" id="m-meaning"></div>
+        </div>
+        <div class="detail-section">
+            <div class="section-title">各爻辞解</div>
+            <div class="section-content" id="m-yaoci"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+// ============================================================
+// 1. 粒子背景
+// ============================================================
+(function(){
+    const c = document.getElementById('bg-canvas');
+    const ctx = c.getContext('2d');
+    let W, H;
+    const particles = [];
+    const N = 400;
+    function resize() { W = c.width = window.innerWidth; H = c.height = window.innerHeight; }
+    window.addEventListener('resize', resize); resize();
+    function gaussianRandom() {
+        let u=0,v=0;
+        while(u===0) u=Math.random();
+        while(v===0) v=Math.random();
+        return Math.sqrt(-2*Math.log(u)) * Math.cos(2*Math.PI*v);
+    }
+    class Particle {
+        constructor() { this.isYang = Math.random() > 0.5; this.reset(true); }
+        reset(r=false) {
+            this.progress = r ? Math.random() : 0;
+            this.speed = Math.random()*0.0015+0.0005;
+            this.size  = Math.random()*3.5+1.5;
+            this.thickness = gaussianRandom() * (Math.max(W,H)*0.15);
+        }
+        update() { this.progress += this.speed; if(this.progress>1) this.reset(); }
+        draw() {
+            const cx=W/2, cy=H/2, maxR=Math.max(W,H)*0.7;
+            const base = this.progress*Math.PI*2.5 + (this.isYang?0:Math.PI);
+            const r    = maxR*(1-this.progress*0.6);
+            const rot  = Date.now()*0.00015;
+            const fa   = base+rot, perp=base+Math.PI/2;
+            const x = cx + r*Math.cos(fa) + Math.cos(perp+rot)*this.thickness;
+            const y = cy + r*Math.sin(fa) + Math.sin(perp+rot)*this.thickness;
+            let a=1;
+            if(this.progress<0.1) a=this.progress/0.1;
+            if(this.progress>0.9) a=(1-this.progress)/0.1;
+            ctx.beginPath(); ctx.arc(x,y,this.size,0,Math.PI*2);
+            ctx.fillStyle = this.isYang
+                ? `rgba(245,215,150,${a*0.6})`
+                : `rgba(160,125,65,${a*0.3})`;
+            ctx.fill();
+        }
+    }
+    for(let i=0;i<N;i++) particles.push(new Particle());
+    function loop() {
+        ctx.fillStyle='rgba(5,5,5,0.25)'; ctx.fillRect(0,0,W,H);
+        const g=ctx.createRadialGradient(W/2,H/2,0,W/2,H/2,Math.max(W,H)/2);
+        g.addColorStop(0,'rgba(138,115,66,0.06)'); g.addColorStop(1,'transparent');
+        ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
+        particles.forEach(p=>{p.update();p.draw();});
+        requestAnimationFrame(loop);
+    }
+    loop();
+})();
+
+// ============================================================
+// 2. 内置纳甲排盘引擎
+// ============================================================
+
+const TRI = {
+    乾:[1,1,1], 坤:[0,0,0], 震:[1,0,0], 巽:[0,1,1],
+    坎:[0,1,0], 离:[1,0,1], 艮:[0,0,1], 兑:[1,1,0]
+};
+
+// 坎、离、兑阴阳顺逆排法已修正
+const NAJIA = {
+    乾: [["甲","子"],["甲","寅"],["甲","辰"],["壬","午"],["壬","申"],["壬","戌"]],
+    坤: [["乙","未"],["乙","巳"],["乙","卯"],["癸","丑"],["癸","亥"],["癸","酉"]],
+    震: [["庚","子"],["庚","寅"],["庚","辰"],["庚","午"],["庚","申"],["庚","戌"]],
+    巽: [["辛","丑"],["辛","亥"],["辛","酉"],["辛","未"],["辛","巳"],["辛","卯"]],
+    坎: [["戊","寅"],["戊","辰"],["戊","午"],["戊","申"],["戊","戌"],["戊","子"]], // 阳顺
+    离: [["己","卯"],["己","丑"],["己","亥"],["己","酉"],["己","未"],["己","巳"]], // 阴逆
+    艮: [["丙","辰"],["丙","午"],["丙","申"],["丙","戌"],["丙","子"],["丙","寅"]],
+    兑: [["丁","巳"],["丁","卯"],["丁","丑"],["丁","亥"],["丁","酉"],["丁","未"]]  // 阴逆
+};
+
+const DZ_WX = {
+    子:"水", 丑:"土", 寅:"木", 卯:"木", 辰:"土", 巳:"火",
+    午:"火", 未:"土", 申:"金", 酉:"金", 戌:"土", 亥:"水"
+};
+
+const WX_SHENG = { 金:"水", 水:"木", 木:"火", 火:"土", 土:"金" };
+const WX_KE    = { 金:"木", 木:"土", 土:"水", 水:"火", 火:"金" };
+
+function getLiuqin(palaceWx, yaoWx) {
+    if (palaceWx === yaoWx) return "兄弟";
+    if (WX_SHENG[palaceWx] === yaoWx) return "子孙";
+    if (WX_SHENG[yaoWx]    === palaceWx) return "父母";
+    if (WX_KE[palaceWx]    === yaoWx) return "妻财";
+    if (WX_KE[yaoWx]       === palaceWx) return "官鬼";
+    return "？";
+}
+
+const SHI_YING = [
+    [5,2],[0,3],[1,4],[2,5],[3,0],[4,1],[3,0],[2,5]
+];
+
+const SEQ_LABELS = ["本宫卦","一世卦","二世卦","三世卦","四世卦","五世卦","游魂卦","归魂卦"];
+
+// ============================================================
+// 3. 京房八宫 + 64 卦数据
+// ============================================================
+const palaces = [
+    { name:"乾", wx:"金", hexagrams:["乾为天","天风姤","天山遁","天地否","风地观","山地剥","火地晋","火天大有"] },
+    { name:"坎", wx:"水", hexagrams:["坎为水","水泽节","水雷屯","水火既济","泽火革","雷火丰","地火明夷","地水师"] },
+    { name:"艮", wx:"土", hexagrams:["艮为山","山火贲","山天大畜","山泽损","火泽睽","天泽履","风泽中孚","风山渐"] },
+    { name:"震", wx:"木", hexagrams:["震为雷","雷地豫","雷水解","雷风恒","地风升","水风井","泽风大过","泽雷随"] },
+    { name:"巽", wx:"木", hexagrams:["巽为风","风天小畜","风火家人","风雷益","天雷无妄","火雷噬嗑","山雷颐","山风蛊"] },
+    { name:"离", wx:"火", hexagrams:["离为火","火山旅","火风鼎","火水未济","山水蒙","风水涣","天水讼","天火同人"] },
+    { name:"坤", wx:"土", hexagrams:["坤为地","地雷复","地泽临","地天泰","雷天大壮","泽天夬","水天需","水地比"] },
+    { name:"兑", wx:"金", hexagrams:["兑为泽","泽水困","泽地萃","泽山咸","水山蹇","地山谦","雷山小过","雷泽归妹"] }
+];
+
+const guaMeta = {};
+const tri2Name = {};
+for(const [k,v] of Object.entries(TRI)) tri2Name[v.join('')] = k;
+
+(function buildMeta() {
+    for(const palace of palaces) {
+        for(let idx=0; idx<8; idx++) {
+            const hName = palace.hexagrams[idx];
+            guaMeta[hName] = {
+                palace: palace.name,
+                palaceWx: palace.wx,
+                seqIdx: idx,
+                seqLabel: SEQ_LABELS[idx],
+                shi: SHI_YING[idx][0],
+                ying: SHI_YING[idx][1]
+            };
+        }
+    }
+})();
+
+// ============================================================
+// 4. 64 卦完整数据
+// ============================================================
+const dictData = {
+    // --- 乾宫 ---
+    "乾为天":   { bin:[1,1,1,1,1,1], m:"乾卦为六十四卦之首，纯阳刚健。象征天，自强不息。大吉，但也需防过刚易折。", y:["初九：潜龙勿用。","九二：见龙在田，利见大人。","九三：君子终日乾乾，夕惕若厉，无咎。","九四：或跃在渊，无咎。","九五：飞龙在天，利见大人。","上九：亢龙有悔。"] },
+    "天风姤":   { bin:[0,1,1,1,1,1], m:"姤卦：一阴生于下，象征相遇、不期而遇。阴气渐长，防范小人，非正缘。", y:["初六：系于金柅，贞吉。有攸往，见凶。","九二：包有鱼，无咎，不利宾。","九三：臀无肤，其行次且，厉，无大咎。","九四：包无鱼，起凶。","九五：以杞包瓜，含章，有陨自天。","上九：姤其角，吝，无咎。"] },
+    "天山遁":   { bin:[0,0,1,1,1,1], m:"遁卦：退避、隐匿。阴渐盛，阳当退守以保平安，不宜强进。", y:["初六：遁尾，厉，勿用有攸往。","六二：执之用黄牛之革，莫之胜说。","九三：系遁，有疾厉，畜臣妾吉。","九四：好遁，君子吉，小人否。","九五：嘉遁，贞吉。","上九：肥遁，无不利。"] },
+    "天地否":   { bin:[0,0,0,1,1,1], m:"否卦：闭塞不通。天地不交，万物不通。小人道长，君子道消，宜隐忍。", y:["初六：拔茅茹，以其汇，贞吉亨。","六二：包承。小人吉，大人否亨。","六三：包羞。","九四：有命无咎，畴离祉。","九五：休否，大人吉。其亡其亡，系于苞桑。","上九：倾否，先否后喜。"] },
+    "风地观":   { bin:[0,0,0,0,1,1], m:"观卦：观察、瞻仰。风行地上，宜静观其变，省视自身。", y:["初六：童观，小人无咎，君子吝。","六二：闚观，利女贞。","六三：观我生，进退。","六四：观国之光，利用宾于王。","九五：观我生，君子无咎。","上九：观其生，君子无咎。"] },
+    "山地剥":   { bin:[0,0,0,0,0,1], m:"剥卦：剥落、颓败。阴盛极，孤阳将尽，诸事不宜，切忌轻举妄动。", y:["初六：剥床以足，蔑贞凶。","六二：剥床以辨，蔑贞凶。","六三：剥之，无咎。","六四：剥床以肤，凶。","六五：贯鱼，以宫人宠，无不利。","上九：硕果不食，君子得舆，小人剥庐。"] },
+    "火地晋":   { bin:[0,0,0,1,0,1], m:"晋卦：晋升、前进。明德出土，如日初升。利于求名、升迁。", y:["初六：晋如，摧如，贞吉。","六二：晋如，愁如，贞吉。受兹介福，于其王母。","六三：众允，悔亡。","九四：晋如鼫鼠，贞厉。","六五：悔亡，失得勿恤，往吉无不利。","上九：晋其角，维用伐邑，厉吉无咎，贞吝。"] },
+    "火天大有": { bin:[1,1,1,1,0,1], m:"大有卦：盛大富有。如日中天，光明普照，万物皆应，大吉。", y:["初九：无交害，匪咎，艰则无咎。","九二：大车以载，有攸往，无咎。","九三：公用亨于天子，小人弗克。","九四：匪其彭，无咎。","六五：厥孚交如，威如，吉。","上九：自天佑之，吉无不利。"] },
+    // --- 坎宫 ---
+    "坎为水":   { bin:[0,1,0,0,1,0], m:"坎卦：重重险阻。水中有险，动辄得咎。需以诚信心态从长计议。", y:["初六：习坎，入于坎窞，凶。","九二：坎有险，求小得。","六三：来之坎坎，险且枕，入于坎窞，勿用。","六四：樽酒簋贰，用缶，纳约自牖，终无咎。","九五：坎不盈，祗既平，无咎。","上六：系用徽纆，寘于丛棘，三岁不得，凶。"] },
+    "水泽节":   { bin:[1,1,0,0,1,0], m:"节卦：节制、止约。凡事有度，不可逾越。得此卦宜克制欲望。", y:["初九：不出户庭，无咎。","九二：不出门庭，凶。","六三：不节若，则嗟若，无咎。","六四：安节，亨。","九五：甘节，吉；往有尚。","上六：苦节，贞凶，悔亡。"] },
+    "水雷屯":   { bin:[1,0,0,0,1,0], m:"屯卦：初生艰难。万物始生，充满阻力。宜坚守正道，建立根基。", y:["初九：磐桓；利居贞，利建侯。","六二：屯如邅如，乘马班如。匪寇婚媾。","六三：即鹿无虞，惟入于林中，君子几不如舍，往吝。","六四：乘马班如，求婚媾，往吉，无不利。","九五：屯其膏，小贞吉，大贞凶。","上六：乘马班如，泣血涟如。"] },
+    "水火既济": { bin:[1,0,1,0,1,0], m:"既济卦：已经成功。阴阳各得其正，大功告成，但需防患于未然，初吉终乱。", y:["初九：曳其轮，濡其尾，无咎。","六二：妇丧其茀，勿逐，七日得。","九三：高宗伐鬼方，三年克之，小人勿用。","六四：繻有衣袽，终日戒。","九五：东邻杀牛，不如西邻之禴祭，实受其福。","上六：濡其首，厉。"] },
+    "泽火革":   { bin:[1,0,1,1,1,0], m:"革卦：变革、革新。旧事物走到尽头，需顺应时势进行改变。", y:["初九：巩用黄牛之革。","六二：巳日乃革之，征吉，无咎。","九三：征凶，贞厉。革言三就，有孚。","九四：悔亡，有孚改命，吉。","九五：大人虎变，未占有孚。","上六：君子豹变，小人革面，征凶，居贞吉。"] },
+    "雷火丰":   { bin:[1,0,1,1,0,0], m:"丰卦：丰盛、壮大。日丽中天，光明正大，但需防乐极生悲。", y:["初九：遇其配主，虽旬无咎，往有尚。","六二：丰其蔀，日中见斗，往得疑疾，有孚发若，吉。","九三：丰其沛，日中见沫，折其右肱，无咎。","九四：丰其蔀，日中见斗，遇其夷主，吉。","六五：来章，有庆誉，吉。","上六：丰其屋，蔀其家，窥其户，阒其无人，三岁不觌，凶。"] },
+    "地火明夷": { bin:[1,0,1,0,0,0], m:"明夷卦：光明受损。黑暗降临，君子宜韬光养晦，不可强出头。", y:["初九：明夷于飞，垂其翼。君子于行，三日不食。","六二：明夷，夷于左股，用拯马壮，吉。","九三：明夷于南狩，得其大首，不可疾贞。","六四：入于左腹，获明夷之心，出于门庭。","六五：箕子之明夷，利贞。","上六：不明晦，初登于天，后入于地。"] },
+    "地水师":   { bin:[0,1,0,0,0,0], m:"师卦：统帅、军队。需要有纪律和长者统领，用兵之道，险中求胜。", y:["初六：师出以律，否臧凶。","九二：在师中，吉无咎，王三锡命。","六三：师或舆尸，凶。","六四：师左次，无咎。","六五：田有禽，利执言，无咎。长子帅师，弟子舆尸，贞凶。","上六：大君有命，开国承家，小人勿用。"] },
+    // --- 艮宫 ---
+    "艮为山":   { bin:[0,0,1,0,0,1], m:"艮卦：静止、停止。两山重叠，时止则止，时行则行，动静不失其时。", y:["初六：艮其趾，无咎，利永贞。","六二：艮其腓，不拯其随，其心不快。","九三：艮其限，列其夤，厉薰心。","六四：艮其身，无咎。","六五：艮其辅，言有序，悔亡。","上九：敦艮，吉。"] },
+    "山火贲":   { bin:[1,0,1,0,0,1], m:"贲卦：文饰、修饰。重内在而非外表，外表光鲜但内有隐忧，利小不利大。", y:["初九：贲其趾，舍车而徒。","六二：贲其须。","九三：贲如濡如，永贞吉。","六四：贲如皤如，白马翰如，匪寇婚媾。","六五：贲于丘园，束帛戋戋，吝，终吉。","上九：白贲，无咎。"] },
+    "山天大畜": { bin:[1,1,1,0,0,1], m:"大畜卦：巨大的积蓄。阳刚被阴所蓄，厚积薄发，利于远行和干大事。", y:["初九：有厉利已。","九二：舆说輹。","九三：良马逐，利艰贞。","六四：童牛之牿，元吉。","六五：豮豕之牙，吉。","上九：何天之衢，亨。"] },
+    "山泽损":   { bin:[1,1,0,0,0,1], m:"损卦：减损。损下益上，先失后得。舍弃暂时的利益可获长远发展。", y:["初九：已事遄往，无咎，酌损之。","九二：利贞，征凶，弗损益之。","六三：三人行，则损一人；一人行，则得其友。","六四：损其疾，使遄有喜，无咎。","六五：或益之，十朋之龟弗克违，元吉。","上九：弗损益之，无咎，贞吉，利有攸往。"] },
+    "火泽睽":   { bin:[1,1,0,1,0,1], m:"睽卦：背离、乖违。火炎上，泽润下，相互背离。测事多主不合、意见分歧。", y:["初九：悔亡，丧马勿逐，自复；见恶人无咎。","九二：遇主于巷，无咎。","六三：见舆曳，其牛掣，其人天且劓，无初有终。","九四：睽孤，遇元夫，交孚，厉无咎。","六五：悔亡，厥宗噬肤，往何咎。","上九：睽孤，见豕负涂，载鬼一车，先张之弧，后说之弧，匪寇婚媾。"] },
+    "天泽履":   { bin:[1,1,0,1,1,1], m:"履卦：履行、踩踏。伴君如伴虎，小心翼翼，按规矩办事可保无虞。", y:["初九：素履，往无咎。","九二：履道坦坦，幽人贞吉。","六三：眇能视，跛能履，履虎尾，咥人，凶。","九四：履虎尾，愬愬，终吉。","九五：夬履，贞厉。","上九：视履考祥，其旋元吉。"] },
+    "风泽中孚": { bin:[1,1,0,0,1,1], m:"中孚卦：诚信。内心诚实，可感化顽劣。测事主诚意沟通即可顺利。", y:["初九：虞吉，有它不燕。","九二：鸣鹤在阴，其子和之。我有好爵，吾与尔靡之。","六三：得敌，或鼓或罢，或泣或歌。","六四：月几望，马匹亡，无咎。","九五：有孚挛如，无咎。","上九：翰音登于天，贞凶。"] },
+    "风山渐":   { bin:[0,0,1,0,1,1], m:"渐卦：循序渐进。如大雁飞行，按部就班，忌急功近利。", y:["初六：鸿渐于干，小子厉，有言，无咎。","六二：鸿渐于磐，饮食衎衎，吉。","九三：鸿渐于陆，夫征不复，妇孕不育，凶；利御寇。","六四：鸿渐于木，或得其桷，无咎。","九五：鸿渐于陵，妇三岁不孕，终莫之胜，吉。","上九：鸿渐于陆，其羽可用为仪，吉。"] },
+    // --- 震宫 ---
+    "震为雷":   { bin:[1,0,0,1,0,0], m:"震卦：震动、惊惧。雷声惊人，起初恐慌，后可转危为安，主变动。", y:["初九：震来虩虩，后笑言哑哑，吉。","六二：震来厉，亿丧贝，跻于九陵，勿逐，七日得。","六三：震苏苏，震行无眚。","九四：震遂泥。","六五：震往来厉，亿无丧，有事。","上六：震索索，视矍矍，征凶。震不于其躬，于其邻，无咎。"] },
+    "雷地豫":   { bin:[0,0,0,1,0,0], m:"豫卦：欢愉、怠惰。顺应天时，和乐融融。但也需防沉溺安乐。", y:["初六：鸣豫，凶。","六二：介于石，不终日，贞吉。","六三：盱豫，悔。迟有悔。","九四：由豫，大有得。勿疑。朋盍簪。","六五：贞疾，恒不死。","上六：冥豫，成有渝，无咎。"] },
+    "雷水解":   { bin:[0,1,0,1,0,0], m:"解卦：解除、化解。冰雪消融，困难得解，宜抓住时机行动。", y:["初六：无咎。","九二：田获三狐，得黄矢，贞吉。","六三：负且乘，致寇至，贞吝。","九四：解而拇，朋至斯孚。","六五：君子维有解，吉；有孚于小人。","上六：公用射隼于高墉之上，获之，无不利。"] },
+    "雷风恒":   { bin:[0,1,1,1,0,0], m:"恒卦：长久、永恒。持之以恒，坚守正道，婚姻感情多主长久稳固。", y:["初六：浚恒，贞凶，无攸往。","九二：悔亡。","九三：不恒其德，或承之羞，贞吝。","九四：田无禽。","六五：恒其德，贞，妇人吉，夫子凶。","上六：振恒，凶。"] },
+    "地风升":   { bin:[0,1,1,0,0,0], m:"升卦：上升、步步高升。木生于地，逐渐长高。利于求职、学业。", y:["初六：允升，大吉。","九二：孚乃利用禴，无咎。","九三：升虚邑。","六四：王用亨于岐山，吉无咎。","六五：贞吉，升阶。","上六：冥升，利于不息之贞。"] },
+    "水风井":   { bin:[0,1,1,0,1,0], m:"井卦：水井、源泉。养民之源，改邑不改井。需修德反省，静待时机。", y:["初六：井泥不食，旧井无禽。","九二：井谷射鲋，瓮敝漏。","九三：井渫不食，为我心恻，可用汲，王明，并受其福。","六四：井甃，无咎。","九五：井冽，寒泉食。","上六：井收勿幕，有孚元吉。"] },
+    "泽风大过": { bin:[0,1,1,1,1,0], m:"大过卦：非常行动、本末倒置。压力过大，需采取非凡手段度过危机。", y:["初六：藉用白茅，无咎。","九二：枯杨生稊，老夫得其女妻，无不利。","九三：栋桡，凶。","九四：栋隆，吉；有它吝。","九五：枯杨生华，老妇得其士夫，无咎无誉。","上六：过涉灭顶，凶，无咎。"] },
+    "泽雷随":   { bin:[1,0,0,1,1,0], m:"随卦：随和、顺从。顺势而为，不可固执己见，退一步海阔天空。", y:["初九：官有渝，贞吉。出门交有功。","六二：系小子，失丈夫。","六三：系丈夫，失小子。随有求得，利居贞。","九四：随有获，贞凶。有孚在道，以明，何咎。","九五：孚于嘉，吉。","上六：拘系之，乃从维之。王用亨于西山。"] },
+    // --- 巽宫 ---
+    "巽为风":   { bin:[0,1,1,0,1,1], m:"巽卦：顺从、风。无孔不入，柔顺变通。测事有随风飘摇、不确定之象。", y:["初六：进退，利武人之贞。","九二：巽在床下，用史巫纷若，吉无咎。","九三：频巽，吝。","六四：悔亡，田获三品。","九五：贞吉悔亡，无不利。无初有终，先庚三日，后庚三日，吉。","上九：巽在床下，丧其资斧，贞凶。"] },
+    "风天小畜": { bin:[1,1,1,0,1,1], m:"小畜卦：小的积蓄、阻碍。力量单薄，密云不雨，只能做小的准备。", y:["初九：复自道，何其咎，吉。","九二：牵复，吉。","九三：舆说輹，夫妻反目。","六四：有孚，血去惕出，无咎。","九五：有孚挛如，富以其邻。","上九：既雨既处，尚德载，妇贞厉。月几望，君子征凶。"] },
+    "风火家人": { bin:[1,0,1,0,1,1], m:"家人卦：家庭、内部。齐家治国，女主内。宜处理好内部团队或家庭关系。", y:["初九：闲有家，悔亡。","六二：无攸遂，在中馈，贞吉。","九三：家人嗃嗃，悔厉吉；妇子嘻嘻，终吝。","六四：富家，大吉。","九五：王假有家，交相恤，吉。","上九：有孚威如，终吉。"] },
+    "风雷益":   { bin:[1,0,0,0,1,1], m:"益卦：增益、受益。损上益下，利人利己，抓住机遇大展宏图。", y:["初九：利用为大作，元吉，无咎。","六二：或益之，十朋之龟弗克违，永贞吉。","六三：益之用凶事，无咎。有孚中行，告公用圭。","六四：中行，告公从。利用为依迁国。","九五：有孚惠心，勿问元吉。有孚惠我德。","上九：莫益之，或击之，立心勿恒，凶。"] },
+    "天雷无妄": { bin:[1,0,0,1,1,1], m:"无妄卦：不虚妄、意外。顺应天道，切忌非分之想。有突发横事之象。", y:["初九：无妄，往吉。","六二：不耕获，不菑畲，则利有攸往。","六三：无妄之灾，或系之牛，行人之得，邑人之灾。","九四：可贞，无咎。","九五：无妄之疾，勿药有喜。","上九：无妄，行有眚，无攸利。"] },
+    "火雷噬嗑": { bin:[1,0,0,1,0,1], m:"噬嗑卦：咬合、刑罚。有阻碍必须咬碎，需以强硬手段明察秋毫去解决。", y:["初九：屦校灭趾，无咎。","六二：噬肤灭鼻，无咎。","六三：噬腊肉，遇毒；小吝，无咎。","九四：噬干胏，得金矢，利艰贞，吉。","六五：噬干肉，得黄金，贞厉，无咎。","上九：何校灭耳，凶。"] },
+    "山雷颐":   { bin:[1,0,0,0,0,1], m:"颐卦：颐养、饮食。修身养性，注意祸从口出、病从口入。", y:["初九：舍尔灵龟，观我朵颐，凶。","六二：颠颐，拂经，于丘颐，征凶。","六三：拂颐，贞凶，十年勿用，无攸利。","六四：颠颐，吉。虎视眈眈，其欲逐逐，无咎。","六五：拂经，居贞吉，不可涉大川。","上九：由颐，厉吉，利涉大川。"] },
+    "山风蛊":   { bin:[0,1,1,0,0,1], m:"蛊卦：腐败、整顿。内部已经腐坏，必须大刀阔斧进行改革除弊。", y:["初六：干父之蛊，有子，考无咎，厉终吉。","九二：干母之蛊，不可贞。","九三：干父之蛊，小有悔，无大咎。","六四：裕父之蛊，往见吝。","六五：干父之蛊，用誉。","上九：不事王侯，高尚其事。"] },
+    // --- 离宫 ---
+    "离为火":   { bin:[1,0,1,1,0,1], m:"离卦：附着、光明。如同火焰需附着于薪，测事需有依托，不可好高骛远。", y:["初九：履错然，敬之无咎。","六二：黄离，元吉。","九三：日昃之离，不鼓缶而歌，则大耋之嗟，凶。","九四：突如其来如，焚如，死如，弃如。","六五：出涕沱若，戚嗟若，吉。","上九：王用出征，有嘉折首，获匪其丑，无咎。"] },
+    "火山旅":   { bin:[0,0,1,1,0,1], m:"旅卦：旅行、羁旅。漂泊在外，失去依靠，行事当委曲求全，难成大事。", y:["初六：旅琐琐，斯其所取灾。","六二：旅即次，怀其资，得童仆贞。","九三：旅焚其次，丧其童仆，贞厉。","九四：旅于处，得其资斧，我心不快。","六五：射雉一矢亡，终以誉命。","上九：鸟焚其巢，旅人先笑后号啕。丧牛于易，凶。"] },
+    "火风鼎":   { bin:[0,1,1,1,0,1], m:"鼎卦：革故鼎新。打破旧局建立新制，大吉之象，利合作与三人同行。", y:["初六：鼎颠趾，利出否，得妾以其子，无咎。","九二：鼎有实，我仇有疾，不我能即，吉。","九三：鼎耳革，其行塞，雉膏不食，方雨亏悔，终吉。","九四：鼎折足，覆公餗，其形渥，凶。","六五：鼎黄耳金铉，利贞。","上九：鼎玉铉，大吉，无不利。"] },
+    "火水未济": { bin:[0,1,0,1,0,1], m:"未济卦：尚未成功。阴阳失调，但未来充满无限可能，需保持谨慎。", y:["初六：濡其尾，吝。","九二：曳其轮，贞吉。","六三：未济，征凶，利涉大川。","九四：贞吉，悔亡，震用伐鬼方，三年有赏于大国。","六五：贞吉，无悔，君子之光，有孚，吉。","上九：有孚于饮酒，无咎，濡其首，有孚失是。"] },
+    "山水蒙":   { bin:[0,1,0,0,0,1], m:"蒙卦：启蒙、蒙昧。前方迷茫未知，需虚心求教于长者智者。", y:["初六：发蒙，利用刑人，用说桎梏，以往吝。","九二：包蒙，吉；纳妇吉；子克家。","六三：勿用取女，见金夫，不有躬，无攸利。","六四：困蒙，吝。","六五：童蒙，吉。","上九：击蒙，不利为寇，利御寇。"] },
