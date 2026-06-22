@@ -37,17 +37,10 @@
         
         .category-bar { background: #4A81B0; color: #FFFFFF; font-weight: bold; padding: 8px 14px; font-size: 15px; border: 1px solid #2B5E8A; border-bottom: none; }
         .forum-table { width: 100%; border-collapse: collapse; margin-bottom: 22px; border: 1px solid #A6CBE7; background-color: #FFF; }
-        .forum-table th { background-color: #F0F5FA; border-bottom: 1px solid #A6CBE7; padding: 8px 10px; color: #333; font-weight: normal; text-align: left; }
-        .forum-table td { border-bottom: 1px solid #E2E8F1; padding: 12px 10px; vertical-align: top; }
+        .forum-table th { background-color: #F0F5FA; border-bottom: 1px solid #A6CBE7; padding: 8px 15px; color: #333; font-weight: normal; text-align: left; }
+        .forum-table td { border-bottom: 1px solid #E2E8F1; padding: 15px; vertical-align: top; }
         .forum-row-alt { background-color: #F9FBFE; }
         .forum-table tr:hover { background-color: #F0F5FA; }
-        
-        .icon-envelope { width: 34px; text-align: center; vertical-align: middle !important; }
-        .icon-box { width: 20px; height: 18px; background-color: #FFCC00; border: 1px solid #D4A800; display: inline-block; position: relative; }
-        .icon-box::before { content: ''; position: absolute; top: 0; left: 0; border-width: 9px 10px 0 10px; border-style: solid; border-color: #FFF transparent transparent transparent; }
-        .icon-box-gray { background-color: #E0E0E0; border: 1px solid #A0A0A0; }
-        .icon-box-hot { background-color: #FF6600; border: 1px solid #CC3300; }
-        .icon-box-lock { background-color: #666; border: 1px solid #333; }
         
         .thread-title { font-size: 16px; font-family: SimSun, sans-serif; cursor: pointer; }
         .forum-desc { color: #666; font-size: 13px; margin-top: 6px; line-height: 1.6; }
@@ -114,12 +107,11 @@
     <div class="category-bar">区域 A：星火站务与校园综合公告栏</div>
     <table class="forum-table" cellpadding="0" cellspacing="0">
         <tr>
-            <th style="width: 55%;">版块主题</th>
+            <th style="width: 60%; padding-left: 15px;">版块主题</th>
             <th style="width: 15%; text-align: center;">统计</th>
-            <th style="width: 30%;">最后发表</th>
+            <th style="width: 25%;">最后发表</th>
         </tr>
         <tr class="forum-row-alt">
-            <td class="icon-envelope"><span class="icon-box icon-box-gray"></span></td>
             <td>
                 <a href="#" onclick="alert('日常公告区。')" class="thread-title bold">【图书馆】关于2007年暑假期间图书馆开馆时间及自习室安排的通知</a>
                 <div class="forum-desc">暑期留校考研的同学请注意，二楼自习室冷气开放时间调整为上午8点至晚上10点。</div>
@@ -130,7 +122,6 @@
             </td>
         </tr>
         <tr>
-            <td class="icon-envelope"><span class="icon-box icon-box-gray"></span></td>
             <td>
                 <a href="#" onclick="alert('日常公告区。')" class="thread-title bold">【学生处】关于做好2007届毕业生离校前宿舍安全清查的最后通牒</a>
                 <div class="forum-desc">请各学院辅导员注意，严查大四宿舍私接电线、违章使用热得快，以及私自拆解拼装废旧电脑主板等危险行为！</div>
@@ -141,7 +132,6 @@
             </td>
         </tr>
         <tr class="forum-row-alt">
-            <td class="icon-envelope"><span class="icon-box icon-box-gray"></span></td>
             <td>
                 <a href="#" onclick="alert('失物招领已过期。')" class="thread-title">[失物招领] 食堂二楼丢了一张饭卡，里面还有三百多块钱啊！急！</a>
                 <div class="forum-desc">卡套是周杰伦《依然范特西》的卡贴。捡到的同学请联系宿舍3栋402，请喝一个月冰红茶！</div>
@@ -156,19 +146,17 @@
     <div class="category-bar">区域 B: 技术流与前沿探索 (硬核玩家集散地)</div>
     <table class="forum-table" cellpadding="0" cellspacing="0">
         <tr class="forum-row-alt">
-            <td class="icon-envelope"><span class="icon-box icon-box-hot"></span></td>
-            <td>
+            <td style="width: 60%;">
                 <a href="#" class="thread-title bold blue locked-link" data-tid="3">「求助」主楼机房的集群服务器是不是中病毒了？底层一直弹乱码！</a>
                 <div class="forum-desc">昨晚在机房通宵挂程序跑计算，突然节点温度飙升，控制台全是非结构化ASCII码，散热风扇嗡嗡作响，感觉机房都要炸了。</div>
             </td>
-            <td style="text-align: center;" class="gray">主题: 24<br />贴数: 310</td>
-            <td>
+            <td style="width: 15%; text-align: center;" class="gray">主题: 24<br />贴数: 310</td>
+            <td style="width: 25%;">
                 <a href="#" class="bold red locked-link" data-tid="3">机房温度报警了！！</a><br />
                 <span class="gray">2007-06-11 11:02 <a href="#">05级_计科首席</a></span>
             </td>
         </tr>
         <tr>
-            <td class="icon-envelope"><span class="icon-box"></span></td>
             <td>
                 <a href="thread_hexagram.html" class="thread-title" style="color:#008000; font-weight:bold;">「脑洞」如果把高低电平（0和1）定义为阴阳，主板会变成八卦阵吗？</a>
                 <div class="forum-desc">设想：利用晶体管电子元器件的二进制状态，完美映射《易经》的六爻。我用JS写了个排盘小工具，你们跑跑看。</div>
@@ -179,7 +167,6 @@
             </td>
         </tr>
         <tr class="forum-row-alt">
-            <td class="icon-envelope"><span class="icon-box"></span></td>
             <td>
                 <a href="#" onclick="alert('附件已失效。')" class="thread-title">「资源」考前突击！05级微积分/线性代数历年期末考试真题打包下载</a>
                 <div class="forum-desc">下周就要期末考了，造福学弟学妹，附件是PDF格式，隐藏回复可见。拒绝伸手党，拿走请顶贴。</div>
@@ -190,7 +177,6 @@
             </td>
         </tr>
         <tr>
-            <td class="icon-envelope"><span class="icon-box icon-box-gray"></span></td>
             <td>
                 <a href="#" onclick="alert('神贴已沉。')" class="thread-title">「攒机」预算5000块，想配一台能玩魔兽世界的电脑，求硬件大神给个配置单</a>
                 <div class="forum-desc">显示器想要17寸纯平的，显卡听说七彩虹的不错？主要是为了备战TBC，求懂行的兄弟指点。</div>
@@ -205,19 +191,17 @@
     <div class="category-bar">区域 C：跳蚤市场与灌水乐园 (潜水与强势围观阵地)</div>
     <table class="forum-table" cellpadding="0" cellspacing="0">
         <tr>
-            <td class="icon-envelope"><span class="icon-box icon-box-hot"></span></td>
-            <td>
+            <td style="width: 60%;">
                 <a href="#" class="thread-title bold red locked-link" style="font-size:16px;" data-tid="1">[突发] 晕死！南门支巷废弃仓库冒浓烟了！保卫处的车都过去了！</a>
                 <div class="forum-desc">刚在网吧通宵出来买早饭，突然听见支巷深处轰的一声巨响，像是什么大电池爆了！最恐怖的是，卷帘门好像从里面被反锁卡死！有人在里面吗？！</div>
             </td>
-            <td style="text-align: center;" class="gray">主题: 104<br />贴数: 1420</td>
-            <td>
+            <td style="width: 15%; text-align: center;" class="gray">主题: 104<br />贴数: 1420</td>
+            <td style="width: 25%;">
                 <a href="#" class="bold red locked-link" data-tid="1">里面有惨叫声！！</a><br />
                 <span class="gray">2007-06-11 11:14 <a href="#">大半夜不睡觉</a></span>
             </td>
         </tr>
         <tr class="forum-row-alt">
-            <td class="icon-envelope"><span class="icon-box icon-box-lock"></span></td>
             <td>
                 <a href="#" class="thread-title bold locked-link" style="color: #660066;" data-tid="2">「招募」【未济小組】大四先锋行为艺术：废旧主板“火葬”仪式</a>
                 <div class="forum-desc">大四了，带不走的主板怎么处理？今晚午时（11点-13点）来南门外支巷废弃仓库，搞个硬核超度仪式，顺便跑一下网格集群计算测试。带上电子垃圾，不见不散。</div>
@@ -229,7 +213,6 @@
             </td>
         </tr>
         <tr>
-            <td class="icon-envelope"><span class="icon-box icon-box-gray"></span></td>
             <td>
                 <a href="thread_umbrella.html" class="thread-title">「情感」今晚在二食堂门口借给我半把伞的那个穿白裙子的女生，我想认识你</a>
                 <div class="forum-desc">雨下得好大，你把透明雨伞往我这边倾斜了一大半，自己肩膀都湿了。你的MP3里放着《不能说的秘密》，如果你逛BBS，请联系我。</div>
@@ -240,7 +223,6 @@
             </td>
         </tr>
         <tr class="forum-row-alt">
-            <td class="icon-envelope"><span class="icon-box icon-box-gray"></span></td>
             <td>
                 <a href="#" onclick="alert('灌水贴已被折叠。')" class="thread-title">「灌水」无聊，接龙贴，一人句周杰伦的歌词，看看能盖多高！</a>
                 <div class="forum-desc">我先来：为你弹奏萧邦的夜曲，纪念我死去的爱情~ （必须带上歌名哦）</div>
@@ -251,7 +233,6 @@
             </td>
         </tr>
         <tr>
-            <td class="icon-envelope"><span class="icon-box icon-box-gray"></span></td>
             <td>
                 <a href="thread_stock.html" class="thread-title">「股神」今天大盘冲击4000点！拿生活费满仓中石油，年底买车！</a>
                 <div class="forum-desc">寝室马上断电了，带不走的全部半卖半送！诺基亚N73只要800块，买手机送周杰伦《十一月的萧邦》正版CD。</div>
