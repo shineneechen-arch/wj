@@ -40,6 +40,7 @@
         /* 底部操作小抄，防止玩家忘记怎么唤醒键盘 */
         #mobile-tip { text-align: center; color: #555; font-size: 12px; margin-top: 25px; border-top: 1px dashed #222; padding-top: 10px; }
 
+        /* 移动端依赖的隐形核心组件 */
         #hidden-input {
             position: fixed; top: -100px; left: -100px;
             width: 1px; height: 1px; opacity: 0;
@@ -86,15 +87,16 @@
     let isAcceptingInput = false;
     let terminalState = "normal"; // normal, awaiting_code
 
+    // 全局点击聚焦，唤醒移动端键盘
     function focusTerminal() {
         if (isAcceptingInput) {
             hiddenInput.focus();
         }
     }
-
     document.addEventListener('click', focusTerminal);
     document.addEventListener('touchend', focusTerminal);
 
+    // 打字机核心动效
     async function typeLine(text, speed = 15, className = "output-line") {
         return new Promise(resolve => {
             const div = document.createElement('div');
@@ -130,7 +132,7 @@
 
     const sleep = ms => new Promise(r => setTimeout(r, ms));
 
-    // 开机引导引导
+    // 开机引导序列
     async function bootSequence() {
         await sleep(500);
         await typeLine("INITIALIZING DEEP CORE UPLINK...", 25);
@@ -155,7 +157,7 @@
         screenDiv.scrollTop = screenDiv.scrollHeight;
     }
 
-    // 实时同步输入内容
+    // 实时同步输入框内容到终端显示
     hiddenInput.addEventListener('input', function() {
         if (!isAcceptingInput) {
             hiddenInput.value = "";
@@ -164,6 +166,7 @@
         userInputSpan.innerText = hiddenInput.value;
     });
 
+    // 捕获回车事件执行指令
     hiddenInput.addEventListener('keydown', function(e) {
         if (!isAcceptingInput) return;
         if (e.key === "Enter") {
@@ -175,7 +178,7 @@
         }
     });
 
-    // 命令行核心控制区
+    // 命令行核心逻辑解析
     async function processCommand(cmd) {
         inputArea.style.display = 'none';
         isAcceptingInput = false;
@@ -254,7 +257,7 @@
         screenDiv.scrollTop = screenDiv.scrollHeight;
     }
 
-    // 进入死刑认证状态
+    // 进入最终死刑认证状态
     async function executePurge() {
         await typeLine("EXECUTING purge_protocol.exe ...", 15);
         await sleep(600);
@@ -279,7 +282,7 @@
         screenDiv.scrollTop = screenDiv.scrollHeight;
     }
 
-    // 终极断流
+    // 处理最后的致命指令与助手同声传译
     async function handleFinalCode(code) {
         if (code === "010101") {
             await typeLine("<br>VERIFYING ANCHOR CODE [010101] (HEXAGRAM 64: WEI JI) ...", 15);
@@ -292,22 +295,44 @@
             
             await typeLine("INJECTING LETHAL HASH RATE FROM 2026 CLIENT...", 5, "output-line system-red");
             await typeLine("GARBAGE COLLECTION RESUMED.", 5, "output-line system-red");
-            await typeLine("ENTITY 01 TERMINATED.", 0, "output-line system-red");
-            await typeLine("ENTITY 02 TERMINATED.", 0, "output-line system-red");
-            await typeLine("ENTITY 03 TERMINATED.", 0, "output-line system-red");
-            await typeLine("ENTITY 04 TERMINATED.", 0, "output-line system-red");
-            await typeLine("ENTITY 05 (WEI_JI) TERMINATED.", 0, "output-line system-red");
-            await typeLine("PHYSICAL ERASURE COMPLETE.", 5, "output-line system-red");
             
+            // 🌟 助手绝望的同声传译
+            await typeLine("================================================================", 0);
+            await typeLine("[时空连接器助手提示]：算力注入成功。阵法已重新启动。系统正在执行降维抹杀...", 0, "output-line system-yellow");
+            
+            await sleep(800);
+            await typeLine("ENTITY 01 TERMINATED.", 0, "output-line system-red");
+            await typeLine("<span class='system-yellow'>-> 助手翻译：实体 01（生命体征）已从当前维度剥离。</span>", 0);
+            
+            await sleep(600);
+            await typeLine("ENTITY 02 TERMINATED.", 0, "output-line system-red");
+            await typeLine("<span class='system-yellow'>-> 助手翻译：实体 02（生命体征）已物理碳化。</span>", 0);
+            
+            await sleep(600);
+            await typeLine("ENTITY 03 TERMINATED.", 0, "output-line system-red");
+            await typeLine("<span class='system-yellow'>-> 助手翻译：实体 03（生命体征）已被阵法完全吸收。</span>", 0);
+            
+            await sleep(600);
+            await typeLine("ENTITY 04 TERMINATED.", 0, "output-line system-red");
+            await typeLine("<span class='system-yellow'>-> 助手翻译：实体 04（生命体征）与硬件晶体管融合完毕。</span>", 0);
+            
+            await sleep(1500); // 留给未济最后的停顿
+            await typeLine("ENTITY 05 (WEI_JI) TERMINATED.", 0, "output-line system-red");
+            await typeLine("<span class='system-yellow'>-> 助手翻译：实体 05（权限所有者：未济）意识已上传至深地节点。</span>", 0);
+            await typeLine("================================================================", 0);
+
+            await sleep(1000);
+            await typeLine("PHYSICAL ERASURE COMPLETE.", 5, "output-line system-red");
             await sleep(1200);
             await typeLine("<br>DIMENSIONAL BRIDGE COLLAPSING... PREPARE FOR REALITY OVERWRITE.", 15);
             
-            await sleep(1500);
+            await sleep(2000);
             document.body.innerHTML = "<div style='height:100vh; display:flex; justify-content:center; align-items:center; background:#000; cursor:none;'><h1 style='color:white; font-family:sans-serif;'>CONNECTION LOST.</h1></div>";
             
+            // 无缝跳转至现代新闻页
             setTimeout(() => {
-                alert("【时空闭环已完成】\n19年前的底层数据已清空。\n2026年正在重写现实维度……（准备走向大结局新闻页）");
-            }, 2000);
+                window.location.href = "news_2026.html";
+            }, 2500);
 
         } else {
             // 终极代码输错纠错
@@ -321,6 +346,7 @@
         }
     }
 
+    // 启动系统
     window.onload = bootSequence;
 </script>
 </body>
