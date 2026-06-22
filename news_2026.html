@@ -248,15 +248,29 @@
         <p>目前，相关部门已将此区域实行最高级别封锁。19年前的悬案线索是否与本次事件有关，仍在进一步调查中。</p>
     </div>
 
-    <div class="comments">
+    <div class="comments" id="comments-section">
         <h3 style="margin-bottom:20px; border-bottom: 2px solid #000; display: inline-block; padding-bottom: 5px;">实时热评 <span id="comment-count">(3,482)</span></h3>
         
         <div id="comment-list">
             <div class="comment">
                 <div class="avatar"></div>
                 <div>
-                    <div class="name">深海观测者 <span class="time">3分钟前</span></div>
+                    <div class="name">吃瓜第一名 <span class="time">5分钟前</span></div>
+                    <div class="text">前排占座！瓜子矿泉水准备好了，蹲一个后续。</div>
+                </div>
+            </div>
+            <div class="comment">
+                <div class="avatar"></div>
+                <div>
+                    <div class="name">深海观测者 <span class="time">4分钟前</span></div>
                     <div class="text">这个事件和2007年那个南江大学失踪案绝对有关联！当年贴吧有人整理过时间线，说那几个学长在仓库搞阵法。</div>
+                </div>
+            </div>
+            <div class="comment">
+                <div class="avatar"></div>
+                <div>
+                    <div class="name">考研要上岸 <span class="time">2分钟前</span></div>
+                    <div class="text">天呐，我就在四川旁边的学校，刚刷着手机确实感觉台灯闪了一下！好吓人！</div>
                 </div>
             </div>
             <div class="comment">
@@ -280,7 +294,6 @@
         const hours = String(now.getHours()).padStart(2, '0');
         const minutes = String(now.getMinutes()).padStart(2, '0');
         const seconds = String(now.getSeconds()).padStart(2, '0');
-        // 将发布时间设置为玩家进网页的这一秒
         document.getElementById('dynamic-time').innerText = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
     }
     updateTime();
@@ -288,13 +301,14 @@
     // 2. 动态评论自动注入剧本
     const commentList = document.getElementById('comment-list');
     const commentCount = document.getElementById('comment-count');
+    const commentsSection = document.getElementById('comments-section');
     let baseCount = 3482;
 
     const dynamicComments = [
         { 
-            name: "地质工程师_林", 
+            name: "理智路人", 
             time: "刚刚", 
-            text: "从工程角度看，这种“中心坍缩”没有应力扩散过程，极其反常，完全违背热力学定律。" 
+            text: "楼上的别瞎猜了，什么降维打击科幻片看多了吧？八成就是当年工程队偷工减料地基没打好塌了而已。" 
         },
         { 
             name: "夜航数据分析员", 
@@ -302,19 +316,24 @@
             text: "如果把2007年的南江事件纳入模型，会发现时间线存在一个巨大的闭环缺口。到底是谁在今天给19年前下发了执行指令？" 
         },
         { 
-            name: "匿名黑客_7742", 
+            name: "南江19级学长", 
             time: "刚刚", 
-            text: "卧槽大新闻！！我刚才在深网的旧论坛镜像里，顺着这篇报道的IP溯源，找到了一个今天刚刚重启的 2026年南江大学BBS暗网节点！<br><a href='bbs_2026_home.html' class='bbs-link'>🔗 点击跳转：http://bbs.njdx-archive.edu/2026/</a>" 
+            text: "等等！！！你们快去看我们学校校友搞的那个‘星火BBS怀旧存档’网站！本来只是个留念用的静态网页，今天突然活了！！" 
         },
         { 
-            name: "吃瓜路人甲", 
+            name: "摸鱼达人", 
             time: "刚刚", 
-            text: "楼上nb！！链接我存了，马上去围观！！" 
+            text: "求网址求网址！打工人急需摸鱼素材！" 
         },
         { 
-            name: "代码搬运工", 
+            name: "南江19级学长", 
             time: "刚刚", 
-            text: "我也进去了，里面全是被屏蔽的乱码贴……等等，有人在后台改数据库权限！" 
+            text: "🔗 怀旧镜像站地址在这：<br><a href='bbs_2026_home.html' class='bbs-link'>http://bbs.njdx-archive.edu/2026/</a> <br>我刚进去看了，里面全是被屏蔽的乱码贴，感觉后台数据库正在被不知名的IP疯狂篡改！" 
+        },
+        { 
+            name: "半夜睡不着", 
+            time: "刚刚", 
+            text: "卧槽我点进去了，真的好诡异，版面一闪一闪的，感觉屏幕在盯着我看……不说了我先撤了有点背脊发凉。" 
         },
         { 
             name: "既济", 
@@ -331,7 +350,6 @@
         if (currentCommentIndex >= dynamicComments.length) return;
 
         const data = dynamicComments[currentCommentIndex];
-        
         const commentDiv = document.createElement('div');
         commentDiv.className = 'comment';
 
@@ -355,12 +373,10 @@
         }
 
         commentList.appendChild(commentDiv);
-        
-        // 更新评论数
         baseCount += 1;
         commentCount.innerText = `(${baseCount.toLocaleString()})`;
 
-        // 平滑滚动到页面最底部，强迫玩家看着评论刷出
+        // 仅在此时平滑滚动到底部
         window.scrollTo({
             top: document.body.scrollHeight,
             behavior: 'smooth'
@@ -368,18 +384,28 @@
 
         currentCommentIndex++;
 
-        // 如果已经刷出了最后一条恐怖评论，则永远停止更新
-        if (currentCommentIndex >= dynamicComments.length) {
-            return; 
+        if (currentCommentIndex < dynamicComments.length) {
+            const nextDelay = Math.floor(Math.random() * 2000) + 1500;
+            setTimeout(addNextComment, nextDelay);
         }
-
-        // 随机设定下一条评论出现的时间（2秒 ~ 4秒之间）
-        const nextDelay = Math.floor(Math.random() * 2000) + 2000;
-        setTimeout(addNextComment, nextDelay);
     }
 
-    // 页面加载 3 秒后，开始自动刷评论
-    setTimeout(addNextComment, 3000);
+    // 3. 监听玩家滚动，直到看到评论区才开始刷评论
+    let hasStartedComments = false;
+    const observer = new IntersectionObserver((entries) => {
+        // 当评论区进入视口（哪怕只有一点点）
+        if (entries[0].isIntersecting && !hasStartedComments) {
+            hasStartedComments = true;
+            // 等待1.5秒后，开始制造“有人正在发评论”的假象
+            setTimeout(addNextComment, 1500);
+            // 触发后取消观察，避免重复执行
+            observer.disconnect();
+        }
+    }, {
+        threshold: 0.1 // 评论区露出 10% 即可触发
+    });
+
+    observer.observe(commentsSection);
 
 </script>
 </body>
