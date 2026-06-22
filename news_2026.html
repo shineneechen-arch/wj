@@ -4,136 +4,74 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>突发！四川某深地数据中心异常坍塌事件调查 - 极昼新闻网</title>
+<title>突发！四川某深地老旧数据中心发生不明原因坍塌 - 极昼新闻网</title>
 
 <style>
-body{
-    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial;
-    background:#f7f9fa;
-    margin:0;
-    color:#1f2937;
-    line-height:1.7;
+body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background-color: #f7f9fa; color: #333; margin: 0; padding: 0; line-height: 1.6; }
+header { background-color: #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 100; }
+.nav-container { max-width: 1000px; margin: 0 auto; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
+.logo { font-size: 22px; font-weight: 900; color: #1a56db; }
+
+main { max-width: 800px; margin: 40px auto; background: #fff; padding: 40px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+
+.category { display: inline-block; background: #eef2ff; color: #1a56db; padding: 4px 10px; border-radius: 4px; font-size: 13px; }
+
+h1 { font-size: 32px; font-weight: 800; }
+
+.meta-info { display:flex; font-size:14px; color:#888; margin-bottom:20px; }
+
+.article-content { font-size:18px; line-height:1.8; }
+
+.quote-block { border-left:4px solid #1a56db; background:#f9fafb; padding:15px; margin:25px 0; }
+
+.image-placeholder { height:350px; background:#e5e7eb; display:flex; justify-content:center; align-items:center; }
+
+.comments-section { margin-top:50px; border-top:2px solid #eee; padding-top:30px; }
+
+.comment { display:flex; margin-bottom:18px; }
+
+.avatar { width:40px; height:40px; border-radius:50%; background:#d1d5db; margin-right:15px; }
+
+.comment-name { font-weight:bold; font-size:14px; }
+
+.comment-text { font-size:15px; color:#444; }
+
+/* =========================
+   🔴 未济跨时间悬浮体（新增）
+========================= */
+#weiji-overlay{
+    position:fixed;
+    right:25px;
+    bottom:35px;
+    z-index:99999;
+    background:rgba(0,0,0,0.85);
+    color:#ff2d2d;
+    border:1px solid #ff2d2d;
+    padding:14px 18px;
+    font-weight:900;
+    font-size:16px;
+    font-family:SimSun;
+    animation:blink 1.3s infinite;
 }
 
-/* 顶部 */
-header{
-    background:#fff;
-    position:sticky;
-    top:0;
-    box-shadow:0 1px 4px rgba(0,0,0,0.06);
+@keyframes blink{
+    50%{opacity:0.25;}
 }
 
-.nav{
-    max-width:900px;
-    margin:auto;
-    padding:12px 20px;
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-}
-
-.logo{
-    font-weight:800;
-    color:#1d4ed8;
-}
-
-/* 主体 */
-main{
-    max-width:820px;
-    margin:30px auto;
-    background:#fff;
-    padding:32px;
-    border-radius:8px;
-    box-shadow:0 2px 10px rgba(0,0,0,0.05);
-}
-
-/* 标题 */
-h1{
-    font-size:26px;
-    margin-bottom:10px;
-    line-height:1.4;
-}
-
-/* 分类 */
-.tag{
-    display:inline-block;
-    font-size:12px;
-    color:#1d4ed8;
-    background:#e0e7ff;
-    padding:3px 8px;
-    border-radius:4px;
-    margin-bottom:10px;
-}
-
-/* 元信息 */
-.meta{
-    font-size:13px;
-    color:#6b7280;
-    margin-bottom:18px;
-    border-bottom:1px solid #eee;
-    padding-bottom:12px;
-}
-
-/* 正文 */
-.content{
-    font-size:15px;
-    line-height:1.75;
-}
-
-.quote{
-    border-left:3px solid #2563eb;
-    background:#f9fafb;
-    padding:12px 14px;
-    font-size:14px;
-    color:#4b5563;
-    margin:18px 0;
-}
-
-/* 图片占位 */
-.img{
-    height:260px;
-    background:#e5e7eb;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    color:#9ca3af;
-    margin:20px 0;
+/* =========================
+   📂 可展开BBS入口样式（新增）
+========================= */
+details.bbs-entry{
+    margin-top:20px;
+    background:#f8fafc;
+    border:1px solid #e5e7eb;
+    padding:12px;
     border-radius:6px;
 }
 
-/* 评论区 */
-.comments{
-    margin-top:40px;
-    border-top:1px solid #eee;
-    padding-top:20px;
-}
-
-.comment{
-    display:flex;
-    margin-bottom:14px;
-}
-
-.avatar{
-    width:34px;
-    height:34px;
-    border-radius:50%;
-    background:#d1d5db;
-    margin-right:10px;
-}
-
-.name{
-    font-size:13px;
-    font-weight:600;
-}
-
-.text{
-    font-size:14px;
-    color:#374151;
-}
-
-/* 隐藏入口链接 */
-.secret-link{
-    font-weight:600;
+details.bbs-entry summary{
+    cursor:pointer;
+    font-weight:700;
     color:#1d4ed8;
 }
 </style>
@@ -141,75 +79,112 @@ h1{
 
 <body>
 
+<div class="glitch-overlay" id="glitch-effect"></div>
+
 <header>
-    <div class="nav">
-        <div class="logo">极昼新闻网</div>
-        <div style="font-size:13px;color:#666;">深度调查 · 权威报道</div>
+    <div class="nav-container">
+        <div class="logo">极昼新闻 (PolarDay)</div>
+        <div class="nav-links">
+            <a href="#">首页</a>
+            <a href="#">国内突发</a>
+            <a href="#">科技前沿</a>
+        </div>
     </div>
 </header>
 
 <main>
 
-<div class="tag">突发 / 深地设施异常</div>
+<div class="category">突发新闻 / 深度报道</div>
 
-<h1>突发！四川某深地老旧数据中心发生结构性坍塌，核心区域发现异常晶体反应</h1>
+<h1>突发！四川某深地老旧数据中心发生不明原因坍塌，核心区域惊现未知结晶体</h1>
 
-<div class="meta">
-首席记者：林晓 ｜ 发布时间：<span id="t">加载中...</span> ｜ 来源：国家地质灾害联合监测中心 / 极昼新闻联合调查组
+<div class="meta-info">
+<span class="author">极昼新闻 首席记者：林晓</span>
+<span>阅读量：14.2 万</span>
 </div>
 
-<div class="content">
+<div class="article-content">
 
-<p>据联合调查组最新通报，位于四川山区深层的一座代号为 <b>SC_DEEP_NODE</b> 的废弃数据中心在无自然地震条件下发生结构性坍塌。</p>
+<p><strong>【极昼新闻网 独家报道】</strong> 深地数据中心发生结构性异常坍塌。</p>
 
-<p>现场监测显示，所有异常能量来源均集中于机房核心计算区域，而外围结构几乎无损。</p>
-
-<div class="quote">
-“我们无法用现有工程学模型解释该现象。部分服务器在瞬间进入极端热态，但周围环境却保持稳定。”
-——匿名地质工程专家
+<div class="quote-block">
+“现场物理结构呈现非标准熔融状态。”
 </div>
 
-<div class="img">[ 机房核心区域扫描图已加密处理 ]</div>
+<div class="image-placeholder">[ 图片已被网安部门审查并替换 ]</div>
 
-<p>更为异常的是，在熔毁机柜残骸中检测到大量未知晶体结构，其组成与传统硅基材料存在明显差异。</p>
+<p>救援人员在核心区域发现未知晶体结构与异常有机残留。</p>
 
-<p>调查人员同时提取到一段异常残留数据，其签名时间显示为：</p>
+<p><b>时间戳异常指向：2007年南江大学南门外支巷废弃仓库事件。</b></p>
 
-<p style="font-weight:600;">2007年6月 · 南江大学南门外支巷废弃仓库</p>
+<!-- =========================
+     📂 可展开隐藏BBS入口（新增）
+========================= -->
+<details class="bbs-entry">
+<summary>展开查看：跨时间论坛残留数据（2026南江大学BBS）</summary>
 
-<p>该时间点与19年前一宗未解校园失踪事件高度重合。</p>
+<p style="margin-top:10px;">
+系统检测到一个未归档的旧论坛节点缓存：
+</p>
 
-<p>在数据恢复过程中，系统意外访问到一个跨时间维度的旧论坛节点缓存。</p>
-
-<p style="text-align:center;">
-<a class="secret-link" href="bbs_2026_index.html">
-👉 点击访问：2026年南江大学BBS存档入口
+<p>
+<a href="bbs_2026_index.html" style="font-weight:bold;color:#d62828;">
+👉 访问：2026年南江大学BBS首页（残留镜像）
 </a>
 </p>
 
+<p style="color:#6b7280;font-size:13px;">
+状态：非活跃节点 / 可能存在跨时间回响
+</p>
+
+</details>
+
 </div>
 
-<div class="comments">
+<!-- =========================
+     💬 评论区（增强真实感）
+========================= -->
+<div class="comments-section">
 
-<h3>最新评论（804）</h3>
+<h3>最新评论 (1,042)</h3>
 
 <div class="comment">
 <div class="avatar"></div>
 <div>
-<div class="name">深海记录者</div>
-<div class="text">
-我在2026年的南江大学BBS里见过类似档案……当时以为是都市传说，现在看来像是同一事件闭环。
-</div>
+<div class="comment-name">深海的鱼_1998</div>
+<div class="comment-text">这个案子我当年在天涯追过……但2026年居然还能看到关联数据？</div>
 </div>
 </div>
 
 <div class="comment">
 <div class="avatar"></div>
 <div>
-<div class="name">数据工程师-夜航</div>
-<div class="text">
-如果那个BBS还在线，那说明这个系统并没有真正“结束”。
+<div class="comment-name">代码搬砖工</div>
+<div class="comment-text">如果这是信息闭环，那是不是说明结果早就写好了？</div>
 </div>
+</div>
+
+<div class="comment">
+<div class="avatar"></div>
+<div>
+<div class="comment-name">地质观测员_L</div>
+<div class="comment-text">我们在现场没有发现任何外力破坏痕迹，像是结构自己“消失”了。</div>
+</div>
+</div>
+
+<div class="comment">
+<div class="avatar"></div>
+<div>
+<div class="comment-name">匿名用户_7721</div>
+<div class="comment-text">刚才那个“2026南江大学BBS”链接有人点进去了吗？我打不开了。</div>
+</div>
+</div>
+
+<div class="comment">
+<div class="avatar"></div>
+<div>
+<div class="comment-name">旧论坛存档员</div>
+<div class="comment-text">我在缓存里看到一个用户ID：未济……状态显示“跨时间在线”。</div>
 </div>
 </div>
 
@@ -217,14 +192,12 @@ h1{
 
 </main>
 
-<script>
-// 时间（更权威：精确时间）
-const d = new Date();
-d.setMinutes(d.getMinutes() - 4);
-
-document.getElementById("t").innerText =
-d.toISOString().replace("T"," ").substring(0,19);
-</script>
+<!-- =========================
+     🔴 未济跨时间悬浮体（新增）
+========================= -->
+<div id="weiji-overlay">
+未济：谢谢你，帮我们完成了闭环。
+</div>
 
 </body>
 </html>
