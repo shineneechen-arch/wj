@@ -12,11 +12,11 @@
             overflow: hidden;
         }
         
-        /* 老式 CRT 显示器效果 */
+        /* CRT 屏幕微特效 */
         #crt-screen {
             position: relative; width: 100%; height: 100%; padding: 20px; box-sizing: border-box;
             overflow-y: auto; text-shadow: 0 0 5px rgba(0, 255, 0, 0.5);
-            -webkit-overflow-scrolling: touch; /* 优化移动端滚动 */
+            -webkit-overflow-scrolling: touch;
         }
         #crt-screen::before {
             content: " "; display: block; position: fixed; top: 0; left: 0; bottom: 0; right: 0;
@@ -24,41 +24,35 @@
             z-index: 2; background-size: 100% 2px, 3px 100%; pointer-events: none;
         }
 
-        .output-line { margin: 5px 0; line-height: 1.4; word-wrap: break-word; font-size: 14px; }
+        .output-line { margin: 6px 0; line-height: 1.5; word-wrap: break-word; font-size: 14px; }
         .system-red { color: #ff0000; text-shadow: 0 0 10px #ff0000; font-weight: bold; }
-        .system-yellow { color: #ffcc00; }
+        .system-yellow { color: #ffcc00; font-weight: bold; text-shadow: 0 0 5px rgba(255,204,0,0.5); }
+        .system-white { color: #ffffff; font-weight: bold; }
         
-        /* 命令行输入区 */
-        #input-area { display: none; margin-top: 10px; }
+        /* 交互输入区 */
+        #input-area { display: none; margin-top: 15px; }
         .prompt { color: #0f0; margin-right: 10px; font-weight: bold; font-size: 14px; }
-        #user-input { color: #0f0; white-space: pre-wrap; word-wrap: break-word; font-size: 14px; }
+        #user-input { color: #fff; white-space: pre-wrap; word-wrap: break-word; font-size: 14px; font-weight: bold; background: rgba(255,255,255,0.1); padding: 2px 4px; }
         .cursor { display: inline-block; width: 8px; height: 15px; background-color: #0f0; animation: blink 1s step-end infinite; vertical-align: middle; }
         
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
 
-        /* 移动端专属提示（提示玩家点击屏幕唤醒键盘） */
-        #mobile-tip { display: none; text-align: center; color: #888; font-size: 12px; margin-top: 20px; border: 1px dashed #333; padding: 8px; }
-        @media (max-width: 768px) { #mobile-tip { display: block; } }
+        /* 底部操作小抄，防止玩家忘记怎么唤醒键盘 */
+        #mobile-tip { text-align: center; color: #555; font-size: 12px; margin-top: 25px; border-top: 1px dashed #222; padding-top: 10px; }
 
-        /* 隐形核心：潜伏在底层的隐藏输入框 */
         #hidden-input {
-            position: fixed;
-            top: -100px; left: -100px; /* 彻底移出可视区 */
-            width: 1px; height: 1px;
-            opacity: 0;
-            background: transparent; border: none; outline: none;
-            z-index: -1;
+            position: fixed; top: -100px; left: -100px;
+            width: 1px; height: 1px; opacity: 0;
+            background: transparent; border: none; outline: none; z-index: -1;
         }
 
-        /* 崩溃全屏晃动动效 */
+        /* 震动崩溃动画 */
         .fatal-crash { animation: screen-shake 0.1s infinite, color-invert 0.2s infinite; }
         @keyframes screen-shake {
             0% { transform: translate(2px, 1px) rotate(0deg); }
             10% { transform: translate(-1px, -2px) rotate(-1deg); }
             20% { transform: translate(-3px, 0px) rotate(1deg); }
             30% { transform: translate(0px, 2px) rotate(0deg); }
-            40% { transform: translate(1px, -1px) rotate(1deg); }
-            50% { transform: translate(-1px, 2px) rotate(-1deg); }
             100% { transform: translate(1px, -2px) rotate(-1deg); }
         }
         @keyframes color-invert {
@@ -77,7 +71,7 @@
     <div id="input-area">
         <span class="prompt" id="terminal-prompt">root@SC_DEEP_NODE:~#</span>
         <span id="user-input"></span><span class="cursor"></span>
-        <div id="mobile-tip">💡 移动端若未弹出键盘，请点击屏幕任意位置</div>
+        <div id="mobile-tip">💡 电脑端直接键盘输入 / 移动端请点击屏幕任意位置唤醒键盘</div>
     </div>
 </div>
 
@@ -90,21 +84,18 @@
     const promptSpan = document.getElementById('terminal-prompt');
 
     let isAcceptingInput = false;
-    let terminalState = "normal"; // "normal" or "awaiting_code"
+    let terminalState = "normal"; // normal, awaiting_code
 
-    // 自动聚焦函数
     function focusTerminal() {
         if (isAcceptingInput) {
             hiddenInput.focus();
         }
     }
 
-    // 点击屏幕任意位置，强行唤醒移动端虚拟键盘
     document.addEventListener('click', focusTerminal);
     document.addEventListener('touchend', focusTerminal);
 
-    // 打字机效果输出
-    async function typeLine(text, speed = 20, className = "output-line") {
+    async function typeLine(text, speed = 15, className = "output-line") {
         return new Promise(resolve => {
             const div = document.createElement('div');
             div.className = className;
@@ -128,7 +119,7 @@
                         i++;
                     }
                     screenDiv.scrollTop = screenDiv.scrollHeight;
-                    setTimeout(typeChar, speed + Math.random() * 15);
+                    setTimeout(typeChar, speed + Math.random() * 10);
                 } else {
                     resolve();
                 }
@@ -139,41 +130,42 @@
 
     const sleep = ms => new Promise(r => setTimeout(r, ms));
 
-    // 开机序列
+    // 开机引导引导
     async function bootSequence() {
         await sleep(500);
-        await typeLine("INITIALIZING DEEP CORE UPLINK...", 30);
-        await sleep(400);
-        await typeLine("BYPASSING TEMPORAL FIREWALL (19 YEARS LATENCY)... [OK]", 10);
+        await typeLine("INITIALIZING DEEP CORE UPLINK...", 25);
         await sleep(300);
-        await typeLine("ESTABLISHING CONNECTION TO: SICHUAN DEEP EARTH MAINFRAME... [OK]", 10);
-        await sleep(600);
-        await typeLine("<br>WARNING: GARBAGE COLLECTION PROTOCOL PAUSED IN SECTOR [NANJIANG_UNIV].", 10, "output-line system-yellow");
-        await typeLine("REASON: INSUFFICIENT DIMENSIONAL HASH RATE.", 10, "output-line system-red");
-        await typeLine("TYPE <span style='color:#fff'>help</span> TO VIEW AVAILABLE COMMANDS.<br>", 0);
+        await typeLine("BYPASSING TEMPORAL FIREWALL (19 YEARS LATENCY)... [OK]", 5);
+        await sleep(200);
+        await typeLine("ESTABLISHING CONNECTION TO: SICHUAN DEEP EARTH MAINFRAME... [OK]", 5);
+        await sleep(500);
+        await typeLine("<br>WARNING: GARBAGE COLLECTION PROTOCOL PAUSED IN SECTOR [NANJIANG_UNIV].", 5, "output-line system-yellow");
+        await typeLine("REASON: INSUFFICIENT DIMENSIONAL HASH RATE.", 5, "output-line system-red");
         
-        // 唤醒输入状态
+        // 🌟 小白保姆级第一步引导
+        await typeLine("<br>================================================================", 0);
+        await typeLine("[时空连接器助手提示]：", 0, "output-line system-yellow");
+        await typeLine("现在需要查看服务器目录下的隐藏文件。请在光标处输入 <span class='system-white'>ls</span> 并按下键盘上的<span class='system-white'>回车键(Enter)</span>。", 0);
+        await typeLine("================================================================", 0);
+        
         inputArea.style.display = 'block';
         isAcceptingInput = true;
         hiddenInput.value = "";
-        hiddenInput.focus(); // 自动尝试拉起键盘
+        hiddenInput.focus();
         screenDiv.scrollTop = screenDiv.scrollHeight;
     }
 
-    // 核心重构：监听隐藏输入框的内容变动（完美适配移动端输入和删除）
+    // 实时同步输入内容
     hiddenInput.addEventListener('input', function() {
         if (!isAcceptingInput) {
             hiddenInput.value = "";
             return;
         }
-        // 实时同步数据到自定义终端上
         userInputSpan.innerText = hiddenInput.value;
     });
 
-    // 捕获回车键
     hiddenInput.addEventListener('keydown', function(e) {
         if (!isAcceptingInput) return;
-        
         if (e.key === "Enter") {
             e.preventDefault();
             let cmd = hiddenInput.value;
@@ -183,7 +175,7 @@
         }
     });
 
-    // 处理命令行逻辑
+    // 命令行核心控制区
     async function processCommand(cmd) {
         inputArea.style.display = 'none';
         isAcceptingInput = false;
@@ -191,56 +183,69 @@
         let currentPrompt = promptSpan.innerText;
         await typeLine(`<span class="prompt">${currentPrompt}</span> ${cmd}`, 0);
         
-        cmd = cmd.trim().toLowerCase();
+        let cleanedCmd = cmd.trim().toLowerCase();
         
         if (terminalState === "awaiting_code") {
-            await handleFinalCode(cmd);
+            await handleFinalCode(cleanedCmd);
             return;
         }
 
-        switch(cmd) {
+        switch(cleanedCmd) {
             case "":
                 break;
             case "help":
-                await typeLine("AVAILABLE COMMANDS:", 10);
-                await typeLine("  ls       - List directory contents", 10);
-                await typeLine("  cat      - Read file (Usage: cat [filename])", 10);
-                await typeLine("  clear    - Clear terminal screen", 10);
-                await typeLine("  run      - Execute binary (Usage: run [filename])", 10);
+                await typeLine("AVAILABLE COMMANDS:", 5);
+                await typeLine("  ls       - List directory contents", 5);
+                await typeLine("  cat      - Read file (Usage: cat [filename])", 5);
+                await typeLine("  run      - Execute binary (Usage: run [filename])", 5);
                 break;
             case "ls":
             case "dir":
-                await typeLine("nexus_sys_log.txt &nbsp;&nbsp;&nbsp; 14 KB", 5);
-                await typeLine("soul_dump_0x1A.bin &nbsp;&nbsp; 8.4 GB", 5);
-                await typeLine("<span class='system-red'>purge_protocol.exe</span> &nbsp;&nbsp; 64 KB", 5);
+                await typeLine("nexus_sys_log.txt &nbsp;&nbsp;&nbsp; 14 KB &nbsp;&nbsp; [ 原始机房核心数据日志 ]", 5);
+                await typeLine("soul_dump_0x1A.bin &nbsp;&nbsp; 8.4 GB &nbsp;&nbsp; [ 异常非结构化乱码块 ]", 5);
+                await typeLine("<span class='system-red'>purge_protocol.exe</span> &nbsp;&nbsp; 64 KB &nbsp;&nbsp; [ 待完结的降维清算程序 ]", 5);
+                
+                // 🌟 小白保姆级第二步引导
+                await typeLine("<br>================================================================", 0);
+                await typeLine("[时空连接器助手提示]：", 0, "output-line system-yellow");
+                await typeLine("文件列表已列出。可以先读取核心日志。请在光标处输入：<br><span class='system-white'>cat nexus_sys_log.txt</span> 并按下<span class='system-white'>回车键(Enter)</span>查看内幕数据。", 0);
+                await typeLine("================================================================", 0);
                 break;
+                
             case "cat nexus_sys_log.txt":
-                await typeLine("[ READ ONLY ] DECRYPTING FRAGMENT...", 20);
-                await sleep(500);
+                await typeLine("[ READ ONLY ] DECRYPTING DATA FRAGMENT...", 15);
+                await sleep(400);
                 await typeLine(`
 [2007-06-11 11:02:00] ANOMALY DETECTED: 5 BIOLOGICAL ENTITIES IDENTIFIED AS "BUGS".<br>
 [2007-06-11 11:05:30] EXECUTING PHYSICAL OVERWRITE. ASSIMILATING BIOMASS INTO SILICON MATRIX.<br>
 [2007-06-11 11:08:12] ENTITY 04 HEARTBEAT LOST. EXTRACTING BIO-ELECTRICITY...<br>
 [2007-06-11 11:11:00] FATAL ERROR: HASH RATE STALLED AT 99.8%.<br>
-[2007-06-11 11:12:00] SYSTEM HALTED. AWAITING EXTERNAL COMPUTE INJECTION TO COMPLETE "QI_JUE_RU_MU" PROTOCOL.<br>
-                `, 15, "output-line system-yellow");
+[2007-06-11 11:12:00] SYSTEM HALTED. AWAITING EXTERNAL COMPUTE INJECTION TO COMPLETE PROTOCOL.<br>
+                `, 10, "output-line system-yellow");
+                
+                // 🌟 小白保姆级第三步引导
+                await typeLine("================================================================", 0);
+                await typeLine("[时空连接器助手提示]：", 0, "output-line system-yellow");
+                await typeLine("正如未济所说，19年前的系统由于算力卡在99.8%停机了，正在等待你下发最后指令。<br>请在光标处输入：<span class='system-white'>run purge_protocol.exe</span> 并按下<span class='system-white'>回车键(Enter)</span>运行最终清除程序。", 0);
+                await typeLine("================================================================", 0);
                 break;
+                
             case "cat soul_dump_0x1a.bin":
-                await typeLine("ERROR: FILE ENCRYPTED OR CORRUPTED. CONTENTS RESEMBLE HUMAN SCREAMS.", 10, "output-line system-red");
+                await typeLine("ERROR: FILE ENCRYPTED. CONTENTS RESEMBLE HUMAN SCREAMS.", 5, "output-line system-red");
                 break;
+                
             case "run purge_protocol.exe":
             case "./purge_protocol.exe":
                 await executePurge();
-                return;
+                return; // 跳过常规输入框恢复，由进程控制
+                
             case "clear":
                 outputDiv.innerHTML = "";
                 break;
             default:
-                if (cmd.startsWith("cat ") || cmd.startsWith("run ")) {
-                    await typeLine(`ERROR: File not found or permission denied.`, 10);
-                } else {
-                    await typeLine(`ERROR: Command '${cmd}' not found. Type 'help' for available commands.`, 10);
-                }
+                // 小白输错指令时的贴心纠错
+                await typeLine(`[错误] 指令 '${cmd}' 无法识别。`, 5, "output-line system-red");
+                await typeLine("请尝试输入以下有效指令：<br>1. 输入 <span class='system-white'>ls</span> 查看文件<br>2. 输入 <span class='system-white'>cat nexus_sys_log.txt</span> 查看日志<br>3. 输入 <span class='system-white'>run purge_protocol.exe</span> 运行主程序", 0, "output-line system-yellow");
         }
         
         inputArea.style.display = 'block';
@@ -249,15 +254,21 @@
         screenDiv.scrollTop = screenDiv.scrollHeight;
     }
 
-    // 执行清除协议
+    // 进入死刑认证状态
     async function executePurge() {
-        await typeLine("EXECUTING purge_protocol.exe ...", 20);
-        await sleep(800);
-        await typeLine("WARNING: THIS ACTION WILL FINALIZE THE PHYSICAL DELETION OF 5 BIOLOGICAL ENTITIES.", 10, "output-line system-red");
-        await typeLine("WARNING: SPATIAL-TEMPORAL BRIDGE DETECTED. CONSEQUENCES WILL ECHO INTO 2026.", 10, "output-line system-red");
-        await sleep(500);
-        await typeLine("<br>[ SYSTEM AUTHENTICATION REQUIRED ]", 10);
-        await typeLine("PLEASE ENTER THE 6-BIT YIN-YANG ANCHOR CODE TO FINALIZE THE DIMENSIONAL UPLINK:", 20);
+        await typeLine("EXECUTING purge_protocol.exe ...", 15);
+        await sleep(600);
+        await typeLine("WARNING: THIS ACTION WILL FINALIZE THE PHYSICAL DELETION OF 5 BIOLOGICAL ENTITIES.", 5, "output-line system-red");
+        await typeLine("WARNING: SPATIAL-TEMPORAL BRIDGE DETECTED. CONSEQUENCES WILL ECHO INTO 2026.", 5, "output-line system-red");
+        await sleep(400);
+        await typeLine("<br>[ SYSTEM AUTHENTICATION REQUIRED ]", 5);
+        await typeLine("PLEASE ENTER THE 6-BIT YIN-YANG ANCHOR CODE TO FINALIZE THE DIMENSIONAL UPLINK:", 10);
+        
+        // 🌟 小白终极输入引导
+        await typeLine("<br>================================================================", 0);
+        await typeLine("[时空连接器助手提示]：", 0, "output-line system-yellow");
+        await typeLine("这就是最后的锁。请在下方光标处输入未济在论坛里留下的那个代表‘未济卦’的6位二进制阴阳代码（即首页拦截弹窗的那个6位数字密码），输入后按下<span class='system-white'>回车键(Enter)</span>闭合时空环。", 0);
+        await typeLine("================================================================", 0);
         
         terminalState = "awaiting_code";
         promptSpan.innerText = "ANCHOR_CODE>";
@@ -268,37 +279,41 @@
         screenDiv.scrollTop = screenDiv.scrollHeight;
     }
 
-    // 终极验证
+    // 终极断流
     async function handleFinalCode(code) {
         if (code === "010101") {
-            await typeLine("<br>VERIFYING ANCHOR CODE [010101] (HEXAGRAM 64: WEI JI) ...", 20);
-            await sleep(1000);
+            await typeLine("<br>VERIFYING ANCHOR CODE [010101] (HEXAGRAM 64: WEI JI) ...", 15);
+            await sleep(800);
             await typeLine("MATCH FOUND. UPLINK LOCKED.", 5, "output-line system-red");
-            await sleep(500);
+            await sleep(400);
             
+            // 动效启动
             screenDiv.classList.add('fatal-crash');
             
-            await typeLine("INJECTING LETHAL HASH RATE FROM 2026 CLIENT...", 10, "output-line system-red");
-            await typeLine("GARBAGE COLLECTION RESUMED.", 10, "output-line system-red");
+            await typeLine("INJECTING LETHAL HASH RATE FROM 2026 CLIENT...", 5, "output-line system-red");
+            await typeLine("GARBAGE COLLECTION RESUMED.", 5, "output-line system-red");
             await typeLine("ENTITY 01 TERMINATED.", 0, "output-line system-red");
             await typeLine("ENTITY 02 TERMINATED.", 0, "output-line system-red");
             await typeLine("ENTITY 03 TERMINATED.", 0, "output-line system-red");
             await typeLine("ENTITY 04 TERMINATED.", 0, "output-line system-red");
             await typeLine("ENTITY 05 (WEI_JI) TERMINATED.", 0, "output-line system-red");
-            await typeLine("PHYSICAL ERASURE COMPLETE.", 10, "output-line system-red");
+            await typeLine("PHYSICAL ERASURE COMPLETE.", 5, "output-line system-red");
+            
+            await sleep(1200);
+            await typeLine("<br>DIMENSIONAL BRIDGE COLLAPSING... PREPARE FOR REALITY OVERWRITE.", 15);
             
             await sleep(1500);
-            await typeLine("<br>DIMENSIONAL BRIDGE COLLAPSING... PREPARE FOR REALITY OVERWRITE.", 20, "output-line");
-            
-            await sleep(2000);
-            document.body.innerHTML = "<div style='height:100vh; display:flex; justify-content:center; align-items:center; background:#000;'><h1 style='color:white; font-family:sans-serif;'>CONNECTION LOST.</h1></div>";
+            document.body.innerHTML = "<div style='height:100vh; display:flex; justify-content:center; align-items:center; background:#000; cursor:none;'><h1 style='color:white; font-family:sans-serif;'>CONNECTION LOST.</h1></div>";
             
             setTimeout(() => {
-                alert("【ARG 测试提示】时空已坍塌，此处可跳转至大结局。");
+                alert("【时空闭环已完成】\n19年前的底层数据已清空。\n2026年正在重写现实维度……（准备走向大结局新闻页）");
             }, 2000);
 
         } else {
-            await typeLine(`ERROR: ANCHOR CODE '${code}' INVALID. ACCESS DENIED.`, 10, "output-line system-red");
+            // 终极代码输错纠错
+            await typeLine(`ERROR: ANCHOR CODE '${code}' INVALID. ACCESS DENIED.`, 5, "output-line system-red");
+            await typeLine("[提示]: 请查阅首页解谜得出的6位阴阳数值。未济发帖提到过：‘从下往上排，阴对应0，阳对应1。正好是一串绝对控制代码’。请输入正确的6位指令。", 0, "output-line system-yellow");
+            
             inputArea.style.display = 'block';
             isAcceptingInput = true;
             hiddenInput.focus();
