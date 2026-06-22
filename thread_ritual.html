@@ -7,7 +7,7 @@
         body { background-color: #E2E8F1; color: #333333; font-family: "SimSun", "宋体", sans-serif; font-size: 14px; margin: 0; padding: 10px 0; }
         a { color: #004499; text-decoration: none; }
         a:hover { text-decoration: underline; color: #FF6600; }
-        #wrap { width: 96%; min-width: 980px; margin: 0 auto; background-color: #FFF; border: 1px solid #A6CBE7; padding: 15px; }
+        #wrap { width: 96%; min-width: 980px; margin: 0 auto; background-color: #FFF; border: 1px solid #A6CBE7; padding: 15px; position: relative; z-index: 1; }
         .header { border-bottom: 3px solid #336699; padding-bottom: 10px; margin-bottom: 15px; font-weight: bold; font-size: 14px; }
         .post-table { width: 100%; border-collapse: collapse; border: 1px solid #A6CBE7; margin-bottom: 10px; background:#FFF; }
         .post-user { width: 180px; background: #F0F5FA; border-right: 1px solid #A6CBE7; padding: 15px; text-align: center; vertical-align: top; }
@@ -18,6 +18,27 @@
         .sys-warn-box { background: #FFFFE0; border: 1px dashed #FFCC00; padding: 12px; margin-top: 15px; color: #FF0000; font-weight: bold; font-family: monospace; }
         .quick-reply { border: 1px solid #A6CBE7; background: #F0F5FA; padding: 15px; margin-top: 20px; }
         .reply-textarea { width: 100%; height: 100px; border: 1px solid #CCC; font-family: SimSun; padding: 5px; margin-top: 10px; resize:none; background:#EEE; color:#666; }
+
+        /* 隐藏的恐怖弹窗 */
+        #blind-modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.95); z-index: 10000; flex-direction: column;
+            justify-content: center; align-items: center; font-family: 'Courier New', Courier, monospace;
+            text-align: center; cursor: none;
+        }
+        .glitch-text {
+            color: #ff0000; font-size: 36px; font-weight: bold; text-shadow: 0 0 20px #ff0000;
+            animation: glitch-anim 0.1s infinite;
+        }
+        .glitch-sub { color: #00ff00; font-size: 20px; margin-top: 20px; opacity: 0.8; }
+        @keyframes glitch-anim { 
+            0% { transform: translate(0) } 
+            20% { transform: translate(-3px, 2px) } 
+            40% { transform: translate(-1px, -3px) } 
+            60% { transform: translate(3px, 1px) } 
+            80% { transform: translate(2px, -2px) } 
+            100% { transform: translate(0) } 
+        }
     </style>
     <script type="text/javascript">
         if (localStorage.getItem('weiji_logged_in') !== 'true') {
@@ -64,13 +85,13 @@
     <table class="post-table">
         <tr>
             <td class="post-user">
-                <div style="font-weight:bold; color:#FF0000; font-size:15px;">05级_未济</div>
-                <div class="avatar" style="background:#000; color:#F00; font-family:SimSun; font-size:24px; font-weight:bold;">爻</div>
-                <div class="user-detail">级别: 区域C 实习版主<br>发帖数: 742</div>
+                <div style="font-weight:bold; color:#004499; font-size:15px;">好奇宝宝</div>
+                <div class="avatar">无头像</div>
+                <div class="user-detail">级别: 新手起步<br>发帖数: 12</div>
             </td>
             <td class="post-content">
-                <div class="post-info"><span style="float:right; font-weight:bold; color:#004499;">板凳</span> 发表于 2007-06-11 10:45:10</div>
-                14楼：可以带过来。目前384个废旧主板节点已全部按六十四卦方位串联完毕。高低电平回路脚本写入成功。准备在 11:00 准时接通物理回路。看看到底是生克制化先跑完，还是编译器的溢出先发生。
+                <div class="post-info"><span style="float:right; font-weight:bold;">6楼</span> 发表于 2007-06-11 10:10:05</div>
+                请问废弃仓库具体在哪个位置啊？是南门烤冷面旁边那个关了门的厂房吗？可以去围观吗？
             </td>
         </tr>
     </table>
@@ -83,8 +104,22 @@
                 <div class="user-detail">级别: 区域C 实习版主<br>发帖数: 742</div>
             </td>
             <td class="post-content">
-                <div class="post-info"><span style="float:right; font-weight:bold; color:#004499;">地板</span> 发表于 2007-06-11 11:01:45</div>
-                有点奇怪。主楼机房的校园网网关为什么在定向封杀我们的本地机组IP？不管了，直接切断一切外网连接，转入纯物理回路离线编译！老四，拉高压电闸！
+                <div class="post-info"><span style="float:right; font-weight:bold; color:#004499;">14楼</span> 发表于 2007-06-11 10:45:10</div>
+                统一回复：目前384个废旧主板节点已全部按六十四卦方位串联完毕。底层控制回路脚本写入成功。感谢老四赞助的工业高压电缆。准备在 11:00 准时接通物理回路。看看到底是生克制化先跑完，还是机器的物理溢出先发生。
+            </td>
+        </tr>
+    </table>
+
+    <table class="post-table">
+        <tr>
+            <td class="post-user">
+                <div style="font-weight:bold; color:#004499; font-size:15px;">睡不醒的猫</div>
+                <div class="avatar">无头像</div>
+                <div class="user-detail">级别: 资深潜水<br>发帖数: 304</div>
+            </td>
+            <td class="post-content">
+                <div class="post-info"><span style="float:right; font-weight:bold;">16楼</span> 发表于 2007-06-11 10:55:30</div>
+                酷！我带两块报废的内存条过来了，已经走到二食堂了！马上到！
             </td>
         </tr>
     </table>
@@ -97,13 +132,27 @@
                 <div class="user-detail">级别: 区域C 实习版主<br>发帖数: 742</div>
             </td>
             <td class="post-content">
-                <div class="post-info"><span style="float:right; font-weight:bold; color:#004499;">5楼</span> 发表于 2007-06-11 11:08:12</div>
+                <div class="post-info"><span style="float:right; font-weight:bold; color:#004499;">18楼</span> 发表于 2007-06-11 11:01:45</div>
+                有点奇怪。主楼的校园网网关为什么在定向封杀我们的节点IP？不管了，直接拔掉外网网线，转入纯物理闭环离线编译！老四，拉高压电闸！
+            </td>
+        </tr>
+    </table>
+
+    <table class="post-table">
+        <tr>
+            <td class="post-user">
+                <div style="font-weight:bold; color:#FF0000; font-size:15px;">05级_未济</div>
+                <div class="avatar" style="background:#000; color:#F00; font-family:SimSun; font-size:24px; font-weight:bold;">爻</div>
+                <div class="user-detail">级别: 区域C 实习版主<br>发帖数: 742</div>
+            </td>
+            <td class="post-content">
+                <div class="post-info"><span style="float:right; font-weight:bold; color:#004499;">22楼</span> 发表于 2007-06-11 11:08:12</div>
                 <span style='font-family:monospace; color:#666;'>温度骤降。这不符合热力学定律。仓库的水冷液全部结冰了，但主板的晶体管却在溶化……门……卷帘门为什么自己砸下来了？重力异常！老四！去开门！</span>
             </td>
         </tr>
     </table>
 
-    <table class="post-table">
+    <table class="post-table" id="final-post">
         <tr>
             <td class="post-user">
                 <div style="font-weight:bold; color:#FF0000; font-size:15px;">05级_未济</div>
@@ -111,8 +160,8 @@
                 <div class="user-detail">级别: 区域C 实习版主<br>发帖数: 742</div>
             </td>
             <td class="post-content">
-                <div class="post-info"><span style="float:right; font-weight:bold; color:#004499;">6楼</span> 发表于 2007-06-11 11:11:00</div>
-                <b style='color:#ff0000; font-family:monospace;'>[ 数据断流前最后盲打文本 ] 010101不是钥匙……那是锚点！！它是顺着网线找过来的！！算力不够了，它在抽我们脑子里的生物电！别算！未来的任何人，千万别点那个——</b>
+                <div class="post-info"><span style="float:right; font-weight:bold; color:#004499;">23楼</span> 发表于 2007-06-11 11:11:00</div>
+                <b style='color:#ff0000; font-family:monospace; font-size:16px;'>[ 数据断流前最后盲打文本 ] 010101不是钥匙……那是锚点！！它是顺着网线找过来的！！算力不够了，它在抽我们脑子里的生物电！别算！未来的任何人，千万别点那个——</b>
             </td>
         </tr>
     </table>
@@ -127,5 +176,30 @@
         <button style="margin-top:10px; padding:5px 15px; background:#DDD; border:1px solid #AAA; color:#999;" disabled="disabled">发表回复</button>
     </div>
 </div>
+
+<div id="blind-modal">
+    <div class="glitch-text">010101 不是钥匙...它是锚点！！</div>
+    <div class="glitch-text" style="margin-top:20px; font-size: 24px;">不要算下去！关闭页面！</div>
+    <div class="glitch-sub">[ SYSTEM FAILURE : 物理连接断开 ]</div>
+</div>
+
+<script type="text/javascript">
+    let modalTriggered = false;
+
+    window.addEventListener('scroll', function() {
+        // 当滚动到底部附近时触发 (距离底部少于 100px)
+        if (!modalTriggered && (window.innerHeight + window.scrollY) >= document.body.offsetHeight - 100) {
+            modalTriggered = true;
+            setTimeout(() => {
+                document.getElementById('blind-modal').style.display = 'flex';
+                // 3秒后自动消失，或者让玩家手动点掉（这里设定3秒后强制重载回顶部，增加错乱感）
+                setTimeout(() => {
+                    document.getElementById('blind-modal').style.display = 'none';
+                    window.scrollTo(0, 0);
+                }, 3000);
+            }, 800); // 稍微延迟0.8秒，让玩家刚好看完最后一行字再被吓到
+        }
+    });
+</script>
 </body>
 </html>
