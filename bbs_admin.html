@@ -27,7 +27,7 @@
         
         /* 草稿箱红色报警闪烁 */
         .draft-alert { background: #FFEBEB; color: #FF0000 !important; font-weight: bold !important; border-left: 3px solid #FF0000 !important; animation: blink-bg 1.5s infinite; }
-        @keyframes blink-bg { 0%, 100% { background: #FFEBEB; } 50% { background: #FFCCCC; } }
+        @keyframes blink-bg { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
 
         /* 右侧内容区 */
         .content { flex: 1; padding: 20px; background: #FFF; }
@@ -39,17 +39,17 @@
         
         .editor-box { border: 1px solid #CCC; background: #F9F9F9; padding: 15px; }
         .editor-input { width: 100%; padding: 5px; border: 1px solid #A6CBE7; font-family: SimSun; font-size: 14px; margin-bottom: 10px; box-sizing: border-box; }
-        .editor-textarea { width: 100%; height: 420px; padding: 10px; border: 1px solid #A6CBE7; font-family: "Courier New", SimSun; font-size: 14px; line-height: 1.8; box-sizing: border-box; resize: none; background: #FFF; color: #333; }
+        .editor-textarea { width: 100%; height: 400px; padding: 10px; border: 1px solid #A6CBE7; font-family: "Courier New", SimSun; font-size: 14px; line-height: 1.8; box-sizing: border-box; resize: none; background: #FFF; color: #333; }
         
-        .action-btn { background: #336699; color: #FFF; border: 1px solid #2B5E8A; padding: 6px 20px; cursor: pointer; font-weight: bold; margin-top: 10px; }
+        .action-btn { background: #336699; color: #FFF; border: 1px solid #2B5E8A; padding: 8px 25px; cursor: pointer; font-weight: bold; margin-top: 10px; font-size: 14px; }
         .action-btn:hover { background: #FF6600; border-color: #CC5200; }
 
         .tab-content { display: none; }
         .tab-content.active { display: block; }
         
         /* 真实 IP 恐吓面板 */
-        .ip-tracker { background: #000; color: #0f0; padding: 15px; font-family: monospace; border: 1px solid #ff0000; line-height: 1.8; box-shadow: inset 0 0 10px #ff0000; }
-        .ip-tracker span { color: #ff0000; font-weight: bold; }
+        .ip-tracker { background: #000; color: #0f0; padding: 15px; font-family: monospace; border: 1px solid #ff0000; line-height: 1.8; box-shadow: inset 0 0 10px rgba(255,0,0,0.3); }
+        .ip-tracker span { color: #ff0000; font-weight: bold; font-size: 15px; }
     </style>
 </head>
 <body>
@@ -57,11 +57,10 @@
 <div id="wrap">
     <div class="header">
         <div class="logo-text">星火BBS 个人控制面板 (UCP)</div>
-        <div><a href="bbs_2007.html">返回论坛首页</a> | <a href="#" onclick="alert('系统被锁定，无法退出。')">退出登录</a></div>
+        <div><a href="bbs_2007.html">返回论坛首页</a> | <a href="#" onclick="alert('系统致命错误，脱机状态下无法注销。')">退出登录</a></div>
     </div>
 
     <div class="admin-container">
-        <!-- 左侧菜单 -->
         <div class="sidebar">
             <div class="menu-group">
                 <div class="menu-title">控制面板</div>
@@ -78,40 +77,31 @@
             </div>
         </div>
 
-        <!-- 右侧内容 -->
         <div class="content">
             
-            <!-- 面板 1：个人信息 -->
             <div id="tab-profile" class="tab-content active">
                 <div class="content-title">公众信息概要</div>
                 <table class="data-table">
                     <tr><th>用户名</th><td class="bold blue" style="font-size:16px;">05级_未济</td></tr>
                     <tr><th>UID</th><td>6604</td></tr>
-                    <tr><th>用户组</th><td class="bold red">区域C 实习版主</td></tr>
+                    <tr><th>用户组</th><td class="bold red">区域C 实习版主 (当前权限状态：不可逆挂起)</td></tr>
                     <tr><th>积分/威望</th><td>-2,147,483,648 点 <span class="gray">(Data Overflow)</span></td></tr>
                 </table>
-                <div style="background:#FFF0F0; border:1px solid #FBC2C4; color:#D12F19; padding:10px; margin-bottom:15px; font-size:13px; font-weight:bold;">
-                    系统提示：您的草稿箱中有 1 份未发送的重要备忘录！底层日志检测到跨时空入侵！
+                <div style="background:#FFF0F0; border:1px solid #FBC2C4; color:#D12F19; padding:10px; margin-bottom:15px; font-size:13px; font-weight:bold; animation: blink-bg 1s infinite;">
+                    系统提示：您的草稿箱中有 1 份未发送的【绝密备忘录】！防御协议已被外部算力击穿！
                 </div>
             </div>
 
-            <!-- 面板 2：异常日志 (接入真实 IP) -->
             <div id="tab-log" class="tab-content">
                 <div class="content-title" style="color:#ff0000; border-bottom-color:#ff0000;">[ 极密 ] 系统底层拦截日志</div>
-                <p style="color:#666; font-size:13px;">系统在 2007-06-11 11:12 阵法通电瞬间，捕获到来自高维时空的算力注入。正是这股算力导致了物理溢出。</p>
-                <div class="ip-tracker">
-                    <div style="animation: blink-bg 1s infinite;">>>> AWAITING FUTURE UPLINK... ESTABLISHED.</div>
-                    <br>
-                    [警告] 检测到非当前时间线的观测者接入：<br>
-                    入侵时间节点：<span id="real-time">正在计算相对时间...</span><br>
-                    高维物理坐标：<span id="real-loc">正在定位...</span><br>
-                    算力注入源IP：<span id="real-ip">正在追踪...</span><br>
-                    <br>
-                    分析结论：<span style="font-size:16px;">此设备即为触发 2007 年阵法反噬的最终算力节点。你是凶手。</span>
-                </div>
+                <p style="color:#666; font-size:13px; line-height: 1.8;">
+                    <b>事件时间：</b> 2007-06-11 11:12:00 <br>
+                    <b>事件描述：</b> 废弃仓库机组通电瞬间，捕获到来自高维时空的非结构化算力注入。<br>
+                    <b>系统动作：</b> 本地物理隔离墙（Firewall）崩溃，服务器权限丢失。<br>
+                    <b>追踪状态：</b> 溯源程序已自动锁定攻击者终端坐标。请前往【草稿箱】查看详细溯源报告。
+                </p>
             </div>
 
-            <!-- 面板 3：草稿箱 (核心剧情) -->
             <div id="tab-draft" class="tab-content">
                 <div class="content-title" style="border-bottom-color:#FF0000; color:#FF0000;">编辑草稿 - [ 绝密备忘录 ]</div>
                 <div class="editor-box">
@@ -166,8 +156,19 @@
 拔掉电源！断开连接！不要成为杀我们的凶手！！！
                     </textarea>
                     
+                    <div class="ip-tracker" style="margin-top: 15px;">
+                        <div style="animation: blink-bg 1.5s infinite; color: #ff0000; font-weight: bold;">>>> SYSTEM ALERT: TRACING FUTURE UPLINK...</div>
+                        <br>
+                        [警告] 阵法已反向捕获高维观测者节点：<br>
+                        入侵时间同步：<span id="real-time">正在计算相对时间...</span><br>
+                        目标物理坐标：<span id="real-loc">正在定位...</span><br>
+                        算力注入源IP：<span id="real-ip">正在追踪...</span><br>
+                        <br>
+                        分析结论：<span style="font-size:16px;">此设备即为触发 2007 年阵法反噬的最终算力锚点。凶手已锁定。绝不准运行下方程序。</span>
+                    </div>
+
                     <div style="margin-top:20px; border-top:1px dashed #CCC; padding-top:15px; text-align:center;">
-                        <div style="color:#666; font-size:12px; margin-bottom:10px;">检测到附件：<span class="bold red">deep_core_access.exe</span> (2.4MB)</div>
+                        <div style="color:#666; font-size:12px; margin-bottom:10px;">系统检测到高危深网执行程序：<span class="bold red" style="text-decoration:underline;">deep_core_access.exe</span> (2.4MB)</div>
                         <button class="action-btn" id="btn-run-core">无视警告，强制运行附件</button>
                     </div>
                 </div>
@@ -177,25 +178,61 @@
     </div>
 </div>
 
+<div id="fatal-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(10, 0, 0, 0.95); z-index: 10000; flex-direction: column; justify-content: center; align-items: center;">
+    <div style="width: 550px; border: 2px solid #FF0000; background: #050000; color: #FFF; font-family: 'Courier New', Courier, monospace; padding: 30px; box-shadow: 0 0 60px rgba(255,0,0,0.6);">
+        <h2 style="color: #FF0000; text-align: center; border-bottom: 1px dashed #FF0000; padding-bottom: 15px; margin-top: 0; animation: blink-bg 0.5s infinite;">[ FATAL ERROR : DIMENSION BREACH ]</h2>
+        <p style="font-size: 15px; line-height: 1.6; color: #CCC;">系统检测到极其致命的穿透指令。一旦执行，您的本地节点将强行撕裂物理屏障，与 19 年前的四川深地主控服务器完成时空握手。</p>
+        
+        <div style="background: rgba(255,0,0,0.1); padding: 15px; border: 1px solid #FF0000; margin: 20px 0; line-height: 2;">
+            <b style="color: #ff5555; font-size: 16px;">>>> 溯源数据最终复核：</b><br>
+            客户端网络 IP: <span id="modal-ip" style="color: #0f0; font-weight: bold; font-size: 16px;"></span><br>
+            高维物理坐标: <span id="modal-loc" style="color: #0f0; font-weight: bold; font-size: 16px;"></span><br>
+            注入时间戳记: <span id="modal-time" style="color: #0f0; font-weight: bold; font-size: 16px;"></span><br>
+        </div>
+        
+        <p style="color: #FF0000; font-size: 18px; font-weight: bold; text-align: center;">你确定要成为完成这个死局闭环的真凶吗？</p>
+        
+        <div style="display: flex; justify-content: space-between; margin-top: 35px;">
+            <button onclick="document.getElementById('fatal-modal').style.display='none'" style="padding: 12px 25px; background: #222; color: #AAA; border: 1px solid #555; cursor: pointer; font-family: monospace; font-size: 15px; transition: 0.3s;">中止执行 (ABORT)</button>
+            <button id="btn-final-execute" style="padding: 12px 25px; background: #FF0000; color: #FFF; border: 1px solid #FFF; font-weight: bold; cursor: pointer; font-family: monospace; font-size: 15px; box-shadow: 0 0 15px #F00;">确认连接 (EXECUTE)</button>
+        </div>
+    </div>
+</div>
+
 <script type="text/javascript">
-    // 获取真实IP与定位
+    // 获取真实IP与定位，填充草稿箱与弹窗
     fetch('https://ipapi.co/json/')
         .then(response => response.json())
         .then(data => {
-            document.getElementById('real-ip').innerText = data.ip || 'UNKNOWN';
-            document.getElementById('real-loc').innerText = `${data.city}, ${data.country_name}`;
+            const ip = data.ip || 'UNKNOWN';
+            const loc = `${data.city}, ${data.country_name}`;
+            
+            document.getElementById('real-ip').innerText = ip;
+            document.getElementById('real-loc').innerText = loc;
+            
+            document.getElementById('modal-ip').innerText = ip;
+            document.getElementById('modal-loc').innerText = loc;
         })
         .catch(error => {
-            document.getElementById('real-ip').innerText = '127.0.0.1 (本地代理拦截)';
-            document.getElementById('real-loc').innerText = '地球 - 物理坐标已混淆';
+            const fallbackIp = '127.0.0.1 (本地网络代理拦截)';
+            const fallbackLoc = '地球 - 物理坐标已混淆';
+            
+            document.getElementById('real-ip').innerText = fallbackIp;
+            document.getElementById('real-loc').innerText = fallbackLoc;
+            
+            document.getElementById('modal-ip').innerText = fallbackIp;
+            document.getElementById('modal-loc').innerText = fallbackLoc;
         });
 
+    // 实时更新时间
     setInterval(() => {
         const now = new Date();
-        document.getElementById('real-time').innerText = now.toLocaleString();
+        const timeStr = now.toLocaleString();
+        document.getElementById('real-time').innerText = timeStr;
+        document.getElementById('modal-time').innerText = timeStr;
     }, 1000);
 
-    // Tab 切换
+    // Tab 切换逻辑
     const tabLinks = document.querySelectorAll('.tab-link');
     const tabContents = document.querySelectorAll('.tab-content');
 
@@ -209,20 +246,39 @@
             const targetId = this.getAttribute('data-target');
             document.getElementById(targetId).classList.add('active');
             
+            // 消除报警样式
             this.classList.remove('draft-alert');
             this.style.color = '#FF6600';
         });
     });
 
-    // 运行附件
+    // 点击强制运行，弹出终极致命警告框
     document.getElementById('btn-run-core').addEventListener('click', function() {
-        if(confirm("【最高安全警告】\n该执行文件将建立与 深地主控服务器(四川节点) 的底层终端连接。\n这可能导致当前所在维度的现实坍塌。\n\n是否强行继续？")) {
-            document.body.style.backgroundColor = '#000';
-            document.body.innerHTML = '<h2 style="color:#0f0; text-align:center; margin-top:20vh; font-family:Courier New;">[ EXE INITIATED ]<br>ESTABLISHING TERMINAL UPLINK...<br>BYPASSING 2007 FIREWALL...</h2>';
-            setTimeout(() => {
-                window.location.href = 'core_terminal.html'; 
-            }, 2500);
-        }
+        document.getElementById('fatal-modal').style.display = 'flex';
+    });
+
+    // 终极红框：点击确认执行，进入命令行
+    document.getElementById('btn-final-execute').addEventListener('click', function() {
+        // 隐藏弹窗
+        document.getElementById('fatal-modal').style.display = 'none';
+        
+        // 物理级崩溃转场动画
+        document.body.style.backgroundColor = '#000';
+        document.body.innerHTML = `
+            <div style="height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; cursor: none;">
+                <h2 style="color:#0f0; text-align:center; font-family:Courier New; animation: blink-bg 0.1s infinite;">
+                    [ EXE INITIATED ]<br><br>
+                    ESTABLISHING TERMINAL UPLINK...<br>
+                    BYPASSING 2007 FIREWALL...<br><br>
+                    <span style="color:#ff0000; font-size: 30px;">WARNING: UPLINK LOCKED. NO TURNING BACK.</span>
+                </h2>
+            </div>
+        `;
+        
+        // 跳转到终端
+        setTimeout(() => {
+            window.location.href = 'core_terminal.html'; 
+        }, 2500);
     });
 </script>
 
