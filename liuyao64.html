@@ -290,7 +290,7 @@
 })();
 
 // ============================================================
-// 2. 内置纳甲排盘引擎 (基于用户修正版)
+// 2. 内置纳甲排盘引擎
 // ============================================================
 
 const TRI = {
@@ -486,7 +486,7 @@ palaces.forEach(palace => {
     const cards = palace.hexagrams.map((hName, idx) => {
         const d = dictData[hName];
         const seqLabel = SEQ_LABELS[idx];
-        const binStr = d ? [...d.bin].reverse().join('') : '------';
+        const binStr = d ? d.bin.join('') : '------';
         const lines = d ? renderMiniLines(d.bin) : '';
         return `
             <div class="hex-card" onclick="openModal('${hName}')">
@@ -517,7 +517,7 @@ window.openModal = function(hName) {
     if(!data || !meta) { alert('数据缺失：' + hName); return; }
 
     const yaos = calcYaoInfo(hName);
-    const binStr = [...data.bin].reverse().join('');
+    const binStr = data.bin.join('');
 
     // --- 恢复默认样式，清除之前的恐怖状态 ---
     modalContent.classList.remove('horror-weiji', 'horror-jiji');
