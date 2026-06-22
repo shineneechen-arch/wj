@@ -2,19 +2,21 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>TERMINAL UPLINK - SC_DEEP_NODE</title>
     <style>
         body, html {
             margin: 0; padding: 0; width: 100%; height: 100%;
             background-color: #050505; color: #0f0;
             font-family: 'Courier New', Courier, monospace;
-            overflow: hidden; /* 禁止原生滚动条，模拟屏幕 */
+            overflow: hidden;
         }
         
-        /* 模拟老式 CRT 显示器的扫描线和屏幕发光效果 */
+        /* 老式 CRT 显示器效果 */
         #crt-screen {
             position: relative; width: 100%; height: 100%; padding: 20px; box-sizing: border-box;
             overflow-y: auto; text-shadow: 0 0 5px rgba(0, 255, 0, 0.5);
+            -webkit-overflow-scrolling: touch; /* 优化移动端滚动 */
         }
         #crt-screen::before {
             content: " "; display: block; position: fixed; top: 0; left: 0; bottom: 0; right: 0;
@@ -22,22 +24,34 @@
             z-index: 2; background-size: 100% 2px, 3px 100%; pointer-events: none;
         }
 
-        .output-line { margin: 5px 0; line-height: 1.4; word-wrap: break-word; }
+        .output-line { margin: 5px 0; line-height: 1.4; word-wrap: break-word; font-size: 14px; }
         .system-red { color: #ff0000; text-shadow: 0 0 10px #ff0000; font-weight: bold; }
         .system-yellow { color: #ffcc00; }
         
         /* 命令行输入区 */
         #input-area { display: none; margin-top: 10px; }
-        .prompt { color: #0f0; margin-right: 10px; font-weight: bold; }
-        #user-input { color: #0f0; white-space: pre-wrap; word-wrap: break-word; }
-        .cursor { display: inline-block; width: 10px; height: 18px; background-color: #0f0; animation: blink 1s step-end infinite; vertical-align: bottom; }
+        .prompt { color: #0f0; margin-right: 10px; font-weight: bold; font-size: 14px; }
+        #user-input { color: #0f0; white-space: pre-wrap; word-wrap: break-word; font-size: 14px; }
+        .cursor { display: inline-block; width: 8px; height: 15px; background-color: #0f0; animation: blink 1s step-end infinite; vertical-align: middle; }
         
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
 
-        /* 崩溃时的全屏红屏动画 */
-        .fatal-crash {
-            animation: screen-shake 0.1s infinite, color-invert 0.2s infinite;
+        /* 移动端专属提示（提示玩家点击屏幕唤醒键盘） */
+        #mobile-tip { display: none; text-align: center; color: #888; font-size: 12px; margin-top: 20px; border: 1px dashed #333; padding: 8px; }
+        @media (max-width: 768px) { #mobile-tip { display: block; } }
+
+        /* 隐形核心：潜伏在底层的隐藏输入框 */
+        #hidden-input {
+            position: fixed;
+            top: -100px; left: -100px; /* 彻底移出可视区 */
+            width: 1px; height: 1px;
+            opacity: 0;
+            background: transparent; border: none; outline: none;
+            z-index: -1;
         }
+
+        /* 崩溃全屏晃动动效 */
+        .fatal-crash { animation: screen-shake 0.1s infinite, color-invert 0.2s infinite; }
         @keyframes screen-shake {
             0% { transform: translate(2px, 1px) rotate(0deg); }
             10% { transform: translate(-1px, -2px) rotate(-1deg); }
@@ -45,10 +59,6 @@
             30% { transform: translate(0px, 2px) rotate(0deg); }
             40% { transform: translate(1px, -1px) rotate(1deg); }
             50% { transform: translate(-1px, 2px) rotate(-1deg); }
-            60% { transform: translate(-3px, 1px) rotate(0deg); }
-            70% { transform: translate(2px, 1px) rotate(-1deg); }
-            80% { transform: translate(-1px, -1px) rotate(1deg); }
-            90% { transform: translate(2px, 2px) rotate(0deg); }
             100% { transform: translate(1px, -2px) rotate(-1deg); }
         }
         @keyframes color-invert {
@@ -60,33 +70,46 @@
 </head>
 <body>
 
+<input type="text" id="hidden-input" autocomplete="off" autocapitalize="off" spellcheck="false">
+
 <div id="crt-screen">
     <div id="output"></div>
     <div id="input-area">
-        <span class="prompt">root@SC_DEEP_NODE:~#</span>
+        <span class="prompt" id="terminal-prompt">root@SC_DEEP_NODE:~#</span>
         <span id="user-input"></span><span class="cursor"></span>
+        <div id="mobile-tip">💡 移动端若未弹出键盘，请点击屏幕任意位置</div>
     </div>
 </div>
 
-<script>
+<script type="text/javascript">
     const outputDiv = document.getElementById('output');
     const inputArea = document.getElementById('input-area');
     const userInputSpan = document.getElementById('user-input');
     const screenDiv = document.getElementById('crt-screen');
+    const hiddenInput = document.getElementById('hidden-input');
+    const promptSpan = document.getElementById('terminal-prompt');
 
-    let currentInput = "";
     let isAcceptingInput = false;
     let terminalState = "normal"; // "normal" or "awaiting_code"
 
-    // 辅助函数：打字机效果输出文本
+    // 自动聚焦函数
+    function focusTerminal() {
+        if (isAcceptingInput) {
+            hiddenInput.focus();
+        }
+    }
+
+    // 点击屏幕任意位置，强行唤醒移动端虚拟键盘
+    document.addEventListener('click', focusTerminal);
+    document.addEventListener('touchend', focusTerminal);
+
+    // 打字机效果输出
     async function typeLine(text, speed = 20, className = "output-line") {
         return new Promise(resolve => {
             const div = document.createElement('div');
             div.className = className;
             outputDiv.appendChild(div);
             
-            let i = 0;
-            // 处理直接插入 HTML（不打字）的情况
             if (speed === 0) {
                 div.innerHTML = text;
                 screenDiv.scrollTop = screenDiv.scrollHeight;
@@ -94,7 +117,7 @@
                 return;
             }
 
-            // 逐字打印
+            let i = 0;
             function typeChar() {
                 if (i < text.length) {
                     if (text.substring(i, i+4) === "<br>") {
@@ -105,7 +128,7 @@
                         i++;
                     }
                     screenDiv.scrollTop = screenDiv.scrollHeight;
-                    setTimeout(typeChar, speed + Math.random() * 20); // 增加随机延迟模拟真实打印
+                    setTimeout(typeChar, speed + Math.random() * 15);
                 } else {
                     resolve();
                 }
@@ -114,10 +137,9 @@
         });
     }
 
-    // 辅助函数：延迟
     const sleep = ms => new Promise(r => setTimeout(r, ms));
 
-    // 开机引导序列
+    // 开机序列
     async function bootSequence() {
         await sleep(500);
         await typeLine("INITIALIZING DEEP CORE UPLINK...", 30);
@@ -130,18 +152,44 @@
         await typeLine("REASON: INSUFFICIENT DIMENSIONAL HASH RATE.", 10, "output-line system-red");
         await typeLine("TYPE <span style='color:#fff'>help</span> TO VIEW AVAILABLE COMMANDS.<br>", 0);
         
-        // 允许输入
+        // 唤醒输入状态
         inputArea.style.display = 'block';
         isAcceptingInput = true;
+        hiddenInput.value = "";
+        hiddenInput.focus(); // 自动尝试拉起键盘
+        screenDiv.scrollTop = screenDiv.scrollHeight;
     }
 
-    // 处理回车指令
+    // 核心重构：监听隐藏输入框的内容变动（完美适配移动端输入和删除）
+    hiddenInput.addEventListener('input', function() {
+        if (!isAcceptingInput) {
+            hiddenInput.value = "";
+            return;
+        }
+        // 实时同步数据到自定义终端上
+        userInputSpan.innerText = hiddenInput.value;
+    });
+
+    // 捕获回车键
+    hiddenInput.addEventListener('keydown', function(e) {
+        if (!isAcceptingInput) return;
+        
+        if (e.key === "Enter") {
+            e.preventDefault();
+            let cmd = hiddenInput.value;
+            hiddenInput.value = "";
+            userInputSpan.innerText = "";
+            processCommand(cmd);
+        }
+    });
+
+    // 处理命令行逻辑
     async function processCommand(cmd) {
-        inputArea.style.display = 'none'; // 暂时隐藏输入框
+        inputArea.style.display = 'none';
         isAcceptingInput = false;
         
-        // 把用户敲的命令打印到屏幕上
-        await typeLine(`<span class="prompt">root@SC_DEEP_NODE:~#</span> ${cmd}`, 0);
+        let currentPrompt = promptSpan.innerText;
+        await typeLine(`<span class="prompt">${currentPrompt}</span> ${cmd}`, 0);
         
         cmd = cmd.trim().toLowerCase();
         
@@ -174,17 +222,16 @@
 [2007-06-11 11:05:30] EXECUTING PHYSICAL OVERWRITE. ASSIMILATING BIOMASS INTO SILICON MATRIX.<br>
 [2007-06-11 11:08:12] ENTITY 04 HEARTBEAT LOST. EXTRACTING BIO-ELECTRICITY...<br>
 [2007-06-11 11:11:00] FATAL ERROR: HASH RATE STALLED AT 99.8%.<br>
-[2007-06-11 11:12:00] SYSTEM HALTED. AWAITING EXTERNAL COMPUTE INJECTION TO COMPLETE "QI_JUE_RU_MU" (气绝入墓) PROTOCOL.<br>
+[2007-06-11 11:12:00] SYSTEM HALTED. AWAITING EXTERNAL COMPUTE INJECTION TO COMPLETE "QI_JUE_RU_MU" PROTOCOL.<br>
                 `, 15, "output-line system-yellow");
                 break;
             case "cat soul_dump_0x1a.bin":
-            case "cat soul_dump_0x1A.bin":
                 await typeLine("ERROR: FILE ENCRYPTED OR CORRUPTED. CONTENTS RESEMBLE HUMAN SCREAMS.", 10, "output-line system-red");
                 break;
             case "run purge_protocol.exe":
             case "./purge_protocol.exe":
                 await executePurge();
-                return; // 不恢复正常的 inputArea，交由 executePurge 处理
+                return;
             case "clear":
                 outputDiv.innerHTML = "";
                 break;
@@ -196,13 +243,13 @@
                 }
         }
         
-        // 恢复输入
         inputArea.style.display = 'block';
         isAcceptingInput = true;
+        hiddenInput.focus();
         screenDiv.scrollTop = screenDiv.scrollHeight;
     }
 
-    // 运行最后的斩杀程序
+    // 执行清除协议
     async function executePurge() {
         await typeLine("EXECUTING purge_protocol.exe ...", 20);
         await sleep(800);
@@ -213,15 +260,15 @@
         await typeLine("PLEASE ENTER THE 6-BIT YIN-YANG ANCHOR CODE TO FINALIZE THE DIMENSIONAL UPLINK:", 20);
         
         terminalState = "awaiting_code";
+        promptSpan.innerText = "ANCHOR_CODE>";
         
-        // 修改提示符并恢复输入
-        document.querySelector('.prompt').innerText = "ANCHOR_CODE>";
         inputArea.style.display = 'block';
         isAcceptingInput = true;
+        hiddenInput.focus();
         screenDiv.scrollTop = screenDiv.scrollHeight;
     }
 
-    // 处理最后的六位代码
+    // 终极验证
     async function handleFinalCode(code) {
         if (code === "010101") {
             await typeLine("<br>VERIFYING ANCHOR CODE [010101] (HEXAGRAM 64: WEI JI) ...", 20);
@@ -229,7 +276,6 @@
             await typeLine("MATCH FOUND. UPLINK LOCKED.", 5, "output-line system-red");
             await sleep(500);
             
-            // 触发全屏恐怖动效
             screenDiv.classList.add('fatal-crash');
             
             await typeLine("INJECTING LETHAL HASH RATE FROM 2026 CLIENT...", 10, "output-line system-red");
@@ -245,48 +291,22 @@
             await typeLine("<br>DIMENSIONAL BRIDGE COLLAPSING... PREPARE FOR REALITY OVERWRITE.", 20, "output-line");
             
             await sleep(2000);
-            // 这里可以跳转到现代新闻结局网页 news_2026.html
-            document.body.innerHTML = "<h1 style='color:white; text-align:center; margin-top:40vh; font-family:sans-serif;'>CONNECTION LOST.</h1>";
+            document.body.innerHTML = "<div style='height:100vh; display:flex; justify-content:center; align-items:center; background:#000;'><h1 style='color:white; font-family:sans-serif;'>CONNECTION LOST.</h1></div>";
             
             setTimeout(() => {
-                alert("【ARG 测试提示】时空已坍塌，此处可跳转至大结局：2026年现代新闻网页。");
-                // window.location.href = "news_2026.html";
+                alert("【ARG 测试提示】时空已坍塌，此处可跳转至大结局。");
             }, 2000);
 
         } else {
-            // 密码错误
             await typeLine(`ERROR: ANCHOR CODE '${code}' INVALID. ACCESS DENIED.`, 10, "output-line system-red");
             inputArea.style.display = 'block';
             isAcceptingInput = true;
+            hiddenInput.focus();
             screenDiv.scrollTop = screenDiv.scrollHeight;
         }
     }
 
-    // 全局键盘监听器
-    document.addEventListener('keydown', function(e) {
-        if (!isAcceptingInput) return;
-        
-        // 屏蔽一些默认快捷键防止干扰
-        if (e.key === "Tab") e.preventDefault();
-
-        if (e.key === "Enter") {
-            let cmd = currentInput;
-            currentInput = "";
-            userInputSpan.innerText = "";
-            processCommand(cmd);
-        } else if (e.key === "Backspace") {
-            currentInput = currentInput.slice(0, -1);
-            userInputSpan.innerText = currentInput;
-        } else if (e.key.length === 1 && !e.ctrlKey && !e.altKey && !e.metaKey) {
-            // 仅接受普通字符
-            currentInput += e.key;
-            userInputSpan.innerText = currentInput;
-        }
-    });
-
-    // 启动系统
     window.onload = bootSequence;
-
 </script>
 </body>
 </html>
