@@ -1,0 +1,257 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="zh-CN">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>控制面板 - 南江大学星火BBS</title>
+    <style type="text/css">
+        /* 2007年 Discuz! 控制面板复古样式 */
+        body { background-color: #E2E8F1; color: #333333; font-family: "SimSun", "宋体", Arial, sans-serif; font-size: 14px; margin: 0; padding: 10px 0; }
+        a { color: #004499; text-decoration: none; }
+        a:hover { text-decoration: underline; color: #FF6600; }
+        .bold { font-weight: bold; }
+        .red { color: #FF0000; }
+        
+        #wrap { width: 96%; min-width: 980px; margin: 0 auto; background-color: #FFFFFF; border: 1px solid #A6CBE7; padding: 15px; }
+        .header { border-bottom: 3px solid #336699; padding-bottom: 10px; margin-bottom: 15px; font-weight: bold; font-size: 14px; display: flex; justify-content: space-between; align-items: flex-end;}
+        .logo-text { font-family: "Microsoft YaHei", "黑体", sans-serif; font-size: 24px; color: #336699; }
+        
+        /* 左右分栏布局 */
+        .admin-container { display: flex; border: 1px solid #A6CBE7; background: #FFF; }
+        
+        /* 左侧菜单栏 */
+        .sidebar { width: 200px; background: #F0F5FA; border-right: 1px solid #A6CBE7; padding: 10px 0; }
+        .menu-group { margin-bottom: 15px; }
+        .menu-title { background: #EBF2F8; padding: 6px 15px; font-weight: bold; color: #336699; border-top: 1px solid #FFF; border-bottom: 1px solid #D5E4F1; font-size: 13px; }
+        .menu-list { list-style: none; margin: 0; padding: 0; }
+        .menu-list li a { display: block; padding: 8px 15px 8px 25px; color: #333; border-bottom: 1px dashed #D5E4F1; transition: background 0.2s; }
+        .menu-list li a:hover, .menu-list li a.active { background: #FFF; color: #FF6600; font-weight: bold; text-decoration: none; border-left: 3px solid #FF6600; padding-left: 22px; }
+        
+        /* 疯狂闪烁的草稿箱提示 */
+        .draft-alert { 
+            background: #FFEBEB; color: #FF0000 !important; font-weight: bold !important; 
+            border-left: 3px solid #FF0000 !important; animation: blink-bg 1.5s infinite;
+        }
+        @keyframes blink-bg { 0%, 100% { background: #FFEBEB; } 50% { background: #FFCCCC; } }
+
+        /* 右侧内容区 */
+        .content { flex: 1; padding: 20px; background: #FFF; }
+        .content-title { font-size: 16px; font-weight: bold; border-bottom: 2px solid #A6CBE7; padding-bottom: 8px; margin-bottom: 20px; color: #336699; }
+        
+        /* 数据表格 */
+        .data-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom: 20px; }
+        .data-table th { background: #F9FBFE; border: 1px solid #A6CBE7; padding: 8px; text-align: right; width: 120px; color: #666; font-weight: normal; }
+        .data-table td { border: 1px solid #A6CBE7; padding: 8px 12px; }
+        
+        /* 草稿箱编辑器样式 */
+        .editor-box { border: 1px solid #CCC; background: #F9F9F9; padding: 15px; }
+        .editor-input { width: 100%; padding: 5px; border: 1px solid #A6CBE7; font-family: SimSun; font-size: 14px; margin-bottom: 10px; box-sizing: border-box; }
+        .editor-textarea { width: 100%; height: 350px; padding: 10px; border: 1px solid #A6CBE7; font-family: "Courier New", SimSun; font-size: 14px; line-height: 1.8; box-sizing: border-box; resize: none; background: #FFF; color: #333; }
+        
+        .action-btn { background: #336699; color: #FFF; border: 1px solid #2B5E8A; padding: 6px 20px; cursor: pointer; font-weight: bold; margin-top: 10px; }
+        .action-btn:hover { background: #FF6600; border-color: #CC5200; }
+        .action-btn:disabled { background: #CCC; border-color: #999; cursor: not-allowed; }
+
+        /* 隐藏的区块 */
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+    </style>
+</head>
+<body>
+
+<div id="wrap">
+    <div class="header">
+        <div class="logo-text">星火BBS 个人控制面板 (UCP)</div>
+        <div><a href="bbs_2007.html">返回论坛首页</a> | <a href="#">退出登录</a></div>
+    </div>
+
+    <div class="admin-container">
+        <!-- 左侧菜单栏 -->
+        <div class="sidebar">
+            <div class="menu-group">
+                <div class="menu-title">个人资料</div>
+                <ul class="menu-list">
+                    <li><a href="#" class="tab-link active" data-target="tab-profile">公众信息与积分</a></li>
+                    <li><a href="#">修改头像/签名</a></li>
+                    <li><a href="#">密码与安全</a></li>
+                </ul>
+            </div>
+            
+            <div class="menu-group">
+                <div class="menu-title">短消息与附件</div>
+                <ul class="menu-list">
+                    <li><a href="#">收件箱 (0)</a></li>
+                    <li><a href="#">发件箱</a></li>
+                    <!-- 核心解密入口 -->
+                    <li><a href="#" class="tab-link draft-alert" data-target="tab-draft">草稿箱 (1) - 待处理</a></li>
+                </ul>
+            </div>
+
+            <div class="menu-group">
+                <div class="menu-title">版主管理权限</div>
+                <ul class="menu-list">
+                    <li><a href="#" class="tab-link" data-target="tab-mod">主题回收站 / 锁定区</a></li>
+                    <li><a href="#">IP 封禁管理</a></li>
+                    <li><a href="#">版块公告设置</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 右侧内容区 -->
+        <div class="content">
+            
+            <!-- 面板 1：公众信息与积分 (默认显示) -->
+            <div id="tab-profile" class="tab-content active">
+                <div class="content-title">公众信息与积分概要</div>
+                <div style="background:#FFF0F0; border:1px solid #FBC2C4; color:#D12F19; padding:10px; margin-bottom:15px; font-size:13px; font-weight:bold;">
+                    系统提示：您的草稿箱中有 1 份未发送的重要文档，最后修改于 2007-06-11 11:14:02。请及时处理！
+                </div>
+                <table class="data-table">
+                    <tr><th>用户名</th><td class="bold blue" style="font-size:16px;">05级_未济</td></tr>
+                    <tr><th>UID</th><td>6604 (注册于 2005-09-02)</td></tr>
+                    <tr><th>用户组</th><td class="bold red">区域C 实习版主</td></tr>
+                    <tr><th>最后登录 IP</th><td>127.0.0.1 (本地回环接口 - 异常端点)</td></tr>
+                    <tr><th>发帖数</th><td>742 篇</td></tr>
+                    <tr><th>精华数</th><td>12 篇</td></tr>
+                </table>
+                <table class="data-table">
+                    <tr><th colspan="2" style="text-align:center; background:#EBF2F8; color:#336699; font-weight:bold;">论坛财产与威望</th></tr>
+                    <tr><th>星火币</th><td><span style="color:#008000; font-weight:bold;">404</span> 枚</td></tr>
+                    <tr><th>威望</th><td><span style="color:#FF6600; font-weight:bold;">999</span> 点 (已达上限)</td></tr>
+                    <tr><th>贡献值</th><td><span class="red bold">-1</span> 点 (数据溢出异常)</td></tr>
+                </table>
+            </div>
+
+            <!-- 面板 2：版主锁定区 (提供解锁主页那些帖子的功能说明) -->
+            <div id="tab-mod" class="tab-content">
+                <div class="content-title">版主管理 - 锁定与屏蔽主题</div>
+                <p style="color:#666; font-size:13px; margin-bottom:15px;">以下主题因触发【紧急治安条例】已被后勤保卫处或系统（SYS_AUTO）强制锁定。您作为版主可查看缓存，但无法进行解锁操作。</p>
+                <table class="data-table" style="text-align:center;">
+                    <tr style="background:#F0F5FA;">
+                        <th style="text-align:center; width:60%;">被锁定主题</th>
+                        <th style="text-align:center; width:20%;">操作人</th>
+                        <th style="text-align:center; width:20%;">锁定时间</th>
+                    </tr>
+                    <tr>
+                        <td style="text-align:left;"><a href="#" class="bold red">「突发直播」狂汗！！南门外支巷那个废弃仓库里好像开始冒黑烟了？？？</a></td>
+                        <td>SYSTEM_AUTO</td>
+                        <td class="gray">2007-06-11 11:15</td>
+                    </tr>
+                    <tr>
+                        <td style="text-align:left;"><a href="#" class="bold">「招募」【传统民俗研习社】大四另类行为艺术：废旧主板“火葬”仪式</a></td>
+                        <td>保卫处管理员</td>
+                        <td class="gray">2007-06-11 11:20</td>
+                    </tr>
+                    <tr>
+                        <td style="text-align:left;"><a href="#" class="bold blue">「求助」主楼机房的集群服务器是不是中病毒了？底层一直弹乱码！</a></td>
+                        <td>SYSTEM_AUTO</td>
+                        <td class="gray">2007-06-11 11:22</td>
+                    </tr>
+                </table>
+                <div style="text-align:center; color:#FF0000; margin-top:30px; font-weight:bold;">[错误] 本地数据库链接已断开，无法调取被锁定帖子的正文缓存。</div>
+            </div>
+
+            <!-- 面板 3：草稿箱 (核心绝笔信) -->
+            <div id="tab-draft" class="tab-content">
+                <div class="content-title" style="border-bottom-color:#FF0000; color:#FF0000;">编辑草稿 - [ 绝密备忘录 ]</div>
+                <div class="editor-box">
+                    <div style="margin-bottom: 10px;">
+                        <span style="display:inline-block; width:60px; color:#666;">收件人：</span>
+                        <input type="text" class="editor-input" style="width:300px; background:#EEE;" value="[ 系统全局广播 ] (未发送)" disabled />
+                    </div>
+                    <div style="margin-bottom: 10px;">
+                        <span style="display:inline-block; width:60px; color:#666;">主  题：</span>
+                        <input type="text" class="editor-input" style="width:80%; font-weight:bold; color:#004499;" value="关于中止星轨矩阵与南江大学物理隔离的最后警告" readonly />
+                    </div>
+                    <textarea class="editor-textarea" readonly>
+如果有人在未来登入了这个账号，看到这封存在本地缓存里的草稿。
+说明地下深处的那根主干电缆，不知为什么，又被重新通电了。
+
+我是未济。南江大学05级计科系。
+如果你能看到这，说明你已经破解了二进制机器码与阴阳爻的底层对应关系。
+那是我们的错。我们太傲慢了。
+
+起初，我们只是想搞个毕业前的“行为艺术”。
+我们收集了系里报废的几百块主板，把它们运到了南门外那个废弃仓库里。
+我们把那些密密麻麻的晶体管和电容，按照周易六十四卦的方位重新焊接，甚至专门编写了脚本去控制高低电平的流向。我们试图用物理硬件来复刻“生克制化”。
+
+但在今天中午11点12分，阵法通电闭环的瞬间，一切都失控了。
+
+硬件没有烧毁，而是... 它们“活”了。
+服务器的算力突破了物理阀值，水冷管直接爆裂，但流出来的水瞬间就被蒸发了。
+仓库的卷帘门不仅电磁锁死，门框周围甚至出现了空间意义上的扭曲和重压。就像是有成千上万吨的泥土从四面八方朝我们挤压过来。
+
+那是“气绝入墓”的物理具象化！
+我们成了阵法的祭品。
+
+我正在用这台没联网的本地终端打字。周围的铜线正在熔化，但它们熔化的轨迹，竟然全是六十四卦的形状！是既济卦... 一切正在被强行锁定。
+为了不让这股能量溢出并摧毁整个大学的电网，我们砸烂了控制面板，从里面把节点焊死了。
+我们的肉体马上就会被碳化，但我们的意识，好像正在被编译成 ASCII 码，被吸入深地那个更庞大的【四川主服务器节点】。
+
+不管你是谁，不管你来自哪一年。
+别找了。别查了。别去试图唤醒深地节点！
+那些帖子被锁定是好事，让这一切掩埋在2007年吧！
+
+千万不要去运行最后那个程序！
+千万不要
+千万不
+                    </textarea>
+                    
+                    <div style="margin-top:20px; border-top:1px dashed #CCC; padding-top:15px; text-align:center;">
+                        <div style="color:#666; font-size:12px; margin-bottom:10px;">检测到附件：<span class="bold red">deep_core_access.exe</span> (2.4MB)</div>
+                        <button class="action-btn" id="btn-run-core">发送广播并运行附件程序</button>
+                        <button class="action-btn" style="background:#FFF; color:#333;" disabled>保存草稿</button>
+                        <button class="action-btn" style="background:#FFF; color:#FF0000; border-color:#FF0000;" disabled>删除该草稿</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div style="text-align: center; margin-top: 30px; color: #999; font-size: 11px; font-family: Arial;">
+        Powered by Discuz! Control Panel &copy; 2001-2007 Comsenz Inc.
+    </div>
+</div>
+
+<script type="text/javascript">
+    // 简单的 Tab 切换逻辑
+    const tabLinks = document.querySelectorAll('.tab-link');
+    const tabContents = document.querySelectorAll('.tab-content');
+
+    tabLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // 移除所有 active 类
+            tabLinks.forEach(l => l.classList.remove('active'));
+            tabContents.forEach(c => c.classList.remove('active'));
+            
+            // 激活当前点击的
+            this.classList.add('active');
+            const targetId = this.getAttribute('data-target');
+            document.getElementById(targetId).classList.add('active');
+            
+            // 如果点击了草稿箱，停止草稿箱的红色闪烁报警
+            if(targetId === 'tab-draft') {
+                this.classList.remove('draft-alert');
+                this.style.color = '#FF6600';
+            }
+        });
+    });
+
+    // 核心跳转逻辑：点击运行附件，坠入四川节点终极终端
+    document.getElementById('btn-run-core').addEventListener('click', function() {
+        if(confirm("【系统安全警告】\n您正在尝试建立与 深地主控服务器(四川节点) 的远端连接。\n这可能会引发不可逆的时空数据溢出。\n\n是否继续？")) {
+            // 模拟运行程序的卡顿与乱码
+            document.body.style.backgroundColor = '#000';
+            document.body.innerHTML = '<h2 style="color:#0f0; text-align:center; margin-top:20%; font-family:Courier New;">[ EXE INITIATED ]<br>ESTABLISHING UPLINK TO CORE NODE...<br>BYPASSING 2007 FIREWALL...</h2>';
+            setTimeout(() => {
+                // TODO: 这里填入下一步“终极终端”的 HTML 文件名
+                window.location.href = 'core_terminal.html'; 
+            }, 2000);
+        }
+    });
+</script>
+
+</body>
+</html>
