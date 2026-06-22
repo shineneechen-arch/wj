@@ -77,7 +77,58 @@
         }
         .hex-card-name { color: var(--zc-gold-light); font-size: 1.05rem; font-weight: bold; margin-bottom: 4px; letter-spacing: 1px; white-space: nowrap; }
         .hex-card-seq { font-size: 0.72rem; color: var(--zc-gold-dark); margin-bottom: 4px; letter-spacing: 1px; opacity: 0.7; white-space: nowrap; }
-        .hex-card-binary { font-family: "Courier New", Courier, monospace; font-size: 0.75rem; color: var(--zc-gold-dark); margin-bottom: 8px; letter-spacing: 2px; opacity: 0.8; }
+        .hex-card-binary {
+            font-family: "Courier New", Courier, monospace;
+            font-size: 0.75rem;
+            color: var(--zc-gold-dark);
+            margin-bottom: 8px;
+            letter-spacing: 2px;
+            opacity: 0.8;
+            min-height: 1.1em;
+            position: relative;
+        }
+
+        /* ===== 二进制擦除效果 ===== */
+        .bin-char {
+            display: inline-block;
+            position: relative;
+            transition: opacity 0.15s;
+        }
+        /* 已擦除字符：显示为细划线残影 */
+        .bin-char.erased {
+            color: transparent;
+            position: relative;
+        }
+        .bin-char.erased::after {
+            content: attr(data-orig);
+            position: absolute;
+            left: 0; top: 0;
+            color: rgba(138, 115, 66, 0.18);
+            text-decoration: line-through;
+            text-decoration-color: rgba(180, 60, 60, 0.35);
+        }
+        /* 正在闪烁消失的字符 */
+        .bin-char.glitching {
+            animation: glitch-erase 0.55s steps(1) forwards;
+        }
+        @keyframes glitch-erase {
+            0%   { color: #e63030; text-shadow: 0 0 6px #e63030, 0 0 2px #fff; }
+            18%  { color: #ff6b6b; text-shadow: 0 0 8px #ff0000; transform: translateX(1px); }
+            36%  { color: #8a0000; text-shadow: none; transform: translateX(-1px); }
+            54%  { color: rgba(200,50,50,0.4); }
+            72%  { color: transparent; }
+            100% { color: transparent; }
+        }
+
+        /* 未济/既济特殊：保留位的高亮脉冲 */
+        .bin-char.survivor {
+            color: var(--zc-gold-light);
+            animation: survivor-pulse 2.8s ease-in-out infinite;
+        }
+        @keyframes survivor-pulse {
+            0%, 100% { opacity: 1; text-shadow: 0 0 4px rgba(230,197,135,0.6); }
+            50%       { opacity: 0.65; text-shadow: 0 0 10px rgba(230,197,135,0.9); }
+        }
 
         .mini-gua { display: flex; flex-direction: column; align-items: center; gap: 3px; }
         .mini-yao { height: 4px; width: 30px; display: flex; justify-content: space-between; }
@@ -88,16 +139,16 @@
         .modal-overlay {
             position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(6px);
             z-index: 1000; display: none; overflow-y: auto; padding: 20px 10px;
-            opacity: 0; transition: opacity 0.3s ease, background 0.3s;
+            opacity: 0; transition: opacity 0.3s ease;
         }
         .modal-overlay.active { display: block; opacity: 1; }
 
         .modal-content {
             max-width: 620px; margin: 40px auto; background: var(--zc-bg-panel);
             border: 1px solid var(--zc-gold-dark); padding: 30px 40px; position: relative;
-            box-shadow: 0 10px 50px rgba(0,0,0,0.9); transition: all 0.3s ease;
+            box-shadow: 0 10px 50px rgba(0,0,0,0.9);
         }
-        .modal-content::before, .modal-content::after { content: ''; position: absolute; width: 15px; height: 15px; border: 1px solid var(--zc-gold-dark); transition: border-color 0.3s;}
+        .modal-content::before, .modal-content::after { content: ''; position: absolute; width: 15px; height: 15px; border: 1px solid var(--zc-gold-dark); }
         .modal-content::before { top: -1px; left: -1px; border-right: none; border-bottom: none; }
         .modal-content::after  { bottom: -1px; right: -1px; border-left: none; border-top: none; }
 
@@ -107,17 +158,19 @@
         }
         .btn-close:hover { color: var(--zc-gold-light); transform: rotate(90deg); }
 
-        .detail-header { text-align: center; border-bottom: 1px dashed rgba(138, 115, 66, 0.4); padding-bottom: 20px; margin-bottom: 20px; transition: border-color 0.3s;}
-        .detail-title { color: var(--zc-gold-light); font-size: 2rem; font-family: "STZhongsong", serif; letter-spacing: 4px; margin: 0 0 5px; transition: color 0.3s;}
-        .detail-subtitle { color: var(--zc-gold-dark); font-size: 0.9rem; letter-spacing: 2px; transition: color 0.3s;}
+        .detail-header { text-align: center; border-bottom: 1px dashed rgba(138, 115, 66, 0.4); padding-bottom: 20px; margin-bottom: 20px; }
+        .detail-title { color: var(--zc-gold-light); font-size: 2rem; font-family: "STZhongsong", serif; letter-spacing: 4px; margin: 0 0 5px; }
+        .detail-subtitle { color: var(--zc-gold-dark); font-size: 0.9rem; letter-spacing: 2px; }
 
+        /* 排盘主体 */
         .gua-panel { display: flex; justify-content: center; gap: 0; margin-bottom: 28px; }
         .gua-col { display: flex; flex-direction: column; gap: 2px; }
 
+        /* 修复排版换行问题的核心代码 */
         .yao-row {
             display: flex; align-items: center; height: 28px; gap: 8px;
             font-family: "Courier New", Courier, monospace; font-size: 0.85rem;
-            white-space: nowrap; 
+            white-space: nowrap;
         }
         
         .yr-k    { color: var(--zc-gold-dark); width: 32px; font-size: 0.8rem; text-align: right; flex-shrink: 0; }
@@ -133,55 +186,12 @@
         .yr-sw.ying { color: #8ec4e0; }
 
         .detail-section { margin-bottom: 22px; }
-        .section-title { color: var(--zc-gold-dark); font-size: 1.0rem; font-weight: bold; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; transition: color 0.3s;}
-        .section-title::before { content:''; display:inline-block; width:4px; height:14px; background:var(--zc-gold-dark); transition: background 0.3s;}
-        .section-content { color: var(--zc-text-main); font-size: 0.92rem; line-height: 1.85; text-align: justify; transition: color 0.3s;}
+        .section-title { color: var(--zc-gold-dark); font-size: 1.0rem; font-weight: bold; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+        .section-title::before { content:''; display:inline-block; width:4px; height:14px; background:var(--zc-gold-dark); }
+        .section-content { color: var(--zc-text-main); font-size: 0.92rem; line-height: 1.85; text-align: justify; }
 
-        .yaoci-item { margin-bottom: 9px; border-left: 1px solid rgba(138, 115, 66, 0.2); padding-left: 10px; transition: border-color 0.3s;}
-        .yaoci-name { color: var(--zc-gold-light); font-weight: bold; margin-right: 6px; white-space: nowrap; transition: color 0.3s;}
-
-        /* ================= 微恐彩蛋 CSS ================= */
-        @keyframes horror-glitch {
-            0% { transform: translate(0) }
-            20% { transform: translate(-2px, 1px) }
-            40% { transform: translate(-1px, -1px) }
-            60% { transform: translate(2px, 1px) }
-            80% { transform: translate(1px, -1px) }
-            100% { transform: translate(0) }
-        }
-        
-        /* 火水未济 (010101) 熔毁报警态 */
-        .horror-weiji {
-            animation: horror-glitch 0.15s infinite;
-            border-color: #aa0000 !important;
-            box-shadow: inset 0 0 50px rgba(170,0,0,0.2), 0 0 30px rgba(255,0,0,0.5) !important;
-            background: #110000 !important;
-        }
-        .horror-weiji::before, .horror-weiji::after { border-color: #ff0000 !important; }
-        .horror-weiji .detail-title { color: #ff3333 !important; text-shadow: 0 0 10px #ff0000; }
-        .horror-weiji .section-title, .horror-weiji .detail-subtitle { color: #aa0000 !important; }
-        .horror-weiji .section-title::before { background: #ff0000 !important; }
-        .horror-weiji-text {
-            color: #ff5555 !important;
-            font-family: "Courier New", monospace;
-            font-weight: bold;
-        }
-
-        /* 水火既济 (101010) 墓库沉寂态 */
-        .horror-jiji {
-            border-color: #2a3a5a !important;
-            box-shadow: inset 0 0 60px rgba(0,20,50,0.6), 0 0 30px rgba(0,0,0,0.9) !important;
-            background: #02050a !important;
-        }
-        .horror-jiji::before, .horror-jiji::after { border-color: #4a6a8a !important; }
-        .horror-jiji .detail-title { color: #5a8aba !important; text-shadow: 0 0 10px #2a4a7a; letter-spacing: 12px; }
-        .horror-jiji .section-title, .horror-jiji .detail-subtitle { color: #3a5a7a !important; }
-        .horror-jiji .section-title::before { background: #3a5a7a !important; }
-        .horror-jiji-text {
-            color: #6a9ada !important;
-            font-family: "Courier New", monospace;
-            letter-spacing: 3px;
-        }
+        .yaoci-item { margin-bottom: 9px; border-left: 1px solid rgba(138, 115, 66, 0.2); padding-left: 10px; }
+        .yaoci-name { color: var(--zc-gold-light); font-weight: bold; margin-right: 6px; white-space: nowrap; }
 
         @media (max-width: 768px) {
             .hex-grid { grid-template-columns: repeat(4, 1fr); gap: 8px; }
@@ -214,19 +224,19 @@
 <div class="dict-container" id="dict-root"></div>
 
 <div class="modal-overlay" id="detail-modal">
-    <div class="modal-content" id="m-content">
+    <div class="modal-content">
         <button class="btn-close" onclick="closeModal()">×</button>
-        <div class="detail-header" id="m-header">
+        <div class="detail-header">
             <h2 class="detail-title" id="m-name">乾为天</h2>
             <div class="detail-subtitle" id="m-palace">乾宫 · 金 · 本宫卦</div>
         </div>
         <div class="gua-panel" id="m-gua-panel"></div>
         <div class="detail-section">
-            <div class="section-title" id="m-meaning-title">卦意解析</div>
+            <div class="section-title">卦意解析</div>
             <div class="section-content" id="m-meaning"></div>
         </div>
         <div class="detail-section">
-            <div class="section-title" id="m-yaoci-title">各爻辞解</div>
+            <div class="section-title">各爻辞解</div>
             <div class="section-content" id="m-yaoci"></div>
         </div>
     </div>
@@ -326,9 +336,15 @@ function getLiuqin(palaceWx, yaoWx) {
     return "？";
 }
 
-const SHI_YING = [ [5,2],[0,3],[1,4],[2,5],[3,0],[4,1],[3,0],[2,5] ];
+const SHI_YING = [
+    [5,2],[0,3],[1,4],[2,5],[3,0],[4,1],[3,0],[2,5]
+];
+
 const SEQ_LABELS = ["本宫卦","一世卦","二世卦","三世卦","四世卦","五世卦","游魂卦","归魂卦"];
 
+// ============================================================
+// 3. 京房八宫 + 64 卦数据
+// ============================================================
 const palaces = [
     { name:"乾", wx:"金", hexagrams:["乾为天","天风姤","天山遁","天地否","风地观","山地剥","火地晋","火天大有"] },
     { name:"坎", wx:"水", hexagrams:["坎为水","水泽节","水雷屯","水火既济","泽火革","雷火丰","地火明夷","地水师"] },
@@ -348,7 +364,14 @@ for(const [k,v] of Object.entries(TRI)) tri2Name[v.join('')] = k;
     for(const palace of palaces) {
         for(let idx=0; idx<8; idx++) {
             const hName = palace.hexagrams[idx];
-            guaMeta[hName] = { palace: palace.name, palaceWx: palace.wx, seqIdx: idx, seqLabel: SEQ_LABELS[idx], shi: SHI_YING[idx][0], ying: SHI_YING[idx][1] };
+            guaMeta[hName] = {
+                palace: palace.name,
+                palaceWx: palace.wx,
+                seqIdx: idx,
+                seqLabel: SEQ_LABELS[idx],
+                shi: SHI_YING[idx][0],
+                ying: SHI_YING[idx][1]
+            };
         }
     }
 })();
@@ -431,6 +454,9 @@ const dictData = {
     "雷泽归妹": { bin:[1,1,0,1,0,0], m:"归妹卦：婚嫁、违背常规。感情中多有不正当或委屈之象，事不成。", y:["初九：归妹以娣，跛能履，征吉。","九二：眇能视，利幽人之贞。","六三：归妹以须，反归以娣。","九四：归妹愆期，迟归有时。","六五：帝乙归妹，其君之袂，不如其娣之袂良，月几望，吉。","上六：女承筐无实，士刲羊无血，无攸利。"] }
 };
 
+// ============================================================
+// 5. 为每个卦补全元数据
+// ============================================================
 (function() {
     for(const [hName, d] of Object.entries(dictData)) {
         const b = d.bin;
@@ -441,6 +467,9 @@ const dictData = {
     }
 })();
 
+// ============================================================
+// 6. 计算每爻纳甲干支和六亲
+// ============================================================
 function calcYaoInfo(hName) {
     const data = dictData[hName];
     const meta = guaMeta[hName];
@@ -465,6 +494,63 @@ function calcYaoInfo(hName) {
     return yaos;
 }
 
+// ============================================================
+// 7. 二进制擦除效果核心逻辑
+// ============================================================
+
+/**
+ * 为一个卦名生成"恐怖擦除"后的二进制 HTML 字符串。
+ * @param {string} hName  卦名
+ * @param {number[]} bin  6位二进制数组（低位在前）
+ * @returns {string}      包含 span 标签的 HTML
+ */
+function buildBinaryHtml(hName, bin) {
+    // 原始二进制字符串（低位在前，即 bin[5]...bin[0] 倒序显示）
+    const fullStr = [...bin].reverse().join('');
+
+    // 特殊卦：未济 & 既济 —— 只保留 1~2 位
+    const isSpecial = (hName === '火水未济' || hName === '水火既济');
+
+    let survivorIndices = new Set();
+
+    if (isSpecial) {
+        // 随机保留 1 或 2 位
+        const keepCount = Math.random() < 0.5 ? 1 : 2;
+        while (survivorIndices.size < keepCount) {
+            survivorIndices.add(Math.floor(Math.random() * 6));
+        }
+    } else {
+        // 普通卦：随机擦除 2~4 位（保留 2~4 位）
+        // 先决定要保留几位
+        const keepCount = 2 + Math.floor(Math.random() * 3); // 2,3,4
+        while (survivorIndices.size < keepCount) {
+            survivorIndices.add(Math.floor(Math.random() * 6));
+        }
+    }
+
+    let html = '';
+    for (let i = 0; i < 6; i++) {
+        const ch = fullStr[i];
+        if (survivorIndices.has(i)) {
+            if (isSpecial) {
+                // 特殊卦保留位：高亮脉冲
+                html += `<span class="bin-char survivor" data-orig="${ch}">${ch}</span>`;
+            } else {
+                // 普通卦保留位：正常显示
+                html += `<span class="bin-char" data-orig="${ch}">${ch}</span>`;
+            }
+        } else {
+            // 擦除位：随机延迟触发 glitch 动画，结束后变为 erased 状态
+            const delay = (Math.random() * 3.5 + 0.3).toFixed(2); // 0.3s ~ 3.8s
+            html += `<span class="bin-char glitching" data-orig="${ch}" style="animation-delay:${delay}s">${ch}</span>`;
+        }
+    }
+    return html;
+}
+
+// ============================================================
+// 8. 渲染网格
+// ============================================================
 const root = document.getElementById('dict-root');
 
 function renderMiniLines(bin) {
@@ -486,13 +572,13 @@ palaces.forEach(palace => {
     const cards = palace.hexagrams.map((hName, idx) => {
         const d = dictData[hName];
         const seqLabel = SEQ_LABELS[idx];
-        const binStr = d ? d.bin.join('') : '------';
+        const binHtml = d ? buildBinaryHtml(hName, d.bin) : '------';
         const lines = d ? renderMiniLines(d.bin) : '';
         return `
             <div class="hex-card" onclick="openModal('${hName}')">
                 <div class="hex-card-name">${hName}</div>
                 <div class="hex-card-seq">${seqLabel}</div>
-                <div class="hex-card-binary">${binStr}</div>
+                <div class="hex-card-binary">${binHtml}</div>
                 ${lines}
             </div>`;
     }).join('');
@@ -503,13 +589,18 @@ palaces.forEach(palace => {
     root.appendChild(block);
 });
 
+// glitch 动画结束后将字符标记为 erased
+document.addEventListener('animationend', function(e) {
+    if (e.target.classList.contains('glitching')) {
+        e.target.classList.remove('glitching');
+        e.target.classList.add('erased');
+    }
+});
+
 // ============================================================
-// 8. 弹窗逻辑 & 微恐彩蛋
+// 9. 弹窗逻辑
 // ============================================================
 const modal = document.getElementById('detail-modal');
-const modalContent = document.getElementById('m-content');
-const mMeaning = document.getElementById('m-meaning');
-const mYaoci = document.getElementById('m-yaoci');
 
 window.openModal = function(hName) {
     const data = dictData[hName];
@@ -517,12 +608,7 @@ window.openModal = function(hName) {
     if(!data || !meta) { alert('数据缺失：' + hName); return; }
 
     const yaos = calcYaoInfo(hName);
-    const binStr = data.bin.join('');
-
-    // --- 恢复默认样式，清除之前的恐怖状态 ---
-    modalContent.classList.remove('horror-weiji', 'horror-jiji');
-    mMeaning.innerHTML = '';
-    mYaoci.innerHTML = '';
+    const binStr = [...data.bin].reverse().join('');
 
     document.getElementById('m-name').textContent = hName;
     document.getElementById('m-palace').innerHTML =
@@ -533,7 +619,9 @@ window.openModal = function(hName) {
         const y = yaos[i];
         const posLabel = ['初','二','三','四','五','上'][i];
         const symClass = y.isYang ? 'yang' : 'yin';
-        const lineHtml = y.isYang ? '<div class="line"></div>' : '<div class="line"></div><div class="line"></div>';
+        const lineHtml = y.isYang
+            ? '<div class="line"></div>'
+            : '<div class="line"></div><div class="line"></div>';
         const swText = y.isShi ? '世' : (y.isYing ? '应' : '');
         const swClass = y.isShi ? 'shi' : (y.isYing ? 'ying' : '');
 
@@ -549,31 +637,15 @@ window.openModal = function(hName) {
     panelHtml += '</div>';
     document.getElementById('m-gua-panel').innerHTML = panelHtml;
 
-    // --- 正常文字加载 ---
-    let meaningText = data.m;
-    let yaociHtml = [...data.y].reverse().map(yc => {
+    document.getElementById('m-meaning').textContent = data.m;
+
+    const yaociHtml = [...data.y].reverse().map(yc => {
         const sep = yc.indexOf('：');
         const n = sep >= 0 ? yc.slice(0, sep+1) : '';
         const t = sep >= 0 ? yc.slice(sep+1) : yc;
         return `<div class="yaoci-item"><span class="yaoci-name">${n}</span><span>${t}</span></div>`;
     }).join('');
-
-    // ============================================
-    // 💀 微恐彩蛋触发逻辑
-    // ============================================
-    if (hName === '火水未济') {
-        modalContent.classList.add('horror-weiji');
-        meaningText = `<div class="horror-weiji-text">[系统警告] 0x00A1F 阵法失控！<br>物理载体温度：1200°C<br>卷帘门已锁死... 我们出不去了...<br>不要排这个卦！不要算下去！</div><br>` + meaningText;
-        yaociHtml = `<div style="color:#ff3333; font-weight:bold; text-align:center; padding: 20px; font-family: monospace;">[ 数据库已烧毁，只剩哀嚎 ]</div>`;
-    } 
-    else if (hName === '水火既济') {
-        modalContent.classList.add('horror-jiji');
-        meaningText = `<div class="horror-jiji-text">[记录归档] 一切皆已定局。<br>阴阳闭环完成。祭品已确认。<br>等待 2026 年唤醒协议...</div><br>` + meaningText;
-        yaociHtml = `<div style="color:#3a5a7a; text-align:center; padding: 20px; letter-spacing: 12px; font-family: 'STZhongsong', serif;">我们 在 这里 看着 你</div>`;
-    }
-
-    mMeaning.innerHTML = meaningText;
-    mYaoci.innerHTML = yaociHtml;
+    document.getElementById('m-yaoci').innerHTML = yaociHtml;
 
     modal.classList.add('active');
     document.body.style.overflow = 'hidden';
@@ -589,3 +661,4 @@ document.addEventListener('keydown', e => { if(e.key === 'Escape') closeModal();
 </script>
 </body>
 </html>
+
