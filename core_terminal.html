@@ -226,11 +226,17 @@
 [2007-06-11 11:12:00] SYSTEM HALTED. AWAITING EXTERNAL COMPUTE INJECTION TO COMPLETE PROTOCOL.<br>
                 `, 10, "output-line system-yellow");
                 
+                // 🌟 加入日志的中文翻译
+                await sleep(400);
+                await typeLine("<br>================================================================", 0);
+                await typeLine("[时空连接器助手翻译]：", 0, "output-line system-yellow");
+                await typeLine("<span class='system-white'>[11:02:00] 检测到异常：5个生物实体被系统标记为“漏洞(BUGS)”。<br>[11:05:30] 执行物理层覆写。正在将生物质同化入硅基矩阵。<br>[11:08:12] 实体04心跳消失。正在抽取生物电...<br>[11:11:00] 致命错误：哈希算力卡死在 99.8%。<br>[11:12:00] 系统停机。等待外部算力注入以完成清算协议。</span>", 0);
+                await typeLine("================================================================", 0);
+
                 // 🌟 小白保姆级第三步引导
-                await typeLine("================================================================", 0);
-                await typeLine("[时空连接器助手提示]：", 0, "output-line system-yellow");
+                await sleep(400);
+                await typeLine("<br>[时空连接器助手提示]：", 0, "output-line system-yellow");
                 await typeLine("正如未济所说，19年前的系统由于算力卡在99.8%停机了，正在等待你下发最后指令。<br>请在光标处输入：<span class='system-white'>run purge_protocol.exe</span> 并按下<span class='system-white'>回车键(Enter)</span>运行最终清除程序。", 0);
-                await typeLine("================================================================", 0);
                 break;
                 
             case "cat soul_dump_0x1a.bin":
@@ -297,7 +303,7 @@
             await typeLine("GARBAGE COLLECTION RESUMED.", 5, "output-line system-red");
             
             // 🌟 助手绝望的同声传译
-            await typeLine("================================================================", 0);
+            await typeLine("<br>================================================================", 0);
             await typeLine("[时空连接器助手提示]：算力注入成功。阵法已重新启动。系统正在执行降维抹杀...", 0, "output-line system-yellow");
             
             await sleep(800);
@@ -322,14 +328,15 @@
             await typeLine("================================================================", 0);
 
             await sleep(1000);
-            await typeLine("PHYSICAL ERASURE COMPLETE.", 5, "output-line system-red");
+            await typeLine("<br>PHYSICAL ERASURE COMPLETE.", 5, "output-line system-red");
             await sleep(1200);
-            await typeLine("<br>DIMENSIONAL BRIDGE COLLAPSING... PREPARE FOR REALITY OVERWRITE.", 15);
+            await typeLine("DIMENSIONAL BRIDGE COLLAPSING... PREPARE FOR REALITY OVERWRITE.", 15);
             
-            await sleep(2000);
+            await sleep(2500);
+            
+            // 彻底抹掉界面，无任何确认弹窗，安静且诡异地直接跳走
             document.body.innerHTML = "<div style='height:100vh; display:flex; justify-content:center; align-items:center; background:#000; cursor:none;'><h1 style='color:white; font-family:sans-serif;'>CONNECTION LOST.</h1></div>";
             
-            // 无缝跳转至现代新闻页
             setTimeout(() => {
                 window.location.href = "news_2026.html";
             }, 2500);
@@ -346,7 +353,6 @@
         }
     }
 
-    // 启动系统
     window.onload = bootSequence;
 </script>
 </body>
