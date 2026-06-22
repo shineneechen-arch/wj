@@ -15,27 +15,31 @@
         .post-content { padding: 15px 20px; vertical-align: top; background: #FFF; line-height: 1.8; }
         .post-info { border-bottom: 1px dashed #CCC; padding-bottom: 5px; margin-bottom: 15px; color: #666; font-size: 12px; }
         .avatar { width: 100px; height: 100px; border: 1px solid #CCC; margin: 10px auto; background: #E2E8F1; display: flex; align-items: center; justify-content: center; color: #999; }
+        .avatar-img { width: 100px; height: 100px; object-fit: cover; }
         
         /* 核心高亮样式 */
         .highlight-box { background: #FFFFE0; border: 1px dashed #FFCC00; padding: 10px; margin: 15px 0; color: #333; }
         .tool-link { display: inline-block; padding: 8px 15px; background: #336699; color: #FFF; font-weight: bold; margin-top: 10px; }
         .tool-link:hover { color: #FFF; background: #FF6600; text-decoration: none; }
+
+        /* 引用框样式 (2007年Discuz常用) */
+        .quote-box { border: 1px solid #ccc; background: #F9F9F9; padding: 10px; margin: 10px 0; font-size: 12px; color: #666; }
     </style>
 </head>
 <body>
 
 <div id="wrap">
     <div class="header">
-        <a href="bbs_2007.html">星火BBS首页</a> &raquo; 区域 B：学术科技与极客前沿探索 &raquo; 「脑洞」如果把高低电平定义为阴阳...
+        <a href="bbs_2007.html">星火BBS首页</a> &raquo; 区域 B：技术流与前沿探索 &raquo; 「脑洞」如果把高低电平定义为阴阳...
     </div>
 
-    <!-- 一楼 楼主 -->
+    <!-- 楼主 -->
     <table class="post-table">
         <tr>
             <td class="post-user">
                 <div style="font-weight:bold; color:#004499; font-size:16px;">薛定谔的键盘</div>
                 <div class="avatar">无头像</div>
-                <div style="color:#666; font-size:12px; margin-top:5px;">级别: 极客狂人<br>精华: 4<br>发帖: 312</div>
+                <div style="color:#666; font-size:12px; margin-top:5px;">级别: 硬件发烧友<br>精华: 4<br>发帖: 312</div>
             </td>
             <td class="post-content">
                 <div class="post-info">楼主 发表于 2007-06-09 23:14:05 | 只看该作者</div>
@@ -48,45 +52,115 @@
                 <div class="highlight-box">
                     为了验证这个理论，我用 JS 写了个沙盒排盘工具，可以把卦象自动生成出来。你们谁有兴趣可以点进去跑跑看：<br>
                     <!-- 将这里的 href 替换为你真实的六爻网页名字 -->
-                    <a href="YOUR_LIUYAO_TOOL.html" target="_blank" class="tool-link">👉 点击进入：易学与机器码转化沙盒 (V1.0)</a>
+                    <a href="liuyao.html" target="_blank" class="tool-link">👉 点击进入：易学与机器码转化沙盒 (V1.0)</a>
                 </div>
             </td>
         </tr>
     </table>
 
-    <!-- 二楼 沙发 -->
+    <!-- 沙发 -->
     <table class="post-table">
         <tr>
             <td class="post-user">
                 <div style="font-weight:bold; color:#004499; font-size:16px;">寂寞的七喜</div>
                 <div class="avatar">无头像</div>
+                <div style="color:#666; font-size:12px; margin-top:5px;">级别: 灌水门童</div>
             </td>
             <td class="post-content">
                 <div class="post-info">沙发 发表于 2007-06-10 01:22:15</div>
-                卧槽，楼主这个脑洞绝了！膜拜大神！<br>
-                按照你这个理论，咱们计科系那个【未济小组】，名字叫“未济”，那它翻译成机器码密码岂不就是一段固定的底层指令了？
+                卧槽，楼主这个脑洞绝了！膜拜技术流大神！<br>
+                按照你这个理论，咱们计科系那个【未济小组】，名字叫“未济”，那它翻译成机器码岂不就是一段固定的底层指令了？细思极恐啊。
             </td>
         </tr>
     </table>
 
-    <!-- 三楼 板凳 (提供解谜核心线索) -->
+    <!-- 板凳 -->
+    <table class="post-table">
+        <tr>
+            <td class="post-user">
+                <div style="font-weight:bold; color:#004499; font-size:16px;">紫水晶的眼泪</div>
+                <div class="avatar">无头像</div>
+                <div style="color:#666; font-size:12px; margin-top:5px;">级别: 潜水员</div>
+            </td>
+            <td class="post-content">
+                <div class="post-info">板凳 发表于 2007-06-10 01:45:33</div>
+                太长不看，纯路过拿两分，顺便马克一下。楼主当心被电工电子的老师挂科~~~ [流汗.gif]
+            </td>
+        </tr>
+    </table>
+
+    <!-- 地板 -->
+    <table class="post-table">
+        <tr>
+            <td class="post-user">
+                <div style="font-weight:bold; color:#004499; font-size:16px;">做人要厚道</div>
+                <div class="avatar">无头像</div>
+                <div style="color:#666; font-size:12px; margin-top:5px;">级别: 知名水怪</div>
+            </td>
+            <td class="post-content">
+                <div class="post-info">地板 发表于 2007-06-10 02:10:05</div>
+                试了一下楼主的工具，UI做得很炫酷啊！不过在我的 IE6 下稍微有点错位，建议加个兼容代码。另外把主板当八卦阵这个想法太危险了，学校本来就限电，小心宿舍跳闸被宿管大妈查水表！
+            </td>
+        </tr>
+    </table>
+
+    <!-- 5楼 (提供解谜核心线索) -->
     <table class="post-table">
         <tr>
             <td class="post-user">
                 <div style="font-weight:bold; color:#FF0000; font-size:16px;">05级_未济</div>
-                <div class="avatar">自定义</div>
+                <div class="avatar">
+                    <div style="width:100px; height:100px; background:#000; color:#F00; font-family:SimSun; display:flex; align-items:center; justify-content:center; font-size:30px;">爻</div>
+                </div>
                 <div style="color:#666; font-size:12px; margin-top:5px;">级别: 版主<br>状态: 离线</div>
             </td>
             <td class="post-content">
-                <div class="post-info">板凳 发表于 2007-06-10 03:45:10</div>
+                <div class="post-info">5楼 发表于 2007-06-10 03:45:10</div>
+                <div class="quote-box">
+                    <b>引用 寂寞的七喜 在 2007-06-10 01:22:15 的发言：</b><br>
+                    按照你这个理论，咱们计科系那个【未济小组】，名字叫“未济”，那它翻译成机器码岂不就是一段固定的底层指令了？
+                </div>
+                <br>
                 二楼很聪明。<br><br>
                 《易经》第64卦，<b>火水未济</b>。上卦为离（火），下卦为坎（水）。<br>
                 你们去用楼主的排盘工具起一卦看看它的阴阳组合就知道了。<br><br>
                 <span style="color:#FF0000; font-weight:bold;">从下往上排，阴对应0，阳对应1。正好是一串 6 位的绝对控制代码。</span><br>
-                有了这串代码，就能掌控阵法的阀门。可惜，大多数人都活不到顿悟的那一刻。
+                有了这串代码，就能打开底层的访问权限。可惜，大多数人都活不到顿悟的那一刻。
             </td>
         </tr>
     </table>
+
+    <!-- 6楼 -->
+    <table class="post-table">
+        <tr>
+            <td class="post-user">
+                <div style="font-weight:bold; color:#004499; font-size:16px;">火星土著</div>
+                <div class="avatar">无头像</div>
+                <div style="color:#666; font-size:12px; margin-top:5px;">级别: 论坛游民</div>
+            </td>
+            <td class="post-content">
+                <div class="post-info">6楼 发表于 2007-06-10 08:15:22</div>
+                惊现未济大神！！强势围观版主！<br>
+                不过版主最后一句话啥意思啊？“活不到顿悟的那一刻”……大清早的看得我后背发凉。你们搞硬件的现在都这么神神叨叨了吗？
+            </td>
+        </tr>
+    </table>
+
+    <!-- 7楼 -->
+    <table class="post-table">
+        <tr>
+            <td class="post-user">
+                <div style="font-weight:bold; color:#004499; font-size:16px;">爱在西元前</div>
+                <div class="avatar">无头像</div>
+                <div style="color:#666; font-size:12px; margin-top:5px;">级别: 音乐版常客</div>
+            </td>
+            <td class="post-content">
+                <div class="post-info">7楼 发表于 2007-06-10 10:42:01</div>
+                顶楼主！技术贴必须顶。不过算出来的那个6位代码到底有啥用？能当魔兽世界点卡密码用吗？能的话我马上排一卦 [晕.gif]
+            </td>
+        </tr>
+    </table>
+
 </div>
 
 </body>
