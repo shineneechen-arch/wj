@@ -23,7 +23,7 @@
         /* ================= 主体内容区 ================= */
         .main-wrap { width: 96%; min-width: 980px; margin: 15px auto; background-color: #FFFFFF; border: 1px solid #A6CBE7; padding: 18px; box-sizing: border-box; }
         
-        /* === 2026年 溯源服图层特有头部 (复刻图片样式) === */
+        /* === 2026年 溯源服图层特有头部 === */
         .header-2026 { background-color: #245b84; padding: 25px 30px; margin: -18px -18px 15px -18px; color: #fff; }
         .header-2026 .logo { font-size: 28px; font-weight: bold; font-family: "Microsoft YaHei", "黑体", sans-serif; text-shadow: 1px 1px 3px rgba(0,0,0,0.6); margin-bottom: 18px; letter-spacing: 1px; }
         .header-2026 .nav { font-size: 14px; font-family: "Microsoft YaHei", sans-serif; }
@@ -97,9 +97,11 @@
 
 <div id="app-container">
     
+    <!-- ================= 2026年 溯源服图层 (常规图层) ================= -->
     <div id="layer-2026" class="layer">
         <div class="main-wrap" id="main-content-2026">
             
+            <!-- 2026 头部 -->
             <div class="header-2026">
                 <div class="logo">南江大学 - 溯源BBS (Since 2004)</div>
                 <div class="nav">
@@ -121,14 +123,17 @@
             <div class="top10-box">
                 <div class="top10-title">🔥 溯源热榜 (Top 10)</div>
                 <div class="top10-list">
-                    <div class="top10-item"><span class="rank rank-hot">1</span> <a href="index.html" class="bold red">【深夜水】南门外支巷新开的那家数据恢复店，是不是有点邪门？</a></div>
+                    <div class="top10-item"><span class="rank rank-hot">1</span> <a href="thread_shop_mystery.html" class="bold red">【深夜水】南门外支巷新开的那家数据恢复店，是不是有点邪门？</a></div>
                     <div class="top10-item"><span class="rank">6</span> <a href="thread_ai_paper.html">【求助】期末论文被查出 AI 生成率高达 85%，怎么降重？在线等！</a></div>
                     <div class="top10-item"><span class="rank rank-hot">2</span> <a href="thread_robot.html">【吐槽】食堂新买的“赛博炒菜机器人”又宕机了，糖醋排骨全糊了！</a></div>
                     <div class="top10-item"><span class="rank">7</span> <a href="thread_computer.html">【攒机】预算5000块，想配一台能玩魔兽世界的电脑，求硬件配置单。</a></div>
                     <div class="top10-item"><span class="rank">3</span> <a href="thread_vision_pro.html">【交易】大四退宿，出二手 Vision Pro，或换带 RTX 6090 的本子。</a></div>
                     <div class="top10-item"><span class="rank">8</span> <a href="thread_zencode_release.html">【开源发布】ZenCode 3D星辰坐标系 v1.0 上线，全流派术数排盘引擎</a></div>
                     <div class="top10-item"><span class="rank">4</span> <a href="thread_cats.html">【日常】今天半夜突然断网，校园网路由器是不是又被流浪猫尿了？</a></div>
-                    <div class="top10-item"><span class="rank">9</span> <a href="thread_umbrella2026.html">【情感】今晚在二食堂门口借给我半把伞的那个穿白裙子的女生...</a></div>
+                    
+                    <!-- 修改了第9条，去除撞梗的白裙子女生 -->
+                    <div class="top10-item"><span class="rank">9</span> <a href="#">【寻物】谁在机房落了一个移动硬盘？上面贴着一张画满红线的黄色符纸...</a></div>
+                    
                     <div class="top10-item"><span class="rank">5</span> <a href="thread_wow_tbc.html">【游戏】魔兽世界TBC国服到底什么时候开啊？等到心碎！</a></div>
                     <div class="top10-item"><span class="rank">10</span> <a href="thread_announcement.html">【站务】关于近期旧版数据库偶发底层异常乱码的排查公告</a></div>
                 </div>
@@ -260,8 +265,10 @@
         </div>
     </div>
 
+    <!-- ================= 2007 远古惊悚图层 (绝对对等高度) ================= -->
     <div id="layer-2007" class="layer">
         <div class="main-wrap horror-theme">
+            <!-- 2007 恐怖头部 -->
             <div class="header-bg-2007">
                 <div class="logo-2007">南江大学星火BBS <span class="logo-sub-2007">| 救救我们！！！</span></div>
                 <div class="nav-2007">
@@ -422,9 +429,11 @@
         </div>
     </div>
     
+    <!-- 物理撕裂滤镜 -->
     <div id="glitch-overlay"></div>
 </div>
 
+<!-- ================= 无提示硬核登录验证 ================= -->
 <div id="login-modal" class="modal-overlay">
     <div class="login-box">
         <div class="modal-header">
@@ -469,13 +478,23 @@
     setInterval(updateTime, 1000);
     updateTime();
 
-    // ================= 均等循环时间频闪逻辑 (绝对对齐) =================
+    // ================= 全局状态控制与频闪逻辑 =================
     const layer2026 = document.getElementById('layer-2026');
     const layer2007 = document.getElementById('layer-2007');
     const glitchOverlay = document.getElementById('glitch-overlay');
     let is2026 = true;
     let flashInterval;
     let isGlitching = true;
+
+    // 当页面加载时，检查是否已经登录过
+    window.onload = function() {
+        if(localStorage.getItem('njdx_bbs_override') === 'true') {
+            applyLoggedInState(false); // 不播放黑屏动画，直接保持登录
+        } else {
+            // 没有登录，开始 4 秒一次的频闪循环
+            flashInterval = setInterval(toggleTimeLayer, 4000);
+        }
+    };
 
     function toggleTimeLayer() {
         if (!isGlitching) return;
@@ -498,11 +517,12 @@
         is2026 = !is2026;
     }
 
-    // 均等时间：严格每隔 4 秒进行一次图层翻转
-    flashInterval = setInterval(toggleTimeLayer, 4000);
-
-    // ================= 登录接管逻辑 =================
+    // ================= 登录与持久化接管逻辑 =================
     function showLogin() {
+        // 如果已经登录，不弹框
+        if(localStorage.getItem('njdx_bbs_override') === 'true') {
+            return;
+        }
         document.getElementById('error').style.display = 'none';
         document.getElementById('login-modal').style.display = 'block';
         document.getElementById('login-user').focus();
@@ -512,50 +532,67 @@
         const user = document.getElementById('login-user').value.trim();
         const pwd = document.getElementById('login-pwd').value.trim();
         
-        // 核心密码：26级_既济 / 101010
-        if(user === '26级_既济' && pwd === '101010') {
-            // 1. 停止闪烁，清理定时器
-            isGlitching = false;
-            clearInterval(flashInterval);
+        // 核心密码：26_既济 / 101010
+        if(user === '26_既济' && pwd === '101010') {
+            // 写入本地存储，实现状态持久化
+            localStorage.setItem('njdx_bbs_override', 'true');
+            
             document.getElementById('login-modal').style.display = 'none';
+            applyLoggedInState(true); // 播放接管动画
+        } else {
+            document.getElementById('error').style.display = 'block';
+        }
+    }
+
+    // 核心函数：应用登录定格状态
+    function applyLoggedInState(playAnimation) {
+        // 1. 停止一切闪烁
+        isGlitching = false;
+        if(flashInterval) clearInterval(flashInterval);
+        
+        // 2. 强制锁死在 2026 页面
+        layer2007.style.display = 'none';
+        layer2026.style.opacity = '1';
+        layer2026.style.pointerEvents = 'auto';
+        glitchOverlay.style.opacity = '0';
+
+        // 3. 执行状态变更
+        const doUpdateUI = () => {
+            document.getElementById('status-bar-2026').innerHTML = `
+                <span class="info-stats" style="color:#D32F2F; font-weight:bold;">SYS_OVERRIDE: 维度已锚定</span>
+                欢迎回来，<span class="bold red" style="font-size:16px;">26_既济 (高维观测者)</span> 
+                &nbsp;&nbsp;&nbsp;现实时间: <span class="bold time-display"></span>
+            `;
+            updateTime();
             
-            // 2. 强制回归并定格在 2026 图层
-            layer2007.style.display = 'none';
-            layer2026.style.opacity = '1';
-            layer2026.style.pointerEvents = 'auto';
-            glitchOverlay.style.opacity = '0';
+            // 避免重复插入广播
+            if(!document.getElementById('success-broadcast')) {
+                const mainWrap = document.getElementById('main-content-2026');
+                const successMsg = document.createElement('div');
+                successMsg.id = 'success-broadcast';
+                successMsg.style.cssText = "background: #E8F5E9; border: 1px solid #4CAF50; padding: 15px; margin-bottom: 20px; color: #2E7D32; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 0 10px rgba(76, 175, 80, 0.3);";
+                successMsg.innerHTML = "【系统广播】权限覆盖完毕。19年前的散逸算力已被安全重定向。<br>时空死局已解，南江大学节点恢复正常运转。感谢您的介入。";
+                mainWrap.insertBefore(successMsg, mainWrap.children[1]);
+            }
             
-            // 3. 展现接管动画
+            const cpLink = document.getElementById('nav-control-panel');
+            cpLink.innerHTML = "控制面板 (已解锁)";
+            cpLink.style.color = "#FF0000";
+            cpLink.onclick = function() { alert('【终端提示】高维后台已接管，所有异常线程已关闭。这片废墟终于归于平静。'); };
+        };
+
+        if (playAnimation) {
             const overlay = document.createElement('div');
             overlay.className = 'hack-transition';
             overlay.innerHTML = '<h1 style="font-size:36px; margin-bottom:10px;">[ TIME PARADOX STABILIZED ]</h1><p style="font-size:18px;">阵列逆转完成。<br>实体覆盖为：26_既济</p><p style="color:#0f0; font-size:24px; font-weight:bold; margin-top:30px;">正在接管 2026 年当前维度节点...</p>';
             document.body.appendChild(overlay);
             
-            // 4. 定格更新界面
             setTimeout(() => { 
                 document.body.removeChild(overlay);
-                
-                document.getElementById('status-bar-2026').innerHTML = `
-                    <span class="info-stats" style="color:#D32F2F; font-weight:bold;">SYS_OVERRIDE: 维度已锚定</span>
-                    欢迎回来，<span class="bold red" style="font-size:16px;">26级_既济 (高维观测者)</span> 
-                    &nbsp;&nbsp;&nbsp;现实时间: <span class="bold time-display"></span>
-                `;
-                updateTime();
-                
-                const mainWrap = document.getElementById('main-content-2026');
-                const successMsg = document.createElement('div');
-                successMsg.style.cssText = "background: #E8F5E9; border: 1px solid #4CAF50; padding: 15px; margin-bottom: 20px; color: #2E7D32; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 0 10px rgba(76, 175, 80, 0.3);";
-                successMsg.innerHTML = "【系统广播】权限覆盖完毕。19年前的散逸算力已被安全重定向。<br>时空死局已解，南江大学节点恢复正常运转。感谢您的介入。";
-                mainWrap.insertBefore(successMsg, mainWrap.children[1]);
-                
-                const cpLink = document.getElementById('nav-control-panel');
-                cpLink.innerHTML = "控制面板 (已解锁)";
-                cpLink.style.color = "#FF0000";
-                cpLink.onclick = function() { alert('【终端提示】高维后台已接管，所有异常线程已关闭。'); };
-                
+                doUpdateUI();
             }, 3000);
         } else {
-            document.getElementById('error').style.display = 'block';
+            doUpdateUI();
         }
     }
 
