@@ -5,7 +5,7 @@
     <title>南江大学溯源BBS - 寻找旧日星火</title>
     <style type="text/css">
         /* ================= 全局基础复古样式 ================= */
-        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background-color: #E2E8F1; color: #333333; font-family: "SimSun", "宋体", Arial, sans-serif; font-size: 14px; overflow-x: hidden; }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background-color: #E2E8F1; color: #333333; font-family: "SimSun", "宋体", Arial, sans-serif; font-size: 14px; overflow-x: hidden; transition: background-color 1.5s; }
         table { font-size: 14px; border-collapse: collapse; }
         a { color: #004499; text-decoration: none; }
         a:hover { text-decoration: underline; color: #FF6600; }
@@ -21,7 +21,7 @@
         #layer-2007 { position: absolute; top: 0; left: 0; z-index: 20; opacity: 0; pointer-events: none; filter: contrast(1.2) sepia(0.3) hue-rotate(-10deg); }
 
         /* ================= 主体内容区 ================= */
-        .main-wrap { width: 96%; min-width: 980px; margin: 15px auto; background-color: #FFFFFF; border: 1px solid #A6CBE7; padding: 18px; box-sizing: border-box; }
+        .main-wrap { width: 96%; min-width: 980px; margin: 15px auto; background-color: #FFFFFF; border: 1px solid #A6CBE7; padding: 18px; box-sizing: border-box; transition: box-shadow 1s; }
         
         /* === 2026年 溯源服图层特有头部 === */
         .header-2026 { background-color: #245b84; padding: 25px 30px; margin: -18px -18px 15px -18px; color: #fff; }
@@ -492,15 +492,17 @@
     let isGlitching = true;
     let flashTimeout;
 
-    // 当页面加载时，检查是否已经登录过
+    // 当页面加载时，检查各种权限状态
     window.onload = function() {
-        // 全局事件监听器必须在页面加载时绑定
         bindClickInterceptor();
 
-        if(localStorage.getItem('njdx_bbs_override') === 'true') {
-            applyLoggedInState(false); // 不播放黑屏动画，直接保持登录
+        const isGod = localStorage.getItem('god_perspective_unlocked') === 'true';
+        const isLogged = localStorage.getItem('njdx_bbs_override') === 'true';
+
+        if(isGod || isLogged) {
+            applyLoggedInState(false); // 不播放黑屏动画，直接保持登录/同化状态
         } else {
-            // 没有登录，开始真实的随机闪烁
+            // 完全没登录，开始真实的随机闪烁
             triggerRandomGlitch();
         }
     };
@@ -508,25 +510,19 @@
     // ================= 访客权限拦截系统 (实体隔离协议) =================
     function bindClickInterceptor() {
         document.addEventListener('click', function(e) {
-            // 向上层级查找触发点击的 <a> 标签
             const targetLink = e.target.closest('a');
-            
-            // 如果点的不是链接，直接放行
             if (!targetLink) return;
 
             const href = targetLink.getAttribute('href');
-            
-            // 放行控制面板、登录按钮、以及带有 # 或 javascript: 的系统级操作链接
             if (!href || href === '#' || href.startsWith('javascript:')) return;
 
-            // 检查本地存储中的覆写状态
-            if (localStorage.getItem('njdx_bbs_override') !== 'true') {
-                e.preventDefault(); // 强行阻断页面跳转
-                
-                // 触发符合设定的赛博玄学拦截警告
+            const isGod = localStorage.getItem('god_perspective_unlocked') === 'true';
+            const isLogged = localStorage.getItem('njdx_bbs_override') === 'true';
+
+            // 只要没拿到任何权限，就拦截
+            if (!isLogged && !isGod) {
+                e.preventDefault(); 
                 alert("【SYSTEM HALT：访问拒绝】\n\n访客权限不足。当前底层数据卷宗存在重度高维算力污染。\n为防止观测者发生精神熵增，请先通过 [控制面板] 完成物理实体覆盖与权限阵列验证。");
-                
-                // 阻断后自动唤起安全校验面板
                 showLogin();
             }
         });
@@ -536,25 +532,21 @@
     function triggerRandomGlitch() {
         if (!isGlitching) return;
 
-        // 随机等待 1秒 到 5秒 触发一次闪烁
         const nextGlitchTime = 1000 + Math.random() * 4000;
         
         flashTimeout = setTimeout(() => {
             if (!isGlitching) return;
 
-            // 瞬间切到 2007 图层，并带上雪花屏
             layer2026.style.opacity = '0';
             layer2007.style.opacity = '1';
             glitchOverlay.style.opacity = '1';
 
-            // 仅仅闪烁 0.1秒 到 0.25秒 后，瞬间切回正常页面，制造极强的惊悚感
             setTimeout(() => {
                 if (!isGlitching) return;
                 layer2026.style.opacity = '1';
                 layer2007.style.opacity = '0';
                 glitchOverlay.style.opacity = '0';
                 
-                // 循环下一次随机闪烁
                 triggerRandomGlitch();
             }, 100 + Math.random() * 150);
 
@@ -563,8 +555,8 @@
 
     // ================= 登录与持久化接管逻辑 =================
     function showLogin() {
-        // 如果已经登录，不弹框
-        if(localStorage.getItem('njdx_bbs_override') === 'true') {
+        // 如果已经取得神性视角或普通登录，不弹框
+        if(localStorage.getItem('njdx_bbs_override') === 'true' || localStorage.getItem('god_perspective_unlocked') === 'true') {
             return;
         }
         document.getElementById('error').style.display = 'none';
@@ -578,67 +570,87 @@
         
         // 核心密码：26级_既济 / 101010
         if(user === '26级_既济' && pwd === '101010') {
-            // 写入本地存储，实现状态持久化
             localStorage.setItem('njdx_bbs_override', 'true');
-            
             document.getElementById('login-modal').style.display = 'none';
-            applyLoggedInState(true); // 播放接管动画
+            applyLoggedInState(true); 
         } else {
             document.getElementById('error').style.display = 'block';
         }
     }
 
-    // 核心函数：应用登录定格状态
+    // 核心函数：应用登录定格状态 或 古神同化状态
     function applyLoggedInState(playAnimation) {
-        // 1. 停止一切闪烁
         isGlitching = false;
         if(flashTimeout) clearTimeout(flashTimeout);
         
-        // 2. 强制锁死在 2026 页面
         layer2007.style.display = 'none';
         layer2026.style.opacity = '1';
         layer2026.style.pointerEvents = 'auto';
         glitchOverlay.style.opacity = '0';
 
-        // 3. 执行状态变更
         const doUpdateUI = () => {
-            document.getElementById('status-bar-2026').innerHTML = `
-                <span class="info-stats" style="color:#D32F2F; font-weight:bold;">SYS_OVERRIDE: 维度已锚定</span>
-                欢迎回来，<span class="bold red" style="font-size:16px;">26级_既济 (高维观测者)</span> 
-                &nbsp;&nbsp;&nbsp;现实时间: <span class="bold time-display"></span>
-            `;
+            const isGod = localStorage.getItem('god_perspective_unlocked') === 'true';
+            const isAdminVerified = localStorage.getItem('njdx_bbs_2026_admin_verified') === 'true';
+            const cpLink = document.getElementById('nav-control-panel');
+            const mainWrap = document.getElementById('main-content-2026');
+
+            // 1. 根据是否被同化，修改顶部栏与页面色调
+            if (isGod) {
+                document.getElementById('status-bar-2026').innerHTML = `
+                    <span class="info-stats" style="color:#D32F2F; font-weight:bold; text-shadow: 0 0 5px #F00;">SYS_OVERRIDE: 血肉网络已同化</span>
+                    欢迎，<span class="bold red" style="font-size:16px;">不可名状的观测者</span> 
+                    &nbsp;&nbsp;&nbsp;现实时间: <span class="bold time-display"></span>
+                `;
+                document.body.style.backgroundColor = "#1a0505"; // 背景泛出血肉红
+                document.querySelector('.main-wrap').style.boxShadow = "0 0 20px rgba(255,0,0,0.3)";
+            } else {
+                document.getElementById('status-bar-2026').innerHTML = `
+                    <span class="info-stats" style="color:#D32F2F; font-weight:bold;">SYS_OVERRIDE: 维度已锚定</span>
+                    欢迎回来，<span class="bold red" style="font-size:16px;">26级_既济 (高维观测者)</span> 
+                    &nbsp;&nbsp;&nbsp;现实时间: <span class="bold time-display"></span>
+                `;
+            }
             updateTime();
             
-            // 避免重复插入广播
+            // 2. 注入系统广播 (区分凡人与古神视角)
             if(!document.getElementById('success-broadcast')) {
-                const mainWrap = document.getElementById('main-content-2026');
                 const successMsg = document.createElement('div');
                 successMsg.id = 'success-broadcast';
-                successMsg.style.cssText = "background: #E8F5E9; border: 1px solid #4CAF50; padding: 15px; margin-bottom: 20px; color: #2E7D32; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 0 10px rgba(76, 175, 80, 0.3);";
-                successMsg.innerHTML = "【系统广播】权限覆盖完毕。19年前的散逸算力已被安全重定向。<br>时空死局已解，南江大学节点恢复正常运转。感谢您的介入。<br><br><span style='font-size:12px; color:#666; cursor:pointer;' onclick='resetGame()'>[点击此处可重置游戏状态并清除阵列缓存]</span>";
+                
+                if (isGod) {
+                    successMsg.style.cssText = "background: #2a0505; border: 1px solid #f00; padding: 15px; margin-bottom: 20px; color: #f00; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 0 15px rgba(255, 0, 0, 0.5);";
+                    successMsg.innerHTML = "【多维干涉】你已成为星火的一部分。血肉网络正在蔓延。<br>物理隔离已失效，所有节点对你敞开。<br><br><span style='font-size:12px; color:#ff8888; cursor:pointer; text-decoration:underline;' onclick='resetGame()'>[ 斩断链接：重置所有时空与肉体剥离 ]</span>";
+                } else {
+                    successMsg.style.cssText = "background: #E8F5E9; border: 1px solid #4CAF50; padding: 15px; margin-bottom: 20px; color: #2E7D32; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 0 10px rgba(76, 175, 80, 0.3);";
+                    successMsg.innerHTML = "【系统广播】权限覆盖完毕。19年前的散逸算力已被安全重定向。<br>时空死局已解，南江大学节点恢复正常运转。感谢您的介入。<br><br><span style='font-size:12px; color:#666; cursor:pointer;' onclick='resetGame()'>[点击此处可重置游戏状态并清除阵列缓存]</span>";
+                }
                 mainWrap.insertBefore(successMsg, mainWrap.children[1]);
             }
             
-            // ================= 修正后的 2026 Admin 连环锁逻辑 =================
-            const cpLink = document.getElementById('nav-control-panel');
-            
-            // 检查是否已经从真正的 2026 Admin 页面获取了逆向授权
-            const isAdminVerified = localStorage.getItem('njdx_bbs_2026_admin_verified') === 'true';
-
-            if (isAdminVerified) {
-                // 彻底解锁状态
+            // 3. 【最核心修改】控制面板的终极跳转逻辑
+            if (isGod) {
+                // 已经成为古神，畅通无阻，直接回城！
+                cpLink.innerHTML = "[ 👁 多维干涉 ] 降临核心";
+                cpLink.style.color = "#FF0000";
+                cpLink.style.textShadow = "0 0 8px #F00";
+                cpLink.onclick = function(e) { 
+                    e.preventDefault();
+                    window.location.href = "bbs_2026_admin.html"; 
+                };
+            } else if (isAdminVerified) {
+                // 只是找到了控制面板，但还没被同化
                 cpLink.innerHTML = "控制面板 (高维阵眼已贯通)";
-                cpLink.style.color = "#00AA00"; // 变成幽绿色代表最终解密
+                cpLink.style.color = "#00AA00";
                 cpLink.onclick = function(e) { 
                     e.preventDefault();
                     window.location.href = "bbs_2026_admin.html"; 
                 };
             } else {
-                // 仅登录，但未找到真正的 Admin 入口
+                // 刚登录表层，还没找到隐藏入口
                 cpLink.innerHTML = "控制面板 (阵眼缺失)";
                 cpLink.style.color = "#FF0000";
                 cpLink.onclick = function(e) { 
-                    e.preventDefault(); // 阻止默认跳转
+                    e.preventDefault();
                     alert("【SYSTEM WARNING：控制台物理链路断裂】\n\n您虽已取得当前表层节点(2026)的观测权，但核心控制台的物理链路已被隐藏。\n必须先在数据残骸中找到真正的【2026溯源管理终端】入口，建立底层通信协议后才能彻底贯通高维通道！");
                 };
             }
@@ -659,10 +671,11 @@
         }
     }
 
-    // 后门：重置所有游戏状态
+    // 后门：重置所有游戏状态 (包含剥离古神思想钢印)
     function resetGame() {
         localStorage.removeItem('njdx_bbs_override');
         localStorage.removeItem('njdx_bbs_2026_admin_verified');
+        localStorage.removeItem('god_perspective_unlocked');
         window.location.reload();
     }
 
