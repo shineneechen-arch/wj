@@ -2,7 +2,7 @@
 <html lang="zh-TW">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
 <title>星象座標系 · 3D高精物理地心儀</title>
 <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+TC:wght@300;400;500&family=Noto+Sans+TC:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
@@ -14,6 +14,7 @@ body{overflow:hidden;background:var(--bg);color:var(--cream);font-family:'Noto S
 body.zen-mode #topbar,body.zen-mode #lp,body.zen-mode #rp,body.zen-mode #legend,body.zen-mode .top-left-panel,body.zen-mode #time-bar{opacity:0!important;pointer-events:none!important}
 body.zen-mode #ctrl-bar{opacity:.15}
 body.zen-mode #ctrl-bar:hover{opacity:1}
+
 #topbar{position:absolute;top:0;left:0;right:0;z-index:30;pointer-events:none;padding:14px 22px 36px;background:linear-gradient(to bottom,rgba(2,2,4,.95),transparent);display:flex;align-items:flex-start;gap:20px}
 #tb-title{font-family:'Ma Shan Zheng',cursive;font-size:1.6rem;color:var(--gold);text-shadow:0 0 28px rgba(240,201,106,.55);letter-spacing:.18em; transition: color 0.5s, text-shadow 0.5s;}
 #tb-sub{font-size:.53rem;color:rgba(255,255,255,.32);letter-spacing:.28em;margin-top:3px; transition: color 0.5s;}
@@ -21,6 +22,7 @@ body.zen-mode #ctrl-bar:hover{opacity:1}
 #tb-name{font-family:'Ma Shan Zheng',cursive;font-size:1.15rem;color:var(--cream);letter-spacing:.1em}
 #tb-date{font-size:.62rem;color:rgba(255,255,255,.42);letter-spacing:.12em;margin-top:2px}
 #tb-place{font-size:.52rem;color:var(--blue);opacity:.75;margin-top:3px;letter-spacing:.08em}
+
 .top-left-panel{position:absolute;top:30px;left:30px;pointer-events:auto;z-index:40}
 .btn-back{display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:50%;background:rgba(99,163,237,.08);border:1px solid rgba(99,163,237,.4);color:var(--blue);text-decoration:none;font-size:1.2rem;transition:all .3s;box-shadow:0 0 10px rgba(99,163,237,.2)}
 .btn-back:hover{background:rgba(99,163,237,.2);border-color:var(--blue-l);box-shadow:0 0 20px rgba(99,163,237,.6);color:#fff}
@@ -35,7 +37,6 @@ body.zen-mode #ctrl-bar:hover{opacity:1}
 .pc:hover{border-color:rgba(99,163,237,.3)}
 .pc-t{font-size:.5rem;color:var(--blue);letter-spacing:.22em;text-transform:uppercase;margin-bottom:9px;padding-bottom:6px;border-bottom:1px solid rgba(99,163,237,.1)}
 .pr{display:flex;align-items:center;gap:7px;padding:4px 2px;border-bottom:1px solid rgba(255,255,255,.04);cursor:pointer;border-radius:4px;transition:.18s}
-.pr:last-child{border-bottom:none}
 .pr:hover{background:rgba(99,163,237,.07);padding-left:5px}
 .pr-ic{font-size:1.05rem;width:20px;text-align:center;flex-shrink:0}
 .pr-info{flex:1;min-width:0}
@@ -65,17 +66,61 @@ body.zen-mode #ctrl-bar:hover{opacity:1}
 #legend{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);z-index:20;pointer-events:none;background:rgba(2,2,4,.92);border:1px solid rgba(255,255,255,.08);border-radius:30px;padding:6px 22px;display:flex;gap:18px;align-items:center}
 .li{display:flex;align-items:center;gap:5px;font-size:.56rem;color:rgba(255,255,255,.42);white-space:nowrap}
 .ld{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+
 #ctrl-bar{position:absolute;bottom:16px;right:14px;z-index:40;display:flex;flex-direction:column;gap:6px;pointer-events:auto;transition:opacity .5s}
 .cb{width:37px;height:37px;border-radius:50%;background:rgba(99,163,237,.07);border:1px solid rgba(99,163,237,.25);color:rgba(144,196,255,.78);font-size:.88rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.22s;position:relative;flex-shrink:0}
 .cb:hover{background:rgba(99,163,237,.18);box-shadow:0 0 14px rgba(99,163,237,.28)}
 .cb.on{background:rgba(99,163,237,.2);border-color:var(--blue-l);box-shadow:0 0 16px rgba(99,163,237,.4)}
 .cb[data-tt]:hover::after{content:attr(data-tt);position:absolute;right:44px;top:50%;transform:translateY(-50%);white-space:nowrap;background:rgba(2,2,4,.94);border:1px solid rgba(99,163,237,.28);color:var(--blue-l);font-size:.56rem;padding:4px 9px;border-radius:4px;pointer-events:none;z-index:99}
-#time-bar{position:absolute;bottom:62px;left:50%;transform:translateX(-50%);z-index:40;pointer-events:auto;background:rgba(2,2,4,.94);border:1px solid rgba(255,255,255,.09);border-radius:30px;padding:7px 20px;display:none;gap:12px;align-items:center;min-width:360px}
+
+#time-bar{position:absolute;bottom:62px;left:50%;transform:translateX(-50%);z-index:40;pointer-events:auto;background:rgba(2,2,4,.94);border:1px solid rgba(255,255,255,.09);border-radius:30px;padding:7px 20px;display:none;gap:12px;align-items:center;min-width:320px; justify-content:center;}
 #time-bar.show{display:flex}
-#time-lbl{font-size:.6rem;color:var(--gold);white-space:nowrap;min-width:120px;text-align:center}
-#time-range{flex:1;accent-color:var(--blue)}
-.tbtn{background:none;border:1px solid rgba(99,163,237,.3);color:var(--blue-l);font-size:.66rem;padding:3px 10px;border-radius:14px;cursor:pointer;transition:.18s;white-space:nowrap}
-.tbtn:hover{background:rgba(99,163,237,.14)}
+.tbtn{background:rgba(99,163,237,.08);border:1px solid rgba(99,163,237,.3);color:var(--blue-l);font-size:.66rem;padding:6px 14px;border-radius:18px;cursor:pointer;transition:.18s;white-space:nowrap;font-family:'Noto Sans TC',sans-serif;}
+.tbtn.gold{border-color:var(--gold);color:var(--gold);background:rgba(240,201,106,.08);font-weight:bold;letter-spacing:1px;}
+.tbtn:hover{background:rgba(99,163,237,.2);box-shadow:0 0 10px rgba(99,163,237,.3);}
+.tbtn.gold:hover{background:rgba(240,201,106,.2);box-shadow:0 0 12px rgba(240,201,106,.4);}
+
+/* ==========================================
+   iOS 風格時間滾輪選擇器
+========================================== */
+#ios-picker-modal {
+    position: fixed; inset: 0; z-index: 8000; background: rgba(0,0,0,0.85);
+    display: none; align-items: center; justify-content: center; backdrop-filter: blur(4px);
+}
+.picker-container {
+    background: rgba(10,12,20,0.95); border: 1px solid rgba(99,163,237,0.3); border-radius: 18px;
+    width: 90%; max-width: 480px; padding: 20px; box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+    display: flex; flex-direction: column; gap: 15px;
+}
+.picker-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px; }
+.picker-title { color: var(--gold); font-family: 'Ma Shan Zheng', cursive; font-size: 1.2rem; letter-spacing: 2px; }
+.picker-close { background: none; border: none; color: rgba(255,255,255,0.6); font-size: 1.5rem; cursor: pointer; padding: 0 5px; }
+.picker-close:hover { color: var(--red); }
+.picker-wheels {
+    position: relative; display: flex; height: 160px; overflow: hidden;
+    mask-image: linear-gradient(to bottom, transparent 0%, black 35%, black 65%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 35%, black 65%, transparent 100%);
+}
+.picker-col {
+    flex: 1; overflow-y: scroll; scroll-snap-type: y mandatory;
+    scrollbar-width: none; -ms-overflow-style: none; /* Firefox & IE */
+    text-align: center; font-family: 'Noto Sans TC', sans-serif;
+    -webkit-overflow-scrolling: touch;
+}
+.picker-col::-webkit-scrollbar { display: none; }
+.picker-item {
+    height: 40px; line-height: 40px; scroll-snap-align: center;
+    font-size: 1rem; color: rgba(255,255,255,0.3); transition: all 0.2s; user-select: none;
+}
+.picker-item.active { color: var(--gold); font-size: 1.15rem; font-weight: bold; }
+.picker-hl {
+    position: absolute; top: 60px; left: 0; right: 0; height: 40px;
+    border-top: 1px solid rgba(99,163,237,0.3); border-bottom: 1px solid rgba(99,163,237,0.3);
+    background: rgba(99,163,237,0.05); pointer-events: none; border-radius: 4px;
+}
+.picker-labels { display: flex; text-align: center; color: rgba(99,163,237,0.8); font-size: 0.6rem; margin-top: -10px; padding-bottom: 5px; }
+.picker-labels div { flex: 1; }
+
 #tip{position:absolute;z-index:50;pointer-events:none;background:rgba(5,3,16,.95);border:1px solid rgba(240,201,106,.25);border-radius:8px;padding:11px 15px;display:none;max-width:210px;box-shadow:0 8px 32px rgba(0,0,0,.7)}
 #tip h4{font-family:'Ma Shan Zheng',cursive;font-size:1.1rem;color:var(--gold);margin-bottom:5px}
 #tip p{font-size:.63rem;color:rgba(255,255,255,.63);line-height:1.72}
@@ -316,6 +361,25 @@ input::placeholder{color:rgba(255,255,255,.17)}
 </div>
 </div>
 
+<div id="ios-picker-modal">
+    <div class="picker-container">
+        <div class="picker-header">
+            <div class="picker-title">⚙ 精確時間錨定</div>
+            <button class="picker-close" onclick="closePicker()">×</button>
+        </div>
+        <div class="picker-labels">
+            <div>年</div><div>月</div><div>日</div><div>時</div><div>分</div>
+        </div>
+        <div class="picker-wheels">
+            <div class="picker-hl"></div>
+            <div class="picker-col" id="col-y" onscroll="onScrollPicker('y')"></div>
+            <div class="picker-col" id="col-m" onscroll="onScrollPicker('m')"></div>
+            <div class="picker-col" id="col-d" onscroll="onScrollPicker('d')"></div>
+            <div class="picker-col" id="col-h" onscroll="onScrollPicker('h')"></div>
+            <div class="picker-col" id="col-min" onscroll="onScrollPicker('min')"></div>
+        </div>
+    </div>
+</div>
 <div class="side-panel" id="lp" style="display:none">
   <div class="pc"><div class="pc-t" id="pct-ecl">星象 · 视黄道度数</div><div id="plist"></div></div>
   <div class="pc"><div class="pc-t" id="pct-ana">命盘分析摘要</div><div id="abody"></div></div>
@@ -356,9 +420,7 @@ input::placeholder{color:rgba(255,255,255,.17)}
 </div>
 <div id="time-bar">
   <button class="tbtn" id="tb-play">▶ 播放</button>
-  <input type="range" id="time-range" min="-87660" max="87660" value="0" step="1">
-  <div id="time-lbl">当前时间</div>
-  <button class="tbtn" onclick="document.getElementById('mw').style.display='flex'">⚙ 精確調整</button>
+  <button class="tbtn gold" onclick="openPicker()">⚙ 精確調整</button>
   <button class="tbtn" id="tb-reset" onclick="if(window.resetTime) window.resetTime()">重置</button>
 </div>
 <div id="tip"><h4 id="tip-h"></h4><p id="tip-p"></p></div>
@@ -453,7 +515,7 @@ const LANGS = {
     al:{asc:'命宫在',sun:'太阳在',moon:'月在',phase:'月相',rahu:'南交點在',jup:'福星在',sat:'剋星在'},
     dst:{off:'標準時',on:'夏令時 +1h',label:'夏令時（DST）',hint:'開啟後自動 +1 小時'},
     dom:{modalTitle:'星象座標系',modalSub:'真3D地心儀 · 晝夜更替 · 二十八宿',lblNm:'命主姓名',lblDt:'出生日期（公曆）',lblTm:'出生時間（24小時）',lblLoc:'出生地經緯度與時區',plhNm:'姓名（可留空）',btnSub:'觀 測 星 象 能 量',btnDemo:'→ 載入演示（2002.12.24 子夜 · 東經109 · 北緯31）',tbTitle:'星象座標系 · 天球儀',tbSub:'GEOCENTRIC ASTROLABE · 物理光影宇宙',tbPlay:'▶ 播放',tbPause:'⏸ 暫停',tbReset:'重置',timeLbl:'當前時間',loadTxt:'載入星象引擎與高精貼圖…',drwLbl:'星象資料',pEcl:'星象 · 視黃道度數',pAna:'命盤分析摘要',pHou:'黃道十二宮 · 宮位星曜',pHouM:'黃道十二宮',ascAligned:'☽ 測者中心已完美鎖定，中天直指螢幕正上方'},
-    ctrl:{zen:'沉浸星空',spin:'時間自轉 (流逝)',zenith:'對齊天頂 (2D星盤)',helio:'切換日心/地心',sys:'切換回歸/恆星',out:'三王星',ecl:'黃道環',eq:'赤道環',man:'二十八宿',pl:'星体顯示',asp:'相位連線',tm:'時間推移',orb:'黃緯垂線',btnSysT:'歸',btnSysS:'恆',btnOut:'王',btnMan:'宿',btnPl:'政',btnHelio:'日'}
+    ctrl:{zen:'沉浸星空',spin:'時間自轉 (流逝)',zenith:'對齊天頂 (2D星盘)',helio:'切換日心/地心',sys:'切換回歸/恆星',out:'三王星',ecl:'黃道環',eq:'赤道環',man:'二十八宿',pl:'星体顯示',asp:'相位連線',tm:'時間推移',orb:'黃緯垂線',btnSysT:'歸',btnSysS:'恆',btnOut:'王',btnMan:'宿',btnPl:'政',btnHelio:'日'}
   },
   'zh-CN':{
     zod:['白羊','金牛','双子','巨蟹','狮子','处女','天秤','天蝎','射手','摩羯','水瓶','双鱼'],
@@ -491,7 +553,7 @@ window.switchLang = function(l) {
     
     const set = (id, v) => { const e = document.getElementById(id); if(e) e.textContent = v; };
     const setHTML = (id, v) => { const e = document.getElementById(id); if(e) e.innerHTML = v; };
-    if(!window.isInfected) { // Only update title if not infected
+    if(!window.isInfected) { 
       set('tb-title', d.dom.tbTitle); set('tb-sub', d.dom.tbSub);
     }
     set('modal-title', d.dom.modalTitle); set('modal-sub', d.dom.modalSub);
@@ -770,7 +832,6 @@ function analyzeChart(geo, isSid, jd) {
 const wrap = document.getElementById('three-canvas');
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x020204);
-// 添加厚重的指数迷雾
 scene.fog = new THREE.FogExp2(0x020204, 0.005); 
 
 const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 2000);
@@ -850,7 +911,7 @@ sunLight.position.set(0, 10, 50);
 scene.add(sunLight);
 scene.add(new THREE.AmbientLight(0xffffff, 0.07));
 
-// 血肉点光源 (隐藏，触发时点亮)
+// 血肉点光源
 const fleshLight = new THREE.PointLight(0xFF0000, 0, 800);
 fleshLight.position.set(0, 0, 0);
 scene.add(fleshLight);
@@ -1370,8 +1431,6 @@ window.submitForm = function() {
 
       userData = { name, y, m, d, h:newH, mn:newM, lng, lat, tz, dst, jd:jd_utc };
       launch();
-      
-      // 检测是否为禁忌时间轴
       checkHorrorEvent(y, m, d);
 
   } catch(e) { alert('计算模组出错: ' + e.message); console.error(e); }
@@ -1385,10 +1444,7 @@ window.loadDemo = function() {
 
 function updatePositions() {
   if (!userData || !userData.jd || isNaN(userData.jd)) return;
-  const tr = document.getElementById('time-range');
-  const tJD = userData.jd + (tr ? parseInt(tr.value) || 0 : 0) * 0.5 / 24;
-  
-  const res = calcAll(T_jd(tJD), tJD, userData.lng, userData.lat, S.sidereal);
+  const res = calcAll(T_jd(userData.jd), userData.jd, userData.lng, userData.lat, S.sidereal);
   curGeo = res.geo; curHelio = res.helio; currentGMST = res.gmst;
   if(isNaN(currentGMST)) return; 
   
@@ -1397,9 +1453,9 @@ function updatePositions() {
   }
   placePlanets(curGeo, curHelio, res.lst, res.aya);
   
-  renderPlanetList(curGeo, S.sidereal, tJD, ''); renderPlanetList(curGeo, S.sidereal, tJD, '-m');
-  renderHouseGrid(curGeo, S.sidereal, tJD, ''); renderHouseGrid(curGeo, S.sidereal, tJD, '-m');
-  renderAnalysis(curGeo, S.sidereal, tJD, ''); renderAnalysis(curGeo, S.sidereal, tJD, '-m');
+  renderPlanetList(curGeo, S.sidereal, userData.jd, ''); renderPlanetList(curGeo, S.sidereal, userData.jd, '-m');
+  renderHouseGrid(curGeo, S.sidereal, userData.jd, ''); renderHouseGrid(curGeo, S.sidereal, userData.jd, '-m');
+  renderAnalysis(curGeo, S.sidereal, userData.jd, ''); renderAnalysis(curGeo, S.sidereal, userData.jd, '-m');
   
   const placeEl = document.getElementById('tb-place');
   if(placeEl) {
@@ -1442,252 +1498,103 @@ function launch() {
   }
 }
 
-// ==========================================
-// 血肉飞升异化模块 (Flesh Ascension Module)
-// ==========================================
-window.isInfected = false;
-window.infectionTime = 0;
-window.eyeShown = false;
-window.ascensionShown = false;
-
-// 1. 低频心跳合成 (Web Audio API)
-const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-let isHeartbeatPlaying = false;
-
-function playHeartbeat() {
-    if (isHeartbeatPlaying) return;
-    isHeartbeatPlaying = true;
-    if (audioCtx.state === 'suspended') audioCtx.resume();
+/* ==========================================
+   iOS 齿轮拨盘时间选择器 (iOS Picker Logic)
+========================================== */
+window.openPicker = function() {
+    if (!userData.jd) return;
+    document.getElementById('ios-picker-modal').style.display = 'flex';
     
-    // 每 1.2 秒跳动一次，带有湿润黏浊的低音
-    setInterval(() => {
-        if(!window.ascensionShown) { // 弹窗出现后停止心跳
-            createHeartbeatSound(50, 0.4); 
-            setTimeout(() => createHeartbeatSound(45, 0.6), 300); // 第二下更重
-        }
-    }, 1200);
-}
-
-function createHeartbeatSound(freq, duration) {
-    const osc = audioCtx.createOscillator();
-    const gainNode = audioCtx.createGain();
-    const filter = audioCtx.createBiquadFilter(); 
-    
-    filter.type = 'lowpass';
-    filter.frequency.value = 150;
-    
-    osc.connect(filter);
-    filter.connect(gainNode);
-    gainNode.connect(audioCtx.destination);
-    
-    osc.type = 'sine';
-    osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-    osc.frequency.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
-    
-    gainNode.gain.setValueAtTime(2.0, audioCtx.currentTime); 
-    gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
-    
-    osc.start(audioCtx.currentTime);
-    osc.stop(audioCtx.currentTime + duration);
-}
-
-// 2. 检测时间触发
-function checkHorrorEvent(y, m, d) {
-    if (window.isInfected) return;
-    if ((y === 1999 && m === 8 && d === 11) || (y === 2007 && m === 6 && d === 11) || (y === 2007 && m === 6 && d === 5)) {
-        triggerFleshAscension();
-    }
-}
-
-function triggerFleshAscension() {
-    window.isInfected = true;
-    if (playingTime) document.getElementById('tb-play').click();
-    
-    playHeartbeat();
-
-    const fOverlay = document.getElementById('flesh-overlay');
-    fOverlay.style.opacity = '1';
-    fOverlay.classList.add('pulsing');
-
-    setInterval(() => {
-        if(window.ascensionShown) return; // 弹窗后停止撕裂
-        document.body.classList.add('severe-glitch');
-        setTimeout(() => document.body.classList.remove('severe-glitch'), 150 + Math.random() * 200);
-    }, 1500 + Math.random() * 4000);
-
-    const titleEl = document.getElementById('tb-title');
-    const subEl = document.getElementById('tb-sub');
-    titleEl.innerHTML = "【 警告：偵測到高維血肉侵蝕 】";
-    titleEl.style.color = "#FF0000";
-    titleEl.style.textShadow = "0 0 28px rgba(255,0,0,0.8)";
-    subEl.innerHTML = "FLESH_ASCENSION_PROTOCOL_ENGAGED";
-    subEl.style.color = "#FF4444";
-
-    document.querySelectorAll('.lbl').forEach(l => l.style.color = '#8B0000');
-
-    mutateThreeJSPlanets();
-}
-
-// 3. 核心 3D 异化逻辑
-function mutateThreeJSPlanets() {
-    scene.background = new THREE.Color(0x0a0000);
-    scene.fog = new THREE.FogExp2(0x110000, 0.008); 
-    sunLight.color.setHex(0xff0000);
-    fleshLight.intensity = 1500; 
-
-    function growVeins(group) {
-        const veins = [];
-        group.traverse(child => {
-            if ((child.isLine || child.isLineSegments) && child.geometry) {
-                child.material.color.setHex(0x550000);
-                child.material.opacity = 0.2;
-                
-                const posAttr = child.geometry.getAttribute('position');
-                if (posAttr) {
-                    for(let v = 0; v < 4; v++) { 
-                        const pts = [];
-                        for(let i=0; i<posAttr.count; i++) {
-                            let x = posAttr.getX(i) + (Math.random() - 0.5) * 1.8;
-                            let y = posAttr.getY(i) + (Math.random() - 0.5) * 1.8;
-                            let z = posAttr.getZ(i) + (Math.random() - 0.5) * 1.8;
-                            pts.push(new THREE.Vector3(x, y, z));
-                        }
-                        const vg = new THREE.BufferGeometry().setFromPoints(pts);
-                        const vm = new THREE.LineBasicMaterial({ color: 0xaa0000, transparent: true, opacity: 0.6 });
-                        const vLine = new THREE.Line(vg, vm);
-                        vLine.userData.isVein = true; 
-                        veins.push(vLine);
-                    }
-                }
-            }
-        });
-        veins.forEach(v => group.add(v));
-    }
-
-    growVeins(eclRingG);
-    growVeins(eqRingG);
-    growVeins(manG);
-
-    if (earthMesh) {
-        earthMesh.traverse(child => {
-            if (child.isMesh) {
-                child.material = new THREE.MeshStandardMaterial({
-                    color: 0x440000, emissive: 0x220000,
-                    roughness: 0.1, metalness: 0.1 
-                });
-                child.userData.isFlesh = true;
-                child.userData.baseScale = child.scale.clone();
-                child.userData.seed = Math.random() * 100;
-            }
-        });
-        growVeins(earthMesh); 
-    }
-
-    Object.values(pMesh).forEach(pm => {
-        pm.traverse(child => {
-            if (child.isMesh) {
-                child.material = new THREE.MeshStandardMaterial({
-                    color: 0x660000, emissive: 0x330000,
-                    roughness: 0.1, metalness: 0.2
-                });
-                child.userData.isFlesh = true;
-                child.userData.baseScale = child.scale.clone();
-                child.userData.seed = Math.random() * 100;
-            }
-        });
-    });
-}
-// ==========================================
-
-const setupEvents = () => {
-    ['f-y','f-m','f-d','f-h','f-mi','f-lg','f-lat','f-tz'].forEach(id => { const el = document.getElementById(id); if (el) el.addEventListener('input', window.hst); });
-    const bindClick = (id, fn) => { const el = document.getElementById(id); if(el) el.addEventListener('click', fn); };
-    bindClick('btn-sub', window.submitForm); bindClick('btn-demo', window.loadDemo);
-    const dstEl = document.getElementById('f-dst'); if(dstEl) dstEl.addEventListener('change', () => { window.toggleDST(); window.hst(); });
-    if(isMobile) bindClick('mobile-drawer-handle', window.toggleDrawer);
-    
-    const tRange = document.getElementById('time-range'), tLbl = document.getElementById('time-lbl');
-    if(tRange) {
-        tRange.addEventListener('input', () => {
-          if (!userData || !userData.jd) return; updatePositions();
-          const offMs = parseInt(tRange.value) * 30 * 60 * 1000, tgt = new Date(new Date(Date.UTC(userData.y, userData.m-1, userData.d, userData.h, userData.mn)).getTime() + offMs);
-          if(tLbl) tLbl.textContent = `${tgt.getUTCFullYear()}.${String(tgt.getUTCMonth()+1).padStart(2,'0')}.${String(tgt.getUTCDate()).padStart(2,'0')} ${String(tgt.getUTCHours()).padStart(2,'0')}:${String(tgt.getUTCMinutes()).padStart(2,'0')}`;
-          
-          // 在拖动时间轴时实时检测是否滑到了禁忌时刻
-          checkHorrorEvent(tgt.getUTCFullYear(), tgt.getUTCMonth() + 1, tgt.getUTCDate());
-        });
-    }
-
-    const tbPlay = document.getElementById('tb-play');
-    if (tbPlay) {
-        tbPlay.addEventListener('click', function() {
-          if (playingTime) { clearInterval(playInterval); playingTime = false; this.textContent = LANGS[currLang].dom.tbPlay; return; }
-          playingTime = true; this.textContent = LANGS[currLang].dom.tbPause;
-          playInterval = setInterval(() => {
-            const v = Math.min(parseInt(tRange.value)+1, 87660); tRange.value = v; tRange.dispatchEvent(new Event('input'));
-            if (v >= 87660) { clearInterval(playInterval); playingTime = false; tbPlay.textContent = LANGS[currLang].dom.tbPlay; }
-          }, 80);
-        });
-    }
-
-    window.resetTime = function() {
-      clearInterval(playInterval); playingTime = false; 
-      if (tbPlay) tbPlay.textContent = LANGS[currLang].dom.tbPlay;
-      if (tRange) { tRange.value = 0; tRange.dispatchEvent(new Event('input')); }
-      if (tLbl) tLbl.textContent = LANGS[currLang].dom.timeLbl;
-    };
-    bindClick('tb-reset', window.resetTime);
-    bindBtn('cb-zen','zen',()=>document.body.classList.add('zen-mode'),()=>document.body.classList.remove('zen-mode'));
-    bindBtn('cb-spin','spin', () => { if(!playingTime && tbPlay) tbPlay.click(); }, () => { if(playingTime && tbPlay) tbPlay.click(); });
-    
-    bindClick('cb-zenith', pointCameraAtBirthplace);
-
-    const helioBtn = document.getElementById('cb-helio');
-    if(helioBtn) {
-      helioBtn.addEventListener('click', () => {
-        S.helio = !S.helio;
-        helioBtn.classList.toggle('on', S.helio);
-        setHelioUIState(S.helio);
-        if(userData.jd) updatePositions();
-      });
-    }
-
-    bindBtn('cb-ecl','ecliptic',()=>eclRingG.visible=true, ()=>eclRingG.visible=false);
-    bindBtn('cb-eq', 'equator', ()=>{ if(!S.helio) eqRingG.visible=true; }, ()=>eqRingG.visible=false);
-    bindBtn('cb-man','mansion', ()=>manG.visible=true,  ()=>manG.visible=false);
-    bindBtn('cb-pl', 'planets', ()=>plG.visible=true,   ()=>plG.visible=false);
-    
-    const btnAsp = document.getElementById('cb-asp');
-    if(btnAsp) {
-      btnAsp.addEventListener('click', () => {
-        S.aspects = !S.aspects;
-        btnAsp.classList.toggle('on', S.aspects);
-        if(userData.jd) {
-          if (S.aspects) {
-            aspG.visible = true; 
-            buildAspects(curGeo, curHelio);
-          } else {
-            clearGroup(aspG);
-          }
-        }
-      });
-    }
-
-    const btnSys = document.getElementById('cb-sys');
-    if(btnSys) btnSys.addEventListener('click', () => {
-        S.sidereal=!S.sidereal; btnSys.classList.toggle('on',S.sidereal); btnSys.textContent = S.sidereal ? LANGS[currLang].ctrl.btnSysS : LANGS[currLang].ctrl.btnSysT;
-        if (userData.jd) updatePositions();
-    });
-
-    const btnOut = document.getElementById('cb-out');
-    if(btnOut) btnOut.addEventListener('click', () => { S.showOut=!S.showOut; btnOut.classList.toggle('on',S.showOut); if(userData.jd)updatePositions(); });
-
-    const tb = document.getElementById('time-bar'), btnTm = document.getElementById('cb-tm');
-    if(btnTm && tb) btnTm.addEventListener('click', () => { S.time=!S.time; btnTm.classList.toggle('on',S.time); S.time ? tb.classList.add('show') : (tb.classList.remove('show'), window.resetTime()); });
-
-    const btnOrb = document.getElementById('cb-orb');
-    if(btnOrb) btnOrb.addEventListener('click', () => { S.orb=!S.orb; btnOrb.classList.toggle('on',S.orb); if (!S.orb) Object.values(dropLines).forEach(dl=>{dl.visible=false;}); else if (userData.jd) updatePositions(); });
+    // 初始化齿轮列表
+    initPickerCol('y', 1900, 2100, userData.y);
+    initPickerCol('m', 1, 12, userData.m);
+    initPickerCol('d', 1, 31, userData.d);
+    initPickerCol('h', 0, 23, userData.h);
+    initPickerCol('min', 0, 59, userData.mn);
 };
+
+window.closePicker = function() {
+    document.getElementById('ios-picker-modal').style.display = 'none';
+};
+
+let scrollTimers = {};
+function initPickerCol(id, min, max, currentVal) {
+    const col = document.getElementById('col-' + id);
+    col.innerHTML = '';
+    // 首尾增加空元素，实现滚动居中
+    col.innerHTML += '<div class="picker-item"></div><div class="picker-item"></div>';
+    for (let i = min; i <= max; i++) {
+        const valStr = String(i).padStart(2, '0');
+        col.innerHTML += `<div class="picker-item" data-val="${i}">${valStr}</div>`;
+    }
+    col.innerHTML += '<div class="picker-item"></div><div class="picker-item"></div>';
+    
+    // 强制滚动到当前值
+    const items = col.querySelectorAll('.picker-item[data-val]');
+    const targetIndex = Array.from(items).findIndex(el => parseInt(el.getAttribute('data-val')) === currentVal);
+    if (targetIndex !== -1) {
+        // 等待DOM渲染后设置scrollTop
+        setTimeout(() => {
+            col.scrollTop = targetIndex * 40;
+            updatePickerHighlight(col);
+        }, 10);
+    }
+}
+
+window.onScrollPicker = function(id) {
+    const col = document.getElementById('col-' + id);
+    clearTimeout(scrollTimers[id]);
+    
+    // 滚动中的视觉反馈
+    updatePickerHighlight(col);
+    
+    // 滚动结束后的事件处理
+    scrollTimers[id] = setTimeout(() => {
+        updatePickerHighlight(col);
+        applyPickerTime();
+    }, 150);
+};
+
+function updatePickerHighlight(col) {
+    const index = Math.round(col.scrollTop / 40);
+    const items = col.children;
+    for(let i=0; i<items.length; i++) {
+        if(i === index + 2) items[i].classList.add('active');
+        else items[i].classList.remove('active');
+    }
+}
+
+function applyPickerTime() {
+    const getVal = (id) => {
+        const col = document.getElementById('col-' + id);
+        const index = Math.round(col.scrollTop / 40);
+        const activeItem = col.children[index + 2];
+        return activeItem ? parseInt(activeItem.getAttribute('data-val')) : 0;
+    };
+    
+    const py = getVal('y'), pm = getVal('m'), pd = getVal('d'), ph = getVal('h'), pmin = getVal('min');
+    if (!py || !pm || !pd) return; // 避免滑动未完成时的报错
+    
+    // 实时更新 userData 和 3D 渲染
+    const effectiveH = userData.dst ? ph + 1 : ph; 
+    const newJd = jdn(py, pm, pd, effectiveH - userData.tz, pmin);
+    
+    if (!isNaN(newJd)) {
+        userData.y = py; userData.m = pm; userData.d = pd;
+        userData.h = ph; userData.mn = pmin; userData.jd = newJd;
+        
+        updatePositions();
+        
+        const tgt = new Date(Date.UTC(py, pm-1, pd, ph, pmin));
+        const tLbl = document.getElementById('time-lbl');
+        if(tLbl) tLbl.textContent = `${tgt.getUTCFullYear()}.${String(tgt.getUTCMonth()+1).padStart(2,'0')}.${String(tgt.getUTCDate()).padStart(2,'0')} ${String(tgt.getUTCHours()).padStart(2,'0')}:${String(tgt.getUTCMinutes()).padStart(2,'0')}`;
+        const dateEl = document.getElementById('tb-date'); 
+        if(dateEl) dateEl.textContent = `${py}.${String(pm).padStart(2,'0')}.${String(pd).padStart(2,'0')} ${String(ph).padStart(2,'0')}:${String(pmin).padStart(2,'0')}${userData.dst?' (DST)':''}`;
+
+        // 滑动齿轮时检测是否进入恐怖时间
+        checkHorrorEvent(py, pm, pd);
+    }
+}
 
 // ==========================================
 // 6. 動畫迴圈與啟動程序
@@ -1943,10 +1850,10 @@ function animate() {
           }
           
           // 血管随心跳发亮，并在前8秒逐渐伸长
-          if (child.isLine && child.userData.isVein) {
+          if (child.isLineSegments && child.userData.isVein) {
               child.material.opacity = 0.2 + 0.6 * heartPulse;
               if (window.infectionTime < 8) {
-                  child.scale.multiplyScalar(1.003); // 让血管像活的一样往外延伸
+                  child.scale.multiplyScalar(1.002); // 伸长速度微调，避免卡顿
               }
           }
       });
@@ -1961,6 +1868,7 @@ function animate() {
       if (window.infectionTime > 11 && !window.ascensionShown) {
           window.ascensionShown = true;
           document.getElementById('ascension-popup').style.display = 'flex';
+          document.getElementById('ios-picker-modal').style.display = 'none'; // 强制关闭拨盘
           
           // 彻底死寂：停止心跳声
           if (audioCtx.state === 'running') {
@@ -1974,7 +1882,13 @@ function animate() {
 
 Promise.all(texPromises).then(() => {
     buildBaseMeshes();
-    setupEvents();
+    
+    // 初始化事件绑定 (不在此处绑定时间轴输入，统一交由 setupEvents 处理)
+    const bindClick = (id, fn) => { const el = document.getElementById(id); if(el) el.addEventListener('click', fn); };
+    bindClick('btn-sub', window.submitForm); bindClick('btn-demo', window.loadDemo);
+    const dstEl = document.getElementById('f-dst'); if(dstEl) dstEl.addEventListener('change', () => { window.toggleDST(); window.hst(); });
+    if(isMobile) bindClick('mobile-drawer-handle', window.toggleDrawer);
+    
     window.switchLang(currLang);
     window.hst();
 
