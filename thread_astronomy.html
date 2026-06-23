@@ -1,60 +1,125 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="utf-8" />
+    <meta charset="UTF-8">
     <title>【招新】天文社带你去看狮子座流星雨 - 南江大学溯源BBS</title>
     <style>
-        body { background-color: #E2E8F1; color: #333; font-family: "SimSun", "宋体", sans-serif; font-size: 14px; margin: 0; padding: 10px 0; }
-        a { color: #004499; text-decoration: none; }
-        #wrap { width: 96%; min-width: 980px; margin: 0 auto; background: #FFF; border: 1px solid #A6CBE7; padding: 15px; }
-        .header { border-bottom: 3px solid #336699; padding-bottom: 10px; margin-bottom: 15px; font-weight: bold; font-size: 14px; }
-        .post-table { width: 100%; border-collapse: collapse; border: 1px solid #A6CBE7; margin-bottom: 10px; background:#FFF; }
-        .post-user { width: 180px; background: #F0F5FA; border-right: 1px solid #A6CBE7; padding: 15px; text-align: center; vertical-align: top; }
-        .post-content { padding: 15px 20px; vertical-align: top; line-height: 1.8; }
-        .post-info { border-bottom: 1px dashed #CCC; padding-bottom: 5px; margin-bottom: 15px; color: #666; font-size: 12px; }
-        .avatar { width: 100px; height: 100px; border: 1px solid #CCC; margin: 10px auto; background: #E2E8F1; display: flex; align-items: center; justify-content: center; color: #999; font-size:12px; }
-        .user-detail { color: #666; font-size: 12px; text-align: left; width: fit-content; margin: 0 auto; line-height: 1.5; }
-        .quote-box { background: #F9F9F9; border: 1px solid #E5E5E5; border-left: 4px solid #336699; padding: 10px 15px; margin: 10px 0; color: #555; }
+        /* 古早 BBS 经典样式重置 (Discuz! 经典蓝风格) */
+        body { font-family: 'SimSun', '宋体', Arial, sans-serif; background-color: #799AE1; color: #000; font-size: 13px; margin: 0; padding: 0 0 30px 0; }
+        a { color: #000000; text-decoration: none; }
+        a:hover { text-decoration: underline; color: #FF6600; }
+        
+        /* 顶部导航与大色块框架 */
+        .header { background: #0F5E8A; border-bottom: 2px solid #003366; padding: 20px 20px; color: #FFF; }
+        .logo { font-size: 24px; font-weight: bold; font-family: 'Microsoft YaHei', sans-serif; text-shadow: 1px 1px 2px #000; }
+        .nav-links { margin-top: 15px; font-weight: bold; font-size: 12px; }
+        .nav-links a { color: #FFF; margin-right: 15px; }
+        
+        /* 核心布局框架 */
+        .wrap { width: 980px; margin: 15px auto; overflow: hidden; background: #FFF; border: 1px solid #003366; padding: 10px; } 
+        .main { width: 740px; float: left; }
+        .sidebar { width: 215px; float: right; }
+
+        /* 面包屑色块 */
+        .breadcrumbs { background: #E5EDF2; border: 1px solid #9CB8CC; padding: 8px 10px; margin-bottom: 10px; font-weight: bold; color: #0055AA; }
+        .breadcrumbs a { color: #0055AA; }
+
+        /* 帖子主容器色块 */
+        .post-list { background: #FFF; border: 1px solid #9CB8CC; margin-bottom: 15px; }
+        .post-header-bar { background: #E5EDF2; border-bottom: 1px solid #9CB8CC; padding: 5px 10px; font-weight: bold; }
+        
+        /* 楼层样式（经典左右分栏色块） */
+        .post-row { border-bottom: 1px solid #9CB8CC; display: table; width: 100%; table-layout: fixed; } 
+        .post-left { width: 130px; background: #EAF0F6; border-right: 1px solid #9CB8CC; padding: 15px 10px; text-align: center; display: table-cell; vertical-align: top; }
+        .post-right { padding: 15px; display: table-cell; vertical-align: top; word-wrap: break-word; overflow: hidden; background: #F5F9FA; }
+        
+        .username { font-weight: bold; font-size: 14px; margin-bottom: 5px; display: block; color: #000080; }
+        
+        /* 头像框设计 */
+        .avatar { width: 100px; height: 100px; border: 1px solid #9CB8CC; background: #E2E8F1; padding: 2px; margin: 5px auto; display: flex; align-items: center; justify-content: center; color: #999; font-size:12px; }
+        .avatar img { width: 100%; height: 100%; display: block; object-fit: cover; }
+        
+        .user-title { color: #0055aa; margin-top: 5px; font-weight: bold; }
+        .user-stats { color: #666; margin-top: 5px; font-size: 12px; line-height: 1.5; text-align: left; padding-left: 20px; }
+        
+        .post-info { border-bottom: 1px dashed #9CB8CC; padding-bottom: 5px; margin-bottom: 15px; color: #666; font-size: 12px; }
+        .floor-num { float: right; font-weight: bold; color: #000; font-family: Arial; }
+        
+        .content { font-size: 14px; line-height: 1.8; color: #000; min-height: 150px; }
+        .content img { max-width: 100%; height: auto; border: 1px solid #9CB8CC; padding: 2px; margin: 10px 0; background: #FFF; box-sizing: border-box; }
+        
+        .quote-box { background: #EAF0F6; border: 1px solid #9CB8CC; border-left: 4px solid #0055AA; padding: 10px 15px; margin: 15px 0; color: #333; font-size: 13px; }
+
+        .signature { border-top: 1px dashed #9CB8CC; margin-top: 30px; padding-top: 10px; color: #666; font-size: 12px; }
+
+        /* 侧边栏色块伪装 */
+        .side-box { background: #FFF; border: 1px solid #9CB8CC; margin-bottom: 15px; }
+        .side-title { background: #D9E4EA; border-bottom: 1px solid #9CB8CC; padding: 6px 10px; font-weight: bold; color: #0055AA; }
+        .side-content { padding: 8px; list-style: none; margin: 0; }
+        .side-content li { border-bottom: 1px dotted #9CB8CC; padding: 4px 0; padding-left: 12px; background: url('data:image/gif;base64,R0lGODlhBQAKAIABAAAAAP///yH5BAEAAAEALAAAAAAFAAoAAAIIjI+pG8HwnCgAOw==') no-repeat left center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 12px; }
     </style>
 </head>
 <body>
-<div id="wrap">
-    <div class="header"><a href="bbs_2026_home.html">溯源BBS首页</a> &raquo; 区域 D: 校园社团与活动区 &raquo; <b>【招新】天文社带你去看狮子座流星雨</b></div>
-    
-    <table class="post-table">
-        <tr>
-            <td class="post-user"><div style="font-weight:bold; color:#004499; font-size:15px;">追星者</div><div class="avatar">无头像</div><div class="user-detail">级别: 望远镜杀手<br>发帖数: 402</div></td>
-            <td class="post-content">
-                <div class="post-info"><span style="float:right; font-weight:bold;">楼主</span> 发表于 2026-06-21 21:05:00</div>
-                哈喽学弟学妹们！本周末天气晴朗，无云少雾，是非常绝佳的观星窗口期！<br><br>
-                天文社组织去西山搭赤道仪观星，名额有限，提供专业的折射望远镜，带你近距离领略宇宙的浪漫。想参加的同学跟帖报名，周五晚在南门广场集合统一出发。
-            </td>
-        </tr>
-    </table>
-    
-    <table class="post-table">
-        <tr>
-            <td class="post-user"><div style="font-weight:bold; color:#004499; font-size:15px;">镜片起雾了</div><div class="avatar">无头像</div><div class="user-detail">级别: 资深社员<br>发帖数: 210</div></td>
-            <td class="post-content">
-                <div class="post-info"><span style="float:right; font-weight:bold;">沙发</span> 发表于 2026-06-21 22:15:10</div>
-                社长，活动可能要取消了，咱们那台最贵的深空望远镜好像坏了。<br><br>
-                昨晚我在天台做赤道仪校准，把镜头对准咱们学校南门上空的时候，目镜里看到的根本不是星空！天空被一层巨大的、暗红色的薄膜覆盖着，上面密密麻麻全是像血管一样的东西，而且正中央还有几个重叠在一起的人影残影，随着一种像脉搏一样的频率在闪烁。<br><br>
-                我吓得揉了半天眼睛，拿开望远镜看天空明明是正常的黑夜。这镜头是不是发霉长菌了产生折射幻觉了啊？
-            </td>
-        </tr>
-    </table>
 
-    <table class="post-table">
-        <tr>
-            <td class="post-user"><div style="font-weight:bold; color:#004499; font-size:15px;">半夜不睡觉</div><div class="avatar">无头像</div><div class="user-detail">级别: 灵异爱好者<br>发帖数: 666</div></td>
-            <td class="post-content">
-                <div class="post-info"><span style="float:right; font-weight:bold;">板凳</span> 发表于 2026-06-21 23:40:05</div>
-                <div class="quote-box">目镜里看到的根本不是星空！天空被一层巨大的、暗红色的薄膜覆盖着...</div>
-                望远镜没坏，你的眼睛也没瞎。<br>
-                光学透镜在特定的光晕折射下，也是能看到高维重叠空间的。你去隔壁贴看看那个用 Vision Pro 的老哥，他用雷达扫出来的也是这个东西。它一直都在我们学校上空，越来越大了。
-            </td>
-        </tr>
-    </table>
+<div class="header">
+    <div class="logo">南江大学 - 溯源BBS (Since 2004)</div>
+    <div class="nav-links">
+        <a href="#">首 页</a> | <a href="#">版块列表</a> | <a href="#">校内资讯</a> | <a href="#">跳蚤市场</a> | <a href="#">灌水乐园</a> | <a href="#">控制面板</a>
+    </div>
 </div>
-</body>
-</html>
+
+<div class="wrap">
+    <div class="main">
+        <div class="breadcrumbs">
+            <a href="bbs_2026_home.html">溯源BBS首页</a> &raquo; <a href="#">校内交流区</a> &raquo; <a href="#">区域 D: 校园社团与活动区</a>
+        </div>
+
+        <div class="post-list">
+            <div class="post-header-bar">
+                【招新】天文社带你去看狮子座流星雨
+            </div>
+            
+            <div class="post-row">
+                <div class="post-left">
+                    <span class="username">追星者</span>
+                    <div class="avatar">无头像</div>
+                    <div class="user-title">望远镜杀手</div>
+                    <div class="user-stats">发帖: 402<br>积分: 1250<br>注册: 2024-03</div>
+                </div>
+                <div class="post-right">
+                    <div class="post-info">
+                        发表于 2026-06-21 21:05:00 <span class="floor-num">楼主</span>
+                    </div>
+                    <div class="content">
+                        哈喽学弟学妹们！本周末天气晴朗，无云少雾，是非常绝佳的观星窗口期！<br><br>
+                        天文社组织去西山搭赤道仪观星，名额有限，提供专业的折射望远镜，带你近距离领略宇宙的浪漫。想参加的同学跟帖报名，周五晚在南门广场集合统一出发。
+                    </div>
+                </div>
+            </div>
+
+            <div class="post-row">
+                <div class="post-left">
+                    <span class="username">镜片起雾了</span>
+                    <div class="avatar">无头像</div>
+                    <div class="user-title">资深社员</div>
+                    <div class="user-stats">发帖: 210<br>积分: 880</div>
+                </div>
+                <div class="post-right">
+                    <div class="post-info">发表于 2026-06-21 22:15:10 <span class="floor-num">沙发</span></div>
+                    <div class="content">
+                        社长，活动可能要取消了，咱们那台最贵的深空望远镜好像坏了。<br><br>
+                        昨晚我在天台做赤道仪校准，把镜头对准咱们学校南门上空的时候，目镜里看到的根本不是星空！天空被一层巨大的、暗红色的薄膜覆盖着，上面密密麻麻全是像血管一样的东西，而且正中央还有几个重叠在一起的人影残影，随着一种像脉搏一样的频率在闪烁。<br><br>
+                        我吓得揉了半天眼睛，拿开望远镜看天空明明是正常的黑夜。这镜头是不是发霉长菌了产生折射幻觉了啊？
+                    </div>
+                </div>
+            </div>
+
+            <div class="post-row">
+                <div class="post-left">
+                    <span class="username">半夜不睡觉</span>
+                    <div class="avatar">无头像</div>
+                    <div class="user-title">灵异爱好者</div>
+                    <div class="user-stats">发帖: 666<br>积分: 2333</div>
+                </div>
+                <div class="post-right">
+                    <div class="post-
