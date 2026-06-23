@@ -136,29 +136,33 @@ input::placeholder{color:rgba(255,255,255,.17)}
 #flesh-overlay {
     position: fixed;
     top: 0; left: 0; width: 100vw; height: 100vh;
-    background: radial-gradient(circle, rgba(255,0,0,0) 30%, rgba(139,0,0,0.5) 70%, rgba(50,0,0,0.95) 100%);
+    background: radial-gradient(circle, rgba(255,0,0,0) 20%, rgba(100,0,0,0.6) 60%, rgba(30,0,0,0.98) 100%);
     pointer-events: none;
     z-index: 9000;
     opacity: 0;
-    transition: opacity 2s ease-in;
+    transition: opacity 1.5s ease-in;
+    mix-blend-mode: multiply;
 }
 
 .pulsing {
     animation: flesh-pulse 1.2s infinite;
 }
 @keyframes flesh-pulse {
-    0% { opacity: 0.7; transform: scale(1); }
-    50% { opacity: 1; transform: scale(1.03); }
-    100% { opacity: 0.7; transform: scale(1); }
+    0% { opacity: 0.6; transform: scale(1); }
+    15% { opacity: 0.9; transform: scale(1.02); }
+    30% { opacity: 0.6; transform: scale(1); }
+    45% { opacity: 1.0; transform: scale(1.04); }
+    100% { opacity: 0.6; transform: scale(1); }
 }
 
 .severe-glitch {
-    animation: screen-tear 0.15s infinite;
+    animation: screen-tear 0.2s infinite;
 }
 @keyframes screen-tear {
-    0% { filter: invert(1) hue-rotate(180deg) contrast(1.5); transform: translate(3px, -3px); }
-    50% { filter: none; transform: translate(-3px, 3px); }
-    100% { filter: saturate(4) contrast(2) sepia(1) hue-rotate(-50deg); transform: translate(0, 0); }
+    0% { filter: invert(0.8) hue-rotate(180deg) contrast(2); transform: translate(4px, -4px); }
+    30% { filter: none; transform: translate(-4px, 4px); }
+    60% { filter: saturate(5) contrast(3) sepia(1) hue-rotate(-50deg); transform: translate(2px, -2px); }
+    100% { filter: none; transform: translate(0, 0); }
 }
 
 @media(max-width:768px){
@@ -186,6 +190,7 @@ input::placeholder{color:rgba(255,255,255,.17)}
 </script>
 </head>
 <body>
+<!-- 血肉滤镜图层 -->
 <div id="flesh-overlay"></div>
 
 <div id="loading-overlay"><div class="loading-spinner"></div><div class="loading-text" id="loading-text-el">載入星象引擎與高精貼圖…</div></div>
@@ -300,7 +305,7 @@ input::placeholder{color:rgba(255,255,255,.17)}
   <button class="tbtn" id="tb-reset" onclick="if(window.resetTime) window.resetTime()">重置</button>
 </div>
 <div id="tip"><h4 id="tip-h"></h4><p id="tip-p"></p></div>
-<div id="asc-hint">☽ 测者中心已完美锁定，中天直指萤幕正上方</div>
+<div id="asc-hint">☽ 测者中心已完美锁定，中天直指螢幕正上方</div>
 
 <script type="module">
 import * as THREE from 'three';
@@ -418,7 +423,7 @@ const LANGS = {
   'ko':{
     zod:['백양','황소','쌍둥이','게','사자','처녀','천칭','전갈','사수','염소','물병','물고기'],
     man:['각','항','저','방','심','미','기','두','우','여','허','위','실','벽','규','루','위2','묘','필','자','삼','정','귀','류','성','장','익','진'],
-    pl:{sun:'태양',moon:'달',mercury:'수성',venus:'금성',mars:'화성',jupiter:'목성',saturn:'토성',uranus:'천왕성',neptune:'해왕성',pluto:'명왕성',rahu:'라후',ketu:'케투',yapo:'월패',ziqi:'자기',fortune:'포춘'},
+    pl:{sun:'태양',moon:'달',mercury:'수성',venus:'금성',mars:'화성',jupiter:'목성',saturn:'토성',uranus:'천왕성',neptune:'해왕성',pluto:'명왕성',라후:'라후',ketu:'케투',yapo:'월패',ziqi:'자기',fortune:'포춘'},
     wx:{sun:'순양·아버지',moon:'순음·어머니',mercury:'양수·사고',venus:'음금·재물',mars:'양화·행동',jupiter:'양목·복',saturn:'음토·책임',rahu:'화의 여기',ketu:'토의 여기',yapo:'수의 여기',ziqi:'목의 여기',uranus:'양토·개혁',neptune:'음목·환상',pluto:'음화·재생',fortune:'행운과 기회'},
     ui:{eq:'적도',ecl:'황도',asc:'ASC 상승',dsc:'DSC 하강',mc:'MC 중천',ic:'IC 천저',mansion:'수',house:'궁',p1:'신월',p2:'상현',p3:'만월',p4:'하현',p5:'그믐',deg:'이각',trop:'회귀 황도',sid:'항성 황도',helio:'일심 황도',helioMsg:'☉ 일심 모드 · 항성 기준계 고정 · 시황도 비적용',zenith:'천정'},
     al:{asc:'명궁:',sun:'태양:',moon:'달:',phase:'위상',rahu:'남교점:',jup:'목성:',sat:'토성:'},
@@ -522,9 +527,7 @@ function getHelio(id, d) {
   const M = norm(p.L + p.n * d - p.w);
   const E = solveKepler(M * DEG, p.e);
   const xv = p.a * (Math.cos(E) - p.e), yv = p.a * Math.sqrt(1 - p.e * p.e) * Math.sin(E);
-  // 【核心修復 1】計算基礎 J2000 黃經
   const l_j2000 = Math.atan2(yv, xv) * R2D + p.w;
-  // 加上自 J2000.0 起的歲差，統一與太陽月亮歸入「回歸黃道 (Tropical of Date)」座標系
   const precession = 3.82394E-5 * d;
   const l = norm(l_j2000 + precession);
   const lat = p.i * Math.sin((l_j2000 - p.Node) * DEG);
@@ -732,6 +735,9 @@ function analyzeChart(geo, isSid, jd) {
 const wrap = document.getElementById('three-canvas');
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x020204);
+// 添加厚重的指数迷雾
+scene.fog = new THREE.FogExp2(0x020204, 0.005); 
+
 const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 2000);
 camera.position.set(0, 55, 115);
 
@@ -769,9 +775,11 @@ function mkStars(n, sz, sp, col, op) {
   g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
   return new THREE.Points(g, new THREE.PointsMaterial({ size:sz, color:col, transparent:true, opacity:op, sizeAttenuation:true }));
 }
-scene.add(mkStars(5000, 0.45, 600, 0xCCDDFF, 0.65));
-scene.add(mkStars(1500, 0.85, 500, 0xFFFFFF, 0.42));
-scene.add(mkStars(500,  1.3,  460, 0xFFEEDD, 0.32));
+const starLayers = [];
+starLayers.push(mkStars(5000, 0.45, 600, 0xCCDDFF, 0.65));
+starLayers.push(mkStars(1500, 0.85, 500, 0xFFFFFF, 0.42));
+starLayers.push(mkStars(500,  1.3,  460, 0xFFEEDD, 0.32));
+starLayers.forEach(l => scene.add(l));
 
 const meteors = [];
 function spawnMeteor(m) {
@@ -806,6 +814,11 @@ const sunLight = new THREE.DirectionalLight(0xffffff, 2.5);
 sunLight.position.set(0, 10, 50);
 scene.add(sunLight);
 scene.add(new THREE.AmbientLight(0xffffff, 0.07));
+
+// 血肉点光源 (隐藏，触发时点亮)
+const fleshLight = new THREE.PointLight(0xFF0000, 0, 800);
+fleshLight.position.set(0, 0, 0);
+scene.add(fleshLight);
 
 const universeG = new THREE.Group(); 
 universeG.rotation.x = -Math.PI / 2; 
@@ -1399,7 +1412,7 @@ function launch() {
 // ==========================================
 window.isInfected = false;
 
-// 使用 Web Audio API 生成合成心跳声，无需外部 mp3 文件！
+// 1. 低频心跳合成 (Web Audio API)
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 let isHeartbeatPlaying = false;
 
@@ -1408,66 +1421,59 @@ function playHeartbeat() {
     isHeartbeatPlaying = true;
     if (audioCtx.state === 'suspended') audioCtx.resume();
     
-    // 心跳节奏循环
+    // 每 1.2 秒跳动一次，带有湿润黏浊的低音
     setInterval(() => {
-        createHeartbeatSound();
-        setTimeout(createHeartbeatSound, 300); // 连跳两下 "咚-咚"
+        createHeartbeatSound(50, 0.4); 
+        setTimeout(() => createHeartbeatSound(45, 0.6), 300); // 第二下更重
     }, 1200);
 }
 
-function createHeartbeatSound() {
+function createHeartbeatSound(freq, duration) {
     const osc = audioCtx.createOscillator();
     const gainNode = audioCtx.createGain();
+    const filter = audioCtx.createBiquadFilter(); // 低通滤波，增加沉闷的肉体感
     
-    osc.connect(gainNode);
+    filter.type = 'lowpass';
+    filter.frequency.value = 150;
+    
+    osc.connect(filter);
+    filter.connect(gainNode);
     gainNode.connect(audioCtx.destination);
     
-    // 沉闷的低频心跳
     osc.type = 'sine';
-    osc.frequency.setValueAtTime(45, audioCtx.currentTime); // 低音
-    osc.frequency.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
+    osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
     
-    // 音量包络线，模拟强有力的搏动
-    gainNode.gain.setValueAtTime(1, audioCtx.currentTime);
-    gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
+    gainNode.gain.setValueAtTime(2.0, audioCtx.currentTime); // 提高音量产生压迫感
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
     
     osc.start(audioCtx.currentTime);
-    osc.stop(audioCtx.currentTime + 0.5);
+    osc.stop(audioCtx.currentTime + duration);
 }
 
+// 2. 检测时间触发
 function checkHorrorEvent(y, m, d) {
     if (window.isInfected) return;
-    // 触发锚点：1999年8月11日 或 2007年6月11日
-    if ((y === 1999 && m === 8 && d === 11) || (y === 2007 && m === 6 && d === 11)) {
+    if ((y === 1999 && m === 8 && d === 11) || (y === 2007 && m === 6 && d === 11) || (y === 2007 && m === 6 && d === 5)) {
         triggerFleshAscension();
     }
 }
 
 function triggerFleshAscension() {
     window.isInfected = true;
+    if (playingTime) document.getElementById('tb-play').click();
     
-    // 如果时间正在播放，强制停止
-    if (playingTime) {
-        document.getElementById('tb-play').click();
-    }
-    
-    // 1. 播放合成心跳音效
     playHeartbeat();
 
-    // 2. 启用血肉滤镜和脉动
     const fOverlay = document.getElementById('flesh-overlay');
     fOverlay.style.opacity = '1';
     fOverlay.classList.add('pulsing');
 
-    // 3. 随机触发极端屏幕撕裂
     setInterval(() => {
         document.body.classList.add('severe-glitch');
-        setTimeout(() => {
-            document.body.classList.remove('severe-glitch');
-        }, 150 + Math.random() * 200);
+        setTimeout(() => document.body.classList.remove('severe-glitch'), 150 + Math.random() * 200);
     }, 1500 + Math.random() * 4000);
 
-    // 4. 修改UI标题，宣告被入侵
     const titleEl = document.getElementById('tb-title');
     const subEl = document.getElementById('tb-sub');
     titleEl.innerHTML = "【 警告：偵測到高維血肉侵蝕 】";
@@ -1476,47 +1482,84 @@ function triggerFleshAscension() {
     subEl.innerHTML = "FLESH_ASCENSION_PROTOCOL_ENGAGED";
     subEl.style.color = "#FF4444";
 
-    // 5. 异化 Three.js 中的所有模型
+    // 切断所有UI文字标签
+    document.querySelectorAll('.lbl').forEach(l => l.style.color = '#8B0000');
+
     mutateThreeJSPlanets();
 }
 
+// 3. 核心 3D 异化逻辑
 function mutateThreeJSPlanets() {
-    // 背景变成极深的暗红色
-    scene.background = new THREE.Color(0x110000); 
+    // A. 改变宇宙底色和光照，移除迷雾改为血红深渊
+    scene.background = new THREE.Color(0x0a0000);
+    scene.fog = new THREE.FogExp2(0x110000, 0.008); 
     sunLight.color.setHex(0xff0000);
+    fleshLight.intensity = 1500; // 点亮中心血红光源
 
-    // 将黄道、赤道、二十八宿的轨道线变成血红色
-    eclRingG.children.forEach(c => { if(c.material) c.material.color.setHex(0x8B0000); });
-    eqRingG.children.forEach(c => { if(c.material) c.material.color.setHex(0x550000); });
-    manG.children.forEach(c => { if(c.material) c.material.color.setHex(0x990000); });
-
-    // 异化地球模型
-    if (earthMesh) {
-        earthMesh.traverse(child => {
-            if (child.isMesh && child.material) {
-                child.material.color.setHex(0xaa0000);
-                if(child.material.emissive) child.material.emissive.setHex(0x330000);
-                if(child.material.map) child.material.map = null; // 剥离贴图，露出肉块本质
+    // B. 生成寄生血管的函数 (给线条加 Jitter 并复制)
+    function growVeins(group) {
+        const veins = [];
+        group.traverse(child => {
+            if ((child.isLine || child.isLineSegments) && child.geometry) {
+                child.material.color.setHex(0x550000);
+                child.material.opacity = 0.2;
+                
+                const posAttr = child.geometry.getAttribute('position');
+                if (posAttr) {
+                    for(let v = 0; v < 4; v++) { // 每条线长出 4 条扭曲血管
+                        const pts = [];
+                        for(let i=0; i<posAttr.count; i++) {
+                            let x = posAttr.getX(i) + (Math.random() - 0.5) * 1.8;
+                            let y = posAttr.getY(i) + (Math.random() - 0.5) * 1.8;
+                            let z = posAttr.getZ(i) + (Math.random() - 0.5) * 1.8;
+                            pts.push(new THREE.Vector3(x, y, z));
+                        }
+                        const vg = new THREE.BufferGeometry().setFromPoints(pts);
+                        const vm = new THREE.LineBasicMaterial({ color: 0xaa0000, transparent: true, opacity: 0.6 });
+                        const vLine = new THREE.Line(vg, vm);
+                        vLine.userData.isVein = true; // 标记为血管，后续闪烁用
+                        veins.push(vLine);
+                    }
+                }
             }
         });
+        veins.forEach(v => group.add(v));
     }
 
-    // 异化所有行星，让它们变红、变黑，并像肿瘤一样膨胀
-    Object.values(pMesh).forEach(pm => {
-        pm.traverse(child => {
-            if (child.isMesh && child.material) {
-                child.material.color.setHex(0x8b0000);
-                if (child.material.emissive) child.material.emissive.setHex(0x550000);
-                if (child.material.map) child.material.map = null;
+    // 给所有环长出血管
+    growVeins(eclRingG);
+    growVeins(eqRingG);
+    growVeins(manG);
+
+    // C. 异化地球 (剥离贴图，变成反光的肉块)
+    if (earthMesh) {
+        earthMesh.traverse(child => {
+            if (child.isMesh) {
+                child.material = new THREE.MeshStandardMaterial({
+                    color: 0x440000, emissive: 0x220000,
+                    roughness: 0.1, metalness: 0.1 // 极度湿润反光
+                });
+                child.userData.isFlesh = true;
+                child.userData.baseScale = child.scale.clone();
+                child.userData.seed = Math.random() * 100;
             }
         });
-        
-        let s = pm.scale.x;
-        let si = setInterval(() => {
-            s += 0.05;
-            pm.scale.set(s, s, s);
-            if(s > 2.8) clearInterval(si); // 放大2.8倍停止
-        }, 50);
+        growVeins(earthMesh); // 地球表面的经纬线也变成血管
+    }
+
+    // D. 异化所有行星
+    Object.values(pMesh).forEach(pm => {
+        pm.traverse(child => {
+            if (child.isMesh) {
+                child.material = new THREE.MeshStandardMaterial({
+                    color: 0x660000, emissive: 0x330000,
+                    roughness: 0.1, metalness: 0.2
+                });
+                child.userData.isFlesh = true;
+                child.userData.baseScale = child.scale.clone();
+                child.userData.seed = Math.random() * 100;
+            }
+        });
     });
 }
 // ==========================================
@@ -1829,11 +1872,50 @@ const clock = new THREE.Clock();
 function animate() {
   requestAnimationFrame(animate);
   const dt = clock.getDelta();
+  const t = clock.getElapsedTime();
+
   if(OCtrl && OCtrl.update) OCtrl.update();
-  if (playingTime && curGeo && curGeo.retrograde) {
+  
+  if (playingTime && curGeo && curGeo.retrograde && !window.isInfected) {
     const rotSpeeds = { moon:0.04, mercury:0.08, venus:0.02, sun:0.12, mars:0.18, jupiter:0.44, saturn:0.38, uranus:0.30, neptune:0.34, pluto:0.06 };
     PCONF.forEach(pc => { if (pMesh[pc.id] && rotSpeeds[pc.id] !== undefined && !S.helio) { pMesh[pc.id].rotateY(dt * rotSpeeds[pc.id] * (curGeo.retrograde[pc.id] ? -1 : 1)); } });
   }
+
+  // ==============================
+  // 血肉飞升异化动画循环 (Flesh Animation)
+  // ==============================
+  if (window.isInfected) {
+      // 模拟心跳搏动的 sine 函数 (周期约 1.2s，双连跳)
+      const heartPulse = Math.pow(Math.sin(t * 5.2), 4);
+      
+      scene.traverse(child => {
+          // 肉体不规则畸变和胀大
+          if (child.isMesh && child.userData.isFlesh) {
+              const bs = child.userData.baseScale;
+              const r = child.userData.seed;
+              
+              // 心跳膨胀因子
+              const throb = 1.0 + 0.15 * heartPulse;
+              
+              // XYZ不规则蠕动畸变
+              const defX = 1 + 0.15 * Math.sin(t * 3.1 + r);
+              const defY = 1 + 0.15 * Math.cos(t * 2.7 + r);
+              const defZ = 1 + 0.15 * Math.sin(t * 3.5 + r);
+              
+              child.scale.set(
+                  bs.x * throb * defX, 
+                  bs.y * throb * defY, 
+                  bs.z * throb * defZ
+              );
+          }
+          
+          // 血管随心跳发亮
+          if (child.isLine && child.userData.isVein) {
+              child.material.opacity = 0.2 + 0.6 * heartPulse;
+          }
+      });
+  }
+
   updateMeteors(dt); composer.render(dt); lblR.render(scene, camera);
 }
 
