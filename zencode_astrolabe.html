@@ -144,6 +144,29 @@ input::placeholder{color:rgba(255,255,255,.17)}
     mix-blend-mode: multiply;
 }
 
+/* 巨型凝视之眼 */
+#giant-eye {
+    position: fixed;
+    inset: 0;
+    z-index: 9500;
+    background: radial-gradient(circle at center, transparent 5%, rgba(139,0,0,0.7) 30%, #000 70%);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 3s ease-in;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+#giant-eye::after {
+    content: '';
+    width: 120px;
+    height: 500px;
+    background: radial-gradient(ellipse at center, #ff0000 0%, #440000 40%, transparent 70%);
+    border-radius: 50%;
+    filter: blur(8px);
+    animation: pupil-throb 1.2s infinite;
+}
+
 .pulsing {
     animation: flesh-pulse 1.2s infinite;
 }
@@ -155,6 +178,14 @@ input::placeholder{color:rgba(255,255,255,.17)}
     100% { opacity: 0.6; transform: scale(1); }
 }
 
+@keyframes pupil-throb {
+    0% { transform: scale(1); opacity: 0.8; }
+    15% { transform: scale(1.1); opacity: 1; }
+    30% { transform: scale(1); opacity: 0.8; }
+    45% { transform: scale(1.15); opacity: 1; }
+    100% { transform: scale(1); opacity: 0.8; }
+}
+
 .severe-glitch {
     animation: screen-tear 0.2s infinite;
 }
@@ -163,6 +194,30 @@ input::placeholder{color:rgba(255,255,255,.17)}
     30% { filter: none; transform: translate(-4px, 4px); }
     60% { filter: saturate(5) contrast(3) sepia(1) hue-rotate(-50deg); transform: translate(2px, -2px); }
     100% { filter: none; transform: translate(0, 0); }
+}
+
+/* 最终飞升弹窗 */
+#ascension-popup {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    background: #000;
+    color: #8b0000;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+.ascension-text {
+    font-family: 'Ma Shan Zheng', cursive;
+    font-size: 3.5rem;
+    letter-spacing: 0.6em;
+    text-shadow: 0 0 30px #ff0000;
+    opacity: 0;
+    animation: fade-in-text 3s forwards 0.5s;
+}
+@keyframes fade-in-text {
+    to { opacity: 1; }
 }
 
 @media(max-width:768px){
@@ -190,8 +245,9 @@ input::placeholder{color:rgba(255,255,255,.17)}
 </script>
 </head>
 <body>
-<!-- 血肉滤镜图层 -->
 <div id="flesh-overlay"></div>
+<div id="giant-eye"></div>
+<div id="ascension-popup"><div class="ascension-text">想要飛升嗎？</div></div>
 
 <div id="loading-overlay"><div class="loading-spinner"></div><div class="loading-text" id="loading-text-el">載入星象引擎與高精貼圖…</div></div>
 <div class="top-left-panel"><a href="/" class="btn-back" title="返回主頁">⟨</a></div>
@@ -302,6 +358,7 @@ input::placeholder{color:rgba(255,255,255,.17)}
   <button class="tbtn" id="tb-play">▶ 播放</button>
   <input type="range" id="time-range" min="-87660" max="87660" value="0" step="1">
   <div id="time-lbl">当前时间</div>
+  <button class="tbtn" onclick="document.getElementById('mw').style.display='flex'">⚙ 精確調整</button>
   <button class="tbtn" id="tb-reset" onclick="if(window.resetTime) window.resetTime()">重置</button>
 </div>
 <div id="tip"><h4 id="tip-h"></h4><p id="tip-p"></p></div>
@@ -406,30 +463,8 @@ const LANGS = {
     ui:{eq:'赤道',ecl:'黄道',asc:'ASC上升',dsc:'DSC下降',mc:'MC中天',ic:'IC天底',mansion:'宿',house:'宫',p1:'新月(朔)',p2:'上弦月',p3:'满月(望)',p4:'下弦月',p5:'晦日',deg:'距角',trop:'回归黄道',sid:'恒星黄道',helio:'日心黄道',helioMsg:'☉ 日心模式 · 恒星参考系固定 · 视黄道不适用',zenith:'天顶'},
     al:{asc:'命宫在',sun:'太阳在',moon:'月在',phase:'月相',rahu:'南交点在',jup:'福星在',sat:'克星在'},
     dst:{off:'标准时',on:'夏令时 +1h',label:'夏令时（DST）',hint:'开启后自动 +1 小时'},
-    dom:{modalTitle:'星象坐标系',modalSub:'真3D地心仪 · 昼夜更替 · 二十八宿',lblNm:'命主姓名',lblDt:'出生日期（公历）',lblTm:'出生时间（24小时）',lblLoc:'出生地经纬度与时区',plhNm:'姓名（可留空）',btnSub:'观 测 星 象 能 量',btnDemo:'→ 载入演示（2002.12.24 子夜 · 东经109 · 北纬31）',tbTitle:'星象坐标系 · 天球仪',tbSub:'GEOCENTRIC ASTROLABE · 物理光影宇宙',tbPlay:'▶ 播放',tbPause:'⏸ 暂停',tbReset:'重置',timeLbl:'当前时间',loadTxt:'载入星象引擎与高精贴图…',drwLbl:'星象资料',pEcl:'星象 · 视黄道度数',pAna:'命盘分析摘要',pHou:'黄道十二宫 · 宫位星曜',pHouM:'黄道十二宫',ascAligned:'☽ 测者中心已完美锁定，中天直指萤幕正上方'},
+    dom:{modalTitle:'星象坐标系',modalSub:'真3D地心仪 · 昼夜更替 · 二十八宿',lblNm:'命主姓名',lblDt:'出生日期（公历）',lblTm:'出生时间（24小时）',lblLoc:'出生地经纬度与时区',plhNm:'姓名（可留空）',btnSub:'观 测 星 象 能 量',btnDemo:'→ 载入演示（2002.12.24 子夜 · 东经109 · 北纬31）',tbTitle:'星象坐标系 · 天球仪',tbSub:'GEOCENTRIC ASTROLABE · 物理光影宇宙',tbPlay:'▶ 播放',tbPause:'⏸ 暂停',tbReset:'重置',timeLbl:'当前时间',loadTxt:'载入星象引擎与高精贴图…',drwLbl:'星象资料',pEcl:'星象 · 视黄道度数',pAna:'命盘分析摘要',pHou:'黄道十二宫 · 宫位星曜',pHouM:'黄道十二宫',ascAligned:'☽ 测者中心已完美锁定，中天直指螢幕正上方'},
     ctrl:{zen:'沉浸星空',spin:'时间自转 (流逝)',zenith:'对齐天顶 (2D星盘)',helio:'切换日心/地心',sys:'切换回归/恒星',out:'三王星',ecl:'黄道环',eq:'赤道环',man:'二十八宿',pl:'星体显示',asp:'相位连线',tm:'时间推移',orb:'黄纬垂线',btnSysT:'归',btnSysS:'恒',btnOut:'王',btnMan:'宿',btnPl:'政',btnHelio:'日'}
-  },
-  'en':{
-    zod:['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagitt.','Capric.','Aquarius','Pisces'],
-    man:['Jiao','Kang','Di','Fang','Xin','Wei','Ji','Dou','Niu','Nu','Xu','Wei2','Shi','Bi','Kui','Lou','Wei3','Mao','Bi2','Zi','Shen','Jing','Gui','Liu','Xing','Zhang','Yi','Zhen'],
-    pl:{sun:'Sun',moon:'Moon',mercury:'Mercury',venus:'Venus',mars:'Mars',jupiter:'Jupiter',saturn:'Saturn',uranus:'Uranus',neptune:'Neptune',pluto:'Pluto',rahu:'Rahu',ketu:'Ketu',yapo:'Lilith',ziqi:'Ziqi',fortune:'Fortune'},
-    wx:{sun:'Pure Yang·Father',moon:'Pure Yin·Mother',mercury:'Yang Water·Mind',venus:'Yin Metal·Wealth',mars:'Yang Fire·Action',jupiter:'Yang Wood·Luck',saturn:'Yin Earth·Karma',rahu:'Fire Remainder',ketu:'Earth Remainder',yapo:'Water Remainder',ziqi:'Wood Remainder',uranus:'Yang Earth·Revolution',neptune:'Yin Wood·Illusion',pluto:'Yin Fire·Rebirth',fortune:'Luck & Opportunities'},
-    ui:{eq:'Equator',ecl:'Ecliptic',asc:'ASC',dsc:'DSC',mc:'MC Midheaven',ic:'IC Nadir',mansion:' M.',house:'H.',p1:'New Moon',p2:'1st Qtr',p3:'Full Moon',p4:'Last Qtr',p5:'Dark Moon',deg:'Elong.',trop:'Tropical',sid:'Sidereal',helio:'Heliocentric',helioMsg:'☉ Heliocentric Mode · Fixed Sidereal Frame · Tropical NA',zenith:'Zenith'},
-    al:{asc:'ASC in',sun:'Sun in',moon:'Moon in',phase:'Phase',rahu:'S.Node in',jup:'Jupiter in',sat:'Saturn in'},
-    dst:{off:'Standard',on:'DST +1h',label:'Daylight Saving Time',hint:'Adds +1h to birth time'},
-    dom:{modalTitle:'Astro Coordinates',modalSub:'True 3D Geocentric Astrolabe',lblNm:'Native Name',lblDt:'Birth Date (Gregorian)',lblTm:'Birth Time (24h)',lblLoc:'Location & Timezone',plhNm:'Name (Optional)',btnSub:'OBSERVE ASTRO ENERGY',btnDemo:'→ Load Demo (2002.12.24 Midnight · 109°E · 31°N)',tbTitle:'Geocentric Astrolabe',tbSub:'TRUE 3D PHYSICAL UNIVERSE',tbPlay:'▶ Play',tbPause:'⏸ Pause',tbReset:'Reset',timeLbl:'Current Time',loadTxt:'Loading Engine...',drwLbl:'Astro Data',pEcl:'Ecliptic Longitudes',pAna:'Chart Summary',pHou:'12 Zodiac Houses',pHouM:'Zodiac Houses',ascAligned:'☽ Topocentric focus locked, MC points straight up'},
-    ctrl:{zen:'Zen Mode',spin:'Time Spin',zenith:'Align Zenith (2D Chart)',helio:'Toggle Helio/Geo',sys:'Toggle Trop/Sid',out:'Outer Planets',ecl:'Ecliptic',eq:'Equator',man:'Mansions',pl:'Planets',asp:'Aspects',tm:'Time Control',orb:'Latitude Lines',btnSysT:'Trop',btnSysS:'Sid',btnOut:'Out',btnMan:'Man',btnPl:'Pl',btnHelio:'Sun'}
-  },
-  'ko':{
-    zod:['백양','황소','쌍둥이','게','사자','처녀','천칭','전갈','사수','염소','물병','물고기'],
-    man:['각','항','저','방','심','미','기','두','우','여','허','위','실','벽','규','루','위2','묘','필','자','삼','정','귀','류','성','장','익','진'],
-    pl:{sun:'태양',moon:'달',mercury:'수성',venus:'금성',mars:'화성',jupiter:'목성',saturn:'토성',uranus:'천왕성',neptune:'해왕성',pluto:'명왕성',라후:'라후',ketu:'케투',yapo:'월패',ziqi:'자기',fortune:'포춘'},
-    wx:{sun:'순양·아버지',moon:'순음·어머니',mercury:'양수·사고',venus:'음금·재물',mars:'양화·행동',jupiter:'양목·복',saturn:'음토·책임',rahu:'화의 여기',ketu:'토의 여기',yapo:'수의 여기',ziqi:'목의 여기',uranus:'양토·개혁',neptune:'음목·환상',pluto:'음화·재생',fortune:'행운과 기회'},
-    ui:{eq:'적도',ecl:'황도',asc:'ASC 상승',dsc:'DSC 하강',mc:'MC 중천',ic:'IC 천저',mansion:'수',house:'궁',p1:'신월',p2:'상현',p3:'만월',p4:'하현',p5:'그믐',deg:'이각',trop:'회귀 황도',sid:'항성 황도',helio:'일심 황도',helioMsg:'☉ 일심 모드 · 항성 기준계 고정 · 시황도 비적용',zenith:'천정'},
-    al:{asc:'명궁:',sun:'태양:',moon:'달:',phase:'위상',rahu:'남교점:',jup:'목성:',sat:'토성:'},
-    dst:{off:'표준시',on:'서머타임 +1h',label:'서머타임(DST)',hint:'+1시간 자동 추가'},
-    dom:{modalTitle:'점성술 좌표계',modalSub:'3D 지구 중심 천구의',lblNm:'이름',lblDt:'생년월일 (양력)',lblTm:'태어난 시간 (24시간)',lblLoc:'출생지 좌표 및 시간대',plhNm:'이름 (선택)',btnSub:'천 체 관 측',btnDemo:'→ 데모 불러오기 (2002.12.24 자정 · 동경 109 · 북위 31)',tbTitle:'지구 중심 천구의',tbSub:'3D 물리적 우주 시뮬레이션',tbPlay:'▶ 재생',tbPause:'⏸ 일시정지',tbReset:'초기화',timeLbl:'현재 시간',loadTxt:'엔진 불러오는 중...',drwLbl:'점성술 데이터',pEcl:'황도 좌표',pAna:'차트 요약',pHou:'12 하우스',pHouM:'하우스',ascAligned:'☽ 관측 지표가 화면 정중앙에 정렬되었습니다 (MC 위)'},
-    ctrl:{zen:'몰입 모드',spin:'시간 회전',zenith:'천정 정렬 (2D 차트)',helio:'일심/지심 전환',sys:'회귀/항성 전환',out:'외행성',ecl:'황도환',eq:'적도환',man:'28수',pl:'행성',asp:'애스펙트',tm:'시간 제어',orb:'황위 수직선',btnSysT:'회귀',btnSysS:'항성',btnOut:'외',btnMan:'수',btnPl:'성',btnHelio:'일'}
   }
 };
 
@@ -1411,6 +1446,9 @@ function launch() {
 // 血肉飞升异化模块 (Flesh Ascension Module)
 // ==========================================
 window.isInfected = false;
+window.infectionTime = 0;
+window.eyeShown = false;
+window.ascensionShown = false;
 
 // 1. 低频心跳合成 (Web Audio API)
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -1423,15 +1461,17 @@ function playHeartbeat() {
     
     // 每 1.2 秒跳动一次，带有湿润黏浊的低音
     setInterval(() => {
-        createHeartbeatSound(50, 0.4); 
-        setTimeout(() => createHeartbeatSound(45, 0.6), 300); // 第二下更重
+        if(!window.ascensionShown) { // 弹窗出现后停止心跳
+            createHeartbeatSound(50, 0.4); 
+            setTimeout(() => createHeartbeatSound(45, 0.6), 300); // 第二下更重
+        }
     }, 1200);
 }
 
 function createHeartbeatSound(freq, duration) {
     const osc = audioCtx.createOscillator();
     const gainNode = audioCtx.createGain();
-    const filter = audioCtx.createBiquadFilter(); // 低通滤波，增加沉闷的肉体感
+    const filter = audioCtx.createBiquadFilter(); 
     
     filter.type = 'lowpass';
     filter.frequency.value = 150;
@@ -1444,7 +1484,7 @@ function createHeartbeatSound(freq, duration) {
     osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
     osc.frequency.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
     
-    gainNode.gain.setValueAtTime(2.0, audioCtx.currentTime); // 提高音量产生压迫感
+    gainNode.gain.setValueAtTime(2.0, audioCtx.currentTime); 
     gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
     
     osc.start(audioCtx.currentTime);
@@ -1470,6 +1510,7 @@ function triggerFleshAscension() {
     fOverlay.classList.add('pulsing');
 
     setInterval(() => {
+        if(window.ascensionShown) return; // 弹窗后停止撕裂
         document.body.classList.add('severe-glitch');
         setTimeout(() => document.body.classList.remove('severe-glitch'), 150 + Math.random() * 200);
     }, 1500 + Math.random() * 4000);
@@ -1482,7 +1523,6 @@ function triggerFleshAscension() {
     subEl.innerHTML = "FLESH_ASCENSION_PROTOCOL_ENGAGED";
     subEl.style.color = "#FF4444";
 
-    // 切断所有UI文字标签
     document.querySelectorAll('.lbl').forEach(l => l.style.color = '#8B0000');
 
     mutateThreeJSPlanets();
@@ -1490,13 +1530,11 @@ function triggerFleshAscension() {
 
 // 3. 核心 3D 异化逻辑
 function mutateThreeJSPlanets() {
-    // A. 改变宇宙底色和光照，移除迷雾改为血红深渊
     scene.background = new THREE.Color(0x0a0000);
     scene.fog = new THREE.FogExp2(0x110000, 0.008); 
     sunLight.color.setHex(0xff0000);
-    fleshLight.intensity = 1500; // 点亮中心血红光源
+    fleshLight.intensity = 1500; 
 
-    // B. 生成寄生血管的函数 (给线条加 Jitter 并复制)
     function growVeins(group) {
         const veins = [];
         group.traverse(child => {
@@ -1506,7 +1544,7 @@ function mutateThreeJSPlanets() {
                 
                 const posAttr = child.geometry.getAttribute('position');
                 if (posAttr) {
-                    for(let v = 0; v < 4; v++) { // 每条线长出 4 条扭曲血管
+                    for(let v = 0; v < 4; v++) { 
                         const pts = [];
                         for(let i=0; i<posAttr.count; i++) {
                             let x = posAttr.getX(i) + (Math.random() - 0.5) * 1.8;
@@ -1517,7 +1555,7 @@ function mutateThreeJSPlanets() {
                         const vg = new THREE.BufferGeometry().setFromPoints(pts);
                         const vm = new THREE.LineBasicMaterial({ color: 0xaa0000, transparent: true, opacity: 0.6 });
                         const vLine = new THREE.Line(vg, vm);
-                        vLine.userData.isVein = true; // 标记为血管，后续闪烁用
+                        vLine.userData.isVein = true; 
                         veins.push(vLine);
                     }
                 }
@@ -1526,28 +1564,25 @@ function mutateThreeJSPlanets() {
         veins.forEach(v => group.add(v));
     }
 
-    // 给所有环长出血管
     growVeins(eclRingG);
     growVeins(eqRingG);
     growVeins(manG);
 
-    // C. 异化地球 (剥离贴图，变成反光的肉块)
     if (earthMesh) {
         earthMesh.traverse(child => {
             if (child.isMesh) {
                 child.material = new THREE.MeshStandardMaterial({
                     color: 0x440000, emissive: 0x220000,
-                    roughness: 0.1, metalness: 0.1 // 极度湿润反光
+                    roughness: 0.1, metalness: 0.1 
                 });
                 child.userData.isFlesh = true;
                 child.userData.baseScale = child.scale.clone();
                 child.userData.seed = Math.random() * 100;
             }
         });
-        growVeins(earthMesh); // 地球表面的经纬线也变成血管
+        growVeins(earthMesh); 
     }
 
-    // D. 异化所有行星
     Object.values(pMesh).forEach(pm => {
         pm.traverse(child => {
             if (child.isMesh) {
@@ -1686,7 +1721,7 @@ const texPromises = Object.entries(TEX_URLS).map(([k, url]) =>
     };
     img.onerror = () => res(); 
     img.src = url;
-    setTimeout(res, 8000); // 增加超時保護，避免網路因素导致卡死
+    setTimeout(res, 8000); 
   })
 );
 
@@ -1885,7 +1920,9 @@ function animate() {
   // 血肉飞升异化动画循环 (Flesh Animation)
   // ==============================
   if (window.isInfected) {
-      // 模拟心跳搏动的 sine 函数 (周期约 1.2s，双连跳)
+      window.infectionTime = (window.infectionTime || 0) + dt;
+
+      // 模拟心跳搏动的 sine 函数
       const heartPulse = Math.pow(Math.sin(t * 5.2), 4);
       
       scene.traverse(child => {
@@ -1893,11 +1930,7 @@ function animate() {
           if (child.isMesh && child.userData.isFlesh) {
               const bs = child.userData.baseScale;
               const r = child.userData.seed;
-              
-              // 心跳膨胀因子
               const throb = 1.0 + 0.15 * heartPulse;
-              
-              // XYZ不规则蠕动畸变
               const defX = 1 + 0.15 * Math.sin(t * 3.1 + r);
               const defY = 1 + 0.15 * Math.cos(t * 2.7 + r);
               const defZ = 1 + 0.15 * Math.sin(t * 3.5 + r);
@@ -1909,11 +1942,31 @@ function animate() {
               );
           }
           
-          // 血管随心跳发亮
+          // 血管随心跳发亮，并在前8秒逐渐伸长
           if (child.isLine && child.userData.isVein) {
               child.material.opacity = 0.2 + 0.6 * heartPulse;
+              if (window.infectionTime < 8) {
+                  child.scale.multiplyScalar(1.003); // 让血管像活的一样往外延伸
+              }
           }
       });
+
+      // 6秒后，巨眼淡入
+      if (window.infectionTime > 6 && !window.eyeShown) {
+          window.eyeShown = true;
+          document.getElementById('giant-eye').style.opacity = '1';
+      }
+
+      // 11秒后，弹出绝杀对话框
+      if (window.infectionTime > 11 && !window.ascensionShown) {
+          window.ascensionShown = true;
+          document.getElementById('ascension-popup').style.display = 'flex';
+          
+          // 彻底死寂：停止心跳声
+          if (audioCtx.state === 'running') {
+              audioCtx.suspend();
+          }
+      }
   }
 
   updateMeteors(dt); composer.render(dt); lblR.render(scene, camera);
