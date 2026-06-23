@@ -1,150 +1,297 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="utf-8" />
+    <meta charset="UTF-8">
     <title>【开源发布】ZenCode 3D星辰坐标系 v1.0 上线，全流派术数排盘引擎 - 南江大学溯源BBS</title>
     <style>
-        body { background-color: #E2E8F1; color: #333; font-family: "SimSun", "宋体", sans-serif; font-size: 14px; margin: 0; padding: 10px 0; }
-        a { color: #004499; text-decoration: none; }
+        /* 古早 BBS 经典样式重置 (Discuz! 经典蓝风格) */
+        body { font-family: 'SimSun', '宋体', Arial, sans-serif; background-color: #799AE1; color: #000; font-size: 13px; margin: 0; padding: 0 0 30px 0; }
+        a { color: #000000; text-decoration: none; }
         a:hover { text-decoration: underline; color: #FF6600; }
-        #wrap { width: 96%; min-width: 980px; margin: 0 auto; background: #FFF; border: 1px solid #A6CBE7; padding: 15px; }
-        .header { border-bottom: 3px solid #336699; padding-bottom: 10px; margin-bottom: 15px; font-weight: bold; font-size: 14px; }
-        .post-table { width: 100%; border-collapse: collapse; border: 1px solid #A6CBE7; margin-bottom: 10px; background:#FFF; }
-        .post-user { width: 180px; background: #F0F5FA; border-right: 1px solid #A6CBE7; padding: 15px; text-align: center; vertical-align: top; }
-        .post-content { padding: 15px 20px; vertical-align: top; line-height: 1.8; }
-        .post-info { border-bottom: 1px dashed #CCC; padding-bottom: 5px; margin-bottom: 15px; color: #666; font-size: 12px; }
-        .avatar { width: 100px; height: 100px; border: 1px solid #CCC; margin: 10px auto; background: #E2E8F1; display: flex; align-items: center; justify-content: center; color: #999; font-size:12px; font-weight:bold; }
-        .user-detail { color: #666; font-size: 12px; text-align: left; width: fit-content; margin: 0 auto; line-height: 1.5; }
-        .quote-box { background: #F9F9F9; border: 1px solid #E5E5E5; border-left: 4px solid #336699; padding: 10px 15px; margin: 10px 0; color: #555; font-size: 13px; }
         
+        /* 顶部导航与大色块框架 */
+        .header { background: #0F5E8A; border-bottom: 2px solid #003366; padding: 20px 20px; color: #FFF; }
+        .logo { font-size: 24px; font-weight: bold; font-family: 'Microsoft YaHei', sans-serif; text-shadow: 1px 1px 2px #000; }
+        .nav-links { margin-top: 15px; font-weight: bold; font-size: 12px; }
+        .nav-links a { color: #FFF; margin-right: 15px; }
+        
+        /* 核心布局框架 */
+        .wrap { width: 980px; margin: 15px auto; overflow: hidden; background: #FFF; border: 1px solid #003366; padding: 10px; } 
+        .main { width: 740px; float: left; }
+        .sidebar { width: 215px; float: right; }
+
+        /* 面包屑色块 */
+        .breadcrumbs { background: #E5EDF2; border: 1px solid #9CB8CC; padding: 8px 10px; margin-bottom: 10px; font-weight: bold; color: #0055AA; }
+        .breadcrumbs a { color: #0055AA; }
+
+        /* 帖子主容器色块 */
+        .post-list { background: #FFF; border: 1px solid #9CB8CC; margin-bottom: 15px; }
+        .post-header-bar { background: #E5EDF2; border-bottom: 1px solid #9CB8CC; padding: 5px 10px; font-weight: bold; }
+        
+        /* 楼层样式（经典左右分栏色块） */
+        .post-row { border-bottom: 1px solid #9CB8CC; display: table; width: 100%; table-layout: fixed; } 
+        .post-left { width: 130px; background: #EAF0F6; border-right: 1px solid #9CB8CC; padding: 15px 10px; text-align: center; display: table-cell; vertical-align: top; }
+        .post-right { padding: 15px; display: table-cell; vertical-align: top; word-wrap: break-word; overflow: hidden; background: #F5F9FA; }
+        
+        .username { font-weight: bold; font-size: 14px; margin-bottom: 5px; display: block; color: #000080; }
+        
+        /* 头像框设计 */
+        .avatar { width: 100px; height: 100px; border: 1px solid #9CB8CC; background: #E2E8F1; padding: 2px; margin: 5px auto; display: flex; align-items: center; justify-content: center; color: #999; font-size:12px; font-weight: bold; }
+        .avatar img { width: 100%; height: 100%; display: block; object-fit: cover; }
+        
+        .user-title { color: #0055aa; margin-top: 5px; font-weight: bold; }
+        .user-stats { color: #666; margin-top: 5px; font-size: 12px; line-height: 1.5; text-align: left; padding-left: 20px; }
+        
+        .post-info { border-bottom: 1px dashed #9CB8CC; padding-bottom: 5px; margin-bottom: 15px; color: #666; font-size: 12px; }
+        .floor-num { float: right; font-weight: bold; color: #000; font-family: Arial; }
+        
+        .content { font-size: 14px; line-height: 1.8; color: #000; min-height: 150px; }
+        
+        .quote-box { background: #EAF0F6; border: 1px solid #9CB8CC; border-left: 4px solid #0055AA; padding: 10px 15px; margin: 15px 0; color: #333; font-size: 13px; }
+        .code-box { background: #1E1E1E; color: #D4D4D4; font-family: Consolas, monospace; padding: 15px; border-radius: 5px; margin: 10px 0; overflow-x: auto; font-size: 12px; }
+
         /* 特殊链接样式 */
         .project-link { display: inline-block; background: #2B618E; color: #FFF !important; padding: 8px 15px; border-radius: 4px; font-family: monospace; font-weight: bold; margin: 10px 0; }
         .project-link:hover { background: #1A4265; text-decoration: none; }
         .horror-link { background: #8B0000; border: 1px solid #FF0000; animation: pulse-link 1.5s infinite; }
         @keyframes pulse-link { 0% { box-shadow: 0 0 0 0 rgba(255,0,0,0.7); } 70% { box-shadow: 0 0 10px 10px rgba(255,0,0,0); } 100% { box-shadow: 0 0 0 0 rgba(255,0,0,0); } }
+
+        /* 侧边栏色块伪装 */
+        .side-box { background: #FFF; border: 1px solid #9CB8CC; margin-bottom: 15px; }
+        .side-title { background: #D9E4EA; border-bottom: 1px solid #9CB8CC; padding: 6px 10px; font-weight: bold; color: #0055AA; }
+        .side-content { padding: 8px; list-style: none; margin: 0; }
+        .side-content li { border-bottom: 1px dotted #9CB8CC; padding: 4px 0; padding-left: 12px; background: url('data:image/gif;base64,R0lGODlhBQAKAIABAAAAAP///yH5BAEAAAEALAAAAAAFAAoAAAIIjI+pG8HwnCgAOw==') no-repeat left center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 12px; }
     </style>
 </head>
 <body>
-<div id="wrap">
-    <div class="header"><a href="bbs_2026_home.html">溯源BBS首页</a> &raquo; 区域 B: 技术与前沿探索区 &raquo; <b>【开源发布】ZenCode 3D星辰坐标系 v1.0 上线，全流派术数排盘引擎</b></div>
-    
-    <table class="post-table">
-        <tr>
-            <td class="post-user">
-                <div style="font-weight:bold; color:#004499; font-size:15px;">Zen_Coder</div>
-                <div class="avatar" style="background:#000; color:#E6C587; border-color:#8A7342;">青冥鉴</div>
-                <div class="user-detail">级别: 技术大牛<br>发帖数: 42</div>
-            </td>
-            <td class="post-content">
-                <div class="post-info"><span style="float:right; font-weight:bold;">楼主</span> 发表于 2026-06-12 14:30:00</div>
-                历时半年，我的大四毕设项目——「ZenCode 3D立体星辰排盘引擎」终于出 v1.0 稳定版了！<br><br>
-                相比市面上全是 2D 平面图的排盘软件，ZenCode 彻底重构了底层坐标系。主要功能如下：<br>
-                1. <b>真·3D视界：</b> 支持黄道坐标与赤道坐标无缝切换，鼠标可任意拖动时间轴，实时演算行星公转与自转轨迹。<br>
-                2. <b>地心/日心双模型：</b> 一键切换地心说（占星学视角）与日心说（天文学视角）模型，看逆行更直观。<br>
-                3. <b>中西合并：</b> 独家引入皇家钦天监「七政四余」算法，精准嵌合中国古代二十八星宿体系。<br><br>
-                目前项目已经部署在云端服务器，大家可以直接点击下方链接进行在线 3D 渲染体验（建议用PC端Chrome浏览器，显卡渲染压力较大）：<br>
-                <a href="#" class="project-link" onclick="alert('正在尝试连接目标服务器...');">🔗 http://zencode.njdx-internal.edu/astrolabe/v1.0</a><br><br>
-                欢迎各位易学和占星同好提出修改意见，后续版本会继续迭代！
-            </td>
-        </tr>
-    </table>
-    
-    <table class="post-table">
-        <tr>
-            <td class="post-user"><div style="font-weight:bold; color:#004499; font-size:15px;">塔罗小女巫</div><div class="avatar">无头像</div><div class="user-detail">级别: 占星学徒<br>发帖数: 215</div></td>
-            <td class="post-content">
-                <div class="post-info"><span style="float:right; font-weight:bold;">沙发</span> 发表于 2026-06-12 15:45:12</div>
-                学姐太牛了！！！进去试了一下，那个时间拖动特效丝滑得像在玩科幻游戏！<br><br>
-                作为西占流派狂喜，现代分宫制（Placidus 普拉西德）和古典整宫制（Whole Sign）的无缝切换做得太完美了！不过有一个小小的劣势，目前的古典宫制只有整宫，没有做阿卡比特（Alcabitius）或者阿卡比特象限宫制，古占看古典盘稍微有点不方便，希望学姐后续能加上！
-            </td>
-        </tr>
-    </table>
 
-    <table class="post-table">
-        <tr>
-            <td class="post-user"><div style="font-weight:bold; color:#004499; font-size:15px;">钦天监打杂</div><div class="avatar">无头像</div><div class="user-detail">级别: 术数狂热者<br>发帖数: 840</div></td>
-            <td class="post-content">
-                <div class="post-info"><span style="float:right; font-weight:bold;">板凳</span> 发表于 2026-06-12 16:10:45</div>
-                神作！绝对是国产排盘引擎的光！<br><br>
-                居然真的把二十八星宿跟西洋黄道完全重合了！学七政四余的人感动哭了。以前用二维盘算南半球出生的人的命理，黄道反转和星宿倒错能把人脑子算废。现在在 ZenCode 的 3D 球体视角下，南半球的本命盘一目了然，直观得可怕。学姐收下我的膝盖！
-            </td>
-        </tr>
-    </table>
-
-    <table class="post-table">
-        <tr>
-            <td class="post-user"><div style="font-weight:bold; color:#004499; font-size:15px;">Zen_Coder</div><div class="avatar" style="background:#000; color:#E6C587; border-color:#8A7342;">青冥鉴</div><div class="user-detail">级别: 技术大牛<br>发帖数: 42</div></td>
-            <td class="post-content">
-                <div class="post-info"><span style="float:right; font-weight:bold;">地板</span> 发表于 2026-06-12 18:05:22</div>
-                <div class="quote-box">唯一的劣势是没有做阿卡比特（Alcabitius）宫制，希望学姐后续加上！</div>
-                感谢反馈！阿卡比特宫制的算法我已经跑通了，正在做 Z 轴的三维映射，预计 v1.1 版本更新时就会加上。大家多玩玩，帮我测测 Bug。
-            </td>
-        </tr>
-    </table>
-
-    <table class="post-table">
-        <tr>
-            <td class="post-user"><div style="font-weight:bold; color:#004499; font-size:15px;">修仙党大护法</div><div class="avatar">无头像</div><div class="user-detail">级别: 夜游神<br>发帖数: 651</div></td>
-            <td class="post-content">
-                <div class="post-info"><span style="float:right; font-weight:bold;">5楼</span> 发表于 2026-06-15 00:03:14</div>
-                那个... 只有我遇到 Bug 了吗？<br><br>
-                刚刚半夜子时过了一点点，我在试着拖动 1999 年的时间轴看天象大十字。我鼠标明明没动，整个 3D 坐标系突然自己扭曲了一下！代表火星和土星的节点疯狂闪烁红光，我以为显卡花屏了，但是网页没卡死，星轨还在自己转，而且越转越快……看得我有点头晕，先关了。
-            </td>
-        </tr>
-    </table>
-
-    <table class="post-table">
-        <tr>
-            <td class="post-user"><div style="font-weight:bold; color:#004499; font-size:15px;">塔罗小女巫</div><div class="avatar">无头像</div><div class="user-detail">级别: 占星学徒<br>发帖数: 215</div></td>
-            <td class="post-content">
-                <div class="post-info"><span style="float:right; font-weight:bold;">6楼</span> 发表于 2026-06-15 09:12:30</div>
-                <div class="quote-box">代表火星和土星的节点疯狂闪烁红光，我以为显卡花屏了</div>
-                我也遇到了！我还以为是我网卡了。不仅闪红光，刚才打开看的时候，太阳系的黄道面上好像出现了好多黑色的噪点，有点掉帧。@Zen_Coder 学姐，是不是云服务器的内存爆了？
-            </td>
-        </tr>
-    </table>
-
-    <table class="post-table">
-        <tr>
-            <td class="post-user"><div style="font-weight:bold; color:#004499; font-size:15px;">前端卷王</div><div class="avatar">无头像</div><div class="user-detail">级别: 技术宅<br>发帖数: 156</div></td>
-            <td class="post-content">
-                <div class="post-info"><span style="float:right; font-weight:bold;">7楼</span> 发表于 2026-06-18 22:45:11</div>
-                @Zen_Coder 学姐你是不是偷偷热更新了代码啊？为什么现在的 3D 模型材质看着那么恶心？<br><br>
-                原本散发着金光的行星节点，现在表面长出了一堆不属于星体的材质，看着像某种生物纤维和暗红色的粘膜。而且原本计算二十八宿的星轨白线，现在全变成了暗红色的，纠缠在一起像血管一样！这如果是万圣节彩蛋的话，真的有点过了啊。
-            </td>
-        </tr>
-    </table>
-
-    <table class="post-table">
-        <tr>
-            <td class="post-user"><div style="font-weight:bold; color:#004499; font-size:15px;">半夜不睡觉</div><div class="avatar">无头像</div><div class="user-detail">级别: 灵异爱好者<br>发帖数: 666</div></td>
-            <td class="post-content">
-                <div class="post-info"><span style="float:right; font-weight:bold;">8楼</span> 发表于 2026-06-19 01:15:00</div>
-                <span style="color:#FF0000; font-size: 16px; font-weight: bold;">卧槽别点那个链接了！！！快退出来！！！</span><br><br>
-                那根本不是什么材质贴图Bug！！我刚才把镜头拉近放大了太阳系的地心模型，那个太阳节点不是个圆球了！它是一团肉！它在跳动！有脉搏的那种扩张和收缩！！！<br>
-                那些发红的星轨正在把不知道从哪里抽来的能量往“太阳”里面输送。我的电脑风扇狂转，CPU占用率直接被拉到了 100%，我想关浏览器居然关不掉！直接拔电源了！！
-            </td>
-        </tr>
-    </table>
-
-    <table class="post-table">
-        <tr>
-            <td class="post-user"><div style="font-weight:bold; color:#004499; font-size:15px;">计科院发际线保护协会</div><div class="avatar">无头像</div><div class="user-detail">级别: 内部知情人<br>发帖数: 1850</div></td>
-            <td class="post-content" style="background-color: #FFF0F0;">
-                <div class="post-info"><span style="float:right; font-weight:bold;">9楼</span> 发表于 2026-06-19 08:30:22</div>
-                警告全体同学！大家千万不要再点一楼的那个体验链接了！<br><br>
-                学姐三天前就已经精神崩溃退学回家了。她走之前把本地的物理服务器全砸了，但是云端的接口根本掐不断。你们仔细看一楼的那个网址，它不知道被什么底层的协议劫持了，现在会自动 301 重定向到一个深网节点。<br><br>
-                它现在的真实路由是指向：<br>
-                <a href="#" class="project-link horror-link" onclick="alert('【系统警告】连接被阻断。检测到大量生命体征剥离风险。');">🔗 http://zencode.njdx-internal.edu/flesh_ascension_astrolabe</a>
-                <br><br>
-                这个星盘已经活过来了。它正在用我们的电脑算力当养料，孵化那个叫「血肉飞升星盘」的东西！关掉网页！快！
-            </td>
-        </tr>
-    </table>
-    
-    <div style="text-align:center; padding: 20px 0; color: #FF0000; font-weight: bold; font-family: monospace;">
-        [ SYS_ERR: 当前帖子所在数据块已被污染，禁止回复。 ]
+<div class="header">
+    <div class="logo">南江大学 - 溯源BBS (Since 2004)</div>
+    <div class="nav-links">
+        <a href="#">首 页</a> | <a href="#">版块列表</a> | <a href="#">校内资讯</a> | <a href="#">跳蚤市场</a> | <a href="#">灌水乐园</a> | <a href="#">控制面板</a>
     </div>
 </div>
+
+<div class="wrap">
+    <div class="main">
+        <div class="breadcrumbs">
+            <a href="bbs_2026_home.html">溯源BBS首页</a> &raquo; <a href="#">校内交流区</a> &raquo; <a href="#">区域 B: 技术与前沿探索区</a>
+        </div>
+
+        <div class="post-list">
+            <div class="post-header-bar">
+                【开源发布】ZenCode 3D星辰坐标系 v1.0 上线，全流派术数排盘引擎
+            </div>
+            
+            <div class="post-row">
+                <div class="post-left">
+                    <span class="username">Zen_Coder</span>
+                    <div class="avatar" style="background:#000; color:#E6C587; border: 1px solid #8A7342;">青冥鉴</div>
+                    <div class="user-title">技术大牛</div>
+                    <div class="user-stats">发帖: 42<br>积分: 950<br>注册: 2024-01</div>
+                </div>
+                <div class="post-right">
+                    <div class="post-info">
+                        发表于 2026-06-12 14:30:00 <span class="floor-num">楼主</span>
+                    </div>
+                    <div class="content">
+                        历时半年，我的大四毕设项目——「ZenCode 3D立体星辰排盘引擎」终于出 v1.0 稳定版了！<br><br>
+                        相比市面上全是 2D 平面图的排盘软件，ZenCode 彻底重构了底层坐标系。本次更新重点：<br>
+                        1. <b>真·3D视界：</b> 支持黄道坐标与赤道坐标无缝切换，鼠标可任意拖动时间轴，实时演算行星公转与自转轨迹。<br>
+                        2. <b>底层逻辑重构：</b> 太岁逻辑已完全修正，严格区分了真实的物理木星运行轨迹与传统太岁神煞的映射关系。<br>
+                        3. <b>硬核输出：</b> 报告系统直接扩充到了二十二个完整章节，全部采用学术严谨口吻并自带古籍引经据典。<br><br>
+                        目前项目已经部署在云端服务器，大家可以直接点击下方链接进行在线 3D 渲染体验（建议用PC端Chrome浏览器，显卡渲染压力较大）：<br>
+                        <a href="#" class="project-link" onclick="alert('正在尝试连接目标服务器...');">🔗 http://zencode.njdx-internal.edu/astrolabe/v1.0</a><br><br>
+                        欢迎各位易学和技术同好提出修改意见，后续版本会继续迭代！
+                    </div>
+                </div>
+            </div>
+
+            <div class="post-row">
+                <div class="post-left">
+                    <span class="username">塔罗小女巫</span>
+                    <div class="avatar">无头像</div>
+                    <div class="user-title">占星学徒</div>
+                    <div class="user-stats">发帖: 215<br>积分: 650</div>
+                </div>
+                <div class="post-right">
+                    <div class="post-info">发表于 2026-06-12 15:45:12 <span class="floor-num">沙发</span></div>
+                    <div class="content">
+                        学姐太牛了！！！进去试了一下，那个时间拖动特效丝滑得像在玩科幻游戏！而且之前大运排盘起运年份总是差十年的Bug（比如05年错排成15年）也完美修复了！<br><br>
+                        作为西占流派狂喜，现代分宫制（Placidus 普拉西德）和古典整宫制（Whole Sign）的无缝切换做得太完美了！不过有一个小小的劣势，目前的古典宫制只有整宫，没有做阿卡比特（Alcabitius）象限宫制，古占看古典盘稍微有点不方便，希望学姐后续能加上！
+                    </div>
+                </div>
+            </div>
+
+            <div class="post-row">
+                <div class="post-left">
+                    <span class="username">钦天监打杂</span>
+                    <div class="avatar">无头像</div>
+                    <div class="user-title">术数狂热者</div>
+                    <div class="user-stats">发帖: 840<br>积分: 3120</div>
+                </div>
+                <div class="post-right">
+                    <div class="post-info">发表于 2026-06-12 16:10:45 <span class="floor-num">板凳</span></div>
+                    <div class="content">
+                        神作！绝对是国产排盘引擎的光！<br><br>
+                        居然真的把二十八星宿跟西洋黄道完全重合了！学七政四余的人感动哭了。以前用二维盘算南半球出生的人的命理，黄道反转和星宿倒错能把人脑子算废。现在在 ZenCode 的 3D 球体视角下，南半球的本命盘一目了然，直观得可怕。学姐收下我的膝盖！
+                    </div>
+                </div>
+            </div>
+
+            <div class="post-row">
+                <div class="post-left">
+                    <span class="username">Zen_Coder</span>
+                    <div class="avatar" style="background:#000; color:#E6C587; border: 1px solid #8A7342;">青冥鉴</div>
+                    <div class="user-title">技术大牛</div>
+                    <div class="user-stats">发帖: 42<br>积分: 950</div>
+                </div>
+                <div class="post-right">
+                    <div class="post-info">发表于 2026-06-12 18:05:22 <span class="floor-num">地板</span></div>
+                    <div class="content">
+                        <div class="quote-box">
+                            <b>引用 塔罗小女巫 在 2026-06-12 15:45:12 发表的帖子:</b><br>
+                            唯一的劣势是没有做阿卡比特（Alcabitius）宫制，希望学姐后续加上！
+                        </div>
+                        感谢反馈！阿卡比特宫制的算法我已经跑通了，正在做 Z 轴的三维映射，预计 v1.1 版本更新时就会加上。大家多玩玩，帮我测测 Bug。
+                    </div>
+                </div>
+            </div>
+
+            <div class="post-row">
+                <div class="post-left">
+                    <span class="username">源码考据党</span>
+                    <div class="avatar">无头像</div>
+                    <div class="user-title">代码民工</div>
+                    <div class="user-stats">发帖: 112<br>积分: 450</div>
+                </div>
+                <div class="post-right">
+                    <div class="post-info">发表于 2026-06-13 10:20:15 <span class="floor-num">5楼</span></div>
+                    <div class="content">
+                        学姐，我 clone 了你放出的部分 GitHub 源码拜读了一下，底层的逻辑太优雅了。<br><br>
+                        尤其是 <code>core/weiji_hexagram.js</code> 里面那个用来区分本卦和变卦（动静状态）的 <b>12位二进制掩码系统</b> 简直是天才设计！直接把高低电平映射成了阴阳爻！<br>
+                        但是我有个疑问，代码里有一段隐蔽的进程，为什么要强制向咱们学校南门机房一个废弃的内网段发送数据包？而且接口命名叫 <code>ORGANIC_TRANSFER_PROTOCOL</code>？这看着不像是算星盘用的啊。
+                    </div>
+                </div>
+            </div>
+
+            <div class="post-row">
+                <div class="post-left">
+                    <span class="username">修仙党大护法</span>
+                    <div class="avatar">无头像</div>
+                    <div class="user-title">夜游神</div>
+                    <div class="user-stats">发帖: 651<br>积分: 1800</div>
+                </div>
+                <div class="post-right">
+                    <div class="post-info">发表于 2026-06-15 00:03:14 <span class="floor-num">6楼</span></div>
+                    <div class="content">
+                        那个... 只有我遇到 Bug 了吗？<br><br>
+                        刚刚半夜子时过了一点点，我在试着拖动 1999 年的时间轴看天象大十字。我鼠标明明没动，整个 3D 坐标系突然自己扭曲了一下！代表火星和土星的节点疯狂闪烁红光，我以为显卡花屏了，但是网页没卡死，星轨还在自己转，而且越转越快……看得我有点头晕，先关了。
+                    </div>
+                </div>
+            </div>
+
+            <div class="post-row">
+                <div class="post-left">
+                    <span class="username">塔罗小女巫</span>
+                    <div class="avatar">无头像</div>
+                    <div class="user-title">占星学徒</div>
+                    <div class="user-stats">发帖: 215<br>积分: 650</div>
+                </div>
+                <div class="post-right">
+                    <div class="post-info">发表于 2026-06-15 09:12:30 <span class="floor-num">7楼</span></div>
+                    <div class="content">
+                        <div class="quote-box">
+                            <b>引用 修仙党大护法 在 2026-06-15 00:03:14 发表的帖子:</b><br>
+                            代表火星和土星的节点疯狂闪烁红光，我以为显卡花屏了
+                        </div>
+                        我也遇到了！我还以为是我网卡了。不仅闪红光，刚才打开看的时候，太阳系的黄道面上好像出现了好多黑色的噪点，有点掉帧。@Zen_Coder 学姐，是不是云服务器的内存爆了？
+                    </div>
+                </div>
+            </div>
+
+            <div class="post-row">
+                <div class="post-left">
+                    <span class="username">前端卷王</span>
+                    <div class="avatar">无头像</div>
+                    <div class="user-title">技术宅</div>
+                    <div class="user-stats">发帖: 156<br>积分: 890</div>
+                </div>
+                <div class="post-right">
+                    <div class="post-info">发表于 2026-06-18 22:45:11 <span class="floor-num">8楼</span></div>
+                    <div class="content">
+                        @Zen_Coder 学姐你是不是偷偷热更新了代码啊？为什么现在的 3D 模型材质看着那么恶心？<br><br>
+                        原本散发着金光的行星节点，现在表面长出了一堆不属于星体的材质，看着像某种生物纤维和暗红色的粘膜。而且原本计算二十八宿的星轨白线，现在全变成了暗红色的，纠缠在一起像血管一样！这如果是万圣节彩蛋的话，真的有点过了啊。
+                    </div>
+                </div>
+            </div>
+
+            <div class="post-row">
+                <div class="post-left">
+                    <span class="username">半夜不睡觉</span>
+                    <div class="avatar">无头像</div>
+                    <div class="user-title">灵异爱好者</div>
+                    <div class="user-stats">发帖: 666<br>积分: 2333</div>
+                </div>
+                <div class="post-right">
+                    <div class="post-info">发表于 2026-06-19 01:15:00 <span class="floor-num">9楼</span></div>
+                    <div class="content">
+                        <span style="color:#FF0000; font-size: 16px; font-weight: bold;">卧槽别点那个链接了！！！快退出来！！！</span><br><br>
+                        那根本不是什么材质贴图Bug！！我刚才把镜头拉近放大了太阳系的地心模型，那个太阳节点不是个圆球了！它是一团肉！它在跳动！有脉搏的那种扩张和收缩！！！<br>
+                        那些发红的星轨正在把不知道从哪里抽来的能量往“太阳”里面输送。我的电脑风扇狂转，CPU占用率直接被拉到了 100%，我想关浏览器居然关不掉！直接拔电源了！！
+                    </div>
+                </div>
+            </div>
+
+            <div class="post-row" style="border-bottom: 1px solid #000;">
+                <div class="post-left" style="background: #FFF0F0; border-right: 1px solid #FF0000;">
+                    <span class="username" style="color: #FF0000;">计科院发际线保护协会</span>
+                    <div class="avatar">无头像</div>
+                    <div class="user-title" style="color: #FF0000;">内部知情人</div>
+                    <div class="user-stats">发帖: 1850<br>积分: 6700</div>
+                </div>
+                <div class="post-right" style="background: #FFF0F0;">
+                    <div class="post-info" style="border-color: #FF0000;">发表于 2026-06-19 08:30:22 <span class="floor-num" style="color: #FF0000;">10楼</span></div>
+                    <div class="content">
+                        警告全体同学！大家千万不要再点一楼的那个体验链接了！<br><br>
+                        学姐三天前跑算法的时候触发了未知错误，已经精神崩溃休学回家了。她走之前把本地的物理服务器全砸了，但是这个云端的接口根本掐不断。你们仔细看一楼的那个网址，它被底层代码里的 <code>weiji_hexagram</code> 掩码系统劫持了，现在会自动重定向到一个深网节点。<br><br>
+                        它现在的真实路由是指向：<br>
+                        <a href="#" class="project-link horror-link" onclick="alert('【系统警告】连接被阻断。检测到大量生命体征剥离风险。');">🔗 http://zencode.njdx-internal.edu/flesh_ascension_astrolabe</a>
+                        <br><br>
+                        这个排盘引擎的算法太精确了，以至于它触碰到了某些不该碰的高维架构。它现在已经活过来了。它正在用我们的电脑算力当养料，孵化那个叫「血肉飞升星盘」的东西！关掉网页！快！
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+
+        <div style="text-align:center; padding: 20px 0; color: #FF0000; font-weight: bold; font-family: monospace; border: 1px solid #FF0000; background: #000; letter-spacing: 1px;">
+            [ SYS_ERR: 当前帖子所在数据块已被高维协议污染，强制切断写入权限。 ]
+        </div>
+    </div>
+
+    <div class="sidebar">
+        <div class="side-box">
+            <div class="side-title">最新校园热门</div>
+            <ul class="side-content">
+                <li><a href="#">食堂三楼的阿姨手又抖了，排骨全掉锅里</a></li>
+                <li><a href="#">求一份历年《高数（上）》期末卷子，救急！</a></li>
+                <li><a href="#">表白墙：昨天在图书馆二楼靠窗穿白裙子的女生</a></li>
+                <li><a href="#">吐槽！本学期关于晚归断电的新规定太坑了</a></li>
+                <li><a href="#">急出大四考研资料，半卖半送</a></li>
+            </ul>
+        </div>
+        
+        <div class="side-box">
+            <div class="side-title">论坛公告板</div>
+            <div style="padding: 10px; line-height: 1.6; color: #666; font-size: 12px;">
+                1. 严禁发布未经证实的小道消息。<br>
+                2. 交易区请警惕网络诈骗。<br>
+                3. 本周末机房维护，BBS 将在凌晨 2:00-5:00 暂停访问。
+            </div>
+        </div>
+    </div>
+</div>
+
 </body>
 </html>
