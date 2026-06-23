@@ -133,14 +133,16 @@
         /* 高级特效：带数码故障损坏、失焦模糊与色彩溶解的血肉星盘 */
         #final-bg-image {
             position: absolute; inset: 0;
-            background-image: url('image_2884fd.jpg'); /* !!! 这里加载血肉巨眼背景图 !!! */
+            /* 已修正为你的血肉巨眼背景图，并调整了可见度 */
+            background-image: url('flesh_eye.jpg'); 
             background-size: cover; background-position: center;
-            opacity: 0.55;
-            mix-blend-mode: overlay;
-            filter: blur(5px) contrast(220%) saturate(140%) grayscale(10%);
+            opacity: 0.85; /* 提高透明度以保证图片显示 */
+            mix-blend-mode: normal; /* 移除强烈的混合模式，让原图颜色透出来 */
+            filter: blur(3px) contrast(150%) saturate(140%);
             animation: digital-corruption-loop 0.25s infinite linear;
             z-index: 1;
         }
+        
         /* CRT 模拟垂直扫描线 */
         #final-bg-image::before {
             content: ""; position: absolute; inset: 0;
@@ -152,7 +154,7 @@
         @keyframes digital-corruption-loop {
             0% { filter: blur(4px) contrast(200%) saturate(130%); transform: scale(1) translate(0, 0); }
             15% { filter: blur(2px) contrast(280%) hue-rotate(-15deg); transform: scale(1.03) translate(-4px, 3px); }
-            30% { filter: blur(7px) contrast(150%) brightness(1.2); transform: scale(0.98) translate(5px, -2px); opacity: 0.45; }
+            30% { filter: blur(7px) contrast(150%) brightness(1.2); transform: scale(0.98) translate(5px, -2px); opacity: 0.75; }
             45% { clip-path: polygon(0 35%, 100% 35%, 100% 42%, 0 42%); transform: translateX(-25px); }
             60% { clip-path: none; filter: blur(3px) contrast(250%) invert(5%); transform: scale(1.05) translate(-2px, -3px); }
             85% { clip-path: polygon(0 75%, 100% 75%, 100% 88%, 0 88%); transform: translateX(30px) hue-rotate(45deg); }
@@ -242,7 +244,7 @@
             <div id="tab-swarm" class="admin-tab active">
                 <div class="content-title">API 接入请求总览 - 待审批队列 (999+)</div>
                 <div id="swarm-area">
-                    </div>
+                </div>
             </div>
 
             <div id="tab-history" class="admin-tab">
@@ -340,13 +342,15 @@
             <div id="tab-qimen" class="admin-tab">
                 <div class="content-title">奇门遁甲阵列状态 (QIMEN_MATRIX_STATUS)</div>
                 <div style="background:#051005; color:#0f0; padding:15px; font-family:monospace; font-size:13px; line-height:1.8; border:1px solid #333; height: 450px; overflow-y:auto;">
-                    > [INIT] 正在扫描九宫格栅...<br>
-                    > [OK] 坎宫 (Kan Palace) - 逻辑门闭合。<br>
-                    > [OK] 震宫 (Zhen Palace) - 频段正常。<br>
-                    > <span style="color:#ff5555;">[WARN] 坤宫 (Kun Palace) - 侦测到大量未授权生命体征。</span><br>
-                    > <span style="color:#ff0000; font-weight:bold;">[FATAL] 死门 (Death Door) 已突破坤宫限制，正在向系统全域蔓延！</span><br>
-                    > [ERR] 九星轨迹正在逆转，天蓬星质量无限坍缩...<br>
-                    > <span class="pulse-text" style="color:#ff0000;">[SYS_MSG] “它们”已从奇门局中爬出。放弃抵抗。</span>
+                    > [INIT] 正在重载奇门遁甲 (QIMEN_MATRIX) 底层防御栅格...<br>
+                    > [OK] 惊门 (Door of Fear) / 兑宫 - 逻辑门暂时闭合。<br>
+                    > <span style="color:#e67e22;">[WARN] 杜门 (Door of Hiding) / 巽宫 - 隐藏协议与隔离沙盒出现物理性撕裂。曾经被屏蔽的[不可名状物]已暴露。</span><br>
+                    > <span style="color:#e67e22;">[WARN] 景门 (Door of Scenery) / 离宫 - 离火算力受潮，光学探针传回极度浓稠的红色液滴图像。</span><br>
+                    > <span style="color:#ff5555;">[CRITICAL] 生门 (Door of Life) / 艮宫 - 发生恶性溢出异常！</span><br>
+                    > <span style="color:#ff5555;">[CRITICAL] 分析报告：系统中的“生”概念已被异化。检测到无序的细胞分裂、脏器畸胎与血管增生。</span><br>
+                    > <span style="color:#ff0000; font-weight:bold;">[FATAL] 逻辑反转！危险并非来自【死门】！它们正在利用【生门】的繁衍属性进行指数级血肉复制！</span><br>
+                    > [ERR] 阵图崩塌，天蓬星(大凶)质量无限坍缩，化为血肉奇点...<br>
+                    > <span class="pulse-text" style="color:#ff0000;">[SYS_MSG] 门已大开。“它们”正从生门的肉巢中挤出，顺着网线爬向你的现实。不要回头。</span>
                 </div>
             </div>
 
