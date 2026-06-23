@@ -1,70 +1,185 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="utf-8" />
+    <meta charset="UTF-8">
     <title>【交易】大四退宿，出二手 Vision Pro，或换带 RTX 6090 的本子 - 南江大学溯源BBS</title>
     <style>
-        body { background-color: #E2E8F1; color: #333; font-family: "SimSun", "宋体", sans-serif; font-size: 14px; margin: 0; padding: 10px 0; }
-        a { color: #004499; text-decoration: none; }
-        #wrap { width: 96%; min-width: 980px; margin: 0 auto; background: #FFF; border: 1px solid #A6CBE7; padding: 15px; }
-        .header { border-bottom: 3px solid #336699; padding-bottom: 10px; margin-bottom: 15px; font-weight: bold; font-size: 14px; }
-        .post-table { width: 100%; border-collapse: collapse; border: 1px solid #A6CBE7; margin-bottom: 10px; background:#FFF; }
-        .post-user { width: 180px; background: #F0F5FA; border-right: 1px solid #A6CBE7; padding: 15px; text-align: center; vertical-align: top; }
-        .post-content { padding: 15px 20px; vertical-align: top; line-height: 1.8; }
-        .post-info { border-bottom: 1px dashed #CCC; padding-bottom: 5px; margin-bottom: 15px; color: #666; font-size: 12px; }
-        .avatar { width: 100px; height: 100px; border: 1px solid #CCC; margin: 10px auto; background: #E2E8F1; display: flex; align-items: center; justify-content: center; color: #999; font-size:12px; }
-        .user-detail { color: #666; font-size: 12px; text-align: left; width: fit-content; margin: 0 auto; line-height: 1.5; }
+        /* 古早 BBS 经典样式重置 (Discuz! 经典蓝风格) */
+        body { font-family: 'SimSun', '宋体', Arial, sans-serif; background-color: #799AE1; color: #000; font-size: 13px; margin: 0; padding: 0 0 30px 0; }
+        a { color: #000000; text-decoration: none; }
+        a:hover { text-decoration: underline; color: #FF6600; }
+        
+        /* 顶部导航与大色块框架 */
+        .header { background: #0F5E8A; border-bottom: 2px solid #003366; padding: 20px 20px; color: #FFF; }
+        .logo { font-size: 24px; font-weight: bold; font-family: 'Microsoft YaHei', sans-serif; text-shadow: 1px 1px 2px #000; }
+        .nav-links { margin-top: 15px; font-weight: bold; font-size: 12px; }
+        .nav-links a { color: #FFF; margin-right: 15px; }
+        
+        /* 核心布局框架 */
+        .wrap { width: 980px; margin: 15px auto; overflow: hidden; background: #FFF; border: 1px solid #003366; padding: 10px; } 
+        .main { width: 740px; float: left; }
+        .sidebar { width: 215px; float: right; }
+
+        /* 面包屑色块 */
+        .breadcrumbs { background: #E5EDF2; border: 1px solid #9CB8CC; padding: 8px 10px; margin-bottom: 10px; font-weight: bold; color: #0055AA; }
+        .breadcrumbs a { color: #0055AA; }
+
+        /* 帖子主容器色块 */
+        .post-list { background: #FFF; border: 1px solid #9CB8CC; margin-bottom: 15px; }
+        .post-header-bar { background: #E5EDF2; border-bottom: 1px solid #9CB8CC; padding: 5px 10px; font-weight: bold; }
+        
+        /* 楼层样式（经典左右分栏色块） */
+        .post-row { border-bottom: 1px solid #9CB8CC; display: table; width: 100%; table-layout: fixed; } 
+        .post-left { width: 130px; background: #EAF0F6; border-right: 1px solid #9CB8CC; padding: 15px 10px; text-align: center; display: table-cell; vertical-align: top; }
+        .post-right { padding: 15px; display: table-cell; vertical-align: top; word-wrap: break-word; overflow: hidden; background: #F5F9FA; }
+        
+        .username { font-weight: bold; font-size: 14px; margin-bottom: 5px; display: block; color: #000080; }
+        
+        /* 头像框设计 */
+        .avatar { width: 100px; height: 100px; border: 1px solid #9CB8CC; background: #E2E8F1; padding: 2px; margin: 5px auto; display: flex; align-items: center; justify-content: center; color: #999; font-size:12px; }
+        .avatar img { width: 100%; height: 100%; display: block; object-fit: cover; }
+        
+        .user-title { color: #0055aa; margin-top: 5px; font-weight: bold; }
+        .user-stats { color: #666; margin-top: 5px; font-size: 12px; line-height: 1.5; text-align: left; padding-left: 20px; }
+        
+        .post-info { border-bottom: 1px dashed #9CB8CC; padding-bottom: 5px; margin-bottom: 15px; color: #666; font-size: 12px; }
+        .floor-num { float: right; font-weight: bold; color: #000; font-family: Arial; }
+        
+        .content { font-size: 14px; line-height: 1.8; color: #000; min-height: 150px; }
+        .content img { max-width: 100%; height: auto; border: 1px solid #9CB8CC; padding: 2px; margin: 10px 0; background: #FFF; box-sizing: border-box; }
+        
+        .quote-box { background: #EAF0F6; border: 1px solid #9CB8CC; border-left: 4px solid #0055AA; padding: 10px 15px; margin: 15px 0; color: #333; font-size: 13px; }
+
+        .signature { border-top: 1px dashed #9CB8CC; margin-top: 30px; padding-top: 10px; color: #666; font-size: 12px; }
+
+        /* 特殊：价格标签样式 */
         .price-tag { display: inline-block; background: #FF6600; color: #FFF; padding: 2px 8px; font-weight: bold; border-radius: 3px; }
+
+        /* 侧边栏色块伪装 */
+        .side-box { background: #FFF; border: 1px solid #9CB8CC; margin-bottom: 15px; }
+        .side-title { background: #D9E4EA; border-bottom: 1px solid #9CB8CC; padding: 6px 10px; font-weight: bold; color: #0055AA; }
+        .side-content { padding: 8px; list-style: none; margin: 0; }
+        .side-content li { border-bottom: 1px dotted #9CB8CC; padding: 4px 0; padding-left: 12px; background: url('data:image/gif;base64,R0lGODlhBQAKAIABAAAAAP///yH5BAEAAAEALAAAAAAFAAoAAAIIjI+pG8HwnCgAOw==') no-repeat left center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 12px; }
     </style>
 </head>
 <body>
-<div id="wrap">
-    <div class="header"><a href="bbs_2026_home.html">溯源BBS首页</a> &raquo; 区域 C: 灌水乐园与二手跳蚤 &raquo; <b>【交易】大四退宿，出二手 Vision Pro，或换带 RTX 6090 的本子。</b></div>
-    
-    <table class="post-table">
-        <tr>
-            <td class="post-user"><div style="font-weight:bold; color:#004499; font-size:15px;">赛博穷鬼</div><div class="avatar">无头像</div><div class="user-detail">级别: 破产边缘<br>发帖数: 44</div></td>
-            <td class="post-content">
-                <div class="post-info"><span style="float:right; font-weight:bold;">楼主</span> 发表于 2026-06-18 10:20:00</div>
-                如题，去年刚买的国行 Vision Pro 空间头显，箱说全，无划痕。<br>
-                一口价 <span class="price-tag">￥8500</span> 爽快可刀，支持面交。或者换一台带满血版 RTX 6090 显卡的游戏本。
-            </td>
-        </tr>
-    </table>
-    
-    <table class="post-table">
-        <tr>
-            <td class="post-user"><div style="font-weight:bold; color:#004499; font-size:15px;">砍价小能手</div><div class="avatar">无头像</div><div class="user-detail">级别: 交易达人<br>发帖数: 1560</div></td>
-            <td class="post-content">
-                <div class="post-info"><span style="float:right; font-weight:bold;">沙发</span> 发表于 2026-06-18 10:45:12</div>
-                现在二手行情都跌到5000了老哥，你这卖8500怕是传家宝。不过你怎么突然想出了？戴着不舒服吗？
-            </td>
-        </tr>
-    </table>
 
-    <table class="post-table">
-        <tr>
-            <td class="post-user"><div style="font-weight:bold; color:#004499; font-size:15px;">赛博穷鬼</div><div class="avatar">无头像</div><div class="user-detail">级别: 破产边缘<br>发帖数: 44</div></td>
-            <td class="post-content">
-                <div class="post-info"><span style="float:right; font-weight:bold;">板凳</span> 发表于 2026-06-18 11:30:20</div>
-                不是戴着不舒服... 哎，当面交易的话我可以告诉你实话。<br><br>
-                最近戴上这个头显，只要往南门支巷的方向走，空间计算的 LiDAR（激光雷达）就会出现严重的视觉穿透Bug。它会在现实校园的上空，渲染出一个巨大无比的、像是星盘一样的 3D 建筑。<br>
-                那个星盘根本不是代码建模，上面全是在蠕动的血管和神经，中间还有几个人影和废弃主板熔接在一起的残骸！太他妈掉san了！每次路过那边我都感觉那巨大的肉块在盯着我看！
-            </td>
-        </tr>
-    </table>
-
-    <table class="post-table">
-        <tr>
-            <td class="post-user"><div style="font-weight:bold; color:#004499; font-size:15px;">半夜不睡觉</div><div class="avatar">无头像</div><div class="user-detail">级别: 灵异爱好者<br>发帖数: 666</div></td>
-            <td class="post-content">
-                <div class="post-info"><span style="float:right; font-weight:bold;">地板</span> 发表于 2026-06-18 13:10:05</div>
-                楼主，这不是你的头显坏了。<br>
-                我查过文献，高精度的激光雷达是能捕捉到高维空间的质量残留的。你看到的那个东西，在暗网里被称为 **「血肉飞升星盘」**。是 19 年前某场极度疯狂的易经阵法实验留下的“结晶”。它其实一直悬浮在我们学校上方，只是普通人的肉眼看不见而已。<br>
-                劝你赶紧把头显卖了，看多了高维生物的视界，你的意识会被上传过去的。
-            </td>
-        </tr>
-    </table>
+<div class="header">
+    <div class="logo">南江大学 - 溯源BBS (Since 2004)</div>
+    <div class="nav-links">
+        <a href="#">首 页</a> | <a href="#">版块列表</a> | <a href="#">校内资讯</a> | <a href="#">跳蚤市场</a> | <a href="#">灌水乐园</a> | <a href="#">控制面板</a>
+    </div>
 </div>
+
+<div class="wrap">
+    <div class="main">
+        <div class="breadcrumbs">
+            <a href="bbs_2026_home.html">溯源BBS首页</a> &raquo; <a href="#">校内交流区</a> &raquo; <a href="#">区域 C: 灌水乐园与二手跳蚤</a>
+        </div>
+
+        <div class="post-list">
+            <div class="post-header-bar">
+                【交易】大四退宿，出二手 Vision Pro，或换带 RTX 6090 的本子
+            </div>
+            
+            <div class="post-row">
+                <div class="post-left">
+                    <span class="username">赛博穷鬼</span>
+                    <div class="avatar">无头像</div>
+                    <div class="user-title">破产边缘</div>
+                    <div class="user-stats">发帖: 44<br>积分: 120<br>注册: 2024-09</div>
+                </div>
+                <div class="post-right">
+                    <div class="post-info">
+                        发表于 2026-06-18 10:20:00 <span class="floor-num">楼主</span>
+                    </div>
+                    <div class="content">
+                        如题，去年刚买的国行 Vision Pro 空间头显，箱说全，无划痕。<br>
+                        一口价 <span class="price-tag">￥8500</span> 爽快可刀，支持面交。或者换一台带满血版 RTX 6090 显卡的游戏本。
+                    </div>
+                </div>
+            </div>
+
+            <div class="post-row">
+                <div class="post-left">
+                    <span class="username">砍价小能手</span>
+                    <div class="avatar">无头像</div>
+                    <div class="user-title">交易达人</div>
+                    <div class="user-stats">发帖: 1560<br>积分: 4500</div>
+                </div>
+                <div class="post-right">
+                    <div class="post-info">发表于 2026-06-18 10:45:12 <span class="floor-num">沙发</span></div>
+                    <div class="content">
+                        现在二手行情都跌到5000了老哥，你这卖8500怕是传家宝。不过你怎么突然想出了？戴着不舒服吗？
+                    </div>
+                </div>
+            </div>
+
+            <div class="post-row">
+                <div class="post-left">
+                    <span class="username">赛博穷鬼</span>
+                    <div class="avatar">无头像</div>
+                    <div class="user-title">破产边缘</div>
+                    <div class="user-stats">发帖: 44<br>积分: 120</div>
+                </div>
+                <div class="post-right">
+                    <div class="post-info">发表于 2026-06-18 11:30:20 <span class="floor-num">板凳</span></div>
+                    <div class="content">
+                        不是戴着不舒服... 哎，当面交易的话我可以告诉你实话。<br><br>
+                        最近戴上这个头显，只要往南门支巷的方向走，空间计算的 LiDAR（激光雷达）就会出现严重的视觉穿透Bug。它会在现实校园的上空，渲染出一个巨大无比的、像是星盘一样的 3D 建筑。<br>
+                        那个星盘根本不是代码建模，上面全是在蠕动的血管和神经，中间还有几个人影和废弃主板熔接在一起的残骸！太他妈掉san了！每次路过那边我都感觉那巨大的肉块在盯着我看！
+                    </div>
+                </div>
+            </div>
+
+            <div class="post-row">
+                <div class="post-left">
+                    <span class="username">半夜不睡觉</span>
+                    <div class="avatar">无头像</div>
+                    <div class="user-title">灵异爱好者</div>
+                    <div class="user-stats">发帖: 666<br>积分: 2333</div>
+                </div>
+                <div class="post-right">
+                    <div class="post-info">发表于 2026-06-18 13:10:05 <span class="floor-num">地板</span></div>
+                    <div class="content">
+                        楼主，这不是你的头显坏了。<br>
+                        我查过文献，高精度的激光雷达是能捕捉到高维空间的质量残留的。你看到的那个东西，在暗网里被称为 <b>「血肉飞升星盘」</b>。是 19 年前某场极度疯狂的易经阵法实验留下的“结晶”。它其实一直悬浮在我们学校上方，只是普通人的肉眼看不见而已。<br>
+                        劝你赶紧把头显卖了，看多了高维生物的视界，你的意识会被上传过去的。
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div style="text-align: right; padding-bottom: 20px;">
+            <span style="border:1px solid #9CB8CC; padding:3px 8px; background:#FFF; color:#0055AA; font-weight:bold;">1</span>
+            <a href="#" style="border:1px solid #9CB8CC; padding:3px 8px; background:#E5EDF2;">2</a>
+            <a href="#" style="border:1px solid #9CB8CC; padding:3px 8px; background:#E5EDF2;">下一页</a>
+        </div>
+    </div>
+
+    <div class="sidebar">
+        <div class="side-box">
+            <div class="side-title">最新校园热门</div>
+            <ul class="side-content">
+                <li><a href="#">食堂三楼的阿姨手又抖了，排骨全掉锅里</a></li>
+                <li><a href="#">求一份历年《高数（上）》期末卷子，救急！</a></li>
+                <li><a href="#">表白墙：昨天在图书馆二楼靠窗穿白裙子的女生</a></li>
+                <li><a href="#">吐槽！本学期关于晚归断电的新规定太坑了</a></li>
+                <li><a href="#">急出大四考研资料，半卖半送</a></li>
+            </ul>
+        </div>
+        
+        <div class="side-box">
+            <div class="side-title">论坛公告板</div>
+            <div style="padding: 10px; line-height: 1.6; color: #666; font-size: 12px;">
+                1. 严禁发布未经证实的小道消息。<br>
+                2. 交易区请警惕网络诈骗。<br>
+                3. 本周末机房维护，BBS 将在凌晨 2:00-5:00 暂停访问。
+            </div>
+        </div>
+    </div>
+</div>
+
 </body>
 </html>
