@@ -133,11 +133,10 @@
         /* 高级特效：带数码故障损坏、失焦模糊与色彩溶解的血肉星盘 */
         #final-bg-image {
             position: absolute; inset: 0;
-            /* 已修正为你的血肉巨眼背景图，并调整了可见度 */
             background-image: url('flesh_eye.jpg'); 
             background-size: cover; background-position: center;
-            opacity: 0.85; /* 提高透明度以保证图片显示 */
-            mix-blend-mode: normal; /* 移除强烈的混合模式，让原图颜色透出来 */
+            opacity: 0.85; 
+            mix-blend-mode: normal; 
             filter: blur(3px) contrast(150%) saturate(140%);
             animation: digital-corruption-loop 0.25s infinite linear;
             z-index: 1;
@@ -423,15 +422,15 @@
             <div id="tab-probes" class="admin-tab">
                 <div class="content-title">防御探针遥测日志 (PROBE_LOGS)</div>
                 <div style="background:#000; color:#0f0; padding:15px; font-family:monospace; font-size:13px; line-height:1.8; border:1px solid #333; height: 450px; overflow-y:auto;">
-                    > [08:00:00] 探针 #01 部署至公网层，信标回传：状态正常。<br>
-                    > [08:05:22] 探针 #02 穿透暗网洋葱路由边界，未发现逻辑错误，状态正常。<br>
-                    > [08:12:45] 探针 #03 遭遇严重的时空维度撕裂。正在尝试重建画面...<br>
-                    > [08:12:48] 探针 #03 画面传输成功。分析：视野内全都是跳动的肉块与血管。<br>
-                    > <span style="color:#ff5555;">[08:15:01] 探针 #04 失去网络信号。最后回传音频：骨骼碎裂声与密集的咀嚼声。</span><br>
-                    > <span style="color:#ff5555;">[08:15:04] 探针 #05 失去网络信号。</span><br>
-                    > <span style="color:#ff5555;">[08:15:09] 探针 #06 失去网络信号。</span><br>
-                    > [08:16:30] 探针核心母体发生 logic 倒转。<br>
-                    > <span style="color:#ff0000; font-weight:bold; font-size:15px;">[08:17:00] 警告：所有失联探针已被同化并反叛。它们正在顺着网线向主服务器爬来。</span><br>
+                    > [<span class="probe-time" data-offset="-1020"></span>] 探针 #01 部署至公网层，信标回传：状态正常。<br>
+                    > [<span class="probe-time" data-offset="-698"></span>] 探针 #02 穿透暗网洋葱路由边界，未发现逻辑错误，状态正常。<br>
+                    > [<span class="probe-time" data-offset="-255"></span>] 探针 #03 遭遇严重的时空维度撕裂。正在尝试重建画面...<br>
+                    > [<span class="probe-time" data-offset="-252"></span>] 探针 #03 画面传输成功。分析：视野内全都是跳动的肉块与血管。<br>
+                    > <span style="color:#ff5555;">[<span class="probe-time" data-offset="-119"></span>] 探针 #04 失去网络信号。最后回传音频：骨骼碎裂声与密集的咀嚼声。</span><br>
+                    > <span style="color:#ff5555;">[<span class="probe-time" data-offset="-116"></span>] 探针 #05 失去网络信号。</span><br>
+                    > <span style="color:#ff5555;">[<span class="probe-time" data-offset="-111"></span>] 探针 #06 失去网络信号。</span><br>
+                    > [<span class="probe-time" data-offset="-30"></span>] 探针核心母体发生 logic 倒转。<br>
+                    > <span style="color:#ff0000; font-weight:bold; font-size:15px;">[<span class="probe-time" data-offset="0"></span>] 警告：所有失联探针已被同化并反叛。它们正在顺着网线向主服务器爬来。</span><br>
                     > <span class="pulse-text" style="color:#ff0000;">[实时] 它们就在门外。</span>
                 </div>
             </div>
@@ -465,6 +464,20 @@
     }
     setInterval(updateTime, 1000);
     updateTime();
+
+    // 新增：动态渲染探针的本地相对时间
+    function updateProbeTimes() {
+        const now = new Date();
+        document.querySelectorAll('.probe-time').forEach(el => {
+            const offset = parseInt(el.getAttribute('data-offset')) || 0;
+            const logTime = new Date(now.getTime() + offset * 1000); // 基于当前时间推算
+            const tStr = String(logTime.getHours()).padStart(2, '0') + ":" + 
+                         String(logTime.getMinutes()).padStart(2, '0') + ":" + 
+                         String(logTime.getSeconds()).padStart(2, '0');
+            el.innerText = tStr;
+        });
+    }
+    updateProbeTimes(); // 页面加载即执行一次
 
     document.querySelectorAll('.menu-list a[data-tab]').forEach(link => {
         link.addEventListener('click', function(e) {
@@ -749,9 +762,23 @@
         }, 150);
     }
 
+    // 修改：X按钮只返回Admin面板，不再直接跳回主站
     window.closeFinalTerminal = function() {
         if(heartbeatInterval) clearInterval(heartbeatInterval);
-        window.location.href = 'bbs_2026_home.html';
+        
+        // 隐藏血肉终端
+        document.getElementById('final-terminal').style.display = 'none';
+        
+        // 退出全屏（如果之前触发进入的话）
+        try { if(document.fullscreenElement) document.exitFullscreen(); } catch(err){}
+        
+        // 恢复被隐藏的管理员面板结构
+        const wrap = document.getElementById('wrap');
+        wrap.style.display = 'block';
+        setTimeout(() => { wrap.style.opacity = '1'; }, 50);
+        
+        // 让页面body背景保持恐怖的深色调，因为同化已经发生了
+        document.body.style.backgroundColor = '#1a0505';
     }
 
 </script>
