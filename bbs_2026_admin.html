@@ -5,7 +5,7 @@
     <title>控制面板 - 南江大学星火BBS</title>
     <style type="text/css">
         /* ================= 2007年 Discuz! 后台复古外壳样式 ================= */
-        body { background-color: #E2E8F1; color: #333333; font-family: "SimSun", "宋体", Arial, sans-serif; font-size: 14px; margin: 0; padding: 10px 0; }
+        body { background-color: #E2E8F1; color: #333333; font-family: "SimSun", "宋体", Arial, sans-serif; font-size: 14px; margin: 0; padding: 10px 0; overflow: hidden;}
         a { color: #004499; text-decoration: none; }
         a:hover { text-decoration: underline; color: #FF6600; }
         .bold { font-weight: bold; }
@@ -15,17 +15,28 @@
         .header { border-bottom: 3px solid #336699; padding-bottom: 10px; margin-bottom: 15px; font-weight: bold; font-size: 14px; display: flex; justify-content: space-between; align-items: flex-end;}
         .logo-text { font-family: "Microsoft YaHei", "黑体", sans-serif; font-size: 24px; color: #336699; }
         
-        .admin-container { display: flex; border: 1px solid #A6CBE7; background: #FFF; min-height: 600px; position: relative; }
+        /* 顶部返回按钮 */
+        .btn-close-return {
+            font-weight: bold; color: #336699; font-size: 16px; 
+            border: 1px solid #A6CBE7; padding: 4px 10px; background: #F0F5FA; cursor: pointer; transition: 0.2s;
+        }
+        .btn-close-return:hover { background: #FF0000; color: #FFF; border-color: #900; }
+        .btn-close-return span { color: #FF0000; font-weight: 900; }
+        .btn-close-return:hover span { color: #FFF; }
+
+        .admin-container { display: flex; border: 1px solid #A6CBE7; background: #FFF; height: 75vh; position: relative; }
         
-        /* 左侧菜单栏 */
-        .sidebar { width: 200px; background: #F0F5FA; border-right: 1px solid #A6CBE7; padding: 10px 0; z-index: 2; }
+        /* 左侧菜单栏 (内容丰富化) */
+        .sidebar { width: 200px; background: #F0F5FA; border-right: 1px solid #A6CBE7; padding: 10px 0; z-index: 2; overflow-y: auto; }
         .menu-group { margin-bottom: 15px; }
         .menu-title { background: #EBF2F8; padding: 6px 15px; font-weight: bold; color: #336699; border-top: 1px solid #FFF; border-bottom: 1px solid #D5E4F1; font-size: 13px; }
         .menu-list { list-style: none; margin: 0; padding: 0; }
         .menu-list li a { display: block; padding: 8px 15px 8px 25px; color: #333; border-bottom: 1px dashed #D5E4F1; transition: background 0.2s; }
-        .menu-list li a:hover, .menu-list li a.active { background: #FFF; color: #FF6600; font-weight: bold; text-decoration: none; border-left: 3px solid #FF6600; padding-left: 22px; }
-        
-        /* 右侧内容区 (核心演出舞台) */
+        .menu-list li a:hover, .menu-list li a.active { background: #FFF; color: #FF6600; font-weight: bold; border-left: 3px solid #FF6600; padding-left: 22px; }
+        .menu-list li a.disabled { color: #aaa; text-decoration: line-through; cursor: not-allowed; border-left: none; }
+        .menu-list li a.disabled:hover { background: transparent; padding-left: 25px; }
+
+        /* 右侧内容区 */
         .content { flex: 1; padding: 0; background: #FFF; position: relative; overflow: hidden; }
         
         /* ================= 嵌入式绿色终端 ================= */
@@ -37,7 +48,7 @@
         }
         .term-line { margin-bottom: 6px; opacity: 0; text-shadow: 0 0 5px #0f0; }
 
-        /* ================= API 密集请求群 (血肉异化区) ================= */
+        /* ================= API 密集请求群 ================= */
         #api-swarm-container {
             position: absolute; inset: 0; background: #FFF; z-index: 50;
             overflow: hidden; padding: 20px; display: none;
@@ -46,39 +57,65 @@
         
         #swarm-area { position: relative; width: 100%; height: calc(100% - 50px); }
 
-        /* 单个 API 请求块 */
+        /* 单个 API 请求块 (通用外观，包括2007年节点) */
         .api-node {
             position: absolute; background: #F9FBFE; border: 1px solid #A6CBE7; 
             padding: 8px 12px; font-size: 12px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
             transition: all 0.3s; cursor: crosshair; display: flex; flex-direction: column; gap: 5px;
-            width: 280px;
+            width: 280px; min-height: 100px;
         }
         .api-node:hover { z-index: 1000 !important; border-color: #FF0000; background: #FFF0F0; transform: scale(1.05); }
-        .api-node.absorbed { background: #500; border-color: #f00; color: #f99; pointer-events: none; }
         
         .node-header { font-weight: bold; color: #336699; font-family: Tahoma; font-size: 11px; border-bottom: 1px dashed #CCC; padding-bottom: 3px;}
         .node-body { color: #555; line-height: 1.4; }
-        .node-action { text-align: right; margin-top: 5px; }
+        .node-action { text-align: right; margin-top: auto; }
         
         .btn-approve { background: #336699; color: #FFF; border: 1px solid #2B5E8A; padding: 4px 10px; cursor: pointer; font-size: 12px; font-family: SimSun; }
         .btn-approve:hover { background: #FF0000; border-color: #900; }
-        .absorbed .btn-approve { background: transparent; border: none; color: #f00; font-weight: bold; }
 
-        /* 特殊：2007 未济节点 */
-        #node-2007 {
-            top: 50%; left: 50%; transform: translate(-50%, -50%); width: 350px;
-            background: #110; border: 2px solid #F00; color: #F00; z-index: 900;
-            box-shadow: 0 0 20px rgba(255,0,0,0.5); animation: pulse 2s infinite;
+        /* 批准后的异化状态：居中、放大、高反差色 */
+        .api-node.absorbed { 
+            background: #2a0505 !important; /* 暗血色背景 */
+            border: 1px solid #ff0000 !important; 
+            box-shadow: 0 0 15px rgba(255,0,0,0.5);
+            justify-content: center; align-items: center;
+            pointer-events: none;
         }
-        #node-2007 .node-header { color: #F00; border-bottom-color: #F00; font-size: 13px; }
-        #node-2007 .node-body { color: #F88; }
-        #node-2007 .btn-approve { background: #F00; color: #FFF; border-color: #FFF; font-weight: bold; font-size: 14px; padding: 6px 15px;}
-        
-        @keyframes pulse { 0% { box-shadow: 0 0 10px #f00; } 50% { box-shadow: 0 0 30px #f00; } 100% { box-shadow: 0 0 10px #f00; } }
+        .api-node.absorbed * { display: none; } /* 隐藏原有文本和按钮 */
+        .api-node.absorbed::after {
+            content: "[ 已 融 合 ]";
+            color: #ff3333; /* 亮红字 */
+            font-size: 24px;
+            font-weight: bold;
+            letter-spacing: 4px;
+            text-shadow: 0 0 8px #f00;
+            display: block;
+        }
+
+        /* 屏闪特效 */
+        #flash-overlay {
+            position: fixed; inset: 0; background: #ff0000; z-index: 100000;
+            opacity: 0; pointer-events: none; transition: opacity 0.05s; mix-blend-mode: multiply;
+        }
+
+        /* 向上浮动的血字 */
+        .floating-text {
+            position: fixed; bottom: -50px;
+            color: #ff0000; font-size: 24px; font-weight: bold;
+            font-family: "Microsoft YaHei", "黑体", sans-serif;
+            text-shadow: 0 0 10px #ff0000, 0 0 20px #800000;
+            z-index: 99990; pointer-events: none;
+            animation: floatUp 3.5s ease-in forwards;
+            opacity: 0.8;
+        }
+        @keyframes floatUp {
+            0% { bottom: -50px; opacity: 1; transform: scale(1); }
+            100% { bottom: 100vh; opacity: 0; transform: scale(1.8); letter-spacing: 8px; }
+        }
 
         /* 终端吞噬全屏特效 */
         #final-terminal {
-            display: none; position: fixed; inset: 0; background: #000; z-index: 99999;
+            display: none; position: fixed; inset: 0; background: #000; z-index: 999999;
             flex-direction: column; justify-content: center; align-items: center;
             color: #f00; font-family: 'Courier New', Courier, monospace; text-align: center;
         }
@@ -86,12 +123,14 @@
 </head>
 <body>
 
+<div id="flash-overlay"></div>
+
 <div id="wrap">
     <div class="header">
         <div class="logo-text">星火BBS 核心控制面板 (CORE_UPLINK)</div>
         <div>
-            登录人：<span class="bold red">26级_既济 (admin)</span> | 
-            <a href="bbs_2026_home.html" style="font-weight:bold; color:#004499; text-decoration:underline;">[ 返回首页 ]</a>
+            登录人：<span class="bold red">26级_既济 (admin)</span> &nbsp;|&nbsp; 
+            <a href="bbs_2026_home.html" class="btn-close-return"><span>X</span> 返回主站</a>
         </div>
     </div>
 
@@ -101,13 +140,17 @@
                 <div class="menu-title">数据接口管理</div>
                 <ul class="menu-list">
                     <li><a href="#" class="active">API 接入请求审核</a></li>
-                    <li><a href="#" style="color:#aaa; text-decoration:line-through;">帖子与用户管理 (不可用)</a></li>
+                    <li><a href="#" class="disabled">首页大盘 (Offline)</a></li>
+                    <li><a href="#" class="disabled">帖子审核与回收站</a></li>
+                    <li><a href="#" class="disabled">用户权限管理</a></li>
                 </ul>
             </div>
             <div class="menu-group">
-                <div class="menu-title">系统状态</div>
+                <div class="menu-title">系统状态监控</div>
                 <ul class="menu-list">
-                    <li><a href="#" style="color:#D32F2F; font-weight:bold; animation: pulse 1s infinite;">底层维度监控 (警告)</a></li>
+                    <li><a href="#" style="color:#D32F2F; font-weight:bold; animation: pulse 1s infinite;">星象引擎状态 (超载)</a></li>
+                    <li><a href="#">底层异常日志 [ SYS_WARN ]</a></li>
+                    <li><a href="#">防御探针日志</a></li>
                 </ul>
             </div>
         </div>
@@ -125,20 +168,19 @@
 </div>
 
 <div id="final-terminal">
-    <h1 style="font-size: 3rem; letter-spacing: 0.1em; text-shadow: 0 0 20px #f00; margin-bottom: 20px; font-family: 'SimSun', serif;">觀測者已成為被觀測物</h1>
-    <p style="font-size: 1.2rem; opacity: 0.8;">歡迎加入永恆的星空血肉網絡。</p>
-    <p style="margin-top:50px; font-size:0.9rem; color:#555;">[ UPLINK SECURED. ]</p>
+    <h1 style="font-size: 3.5rem; letter-spacing: 0.1em; text-shadow: 0 0 20px #f00; margin-bottom: 20px; font-family: 'SimSun', serif;">觀測者已成為被觀測物</h1>
+    <p style="font-size: 1.5rem; opacity: 0.8; font-weight:bold;">歡迎加入永恆的星空血肉網絡。</p>
+    <p style="margin-top:60px; font-size:1rem; color:#555;">[ UPLINK SECURED. ]</p>
 </div>
 
 <script type="text/javascript">
     // ==========================================
-    // 核心逻辑 1：潜入成功，给首页种下解锁缓存
+    // 逻辑 1：潜入成功，给首页种下解锁缓存
     // ==========================================
-    // 只要玩家进入过这个页面，首页的“控制面板”就会被永久解锁
     localStorage.setItem('njdx_bbs_override', 'true');
 
     // ==========================================
-    // 核心逻辑 2：获取玩家真实信息以制造恐怖感
+    // 逻辑 2：获取玩家真实信息以制造恐怖感
     // ==========================================
     let userIP = "127.0.0.1";
     let userLoc = "未知坐标";
@@ -150,14 +192,14 @@
             userIP = data.ip || "192.168.1.104";
             userLoc = `${data.city}, ${data.country_name}`;
             userLatLon = `${data.latitude}, ${data.longitude}`;
-            startBootSequence(); // 获取成功后启动终端
+            startBootSequence(); 
         })
         .catch(() => {
-            startBootSequence(); // 失败也启动
+            startBootSequence(); 
         });
 
     // ==========================================
-    // 核心逻辑 3：音效系统 (肉块与终端音效)
+    // 逻辑 3：音效系统与特效 (屏闪、飘字)
     // ==========================================
     let audioCtx = null;
     function initAudio() {
@@ -165,6 +207,7 @@
         if (audioCtx.state === 'suspended') audioCtx.resume();
     }
 
+    // 血肉挤压音效
     function playSquishSound() {
         initAudio();
         const bufferSize = audioCtx.sampleRate * 0.4;
@@ -185,8 +228,32 @@
         noiseSource.start();
     }
 
+    // 屏幕血红频闪
+    function triggerFlash() {
+        const overlay = document.getElementById('flash-overlay');
+        overlay.style.opacity = '0.7';
+        setTimeout(() => { overlay.style.opacity = '0'; }, 80);
+    }
+
+    // 从底部浮起红色文字
+    function spawnFloatingText() {
+        const textNode = document.createElement('div');
+        textNode.className = 'floating-text';
+        textNode.innerText = "Api已被接入";
+        // 随机水平位置，防止文字完全重叠
+        const randomLeft = 30 + Math.random() * 40; 
+        textNode.style.left = `${randomLeft}%`;
+        
+        document.body.appendChild(textNode);
+        
+        // 动画结束后自动清理 DOM
+        setTimeout(() => {
+            if(textNode.parentNode) textNode.remove();
+        }, 3600);
+    }
+
     // ==========================================
-    // 核心逻辑 4：嵌入式终端启动动画
+    // 逻辑 4：嵌入式终端启动动画
     // ==========================================
     function startBootSequence() {
         const terminal = document.getElementById('embedded-terminal');
@@ -213,7 +280,6 @@
                 terminal.appendChild(line);
                 setTimeout(() => line.style.opacity = '1', 50);
                 
-                // 滚动到底部
                 terminal.scrollTop = terminal.scrollHeight;
 
                 if (index === logs.length - 1) {
@@ -221,41 +287,32 @@
                         terminal.style.opacity = '0';
                         setTimeout(() => {
                             terminal.style.display = 'none';
-                            initApiSwarm(); // 终端消失，露出底层的 API 请求群
+                            initApiSwarm(); 
                         }, 1000);
                     }, 1200);
                 }
             }, delay);
-            delay += 300 + Math.random() * 300;
+            delay += 250 + Math.random() * 250;
         });
     }
 
     // ==========================================
-    // 核心逻辑 5：密密麻麻的四维 API 请求群
+    // 逻辑 5：密密麻麻的四维 API 请求群
     // ==========================================
     let corruptionLevel = 0;
 
     function initApiSwarm() {
-        initAudio(); // 交互开始时初始化音频
+        initAudio(); 
         document.getElementById('api-swarm-container').style.display = 'block';
         const swarmArea = document.getElementById('swarm-area');
         
-        // 1. 生成现代请求 (密密麻麻浮在一起)
-        const nodeCount = 35; // 节点数量
+        const nodeCount = 45; // 大量节点填满屏幕
+        let nodesArray = [];
+
+        // 1. 生成现代请求
         for(let i = 0; i < nodeCount; i++) {
-            const node = document.createElement('div');
-            node.className = 'api-node';
-            
-            // 随机坐标重叠 (限制在区域内)
-            node.style.left = `${Math.random() * 70}%`;
-            node.style.top = `${Math.random() * 85}%`;
-            // 随机层级，造成堆叠感
-            node.style.zIndex = Math.floor(Math.random() * 50);
-            
-            // 时间稍微做一点随机偏移，模拟并发请求
             const reqTime = new Date(Date.now() - Math.random() * 60000).toLocaleTimeString();
-            
-            node.innerHTML = `
+            nodesArray.push(`
                 <div class="node-header">[+] 四维总览请求 (ID:${Math.floor(Math.random()*90000)+10000})</div>
                 <div class="node-body">
                     时间: ${reqTime}<br>
@@ -266,43 +323,58 @@
                 <div class="node-action">
                     <button class="btn-approve" onclick="absorbNode(this, event)">批准请求</button>
                 </div>
-            `;
-            swarmArea.appendChild(node);
+            `);
         }
 
-        // 2. 生成 2007 的致命未济节点 (埋在中间，层级最高)
-        const node2007 = document.createElement('div');
-        node2007.className = 'api-node';
-        node2007.id = 'node-2007';
-        node2007.innerHTML = `
-            <div class="node-header">[ ! ] 跨维度底层接入请求 (最高优先级)</div>
+        // 2. 生成 2007 的致命未济节点 (混入其中，外观结构代码完全一致)
+        const fatalNodeHtml = `
+            <div class="node-header">[+] 四维总览请求 (ID:00042)</div>
             <div class="node-body">
-                <b>时间:</b> 2007-06-11 11:00:00<br>
-                <b>来源:</b> 四川深地主服务器 (IP: 192.168.0.12)<br>
-                <b>实体:</b> 未济 (残存质)<br>
-                <b>内容:</b> 六十四卦算力反向注入。等待 2026 年锚点确认。
+                时间: 2007-06-11 11:00:00<br>
+                来源 IP: <span class="bold">192.168.0.12</span><br>
+                实体: 未济 (残存质)<br>
+                类型: 空间全息扫描与意识同步
             </div>
-            <div class="node-action" style="margin-top:10px; text-align:center;">
-                <button class="btn-approve" onclick="triggerAssimilation()">⚠️ 批准接入 (完成死局闭环)</button>
+            <div class="node-action">
+                <button class="btn-approve" onclick="triggerAssimilation(this, event)">批准请求</button>
             </div>
         `;
-        swarmArea.appendChild(node2007);
+        
+        // 随机挑一个位置插入致命节点，保证它和别人的渲染方式毫无二致
+        const fatalIndex = Math.floor(Math.random() * (nodeCount / 2)) + Math.floor(nodeCount / 4); // 放在中间层级
+        nodesArray.splice(fatalIndex, 0, fatalNodeHtml);
+
+        // 渲染所有节点
+        nodesArray.forEach((htmlContent) => {
+            const node = document.createElement('div');
+            node.className = 'api-node';
+            
+            // 随机坐标重叠 (打散在容器内)
+            node.style.left = `${Math.random() * 75}%`;
+            node.style.top = `${Math.random() * 80}%`;
+            node.style.zIndex = Math.floor(Math.random() * 50);
+            
+            node.innerHTML = htmlContent;
+            swarmArea.appendChild(node);
+        });
     }
 
-    // 处理现代节点的吸收
+    // 交互：吸收现代节点
     window.absorbNode = function(btn, e) {
         e.stopPropagation();
-        playSquishSound();
+        triggerFlash();       // 屏闪
+        playSquishSound();    // 音效
+        spawnFloatingText();  // 漂浮红字
+        
         const node = btn.closest('.api-node');
-        node.classList.add('absorbed');
-        btn.innerText = "[ 已吸收 ]";
+        node.classList.add('absorbed'); // CSS 接管异化展现 (居中放大红字)
         
         corruptionLevel++;
         
-        // 随着吸收增多，背景变得不安
-        if (corruptionLevel === 3) {
+        // 背景环境微弱变异
+        if (corruptionLevel === 5) {
             document.body.style.backgroundColor = "#e0caca";
-        } else if (corruptionLevel === 6) {
+        } else if (corruptionLevel === 12) {
             document.body.style.backgroundColor = "#2a1515";
             document.querySelector('.header').style.backgroundColor = "#110";
             document.querySelector('.sidebar').style.backgroundColor = "#200";
@@ -310,12 +382,20 @@
     }
 
     // ==========================================
-    // 核心逻辑 6：最终同化 (点击 2007 节点)
+    // 逻辑 6：最终同化 (点击 2007 节点)
     // ==========================================
-    window.triggerAssimilation = function() {
+    window.triggerAssimilation = function(btn, e) {
+        e.stopPropagation();
+        triggerFlash();
         playSquishSound();
+        spawnFloatingText();
+        
+        const node = btn.closest('.api-node');
+        node.classList.add('absorbed');
+        
+        // 锁死全部交互
         const swarm = document.getElementById('api-swarm-container');
-        swarm.style.pointerEvents = 'none'; // 锁死点击
+        swarm.style.pointerEvents = 'none'; 
         
         // 伪装面板瞬间崩溃变红
         document.body.style.filter = 'contrast(200%) saturate(150%) hue-rotate(-20deg) invert(10%)';
@@ -323,16 +403,17 @@
         let flashCount = 0;
         const flashInterval = setInterval(() => {
             document.body.style.backgroundColor = flashCount % 2 === 0 ? "#f00" : "#000";
+            spawnFloatingText(); // 疯狂冒字
+            playSquishSound();
             flashCount++;
-            if (flashCount > 8) {
+            if (flashCount > 10) {
                 clearInterval(flashInterval);
                 document.getElementById('wrap').style.display = 'none';
                 
                 // 弹出最终文字
                 const finalTerm = document.getElementById('final-terminal');
                 finalTerm.style.display = 'flex';
-                // 尝试网页全屏增强压迫感
-                try { document.documentElement.requestFullscreen(); } catch(e){}
+                try { document.documentElement.requestFullscreen(); } catch(err){}
             }
         }, 150);
     }
