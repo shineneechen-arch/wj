@@ -528,7 +528,7 @@ const LANGS = {
     ui:{eq:'赤道',ecl:'黃道',asc:'ASC上升',dsc:'DSC下降',mc:'MC中天',ic:'IC天底',mansion:'宿',house:'宫',p1:'新月(朔)',p2:'上弦月',p3:'滿月(望)',p4:'下弦月',p5:'晦日',deg:'距角',trop:'回歸黃道',sid:'恆星黃道',helio:'日心黃道',helioMsg:'☉ 日心模式 · 恆星參考系固定 · 視黃道不適用',zenith:'天頂'},
     al:{asc:'命宫在',sun:'太阳在',moon:'月在',phase:'月相',rahu:'南交點在',jup:'福星在',sat:'剋星在'},
     dst:{off:'標準時',on:'夏令時 +1h',label:'夏令時（DST）',hint:'開啟後自動 +1 小時'},
-    dom:{modalTitle:'星象座標系',modalSub:'真3D地心儀 · 晝夜更替 · 二十八宿',lblNm:'命主姓名',lblDt:'出生日期（公曆）',lblTm:'出生時間（24小時）',lblLoc:'出生地經緯度與時區',plhNm:'姓名（可留空）',btnSub:'觀 測 星 象 能 量',btnDemo:'→ 載入演示（2002.12.24 子夜 · 東經109 · 北緯31）',tbTitle:'星象座標系 · 天球儀',tbSub:'GEOCENTRIC ASTROLABE · 物理光影宇宙',tbPlay:'▶ 播放',tbPause:'⏸ 暫停',tbReset:'重置',timeLbl:'當前時間',loadTxt:'載入星象引擎與高精貼圖…',drwLbl:'星象資料',pEcl:'星象 · 视黃道度数',pAna:'命盤分析摘要',pHou:'黃道十二宮 · 宮位星曜',pHouM:'黃道十二宮',ascAligned:'☽ 测者中心已完美鎖定，中天直指螢幕正上方'},
+    dom:{modalTitle:'星象座標系',modalSub:'真3D地心儀 · 晝夜更替 · 二十八宿',lblNm:'命主姓名',lblDt:'出生日期（公曆）',lblTm:'出生時間（24小時）',lblLoc:'出生地經緯度與時區',plhNm:'姓名（可留空）',btnSub:'觀 測 星 象 能 量',btnDemo:'→ 載入演示（2002.12.24 子夜 · 東經109 · 北緯31）',tbTitle:'星象座標系 · 天球儀',tbSub:'GEOCENTRIC ASTROLABE · 物理光影宇宙',tbPlay:'▶ 播放',tbPause:'⏸ 暫停',tbReset:'重置',timeLbl:'當前時間',loadTxt:'載入星象引擎與高精貼圖…',drwLbl:'星象资料',pEcl:'星象 · 视黃道度数',pAna:'命盤分析摘要',pHou:'黃道十二宮 · 宮位星曜',pHouM:'黃道十二宮',ascAligned:'☽ 测者中心已完美鎖定，中天直指螢幕正上方'},
     ctrl:{zen:'沉浸星空',spin:'時間自轉',zenith:'對齊天頂',helio:'切換日心/地心',sys:'切換回歸/恆星',out:'三王星',ecl:'黃道環',eq:'赤道環',man:'二十八宿',pl:'星体顯示',asp:'相位連線',tm:'時間推移',orb:'黃緯垂線',btnSysT:'歸',btnSysS:'恆',btnOut:'王',btnMan:'宿',btnPl:'政',btnHelio:'日'}
   },
   'zh-CN':{
@@ -833,7 +833,7 @@ window.loadDemo=function(){['f-nm','f-y','f-m','f-d','f-h','f-mi','f-lg','f-lat'
 function updatePositions(){
   if(!userData||!userData.jd||isNaN(userData.jd))return;
   const tr = document.getElementById('time-range');
-  const tJD = userData.jd + (tr ? parseInt(tr.value) || 0 : 0) * 1 / 24;
+  const tJD = userData.jd + (tr ? parseInt(tr.value) || 0 : 0) * 1 / 24; // 1 step = 1 hour
   const res=calcAll(T_jd(tJD),tJD,userData.lng,userData.lat,S.sidereal);
   curGeo=res.geo;curHelio=res.helio;currentGMST=res.gmst;
   if(isNaN(currentGMST))return;
@@ -944,6 +944,7 @@ window.confirmPicker = function() {
     const tr = document.getElementById('time-range');
     if (tr) { tr.value = 0; tr.dispatchEvent(new Event('input')); }
     updatePositions();
+    checkHorrorEvent(y, m, d);
   }
 };
 
@@ -953,7 +954,7 @@ window.confirmPicker = function() {
 window.isInfected = false;
 const furSystems = {}; 
 
-function buildFurForPlanet(id, pos, radius, count=400) {
+function buildFurForPlanet(id, pos, radius, count=600) {
   if (furSystems[id]) { plG.remove(furSystems[id]);
     furSystems[id].geometry.dispose(); furSystems[id].material.dispose(); delete furSystems[id]; 
   }
@@ -972,7 +973,7 @@ function buildFurForPlanet(id, pos, radius, count=400) {
   const geo = new THREE.BufferGeometry();
   geo.setAttribute('position', new THREE.BufferAttribute(positions.slice(),3));
   geo.setAttribute('velocity', new THREE.BufferAttribute(velocities,3));
-  const mat = new THREE.PointsMaterial({ color:0xCC2200, size:0.25, transparent:true, opacity:0, sizeAttenuation:true });
+  const mat = new THREE.PointsMaterial({ color:0x880000, size:0.3, transparent:true, opacity:0, sizeAttenuation:true });
   const pts = new THREE.Points(geo, mat);
   plG.add(pts);
   furSystems[id] = pts;
@@ -983,37 +984,48 @@ const veinLines = [];
 function buildVeins() {
   clearGroup(veinG);
   veinLines.length = 0;
-  const pairs = [
-    ['mercury','venus',0xFF2200],['venus','earth',0x0044FF],['earth','mars',0xFF1100],
-    ['mars','jupiter',0x0055FF],['mercury','mars',0xFF3300],['venus','jupiter',0x2200FF],
-    ['moon','earth',0xFF4400],['saturn','jupiter',0x0033CC],['earth','jupiter',0xFF0022],
-    ['mars','saturn',0x0066FF],['sun','mercury',0xCC1100],['sun','venus',0x0033FF],
-    ['moon','jupiter',0xFF0000],['earth','saturn',0x0088FF],
-  ];
-  pairs.forEach(([srcId, dstId, col]) => {
-    const srcMesh = pMesh[srcId], dstMesh = pMesh[dstId];
-    if (!srcMesh || !dstMesh) return;
+  const bp = ['sun','moon','mercury','venus','earth','mars','jupiter','saturn','uranus','neptune','pluto'];
+  const colors = [0xff0000, 0xaa0000, 0x550000, 0xff3300, 0x880000];
+  
+  // 建立密集交錯網路
+  for(let i=0; i<bp.length; i++) {
+    for(let j=i+1; j<bp.length; j++) {
+      if(Math.random() > 0.1) { // 90% 概率產生連結
+        const srcMesh = pMesh[bp[i]] || earthMesh; // Earth is special handled sometimes but let's map loosely
+        const dstMesh = pMesh[bp[j]] || earthMesh;
+        if (!srcMesh || !dstMesh) continue;
+        
+        let srcPos = bp[i]==='earth' ? new THREE.Vector3(0,0,0) : srcMesh.position;
+        let dstPos = bp[j]==='earth' ? new THREE.Vector3(0,0,0) : dstMesh.position;
 
-    const src = srcMesh.position, dst = dstMesh.position;
-    const mid = new THREE.Vector3().addVectors(src, dst).multiplyScalar(0.5);
-    mid.x += (Math.random()-0.5)*8; mid.y += (Math.random()-0.5)*8; mid.z += (Math.random()-0.5)*5;
-    const curve = new THREE.CatmullRomCurve3([src.clone(), mid.clone(), dst.clone()]);
-
-    const maxPts = 60;
-    const allPts = curve.getPoints(maxPts);
-    const positions = new Float32Array(maxPts * 3);
-
-    const geo = new THREE.BufferGeometry();
-    const pa = new THREE.BufferAttribute(positions, 3);
-    pa.setUsage(THREE.DynamicDrawUsage);
-    for(let i=0;i<maxPts;i++){pa.setXYZ(i,src.x,src.y,src.z);}
-    geo.setAttribute('position', pa);
-    geo.setDrawRange(0,2);
-    const mat = new THREE.LineBasicMaterial({ color:col, transparent:true, opacity:0, linewidth:2 });
-    const line = new THREE.Line(geo, mat);
-    veinG.add(line);
-    veinLines.push({ line, pa, allPts, progress:0, srcId, dstId, color:col, maxPts });
-  });
+        const strands = 3 + Math.floor(Math.random() * 4); // 3-6 根纖維管
+        const col = colors[Math.floor(Math.random() * colors.length)];
+        
+        for(let s=0; s<strands; s++) {
+          const mid = new THREE.Vector3().addVectors(srcPos, dstPos).multiplyScalar(0.5);
+          mid.x += (Math.random()-0.5)*20;
+          mid.y += (Math.random()-0.5)*20;
+          mid.z += (Math.random()-0.5)*20;
+          
+          const curve = new THREE.CatmullRomCurve3([srcPos.clone(), mid.clone(), dstPos.clone()]);
+          const maxPts = 50;
+          const allPts = curve.getPoints(maxPts);
+          const positions = new Float32Array(maxPts * 3);
+          const pa = new THREE.BufferAttribute(positions, 3);
+          pa.setUsage(THREE.DynamicDrawUsage);
+          for(let k=0; k<maxPts; k++){pa.setXYZ(k,srcPos.x,srcPos.y,srcPos.z);}
+          
+          const geo = new THREE.BufferGeometry();
+          geo.setAttribute('position', pa);
+          geo.setDrawRange(0,2);
+          const mat = new THREE.LineBasicMaterial({ color:col, transparent:true, opacity:0, blending:THREE.AdditiveBlending });
+          const line = new THREE.Line(geo, mat);
+          veinG.add(line);
+          veinLines.push({ line, pa, allPts, maxPts });
+        }
+      }
+    }
+  }
 }
 
 function updateVeins(progress) {
@@ -1025,28 +1037,30 @@ function updateVeins(progress) {
     const drawCount = Math.max(2, Math.floor(localP * v.maxPts));
     for (let i=0; i<drawCount; i++) {
       const pt = v.allPts[Math.min(i, v.allPts.length-1)];
-      const jitter = (1-localP)*0.3;
+      const jitter = (1-localP)*0.4 + 0.1; // 持續輕微抖動
       v.pa.setXYZ(i, pt.x+(Math.random()-.5)*jitter, pt.y+(Math.random()-.5)*jitter, pt.z+(Math.random()-.5)*jitter);
     }
     v.pa.needsUpdate = true;
     v.line.geometry.setDrawRange(0, drawCount);
-    v.line.material.opacity = 0.5 + 0.5*localP; 
+    v.line.material.opacity = 0.4 + 0.6*localP; 
   });
 }
 
 let jupEyeMeshes = [];
+let eyeMistG = null;
+
 function buildJupiterEye(jupPos) {
     clearGroup(jupEyeG);
     jupEyeMeshes = [];
 
     const eyeScale = 4.5; 
 
-    // 1. 肉块底座
+    // 1. 肉塊底座
     const meatMat = new THREE.MeshStandardMaterial({ 
         color: 0x8b0000, 
         roughness: 0.3, 
         metalness: 0.1, 
-        emissive: 0x330000 
+        emissive: 0x440000 
     });
     const meat = new THREE.Mesh(new THREE.SphereGeometry(1.8 * eyeScale, 64, 64), meatMat);
     meat.position.copy(jupPos);
@@ -1086,7 +1100,7 @@ function buildJupiterEye(jupPos) {
 
     // 3. 上下眼皮 (大幅度撕開)
     const topLid = new THREE.Mesh(
-        new THREE.SphereGeometry(1.82 * eyeScale, 64, 64, 0, Math.PI*2, 0, Math.PI/2 - 0.6), 
+        new THREE.SphereGeometry(1.82 * eyeScale, 64, 64, 0, Math.PI*2, 0, Math.PI/2 - 0.7), 
         meatMat
     );
     topLid.position.copy(jupPos);
@@ -1094,7 +1108,7 @@ function buildJupiterEye(jupPos) {
     jupEyeMeshes.push(topLid);
 
     const bottomLid = new THREE.Mesh(
-        new THREE.SphereGeometry(1.82 * eyeScale, 64, 64, 0, Math.PI*2, Math.PI/2 + 0.6, Math.PI/2), 
+        new THREE.SphereGeometry(1.82 * eyeScale, 64, 64, 0, Math.PI*2, Math.PI/2 + 0.7, Math.PI/2), 
         meatMat
     );
     bottomLid.position.copy(jupPos);
@@ -1133,34 +1147,65 @@ function buildJupiterEye(jupPos) {
     const irisTex = new THREE.CanvasTexture(c); 
     irisTex.colorSpace = THREE.SRGBColorSpace;
 
-    const irisMat = new THREE.MeshStandardMaterial({ 
-        map: irisTex, roughness: 0.1, emissive: 0x220000 
-    });
+    const irisMat = new THREE.MeshBasicMaterial({ map: irisTex });
     
-    const iris = new THREE.Mesh(new THREE.SphereGeometry(0.8 * eyeScale, 32, 16, 0, Math.PI*2, 0, Math.PI/2), irisMat);
-    iris.scale.set(1, 1, 0.2); 
-    iris.rotation.x = Math.PI / 2; 
-    iris.position.z = 1.62 * eyeScale; 
+    // 平面貼合在眼球正前方
+    const iris = new THREE.Mesh(new THREE.CircleGeometry(0.8 * eyeScale, 48), irisMat);
+    iris.position.z = 1.75 * eyeScale + 0.05; 
     irisGroup.add(iris);
 
     // 豎直裂隙瞳孔
     const pupilMat = new THREE.MeshBasicMaterial({ color: 0x000000 });
-    const pupil = new THREE.Mesh(new THREE.SphereGeometry(0.4 * eyeScale, 32, 16, 0, Math.PI*2, 0, Math.PI/2), pupilMat);
-    pupil.scale.set(0.18, 1.3, 0.1); // 山羊/惡魔的豎瞳
-    pupil.rotation.x = Math.PI / 2;
-    pupil.position.z = 1.68 * eyeScale + 0.05;
+    const pupil = new THREE.Mesh(new THREE.CircleGeometry(0.4 * eyeScale, 32), pupilMat);
+    pupil.scale.set(0.18, 1.4, 1); 
+    pupil.position.z = 1.75 * eyeScale + 0.08;
     irisGroup.add(pupil);
-    jupEyeMeshes.push(pupil); // push inside to access for scaling animation
+    jupEyeMeshes.push(pupil); 
 
     const hlMat = new THREE.MeshBasicMaterial({ color: 0xFFFFFF, transparent: true, opacity: 0.7 });
     const hl = new THREE.Mesh(new THREE.CircleGeometry(0.12 * eyeScale, 16), hlMat);
-    hl.position.set(0.3 * eyeScale, 0.3 * eyeScale, 1.7 * eyeScale + 0.1);
-    hl.lookAt(new THREE.Vector3(0.3 * eyeScale, 0.3 * eyeScale, 10)); 
+    hl.position.set(0.3 * eyeScale, 0.3 * eyeScale, 1.75 * eyeScale + 0.1);
     irisGroup.add(hl);
 
     irisGroup.position.copy(jupPos);
     jupEyeG.add(irisGroup);
     jupEyeMeshes.push(irisGroup); 
+
+    // 5. 加入血霧特效 (Blood Mist)
+    eyeMistG = new THREE.Group();
+    const mistCanvas = document.createElement('canvas');
+    mistCanvas.width = 128; mistCanvas.height = 128;
+    const mCtx = mistCanvas.getContext('2d');
+    const mGrad = mCtx.createRadialGradient(64,64,0,64,64,64);
+    mGrad.addColorStop(0, 'rgba(255, 0, 0, 0.8)');
+    mGrad.addColorStop(0.4, 'rgba(150, 0, 0, 0.4)');
+    mGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+    mCtx.fillStyle = mGrad; mCtx.fillRect(0,0,128,128);
+    const mistTex = new THREE.CanvasTexture(mistCanvas);
+    mistTex.colorSpace = THREE.SRGBColorSpace;
+    
+    const mistGeo = new THREE.BufferGeometry();
+    const mistPts = [];
+    for(let i=0; i<80; i++){
+        mistPts.push(
+          (Math.random()-0.5)*eyeScale*4.5, 
+          (Math.random()-0.5)*eyeScale*4.5, 
+          (Math.random()-0.5)*eyeScale*2 + eyeScale*0.5
+        );
+    }
+    mistGeo.setAttribute('position', new THREE.Float32BufferAttribute(mistPts, 3));
+    const mistMat = new THREE.PointsMaterial({
+        size: 4.5 * eyeScale,
+        map: mistTex,
+        transparent: true,
+        opacity: 0.7,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending
+    });
+    const bloodMist = new THREE.Points(mistGeo, mistMat);
+    eyeMistG.add(bloodMist);
+    eyeMistG.position.copy(jupPos);
+    jupEyeG.add(eyeMistG);
 }
 
 // ─── Flash effect ───
@@ -1395,7 +1440,7 @@ function updateHorror(dt, t) {
         const pos = line.geometry.attributes.position;
         const orig = line.userData.origPos;
         if (!pos || !orig) return;
-        const amp = HORROR.earthPulseAmp * 0.6; 
+        const amp = HORROR.earthPulseAmp * 0.8; 
         for (let i=0; i<pos.count; i++) {
             const waveX = (Math.random()-0.5) * amp;
             const waveY = (Math.random()-0.5) * amp;
@@ -1421,7 +1466,6 @@ function updateHorror(dt, t) {
             if (mesh.material && mesh.material.emissive) {
                 mesh.material.emissive.lerp(new THREE.Color(0x550000), 0.015);
             }
-            // 處理光環變異
             mesh.children.forEach(c => {
                 if (c.material && c.material.color && c.type !== 'PointLight') {
                     c.material.color.lerp(new THREE.Color(0x330000), 0.02);
@@ -1461,6 +1505,7 @@ function updateHorror(dt, t) {
   if (phase >= 6 && jupEyeG.visible) {
     jupEyeMeshes.forEach((m, idx) => {
       if (m.isLine) return;
+      
       const target = camera.position.clone();
       target.x += Math.sin(t * 12) * 3;
       target.y += Math.cos(t * 15) * 3;
@@ -1474,12 +1519,16 @@ function updateHorror(dt, t) {
               1.02 + 0.05 * Math.sin(t * 9)
           );
       }
-      // 瞳孔縮放
+      // 瞳孔縮放 (竖瞳心跳收缩)
       if (idx === 5) { 
           const dilate = 0.18 + 0.05 * Math.sin(t * 5);
-          m.scale.set(dilate, 1.3, 0.1); 
+          m.scale.set(dilate, 1.4, 1); 
       }
     });
+
+    if (eyeMistG) {
+        eyeMistG.rotation.z += dt * 0.5; // 血雾缓缓旋转
+    }
 
     const eyePulse = 1 + 0.12 * heartBeat;
     jupEyeG.scale.setScalar(eyePulse);
@@ -1711,9 +1760,9 @@ function animate() {
 
   PCONF.forEach(pc => {
     // 恐怖模式下所有星體瘋狂自轉
-    if(pMesh[pc.id]) pMesh[pc.id].rotateY(dt * (HORROR.active ? 0.8 : 0.12));
+    if(pMesh[pc.id]) pMesh[pc.id].rotateY(dt * (HORROR.active ? (2.0 + Math.random()*0.5) : 0.12));
   });
-  if(earthMesh) earthMesh.rotateY(dt * (HORROR.active ? 1.2 : 0.18));
+  if(earthMesh) earthMesh.rotateY(dt * (HORROR.active ? 2.5 : 0.18));
 
   if (HORROR.active) updateHorror(dt, t);
 
