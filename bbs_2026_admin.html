@@ -127,12 +127,49 @@
         #final-terminal {
             display: none; position: fixed; inset: 0; z-index: 999999;
             background: linear-gradient(to bottom, #181818 15%, #ed1c24 15%);
-            flex-direction: column; justify-content: center; align-items: center;
+            overflow: hidden;
         }
+
+        /* 核心：带数码损坏和色彩叠加的巨眼背景 */
+        #final-bg-image {
+            position: absolute; inset: 0;
+            background-image: url('flesh_eye.jpg'); /* !!! 确保这里的图片名称与你保存的一致 !!! */
+            background-size: cover; background-position: center;
+            opacity: 0.45;
+            mix-blend-mode: color-dodge; /* 与背景的红黑深度融合 */
+            filter: blur(4px) contrast(150%) saturate(120%) grayscale(20%);
+            animation: digital-rot 4s infinite;
+            z-index: 1;
+        }
+        /* CRT 扫描线覆盖 */
+        #final-bg-image::before {
+            content: ""; position: absolute; inset: 0;
+            background: repeating-linear-gradient(0deg, rgba(0,0,0,0.3), rgba(0,0,0,0.3) 2px, transparent 2px, transparent 4px);
+            pointer-events: none; z-index: 2;
+        }
+
+        /* 数码撕裂与失焦动画 */
+        @keyframes digital-rot {
+            0%, 100% { filter: blur(4px) contrast(150%) saturate(120%) grayscale(20%) hue-rotate(0deg); transform: scale(1.05); }
+            10% { filter: blur(1px) contrast(300%) grayscale(0%) hue-rotate(-20deg) invert(10%); transform: scale(1.08) translate(-10px, 5px); opacity: 0.8; }
+            12% { filter: blur(8px) contrast(100%); transform: scale(1.02) translate(5px, -5px); opacity: 0.3; }
+            45% { filter: blur(3px) contrast(180%); transform: scale(1.05); opacity: 0.5; }
+            48% { clip-path: polygon(0 20%, 100% 20%, 100% 30%, 0 30%); transform: translateX(20px); opacity: 0.9; }
+            50% { clip-path: none; filter: blur(6px) contrast(200%) sepia(60%); transform: scale(1.1); opacity: 0.4; }
+            75% { filter: blur(2px) contrast(120%); transform: scale(1.04); opacity: 0.6; }
+            77% { clip-path: polygon(0 70%, 100% 70%, 100% 80%, 0 80%); transform: translateX(-20px); opacity: 0.9; filter: hue-rotate(90deg); }
+            80% { clip-path: none; }
+        }
+
+        .final-content-wrapper {
+            position: relative; z-index: 10; width: 100%; height: 100%;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+        }
+
         .final-close-btn {
             position: absolute; top: 20px; right: 30px; font-size: 40px; 
             color: #555; background: none; border: none; cursor: pointer;
-            transition: color 0.3s;
+            transition: color 0.3s; z-index: 20;
         }
         .final-close-btn:hover { color: #fff; }
         
@@ -247,7 +284,6 @@
                         <td>半人马座 Alpha 星区遗迹</td>
                         <td style="color:#888;">延期 (DELAYED)</td>
                     </tr>
-                    
                     <tr style="background:#1a0505; border: 2px solid #F00; border-bottom: 1px dashed #600;">
                         <td class="red bold" style="color:#f88;">2007-06-11 11:00:00</td>
                         <td class="red bold" style="color:#f88;">[深渊共振信号]</td>
@@ -320,9 +356,12 @@
 </div>
 
 <div id="final-terminal">
-    <button class="final-close-btn" onclick="closeFinalTerminal()">×</button>
-    <h1 class="final-title">歡迎加入永恆的星空血肉網絡。</h1>
-    <p class="final-subtitle">[ UPLINK SECURED. ]</p>
+    <div id="final-bg-image"></div>
+    <div class="final-content-wrapper">
+        <button class="final-close-btn" onclick="closeFinalTerminal()">×</button>
+        <h1 class="final-title">歡迎加入永恆的星空血肉網絡。</h1>
+        <p class="final-subtitle">[ UPLINK SECURED. ]</p>
+    </div>
 </div>
 
 <script type="text/javascript">
@@ -351,16 +390,13 @@
             e.preventDefault();
             if(this.classList.contains('disabled')) return;
             
-            // 切换菜单高亮
             document.querySelectorAll('.menu-list a').forEach(l => l.classList.remove('active'));
             this.classList.add('active');
             
-            // 切换内容面板
             document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
             const targetId = this.getAttribute('data-tab');
             document.getElementById(targetId).classList.add('active');
             
-            // 切换时附带一丝恐怖音效
             if(corruptionLevel > 0) playSquishSound(0.2);
         });
     });
@@ -369,7 +405,7 @@
     // 逻辑 2：获取玩家真实信息以制造恐怖感
     // ==========================================
     let userIP = "127.0.0.1";
-    let userLoc = "浙江省, 杭州市"; // 默认包含杭州
+    let userLoc = "浙江省, 杭州市";
     let userLatLon = "30.2741, 120.1551";
 
     fetch('https://ipapi.co/json/')
@@ -398,7 +434,6 @@
         if (audioCtx.state === 'suspended') audioCtx.resume();
     }
 
-    // 血肉挤压音效
     function playSquishSound(volume = 1.5) {
         initAudio();
         const bufferSize = audioCtx.sampleRate * 0.4;
@@ -419,10 +454,10 @@
         noiseSource.start();
     }
 
-    // 结局狂暴心跳音效
     function startDeathHeartbeat() {
         initAudio();
         if (heartbeatInterval) clearInterval(heartbeatInterval);
+        // 提高心跳频率和强度
         heartbeatInterval = setInterval(() => {
             const osc = audioCtx.createOscillator();
             const gain = audioCtx.createGain();
@@ -435,8 +470,9 @@
             gain.gain.setValueAtTime(3.0, audioCtx.currentTime);
             gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
             osc.start(); osc.stop(audioCtx.currentTime + 0.5);
-            playSquishSound(1.0); // 伴随撕裂声
-        }, 600);
+            // 每次心跳伴随撕裂噪音
+            playSquishSound(1.2); 
+        }, 500); 
     }
 
     function triggerFlash() {
@@ -510,18 +546,16 @@
         document.getElementById('api-swarm-container').style.display = 'block';
         const swarmArea = document.getElementById('swarm-area');
         
-        const nodeCount = 55; // 大量节点填满屏幕
+        const nodeCount = 55;
         let nodesArray = [];
         
         const cityPool = [
             "浙江省, 杭州市", 
             "四川省, 成都市 (深地节点)", 
-            userLoc // 真实IP位置
+            userLoc
         ];
 
-        // 1. 生成现代请求 (补全了 YYYY-MM-DD 年份)
         for(let i = 0; i < nodeCount; i++) {
-            // 随机时间减去 0~10 小时
             const reqDate = new Date(Date.now() - Math.random() * 36000000);
             const reqTimeFull = reqDate.getFullYear() + "-" + 
                                 String(reqDate.getMonth()+1).padStart(2,'0') + "-" + 
@@ -546,7 +580,6 @@
             `);
         }
 
-        // 2. 生成 2007 的致命未济节点 (外观结构代码完全一致，但坐标指向杭州锚点)
         const fatalNodeHtml = `
             <div class="node-header">[+] 四维总览请求 (ID:00042)</div>
             <div class="node-body">
@@ -560,25 +593,20 @@
             </div>
         `;
         
-        // 随机挑一个位置插入致命节点
         const fatalIndex = Math.floor(Math.random() * (nodeCount / 2)) + Math.floor(nodeCount / 4); 
         nodesArray.splice(fatalIndex, 0, fatalNodeHtml);
 
-        // 渲染所有节点
         nodesArray.forEach((htmlContent) => {
             const node = document.createElement('div');
             node.className = 'api-node';
-            
             node.style.left = `${Math.random() * 75}%`;
             node.style.top = `${Math.random() * 80}%`;
             node.style.zIndex = Math.floor(Math.random() * 50);
-            
             node.innerHTML = htmlContent;
             swarmArea.appendChild(node);
         });
     }
 
-    // 交互：吸收节点
     window.absorbNode = function(btn, e) {
         e.stopPropagation();
         triggerFlash();       
@@ -633,13 +661,12 @@
                 // 弹出最终文字
                 const finalTerm = document.getElementById('final-terminal');
                 finalTerm.style.display = 'flex';
-                startDeathHeartbeat(); // 开启狂暴心跳音效
+                startDeathHeartbeat(); 
                 try { document.documentElement.requestFullscreen(); } catch(err){}
             }
         }, 150);
     }
 
-    // 关闭最终全屏 (返回主页)
     window.closeFinalTerminal = function() {
         if(heartbeatInterval) clearInterval(heartbeatInterval);
         window.location.href = 'bbs_2026_home.html';
