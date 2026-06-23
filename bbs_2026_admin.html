@@ -470,14 +470,14 @@
         const now = new Date();
         document.querySelectorAll('.probe-time').forEach(el => {
             const offset = parseInt(el.getAttribute('data-offset')) || 0;
-            const logTime = new Date(now.getTime() + offset * 1000); // 基于当前时间推算
+            const logTime = new Date(now.getTime() + offset * 1000); 
             const tStr = String(logTime.getHours()).padStart(2, '0') + ":" + 
                          String(logTime.getMinutes()).padStart(2, '0') + ":" + 
                          String(logTime.getSeconds()).padStart(2, '0');
             el.innerText = tStr;
         });
     }
-    updateProbeTimes(); // 页面加载即执行一次
+    updateProbeTimes(); 
 
     document.querySelectorAll('.menu-list a[data-tab]').forEach(link => {
         link.addEventListener('click', function(e) {
@@ -551,7 +551,6 @@
     function startDeathHeartbeat() {
         initAudio();
         if (heartbeatInterval) clearInterval(heartbeatInterval);
-        // 提高心跳频率和强度
         heartbeatInterval = setInterval(() => {
             const osc = audioCtx.createOscillator();
             const gain = audioCtx.createGain();
@@ -564,7 +563,6 @@
             gain.gain.setValueAtTime(3.0, audioCtx.currentTime);
             gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
             osc.start(); osc.stop(audioCtx.currentTime + 0.5);
-            // 每次心跳伴随撕裂噪音
             playSquishSound(1.2); 
         }, 500); 
     }
@@ -631,7 +629,7 @@
     }
 
     // ==========================================
-    // 逻辑 5：密密麻麻的四维 API 请求群
+    // 逻辑 5：密密麻麻的四维 API 请求群与【关键双节点】
     // ==========================================
     let corruptionLevel = 0;
 
@@ -639,15 +637,19 @@
         initAudio(); 
         const swarmArea = document.getElementById('swarm-area');
         
-        const nodeCount = 55; 
+        // 稍微减少普通节点的数量，确保关键节点更醒目
+        const nodeCount = 35; 
         let nodesArray = [];
         
         const cityPool = [
-            "CHN_ZHEJIANG_HANGZHOU (浙江省杭州市)", 
-            "CHN_SICHUAN_CHENGDU (四川省成都市深地)", 
+            "CHN_BEIJING_CAPITAL (北京市)", 
+            "CHN_SHANGHAI_NODE (上海市)", 
+            "USA_NEW_YORK (纽约)",
+            "GBR_LONDON (伦敦)",
             userLoc
         ];
 
+        // 生成普通干扰节点
         for(let i = 0; i < nodeCount; i++) {
             const reqDate = new Date(Date.now() - Math.random() * 36000000);
             const reqTimeFull = reqDate.getFullYear() + "-" + 
@@ -658,47 +660,97 @@
                                 String(reqDate.getSeconds()).padStart(2,'0');
 
             const randomCity = cityPool[Math.floor(Math.random() * cityPool.length)];
+            const fakeIP = `${Math.floor(Math.random()*255)}.${Math.floor(Math.random()*255)}.${Math.floor(Math.random()*255)}.x`;
             
-            nodesArray.push(`
+            nodesArray.push({
+                html: `
                 <div class="node-header">[+] 四维总览请求 (ID:${Math.floor(Math.random()*90000)+10000})</div>
                 <div class="node-body">
                     时间: ${reqTimeFull}<br>
-                    来源 IP: <span class="bold">${userIP}</span><br>
+                    来源 IP: <span class="bold">${fakeIP}</span><br>
                     节点坐标: ${randomCity}<br>
                     类型: 空间全息扫描与意识同步
                 </div>
                 <div class="node-action">
                     <button class="btn-approve" onclick="absorbNode(this, event)">批准请求</button>
                 </div>
-            `);
+                `,
+                isKey: false
+            });
         }
 
-        // 2007年致命杭州锚点节点
-        const fatalNodeHtml = `
-            <div class="node-header">[+] 四维总览请求 (ID:00042)</div>
+        // ==========================================
+        // 关键节点 1：2007年6月11日 浙江杭州 (过去的降临)
+        // ==========================================
+        const fatalNodeHtml2007 = {
+            html: `
+            <div class="node-header" style="color:#d32f2f; border-bottom: 1px dashed #d32f2f;">[!] 核心协议请求 (ID:00042)</div>
             <div class="node-body">
-                时间: 2007-06-11 11:00:00<br>
+                时间: <span class="bold red">2007-06-11 11:00:00</span><br>
                 来源 IP: <span class="bold">192.168.0.12</span><br>
-                节点坐标: CHN_ZHEJIANG_HANGZHOU (南江大學廢棄機房)<br>
-                类型: 空间全息扫描与意识同步
+                节点坐标: <span class="bold" style="color:#d32f2f;">CHN_ZHEJIANG_HANGZHOU (浙江杭州)</span><br>
+                类型: 物理层降临与意识融合
             </div>
             <div class="node-action">
-                <button class="btn-approve" onclick="triggerAssimilation(this, event)">批准请求</button>
+                <button class="btn-approve" style="background:#800; border-color:#f00;" onclick="triggerAssimilation(this, event)">立即接入</button>
             </div>
-        `;
+            `,
+            isKey: true
+        };
         
-        const fatalIndex = Math.floor(Math.random() * (nodeCount / 2)) + Math.floor(nodeCount / 4); 
-        nodesArray.splice(fatalIndex, 0, fatalNodeHtml);
+        // ==========================================
+        // 关键节点 2：2026年6月 四川成都 (现在的苏醒，读取实时分秒)
+        // ==========================================
+        const now = new Date();
+        const dd = String(now.getDate()).padStart(2,'0');
+        const hh = String(now.getHours()).padStart(2,'0');
+        const mm = String(now.getMinutes()).padStart(2,'0');
+        const ss = String(now.getSeconds()).padStart(2,'0');
+        const sysTime2026 = `2026-06-${dd} ${hh}:${mm}:${ss}`;
 
-        nodesArray.forEach((htmlContent) => {
+        const fatalNodeHtml2026 = {
+            html: `
+            <div class="node-header" style="color:#d32f2f; border-bottom: 1px dashed #d32f2f;">[!] 核心协议请求 (ID:00404)</div>
+            <div class="node-body">
+                时间: <span class="bold red">${sysTime2026}</span><br>
+                来源 IP: <span class="bold pulse-text">RESONANCE_STREAM</span><br>
+                节点坐标: <span class="bold" style="color:#d32f2f;">CHN_SICHUAN_CHENGDU (四川成都)</span><br>
+                类型: 维度撕裂与血肉苏醒
+            </div>
+            <div class="node-action">
+                <button class="btn-approve" style="background:#800; border-color:#f00;" onclick="triggerAssimilation(this, event)">立即接入</button>
+            </div>
+            `,
+            isKey: true
+        };
+
+        // 将双主线节点加入数组
+        nodesArray.push(fatalNodeHtml2007);
+        nodesArray.push(fatalNodeHtml2026);
+
+        // 随机打乱数组顺序
+        nodesArray.sort(() => Math.random() - 0.5);
+
+        // 渲染到页面
+        nodesArray.forEach((item) => {
             const node = document.createElement('div');
             node.className = 'api-node';
             
-            node.style.left = `${Math.random() * 75}%`;
-            node.style.top = `${Math.random() * 80}%`;
-            node.style.zIndex = Math.floor(Math.random() * 50);
+            if (item.isKey) {
+                // 确保关键节点出现在更容易点击的中心区域，且层级最高
+                node.style.left = `${15 + Math.random() * 50}%`;
+                node.style.top = `${20 + Math.random() * 40}%`;
+                node.style.zIndex = 9999;
+                node.style.borderColor = "#FF0000";
+                node.style.backgroundColor = "#FFF5F5";
+                node.style.boxShadow = "0 0 15px rgba(255,0,0,0.6)";
+            } else {
+                node.style.left = `${Math.random() * 75}%`;
+                node.style.top = `${Math.random() * 80}%`;
+                node.style.zIndex = Math.floor(Math.random() * 50);
+            }
             
-            node.innerHTML = htmlContent;
+            node.innerHTML = item.html;
             swarmArea.appendChild(node);
         });
     }
@@ -762,22 +814,18 @@
         }, 150);
     }
 
-    // 修改：X按钮只返回Admin面板，不再直接跳回主站
+    // 修改：X按钮只返回Admin面板
     window.closeFinalTerminal = function() {
         if(heartbeatInterval) clearInterval(heartbeatInterval);
         
-        // 隐藏血肉终端
         document.getElementById('final-terminal').style.display = 'none';
         
-        // 退出全屏（如果之前触发进入的话）
         try { if(document.fullscreenElement) document.exitFullscreen(); } catch(err){}
         
-        // 恢复被隐藏的管理员面板结构
         const wrap = document.getElementById('wrap');
         wrap.style.display = 'block';
         setTimeout(() => { wrap.style.opacity = '1'; }, 50);
         
-        // 让页面body背景保持恐怖的深色调，因为同化已经发生了
         document.body.style.backgroundColor = '#1a0505';
     }
 
