@@ -1,0 +1,150 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="zh-CN">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>[求助] 文科生落泪，十进制和二进制换算至今傻傻分不清 - 星火BBS</title>
+    <style type="text/css">
+        body { background-color: #E2E8F1; color: #333333; font-family: "SimSun", "宋体", Arial, sans-serif; font-size: 14px; margin: 0; padding: 10px 0; }
+        a { color: #004499; text-decoration: none; }
+        a:hover { text-decoration: underline; color: #FF6600; }
+        .bold { font-weight: bold; }
+        .gray { color: #888888; font-size: 12px; }
+        
+        #main-wrap { width: 96%; min-width: 980px; margin: 0 auto; background-color: #FFFFFF; border: 1px solid #A6CBE7; padding: 18px; }
+        .header-table { width: 100%; border-bottom: 3px solid #336699; margin-bottom: 12px; }
+        .logo-area { font-family: "Microsoft YaHei", "黑体", sans-serif; font-size: 32px; font-weight: bold; color: #336699; letter-spacing: 2px; padding-bottom: 10px; }
+        
+        .nav-crumbs { background: #F5F9FD; border: 1px solid #A6CBE7; padding: 8px 14px; margin-bottom: 15px; font-weight: bold; font-size: 14px; }
+        .thread-header { font-size: 18px; font-weight: bold; color: #333; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px dashed #CCC; }
+        
+        .post-table { width: 100%; border-collapse: collapse; margin-bottom: 15px; border: 1px solid #A6CBE7; background: #FFF; }
+        .post-user { width: 180px; background: #F0F5FA; vertical-align: top; padding: 15px; border-right: 1px solid #A6CBE7; text-align: center; }
+        .post-content { padding: 15px; vertical-align: top; }
+        .post-top { border-bottom: 1px dashed #E2E8F1; padding-bottom: 8px; margin-bottom: 12px; color: #666; font-size: 12px; display: flex; justify-content: space-between; }
+        
+        .avatar { width: 100px; height: 100px; background: #DDD; border: 1px solid #CCC; margin: 10px auto; line-height: 100px; color: #888; }
+        .quote { background: #F9FBFE; border: 1px solid #C3D9EC; padding: 10px; margin: 15px 0; color: #555; font-size: 13px; }
+        .footer { text-align: center; margin-top: 30px; padding-top: 15px; border-top: 1px solid #A6CBE7; color: #666; font-size: 12px; }
+    </style>
+</head>
+<body>
+
+<div id="main-wrap">
+    <table class="header-table" cellpadding="0" cellspacing="0">
+        <tr>
+            <td class="logo-area">南江大学星火BBS</td>
+        </tr>
+    </table>
+
+    <div class="nav-crumbs">
+        <a href="index.html">星火BBS首页</a> &raquo; <a href="#">区域 B: 技术流与前沿探索</a> &raquo; [求助] 文科生落泪，十进制和二进制换算至今傻傻分不清
+    </div>
+
+    <div class="thread-header">
+        <span style="color: #FF6600;">[求助]</span> 文科生落泪，十进制和二进制换算至今傻傻分不清，求大神指点orz
+    </div>
+
+    <table class="post-table" cellpadding="0" cellspacing="0">
+        <tr>
+            <td class="post-user">
+                <div class="bold" style="color: #FF0066;">文学院小透明</div>
+                <div class="avatar">无头像</div>
+                <div class="gray">等级: 新手上路<br>发帖: 12<br>金币: 50</div>
+            </td>
+            <td class="post-content">
+                <div class="post-top">
+                    <span>发表于 2007-06-11 10:15</span>
+                    <span class="bold">楼主</span>
+                </div>
+                各位计科院的大虾好~ 小女是一枚文学院大一（快大二啦）的菜鸟。<br><br>
+                最近突然对计算机原理很感兴趣，从图书馆借了本计算机基础的书在啃。但是刚看到第一章，二进制和十进制互相转换的地方，脑子直接宕机了！什么除2取余法从下往上写，什么位权展开，书上写得太干瘪了，完全看不懂啊 T_T<br><br>
+                比如十进制的 13 怎么变成二进制？二进制的 1011 又是怎么变回来的？<br><br>
+                求用通俗易懂的“人话”解释，不要书上那种冷冰冰的公式，救救孩子吧！解答得好的同学，小女子请客南门大盘鸡！orz
+            </td>
+        </tr>
+    </table>
+
+    <table class="post-table" cellpadding="0" cellspacing="0">
+        <tr>
+            <td class="post-user">
+                <div class="bold blue">06级_码农预备役</div>
+                <div class="avatar">无头像</div>
+                <div class="gray">等级: 论坛游侠<br>发帖: 304</div>
+            </td>
+            <td class="post-content">
+                <div class="post-top">
+                    <span>发表于 2007-06-11 10:18</span>
+                    <span class="bold">沙发</span>
+                </div>
+                抢沙发！<br><br>
+                妹子别慌，其实就是除法啊。13除以2等于6余1，6除以2等于3余0，3除以2等于1余1，1除以2等于0余1。然后把余数倒过来写，就是1101。多练练就会了！
+            </td>
+        </tr>
+    </table>
+
+    <table class="post-table" cellpadding="0" cellspacing="0">
+        <tr>
+            <td class="post-user">
+                <div class="bold" style="color: #008000;">计科系草</div>
+                <div class="avatar">无头像</div>
+                <div class="gray">等级: 核心版主<br>发帖: 1542</div>
+            </td>
+            <td class="post-content">
+                <div class="post-top">
+                    <span>发表于 2007-06-11 10:35</span>
+                    <span class="bold">板凳</span>
+                </div>
+                <div class="quote">
+                    <b>引用 06级_码农预备役 在 2007-06-11 10:18 发表的帖子:</b><br>
+                    妹子别慌，其实就是除法啊。13除以2等于6余1...倒过来写...
+                </div>
+                楼上这种应试教育的解释对文科妹子太不友好了！<br><br>
+                妹子，我给你个绝对通俗的“魔法盒子法”：<br>
+                你把二进制想象成一排有魔法的盒子，从右到左排好。盒子里能装的苹果数量是固定的，分别是 <b>1, 2, 4, 8, 16, 32...</b>（每次翻倍）。<br><br>
+                <b>【二进制 变 十进制】</b><br>
+                比如你的二进制 <b>1011</b>。<br>
+                数字 1 代表这个盒子里有苹果，数字 0 代表盒子里是空的。<br>
+                我们从右往左对着看 1 0 1 1：<br>
+                第1个盒子（容量1）是 1，所以有 1 个苹果。<br>
+                第2个盒子（容量2）是 1，所以有 2 个苹果。<br>
+                第3个盒子（容量4）是 0，空盒子，0 个苹果。<br>
+                第4个盒子（容量8）是 1，所以有 8 个苹果。<br>
+                把苹果加起来：8 + 0 + 2 + 1 = <b>11</b>。搞定！<br><br>
+                <b>【十进制 变 二进制】（凑数法）</b><br>
+                比如你要算 <b>13</b>。你就从能装得下的大盒子开始挑，做减法。<br>
+                13 里面能塞进 8 吗？能！记作 <b>1</b>。剩下 13-8 = 5个苹果。<br>
+                剩下的 5 能塞进 4 吗？能！记作 <b>1</b>。剩下 5-4 = 1个苹果。<br>
+                剩下的 1 能塞进 2 吗？不能！记作 <b>0</b>。<br>
+                剩下的 1 能塞进 1 吗？能！记作 <b>1</b>。苹果分完了。<br>
+                连起来就是 <b>1101</b>！<br><br>
+                是不是比除以2简单多了？大盘鸡我就不要了，留着钱买好点的防晒霜吧，最近军训快开始了~
+            </td>
+        </tr>
+    </table>
+
+    <table class="post-table" cellpadding="0" cellspacing="0">
+        <tr>
+            <td class="post-user">
+                <div class="bold" style="color: #FF0066;">文学院小透明</div>
+                <div class="avatar">无头像</div>
+                <div class="gray">等级: 新手上路<br>发帖: 13</div>
+            </td>
+            <td class="post-content">
+                <div class="post-top">
+                    <span>发表于 2007-06-11 10:45</span>
+                    <span class="bold">地板</span>
+                </div>
+                哇！！！二楼大神太牛了！神人啊！！！<br><br>
+                那个魔法盒子的比喻我一下就看懂了！！！原来位权就是盒子的容量啊，自己凑减法真的比那个倒着写余数直观一万倍！<br>
+                疯狂膜拜，我懂了我懂了，大恩不言谢，下次在二食堂遇到一定要请你喝冰红茶！^_^
+            </td>
+        </tr>
+    </table>
+
+    <div class="footer">
+        Powered by Discuz! 5.5.0 Premium &copy; 2001-2007 Comsenz Inc.
+    </div>
+</div>
+
+</body>
+</html>
