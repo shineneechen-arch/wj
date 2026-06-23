@@ -985,13 +985,15 @@ function buildVeins() {
   clearGroup(veinG);
   veinLines.length = 0;
   const bp = ['sun','moon','mercury','venus','earth','mars','jupiter','saturn','uranus','neptune','pluto'];
-  const colors = [0xff0000, 0xaa0000, 0x550000, 0xff3300, 0x880000];
+  const colors = [
+    0xff0000, 0x8b0000, 0x4a0000, 0xb22222, 0xdc143c, 0x800000, 0xff3333
+  ];
   
   // 建立密集交錯網路
   for(let i=0; i<bp.length; i++) {
     for(let j=i+1; j<bp.length; j++) {
       if(Math.random() > 0.1) { // 90% 概率產生連結
-        const srcMesh = pMesh[bp[i]] || earthMesh; // Earth is special handled sometimes but let's map loosely
+        const srcMesh = pMesh[bp[i]] || earthMesh; 
         const dstMesh = pMesh[bp[j]] || earthMesh;
         if (!srcMesh || !dstMesh) continue;
         
@@ -999,13 +1001,13 @@ function buildVeins() {
         let dstPos = bp[j]==='earth' ? new THREE.Vector3(0,0,0) : dstMesh.position;
 
         const strands = 3 + Math.floor(Math.random() * 4); // 3-6 根纖維管
-        const col = colors[Math.floor(Math.random() * colors.length)];
         
         for(let s=0; s<strands; s++) {
+          const col = colors[Math.floor(Math.random() * colors.length)];
           const mid = new THREE.Vector3().addVectors(srcPos, dstPos).multiplyScalar(0.5);
-          mid.x += (Math.random()-0.5)*20;
-          mid.y += (Math.random()-0.5)*20;
-          mid.z += (Math.random()-0.5)*20;
+          mid.x += (Math.random()-0.5)*25;
+          mid.y += (Math.random()-0.5)*25;
+          mid.z += (Math.random()-0.5)*25;
           
           const curve = new THREE.CatmullRomCurve3([srcPos.clone(), mid.clone(), dstPos.clone()]);
           const maxPts = 50;
@@ -1072,19 +1074,19 @@ function buildJupiterEye(jupPos) {
     const scleraCanvas = document.createElement('canvas');
     scleraCanvas.width = 512; scleraCanvas.height = 512;
     const sCtx = scleraCanvas.getContext('2d');
-    sCtx.fillStyle = '#ffeaea'; sCtx.fillRect(0,0,512,512);
-    for(let i=0; i<300; i++) {
+    sCtx.fillStyle = '#ffffff'; sCtx.fillRect(0,0,512,512); // 更刺眼的白
+    for(let i=0; i<450; i++) {
         sCtx.beginPath();
         let sx = Math.random()*512;
         let sy = Math.random() > 0.5 ? 0 : 512; 
         sCtx.moveTo(sx, sy);
-        for(let j=0; j<5; j++) {
+        for(let j=0; j<6; j++) {
             sx += (Math.random()-0.5)*40;
             sy += (sy < 256 ? 1 : -1) * (20 + Math.random()*40);
             sCtx.lineTo(sx, sy);
         }
-        sCtx.strokeStyle = 'rgba(200, 0, 0, '+(Math.random()*0.5+0.1)+')';
-        sCtx.lineWidth = Math.random()*3;
+        sCtx.strokeStyle = 'rgba(180, 0, 0, '+(Math.random()*0.6+0.2)+')';
+        sCtx.lineWidth = Math.random()*4;
         sCtx.stroke();
     }
     const scleraTex = new THREE.CanvasTexture(scleraCanvas);
@@ -1098,9 +1100,9 @@ function buildJupiterEye(jupPos) {
     jupEyeG.add(eyeball);
     jupEyeMeshes.push(eyeball); 
 
-    // 3. 上下眼皮 (大幅度撕開)
+    // 3. 上下眼皮 (極大幅度撕開)
     const topLid = new THREE.Mesh(
-        new THREE.SphereGeometry(1.82 * eyeScale, 64, 64, 0, Math.PI*2, 0, Math.PI/2 - 0.7), 
+        new THREE.SphereGeometry(1.82 * eyeScale, 64, 64, 0, Math.PI*2, 0, Math.PI/2 - 1.0), 
         meatMat
     );
     topLid.position.copy(jupPos);
@@ -1108,7 +1110,7 @@ function buildJupiterEye(jupPos) {
     jupEyeMeshes.push(topLid);
 
     const bottomLid = new THREE.Mesh(
-        new THREE.SphereGeometry(1.82 * eyeScale, 64, 64, 0, Math.PI*2, Math.PI/2 + 0.7, Math.PI/2), 
+        new THREE.SphereGeometry(1.82 * eyeScale, 64, 64, 0, Math.PI*2, Math.PI/2 + 1.0, Math.PI/2), 
         meatMat
     );
     bottomLid.position.copy(jupPos);
@@ -1149,22 +1151,23 @@ function buildJupiterEye(jupPos) {
 
     const irisMat = new THREE.MeshBasicMaterial({ map: irisTex });
     
-    // 平面貼合在眼球正前方
-    const iris = new THREE.Mesh(new THREE.CircleGeometry(0.8 * eyeScale, 48), irisMat);
-    iris.position.z = 1.75 * eyeScale + 0.05; 
+    // 將虹膜曲面化，完美貼合眼球並放大 (佔比40%)
+    const irisGeo = new THREE.SphereGeometry(1.76 * eyeScale, 64, 32, 0, Math.PI*2, 0, 0.75); // opening angle 0.75 rad
+    const iris = new THREE.Mesh(irisGeo, irisMat);
+    iris.rotation.x = Math.PI / 2;
     irisGroup.add(iris);
 
     // 豎直裂隙瞳孔
     const pupilMat = new THREE.MeshBasicMaterial({ color: 0x000000 });
-    const pupil = new THREE.Mesh(new THREE.CircleGeometry(0.4 * eyeScale, 32), pupilMat);
-    pupil.scale.set(0.18, 1.4, 1); 
-    pupil.position.z = 1.75 * eyeScale + 0.08;
+    const pupil = new THREE.Mesh(new THREE.CircleGeometry(0.7 * eyeScale, 32), pupilMat);
+    pupil.scale.set(0.18, 1.2, 1); 
+    pupil.position.z = 1.77 * eyeScale; 
     irisGroup.add(pupil);
     jupEyeMeshes.push(pupil); 
 
     const hlMat = new THREE.MeshBasicMaterial({ color: 0xFFFFFF, transparent: true, opacity: 0.7 });
-    const hl = new THREE.Mesh(new THREE.CircleGeometry(0.12 * eyeScale, 16), hlMat);
-    hl.position.set(0.3 * eyeScale, 0.3 * eyeScale, 1.75 * eyeScale + 0.1);
+    const hl = new THREE.Mesh(new THREE.CircleGeometry(0.18 * eyeScale, 16), hlMat);
+    hl.position.set(0.4 * eyeScale, 0.4 * eyeScale, 1.77 * eyeScale + 0.05);
     irisGroup.add(hl);
 
     irisGroup.position.copy(jupPos);
@@ -1290,20 +1293,21 @@ function triggerHorror() {
     setHeartbeatVolume(0.5);
   }, 6000);
   
-  // Phase 3: All Orbits and Rings mutate wildly
+  // Phase 3: All Orbits and Rings mutate wildly to bone color
   setTimeout(() => {
     HORROR.phase = 3;
-    horrorMsg('【 維度崩潰 】全軌道觀測標記失效');
+    horrorMsg('【 維度崩潰 】全軌道白骨化…觀測失效');
     document.querySelectorAll('.lbl').forEach(el => {
       el.style.transition='opacity 1.5s';
       el.style.opacity='0';
       el.style.pointerEvents='none';
     });
     
-    // Store original line positions for orbital jittering
+    // Store original line positions for orbital jittering and turn them to bone white
     scene.traverse(child => {
       if((child.isLine || child.isLineSegments) && child.material && !child.userData.isVein) {
-        child.material.color = new THREE.Color(0xaa0000);
+        child.material.color = new THREE.Color(0xe6e0d4); // 死寂白骨色
+        child.material.opacity = 0.8;
         if (!child.userData.origPos && child.geometry.attributes.position) {
            child.userData.origPos = child.geometry.attributes.position.clone();
            horrorLines.push(child);
@@ -1409,6 +1413,8 @@ window.handleAscN = function() {
 };
 
 // ─── Horror animation update ───
+const rotSpeeds = { moon:0.04, mercury:0.08, venus:0.02, sun:0.12, mars:0.18, jupiter:0.44, saturn:0.38, uranus:0.30, neptune:0.34, pluto:0.06 };
+
 function updateHorror(dt, t) {
   if (!HORROR.active) return;
   HORROR.t += dt;
@@ -1442,9 +1448,11 @@ function updateHorror(dt, t) {
         if (!pos || !orig) return;
         const amp = HORROR.earthPulseAmp * 0.8; 
         for (let i=0; i<pos.count; i++) {
-            const waveX = (Math.random()-0.5) * amp;
-            const waveY = (Math.random()-0.5) * amp;
-            const waveZ = (Math.random()-0.5) * amp;
+            // 骨折般的鋸齒狀錯位
+            const segment = Math.floor(i / 3); 
+            const waveX = (Math.sin(segment*12.1) * 1.5 + (Math.random()-0.5)*0.2) * amp;
+            const waveY = (Math.cos(segment*13.4) * 1.5 + (Math.random()-0.5)*0.2) * amp;
+            const waveZ = (Math.sin(segment*11.5) * 1.5 + (Math.random()-0.5)*0.2) * amp;
             pos.setXYZ(i, orig.getX(i) + waveX, orig.getY(i) + waveY, orig.getZ(i) + waveZ);
         }
         pos.needsUpdate = true;
@@ -1461,14 +1469,21 @@ function updateHorror(dt, t) {
             const throb = 1 + 0.15 * Math.sin(t * 12 + pc.R) * HORROR.furProgress;
             mesh.scale.setScalar(throb);
             if (mesh.material && mesh.material.color) {
-                mesh.material.color.lerp(new THREE.Color(0x220000), 0.015);
+                mesh.material.color.lerp(new THREE.Color(0x2b0000), 0.015);
             }
             if (mesh.material && mesh.material.emissive) {
-                mesh.material.emissive.lerp(new THREE.Color(0x550000), 0.015);
+                mesh.material.emissive.lerp(new THREE.Color(0x660000), 0.015);
             }
+            
+            // 處理光環變異保護
             mesh.children.forEach(c => {
-                if (c.material && c.material.color && c.type !== 'PointLight') {
-                    c.material.color.lerp(new THREE.Color(0x330000), 0.02);
+                if (c.geometry && c.geometry.type === 'RingGeometry' && pc.id === 'saturn') {
+                    if (c.material && c.material.color) {
+                        // 土星環保留透明度，染上骨血色
+                        c.material.color.lerp(new THREE.Color(0xaa3333), 0.01);
+                    }
+                } else if (c.material && c.material.color && c.type !== 'PointLight') {
+                    c.material.color.lerp(new THREE.Color(0x440000), 0.02);
                 }
             });
         }
@@ -1521,8 +1536,8 @@ function updateHorror(dt, t) {
       }
       // 瞳孔縮放 (竖瞳心跳收缩)
       if (idx === 5) { 
-          const dilate = 0.18 + 0.05 * Math.sin(t * 5);
-          m.scale.set(dilate, 1.4, 1); 
+          const dilate = 0.18 + 0.08 * Math.sin(t * 5);
+          m.scale.set(dilate, 1.2, 1); 
       }
     });
 
@@ -1657,7 +1672,7 @@ function buildPlanet(pc) {
       });
     } else {
       const em = EMISSIVE[pc.id] || { col: pc.col, i: 0.1 };
-      mat = new THREE.MeshStandardMaterial({
+      mat = new MeshStandardMaterial({
         color: pc.col, emissive: new THREE.Color(em.col), emissiveIntensity: em.i,
         roughness: 0.8, metalness: 0.1
       });
@@ -1759,10 +1774,21 @@ function animate() {
   }
 
   PCONF.forEach(pc => {
-    // 恐怖模式下所有星體瘋狂自轉
-    if(pMesh[pc.id]) pMesh[pc.id].rotateY(dt * (HORROR.active ? (2.0 + Math.random()*0.5) : 0.12));
+    if(pMesh[pc.id] && rotSpeeds[pc.id] !== undefined && !S.helio) {
+      let speed = rotSpeeds[pc.id] * (curGeo.retrograde && curGeo.retrograde[pc.id] ? -1 : 1);
+      if(HORROR.active) {
+         // 神經質高頻自轉
+         speed *= (6.0 + Math.random()*2.0); 
+      }
+      pMesh[pc.id].rotateY(dt * speed);
+    }
   });
-  if(earthMesh) earthMesh.rotateY(dt * (HORROR.active ? 2.5 : 0.18));
+  
+  if(earthMesh) {
+      let eSpeed = 0.18;
+      if(HORROR.active) eSpeed *= (6.0 + Math.random()*2.0);
+      earthMesh.rotateY(dt * eSpeed);
+  }
 
   if (HORROR.active) updateHorror(dt, t);
 
