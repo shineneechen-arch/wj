@@ -1,79 +1,190 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="utf-8" />
+    <meta charset="UTF-8">
     <title>【站务】关于近期旧版数据库偶发底层异常乱码的排查公告 - 南江大学溯源BBS</title>
     <style>
-        body { background-color: #E2E8F1; color: #333; font-family: "SimSun", "宋体", sans-serif; font-size: 14px; margin: 0; padding: 10px 0; }
-        a { color: #004499; text-decoration: none; }
-        #wrap { width: 96%; min-width: 980px; margin: 0 auto; background: #FFF; border: 1px solid #A6CBE7; padding: 15px; }
-        .header { border-bottom: 3px solid #336699; padding-bottom: 10px; margin-bottom: 15px; font-weight: bold; font-size: 14px; }
-        .post-table { width: 100%; border-collapse: collapse; border: 1px solid #A6CBE7; margin-bottom: 10px; background:#FFF; }
-        .post-user { width: 180px; background: #F0F5FA; border-right: 1px solid #A6CBE7; padding: 15px; text-align: center; vertical-align: top; }
-        .post-content { padding: 15px 20px; vertical-align: top; line-height: 1.8; }
-        .post-info { border-bottom: 1px dashed #CCC; padding-bottom: 5px; margin-bottom: 15px; color: #666; font-size: 12px; }
-        .avatar { width: 100px; height: 100px; border: 1px solid #CCC; margin: 10px auto; background: #E2E8F1; display: flex; align-items: center; justify-content: center; color: #999; font-size:12px; }
-        .user-detail { color: #666; font-size: 12px; text-align: left; width: fit-content; margin: 0 auto; line-height: 1.5; }
-        .admin-badge { color: red; font-weight: bold; border: 1px solid red; padding: 2px 5px; font-size: 11px; margin-top: 5px; display: inline-block; }
+        /* 古早 BBS 经典样式重置 (Discuz! 经典蓝风格) */
+        body { font-family: 'SimSun', '宋体', Arial, sans-serif; background-color: #799AE1; color: #000; font-size: 13px; margin: 0; padding: 0 0 30px 0; }
+        a { color: #000000; text-decoration: none; }
+        a:hover { text-decoration: underline; color: #FF6600; }
+        
+        /* 顶部导航与大色块框架 */
+        .header { background: #0F5E8A; border-bottom: 2px solid #003366; padding: 20px 20px; color: #FFF; }
+        .logo { font-size: 24px; font-weight: bold; font-family: 'Microsoft YaHei', sans-serif; text-shadow: 1px 1px 2px #000; }
+        .nav-links { margin-top: 15px; font-weight: bold; font-size: 12px; }
+        .nav-links a { color: #FFF; margin-right: 15px; }
+        
+        /* 核心布局框架 */
+        .wrap { width: 980px; margin: 15px auto; overflow: hidden; background: #FFF; border: 1px solid #003366; padding: 10px; } 
+        .main { width: 740px; float: left; }
+        .sidebar { width: 215px; float: right; }
+
+        /* 面包屑色块 */
+        .breadcrumbs { background: #E5EDF2; border: 1px solid #9CB8CC; padding: 8px 10px; margin-bottom: 10px; font-weight: bold; color: #0055AA; }
+        .breadcrumbs a { color: #0055AA; }
+
+        /* 帖子主容器色块 */
+        .post-list { background: #FFF; border: 1px solid #9CB8CC; margin-bottom: 15px; }
+        .post-header-bar { background: #E5EDF2; border-bottom: 1px solid #9CB8CC; padding: 5px 10px; font-weight: bold; }
+        
+        /* 楼层样式（经典左右分栏色块） */
+        .post-row { border-bottom: 1px solid #9CB8CC; display: table; width: 100%; table-layout: fixed; } 
+        .post-left { width: 130px; background: #EAF0F6; border-right: 1px solid #9CB8CC; padding: 15px 10px; text-align: center; display: table-cell; vertical-align: top; }
+        .post-right { padding: 15px; display: table-cell; vertical-align: top; word-wrap: break-word; overflow: hidden; background: #F5F9FA; }
+        
+        .username { font-weight: bold; font-size: 14px; margin-bottom: 5px; display: block; color: #000080; }
+        
+        /* 头像框设计 */
+        .avatar { width: 100px; height: 100px; border: 1px solid #9CB8CC; background: #E2E8F1; padding: 2px; margin: 5px auto; display: flex; align-items: center; justify-content: center; color: #999; font-size:12px; font-weight: bold; }
+        .avatar img { width: 100%; height: 100%; display: block; object-fit: cover; }
+        
+        .user-title { color: #0055aa; margin-top: 5px; font-weight: bold; }
+        .user-stats { color: #666; margin-top: 5px; font-size: 12px; line-height: 1.5; text-align: left; padding-left: 20px; }
+        
+        /* 特殊权限徽章 */
+        .admin-badge { color: red; font-weight: bold; border: 1px solid red; padding: 2px 5px; font-size: 11px; margin-top: 5px; display: inline-block; background: #FFF; }
+
+        .post-info { border-bottom: 1px dashed #9CB8CC; padding-bottom: 5px; margin-bottom: 15px; color: #666; font-size: 12px; }
+        .floor-num { float: right; font-weight: bold; color: #000; font-family: Arial; }
+        
+        .content { font-size: 14px; line-height: 1.8; color: #000; min-height: 150px; }
+        .content img { max-width: 100%; height: auto; border: 1px solid #9CB8CC; padding: 2px; margin: 10px 0; background: #FFF; box-sizing: border-box; }
+        
+        .signature { border-top: 1px dashed #9CB8CC; margin-top: 30px; padding-top: 10px; color: #666; font-size: 12px; }
+
+        /* 侧边栏色块伪装 */
+        .side-box { background: #FFF; border: 1px solid #9CB8CC; margin-bottom: 15px; }
+        .side-title { background: #D9E4EA; border-bottom: 1px solid #9CB8CC; padding: 6px 10px; font-weight: bold; color: #0055AA; }
+        .side-content { padding: 8px; list-style: none; margin: 0; }
+        .side-content li { border-bottom: 1px dotted #9CB8CC; padding: 4px 0; padding-left: 12px; background: url('data:image/gif;base64,R0lGODlhBQAKAIABAAAAAP///yH5BAEAAAEALAAAAAAFAAoAAAIIjI+pG8HwnCgAOw==') no-repeat left center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 12px; }
+
+        /* 隐藏进度条 */
+        #arg-progress { position: fixed; bottom: 5px; right: 5px; font-family: Terminal, monospace; font-size: 9px; color: #000; opacity: 0.4; }
     </style>
 </head>
 <body>
-<div id="wrap">
-    <div class="header"><a href="bbs_2026_home.html">溯源BBS首页</a> &raquo; 区域 A：校园综合交流与校务区 &raquo; <b>【站务】关于近期旧版数据库偶发底层异常乱码的排查公告</b></div>
-    
-    <table class="post-table">
-        <tr>
-            <td class="post-user">
-                <div style="font-weight:bold; color:red; font-size:15px;">现任管理员</div>
-                <div class="avatar">SYS</div>
-                <div class="admin-badge">SYSTEM ADMIN</div>
-            </td>
-            <td class="post-content">
-                <div class="post-info"><span style="float:right; font-weight:bold;">楼主</span> 发表于 2026-06-21 09:00:00</div>
-                各位校友：<br><br>
-                近日，我们收到大量用户反馈，在深夜访问本“溯源镜像服”时，页面偶尔会出现极其短暂的频闪，并随机刷出一些落款时间为 **2007年6月11日** 的血红色求救贴。<br><br>
-                经过网络中心初步排查，这是由于我们在构建这个 2026 年镜像服时，为了保留历史归档，挂载了一块 2007 年服务器的物理旧硬盘。由于年代久远，该硬盘存在严重的坏道（Bad Sectors）和磁道漏读现象，导致在 I/O 高峰期，旧表的缓存数据会溢出并覆盖当前页面的 DOM 树。<br><br>
-                我们保证这**只是一次单纯的硬件读取故障**，绝非黑客攻击或恶作剧。技术团队正在尝试对该旧硬盘进行物理隔离，请大家保持理性，不要在版内传播不实谣言。
-            </td>
-        </tr>
-    </table>
-    
-    <table class="post-table">
-        <tr>
-            <td class="post-user"><div style="font-weight:bold; color:#004499; font-size:15px;">删库跑路</div><div class="avatar">无头像</div><div class="user-detail">级别: 资深DBA<br>发帖数: 840</div></td>
-            <td class="post-content">
-                <div class="post-info"><span style="float:right; font-weight:bold;">沙发</span> 发表于 2026-06-21 11:30:15</div>
-                管理员别洗地了，你这套说辞骗骗文科生还行。<br><br>
-                我是上届计协的技术部部长，有部分读库的权限。我昨天出于好奇，跑去 dump 了一下你说的那个“2007年旧版数据库表”。<br>
-                如果是硬件坏道导致的旧数据读取错误，那表的大小应该是固定的死数据对吧？<br><br>
-                但我监控了 48 小时，<b>那张 2007 年的帖子表，体积正在不断变大！</b><br>
-                里面一直在生成新的记录，每一条新记录的发帖时间全都是死死的 `2007-06-11 11:02:00`。
-            </td>
-        </tr>
-    </table>
 
-    <table class="post-table">
-        <tr>
-            <td class="post-user"><div style="font-weight:bold; color:#004499; font-size:15px;">删库跑路</div><div class="avatar">无头像</div><div class="user-detail">级别: 资深DBA<br>发帖数: 840</div></td>
-            <td class="post-content">
-                <div class="post-info"><span style="float:right; font-weight:bold;">板凳</span> 发表于 2026-06-21 11:35:40</div>
-                补充一下：<br>
-                死掉的数据是不会自己写 SQL 插入新行的。<br>
-                这说明在 19 年前的那个时间点，有某种东西卡在了网络层里。它（或者他们）正在以极其惊人的并发量，疯狂地向我们的 2026 年现代数据库里执行 `INSERT` 操作。<br>
-                赶紧把那块盘砸了吧，里面装的根本不是坏道，是活的。
-            </td>
-        </tr>
-    </table>
+<div class="header">
+    <div class="logo">南江大学 - 溯源BBS (Since 2004)</div>
+    <div class="nav-links">
+        <a href="#">首 页</a> | <a href="#">版块列表</a> | <a href="#">校内资讯</a> | <a href="#">跳蚤市场</a> | <a href="#">灌水乐园</a> | <a href="#">控制面板</a>
+    </div>
+</div>
 
-    <table class="post-table">
-        <tr>
-            <td class="post-user"><div style="font-weight:bold; color:#004499; font-size:15px;">围观群众</div><div class="avatar">无头像</div><div class="user-detail">级别: 萌新<br>发帖数: 5</div></td>
-            <td class="post-content">
-                <div class="post-info"><span style="float:right; font-weight:bold;">地板</span> 发表于 2026-06-21 12:01:10</div>
-                救命啊，这楼走向怎么越来越阴间了...我今晚都不敢登BBS了！
-            </td>
-        </tr>
-    </table>
+<div class="wrap">
+    <div class="main">
+        <div class="breadcrumbs">
+            <a href="bbs_2026_home.html">溯源BBS首页</a> &raquo; <a href="#">校内交流区</a> &raquo; <a href="#">区域 A：校园综合交流与校务区</a>
+        </div>
+
+        <div class="post-list">
+            <div class="post-header-bar">
+                【站务】关于近期旧版数据库偶发底层异常乱码的排查公告
+            </div>
+            
+            <div class="post-row">
+                <div class="post-left">
+                    <span class="username" style="color: red;">现任管理员</span>
+                    <div class="avatar" style="color: red; background: #FFEBEB;">SYS</div>
+                    <div class="admin-badge">SYSTEM ADMIN</div>
+                    <div class="user-stats" style="margin-top: 10px;">发帖: 88<br>积分: 9999<br>注册: 2015-09</div>
+                </div>
+                <div class="post-right">
+                    <div class="post-info">
+                        发表于 2026-06-21 09:00:00 <span class="floor-num">楼主</span>
+                    </div>
+                    <div class="content">
+                        各位校友：<br><br>
+                        近日，我们收到大量用户反馈，在深夜访问本“溯源镜像服”时，页面偶尔会出现极其短暂的频闪，并随机刷出一些落款时间为 **2007年6月11日** 的血红色求救贴。<br><br>
+                        经过网络中心初步排查，这是由于我们在构建这个 2026 年镜像服时，为了保留历史归档，挂载了一块 2007 年服务器的物理旧硬盘。由于年代久远，该硬盘存在严重的坏道（Bad Sectors）和磁道漏读现象，导致在 I/O 高峰期，旧表的缓存数据会溢出并覆盖当前页面的 DOM 树。<br><br>
+                        我们保证这<b>只是一次单纯的硬件读取故障</b>，绝非黑客攻击或恶作剧。技术团队正在尝试对该旧硬盘进行物理隔离，请大家保持理性，不要在版内传播不实谣言。
+                    </div>
+                </div>
+            </div>
+
+            <div class="post-row">
+                <div class="post-left">
+                    <span class="username">删库跑路</span>
+                    <div class="avatar">无头像</div>
+                    <div class="user-title">资深DBA</div>
+                    <div class="user-stats">发帖: 840<br>积分: 3420</div>
+                </div>
+                <div class="post-right">
+                    <div class="post-info">发表于 2026-06-21 11:30:15 <span class="floor-num">沙发</span></div>
+                    <div class="content">
+                        管理员别洗地了，你这套说辞骗骗文科生还行。<br><br>
+                        我是上届计协的技术部部长，有部分读库的权限。我昨天出于好奇，跑去 dump 了一下你说的那个“2007年旧版数据库表”。<br>
+                        如果是硬件坏道导致的旧数据读取错误，那表的大小应该是固定的死数据对吧？<br><br>
+                        但我监控了 48 小时，<b>那张 2007 年的帖子表，体积正在不断变大！</b><br>
+                        里面一直在生成新的记录，每一条新记录的发帖时间全都是死死的 <code>2007-06-11 11:02:00</code>。
+                    </div>
+                </div>
+            </div>
+
+            <div class="post-row">
+                <div class="post-left">
+                    <span class="username">删库跑路</span>
+                    <div class="avatar">无头像</div>
+                    <div class="user-title">资深DBA</div>
+                    <div class="user-stats">发帖: 840<br>积分: 3420</div>
+                </div>
+                <div class="post-right">
+                    <div class="post-info">发表于 2026-06-21 11:35:40 <span class="floor-num">板凳</span></div>
+                    <div class="content">
+                        补充一下：<br>
+                        死掉的数据是不会自己写 SQL 插入新行的。<br>
+                        这说明在 19 年前的那个时间点，有某种东西卡在了网络层里。它（或者他们）正在以极其惊人的并发量，疯狂地向我们的 2026 年现代数据库里执行 <code>INSERT</code> 操作。<br>
+                        赶紧把那块盘砸了吧，里面装的根本不是坏道，是活的。
+                    </div>
+                </div>
+            </div>
+
+            <div class="post-row">
+                <div class="post-left">
+                    <span class="username">围观群众</span>
+                    <div class="avatar">无头像</div>
+                    <div class="user-title">萌新</div>
+                    <div class="user-stats">发帖: 5<br>积分: 12</div>
+                </div>
+                <div class="post-right">
+                    <div class="post-info">发表于 2026-06-21 12:01:10 <span class="floor-num">地板</span></div>
+                    <div class="content">
+                        救命啊，这楼走向怎么越来越阴间了...我今晚都不敢登BBS了！
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div style="text-align: right; padding-bottom: 20px;">
+            <span style="border:1px solid #9CB8CC; padding:3px 8px; background:#FFF; color:#0055AA; font-weight:bold;">1</span>
+            <a href="#" style="border:1px solid #9CB8CC; padding:3px 8px; background:#E5EDF2;">2</a>
+            <a href="#" style="border:1px solid #9CB8CC; padding:3px 8px; background:#E5EDF2;">下一页</a>
+        </div>
+    </div>
+
+    <div class="sidebar">
+        <div class="side-box">
+            <div class="side-title">最新校园热门</div>
+            <ul class="side-content">
+                <li><a href="#">食堂三楼的阿姨手又抖了，排骨全掉锅里</a></li>
+                <li><a href="#">求一份历年《高数（上）》期末卷子，救急！</a></li>
+                <li><a href="#">表白墙：昨天在图书馆二楼靠窗穿白裙子的女生</a></li>
+                <li><a href="#">吐槽！本学期关于晚归断电的新规定太坑了</a></li>
+                <li><a href="#">急出大四考研资料，半卖半送</a></li>
+            </ul>
+        </div>
+        
+        <div class="side-box">
+            <div class="side-title">论坛公告板</div>
+            <div style="padding: 10px; line-height: 1.6; color: #666; font-size: 12px;">
+                1. 严禁发布未经证实的小道消息。<br>
+                2. 交易区请警惕网络诈骗。<br>
+                3. 本周末机房维护，BBS 将在凌晨 2:00-5:00 暂停访问。
+            </div>
+        </div>
+    </div>
 </div>
 </body>
 </html>
