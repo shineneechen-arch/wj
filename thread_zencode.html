@@ -1,81 +1,213 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="utf-8" />
+    <meta charset="UTF-8">
     <title>【八卦】今年计科系的毕业设计居然有人交了个算命排盘系统？ - 南江大学溯源BBS</title>
     <style>
-        body { background-color: #E2E8F1; color: #333; font-family: "SimSun", "宋体", sans-serif; font-size: 14px; margin: 0; padding: 10px 0; }
-        a { color: #004499; text-decoration: none; }
-        #wrap { width: 96%; min-width: 980px; margin: 0 auto; background: #FFF; border: 1px solid #A6CBE7; padding: 15px; }
-        .header { border-bottom: 3px solid #336699; padding-bottom: 10px; margin-bottom: 15px; font-weight: bold; font-size: 14px; }
-        .post-table { width: 100%; border-collapse: collapse; border: 1px solid #A6CBE7; margin-bottom: 10px; background:#FFF; }
-        .post-user { width: 180px; background: #F0F5FA; border-right: 1px solid #A6CBE7; padding: 15px; text-align: center; vertical-align: top; }
-        .post-content { padding: 15px 20px; vertical-align: top; line-height: 1.8; }
-        .post-info { border-bottom: 1px dashed #CCC; padding-bottom: 5px; margin-bottom: 15px; color: #666; font-size: 12px; }
-        .avatar { width: 100px; height: 100px; border: 1px solid #CCC; margin: 10px auto; background: #E2E8F1; display: flex; align-items: center; justify-content: center; color: #999; font-size:12px; }
-        .user-detail { color: #666; font-size: 12px; text-align: left; width: fit-content; margin: 0 auto; line-height: 1.5; }
-        .quote-box { background: #F9F9F9; border: 1px solid #E5E5E5; border-left: 4px solid #336699; padding: 10px 15px; margin: 10px 0; color: #555; }
+        /* 古早 BBS 经典样式重置 (Discuz! 经典蓝风格) */
+        body { font-family: 'SimSun', '宋体', Arial, sans-serif; background-color: #799AE1; color: #000; font-size: 13px; margin: 0; padding: 0 0 30px 0; }
+        a { color: #000000; text-decoration: none; }
+        a:hover { text-decoration: underline; color: #FF6600; }
+        
+        /* 顶部导航与大色块框架 */
+        .header { background: #0F5E8A; border-bottom: 2px solid #003366; padding: 20px 20px; color: #FFF; }
+        .logo { font-size: 24px; font-weight: bold; font-family: 'Microsoft YaHei', sans-serif; text-shadow: 1px 1px 2px #000; }
+        .nav-links { margin-top: 15px; font-weight: bold; font-size: 12px; }
+        .nav-links a { color: #FFF; margin-right: 15px; }
+        
+        /* 核心布局框架 */
+        .wrap { width: 980px; margin: 15px auto; overflow: hidden; background: #FFF; border: 1px solid #003366; padding: 10px; } 
+        .main { width: 740px; float: left; }
+        .sidebar { width: 215px; float: right; }
+
+        /* 面包屑色块 */
+        .breadcrumbs { background: #E5EDF2; border: 1px solid #9CB8CC; padding: 8px 10px; margin-bottom: 10px; font-weight: bold; color: #0055AA; }
+        .breadcrumbs a { color: #0055AA; }
+
+        /* 帖子主容器色块 */
+        .post-list { background: #FFF; border: 1px solid #9CB8CC; margin-bottom: 15px; }
+        .post-header-bar { background: #E5EDF2; border-bottom: 1px solid #9CB8CC; padding: 5px 10px; font-weight: bold; }
+        
+        /* 楼层样式（经典左右分栏色块） */
+        .post-row { border-bottom: 1px solid #9CB8CC; display: table; width: 100%; table-layout: fixed; } 
+        .post-left { width: 130px; background: #EAF0F6; border-right: 1px solid #9CB8CC; padding: 15px 10px; text-align: center; display: table-cell; vertical-align: top; }
+        .post-right { padding: 15px; display: table-cell; vertical-align: top; word-wrap: break-word; overflow: hidden; background: #F5F9FA; }
+        
+        .username { font-weight: bold; font-size: 14px; margin-bottom: 5px; display: block; color: #000080; }
+        
+        /* 头像框设计 */
+        .avatar { width: 100px; height: 100px; border: 1px solid #9CB8CC; background: #E2E8F1; padding: 2px; margin: 5px auto; display: flex; align-items: center; justify-content: center; color: #999; font-size:12px; }
+        .avatar img { width: 100%; height: 100%; display: block; object-fit: cover; }
+        
+        .user-title { color: #0055aa; margin-top: 5px; font-weight: bold; }
+        .user-stats { color: #666; margin-top: 5px; font-size: 12px; line-height: 1.5; text-align: left; padding-left: 20px; }
+        
+        .post-info { border-bottom: 1px dashed #9CB8CC; padding-bottom: 5px; margin-bottom: 15px; color: #666; font-size: 12px; }
+        .floor-num { float: right; font-weight: bold; color: #000; font-family: Arial; }
+        
+        .content { font-size: 14px; line-height: 1.8; color: #000; min-height: 150px; }
+        .content img { max-width: 100%; height: auto; border: 1px solid #9CB8CC; padding: 2px; margin: 10px 0; background: #FFF; box-sizing: border-box; }
+        
+        .quote-box { background: #EAF0F6; border: 1px solid #9CB8CC; border-left: 4px solid #0055AA; padding: 10px 15px; margin: 15px 0; color: #333; font-size: 13px; }
+        .code-box { background: #1E1E1E; color: #D4D4D4; font-family: Consolas, monospace; padding: 15px; border-radius: 5px; margin: 10px 0; overflow-x: auto; font-size: 12px; }
+
+        .signature { border-top: 1px dashed #9CB8CC; margin-top: 30px; padding-top: 10px; color: #666; font-size: 12px; }
+
+        /* 侧边栏色块伪装 */
+        .side-box { background: #FFF; border: 1px solid #9CB8CC; margin-bottom: 15px; }
+        .side-title { background: #D9E4EA; border-bottom: 1px solid #9CB8CC; padding: 6px 10px; font-weight: bold; color: #0055AA; }
+        .side-content { padding: 8px; list-style: none; margin: 0; }
+        .side-content li { border-bottom: 1px dotted #9CB8CC; padding: 4px 0; padding-left: 12px; background: url('data:image/gif;base64,R0lGODlhBQAKAIABAAAAAP///yH5BAEAAAEALAAAAAAFAAoAAAIIjI+pG8HwnCgAOw==') no-repeat left center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 12px; }
     </style>
 </head>
 <body>
-<div id="wrap">
-    <div class="header"><a href="bbs_2026_home.html">溯源BBS首页</a> &raquo; 区域 A：校园综合交流与校务区 &raquo; <b>【八卦】今年计科系的毕业设计居然有人交了个算命排盘系统？</b></div>
-    
-    <table class="post-table">
-        <tr>
-            <td class="post-user"><div style="font-weight:bold; color:#004499; font-size:15px;">吃瓜大队长</div><div class="avatar">无头像</div><div class="user-detail">级别: 黄金会员<br>发帖数: 342</div></td>
-            <td class="post-content">
-                <div class="post-info"><span style="float:right; font-weight:bold;">楼主</span> 发表于 2026-06-20 14:20:00</div>
-                家人们，谁懂啊，前几天去围观计科系大四的毕设，有个学姐简直神仙下凡。别人都在做电商后台、管理系统，她搞了一个叫「ZenCode」的极客玄学工具，还同步弄了个微信公众号叫「ZenCode青冥鉴」。<br><br>
-                本来以为只是个噱头，结果一看功能我都跪了。里面能排八字、排星盘、排六爻，特别是八字的节气交接，算法居然精确到了分秒！这精度听说是可以直接问鼎圈内那个巨权威的“问真八字排盘”了。<br><br>
-                最最最惊艳的是她的 3D 立体星盘功能，直接把整个太阳系的运行轨迹搬进去了！而且居然还做出了发光行星的自转和星轨流光的特效！据她介绍，这套系统结合了二十八宿，还有一种中国古代极其小众的皇家钦天监专属术数，叫“七政四余”。虽然咱们普通人根本看不懂那些行星交角和命宫是怎么转的，但看着就是不明觉厉，高级得一塌糊涂。<br><br>
-                这毕设稳拿第一的节奏啊，但是感觉那学姐答辩的时候脸色惨白，看着特别憔悴，有人认识她吗？
-            </td>
-        </tr>
-    </table>
-    
-    <table class="post-table">
-        <tr>
-            <td class="post-user"><div style="font-weight:bold; color:#004499; font-size:15px;">前端卷王</div><div class="avatar">无头像</div><div class="user-detail">级别: 技术宅<br>发帖数: 156</div></td>
-            <td class="post-content">
-                <div class="post-info"><span style="float:right; font-weight:bold;">沙发</span> 发表于 2026-06-20 15:05:12</div>
-                我也关注了青冥鉴那个公众号，黑金配色（Black & Gold）绝了，高级感直接拉满。她的排盘算法全是用 Node.js 自己写的底层逻辑，不是调的破烂开源库，这学姐是真大佬。脸色差估计是熬夜赶代码累的吧？
-            </td>
-        </tr>
-    </table>
 
-    <table class="post-table">
-        <tr>
-            <td class="post-user"><div style="font-weight:bold; color:#004499; font-size:15px;">深夜冲浪员</div><div class="avatar">无头像</div><div class="user-detail">级别: 潜水员<br>发帖数: 89</div></td>
-            <td class="post-content">
-                <div class="post-info"><span style="float:right; font-weight:bold;">板凳</span> 发表于 2026-06-21 02:11:45</div>
-                根本不是熬夜累的。听她舍友说，那学姐后期跑那个3D星盘的时候，整个人状态就极其不对劲了。<br><br>
-                有一天半夜她舍友起来上厕所，看她还坐在电脑前，就顺眼瞟了一下。结果发现她电脑屏幕上的 3D 星盘根本不是什么发光的行星轨迹！原本散发着金光的节点，全变成了暗红色的血管和神经索，中间还有一大块散发着腥气的肉团在有规律地跳动自转……<br><br>
-                舍友吓得尖叫，学姐当时就瘫坐在屏幕前死死盯着，一边哭一边发抖，嘴里一直念叨着自己底层的生克卦象算错了，不小心把端口连进了深网里的什么<b>「血肉飞升星盘」</b>。
-            </td>
-        </tr>
-    </table>
-
-    <table class="post-table">
-        <tr>
-            <td class="post-user"><div style="font-weight:bold; color:#004499; font-size:15px;">计科院发际线保护协会</div><div class="avatar">无头像</div><div class="user-detail">级别: 内部知情人<br>发帖数: 1850</div></td>
-            <td class="post-content">
-                <div class="post-info"><span style="float:right; font-weight:bold;">地板</span> 发表于 2026-06-21 08:30:22</div>
-                证实一下，我是她隔壁寝室的。休学倒是没有，但是她最近精神状态确实很差，整天把自己锁在床帐里不怎么见人。<br><br>
-                而且最诡异的是，她明明已经把本地的渲染服务给关了，甚至拔了自己电脑的网线，但那个 3D 星盘的线上接口，到现在还在自己往外发包跑数据！就好像那个星盘是活的，已经不需要她的物理服务器，自己在深网里开始演化了一样。
-            </td>
-        </tr>
-    </table>
-
-    <table class="post-table">
-        <tr>
-            <td class="post-user"><div style="font-weight:bold; color:#004499; font-size:15px;">匿名胆小鬼</div><div class="avatar">无头像</div><div class="user-detail">级别: 萌新<br>发帖数: 8</div></td>
-            <td class="post-content">
-                <div class="post-info"><span style="float:right; font-weight:bold;">5楼</span> 发表于 2026-06-21 09:15:00</div>
-                卧槽……大半夜看这个帖子背后发凉。那个血肉飞升星盘到底是个什么东西？是不是招惹了什么不该碰的脏东西啊……
-            </td>
-        </tr>
-    </table>
+<div class="header">
+    <div class="logo">南江大学 - 溯源BBS (Since 2004)</div>
+    <div class="nav-links">
+        <a href="#">首 页</a> | <a href="#">版块列表</a> | <a href="#">校内资讯</a> | <a href="#">跳蚤市场</a> | <a href="#">灌水乐园</a> | <a href="#">控制面板</a>
+    </div>
 </div>
+
+<div class="wrap">
+    <div class="main">
+        <div class="breadcrumbs">
+            <a href="bbs_2026_home.html">溯源BBS首页</a> &raquo; <a href="#">校内交流区</a> &raquo; <a href="#">区域 A：校园综合交流与校务区</a>
+        </div>
+
+        <div class="post-list">
+            <div class="post-header-bar">
+                【八卦】今年计科系的毕业设计居然有人交了个算命排盘系统？
+            </div>
+            
+            <div class="post-row">
+                <div class="post-left">
+                    <span class="username">吃瓜大队长</span>
+                    <div class="avatar">无头像</div>
+                    <div class="user-title">黄金会员</div>
+                    <div class="user-stats">发帖: 342<br>积分: 1250<br>注册: 2023-09</div>
+                </div>
+                <div class="post-right">
+                    <div class="post-info">
+                        发表于 2026-06-20 14:20:00 <span class="floor-num">楼主</span>
+                    </div>
+                    <div class="content">
+                        家人们，谁懂啊，前几天去围观计科系大四的毕设答辩，有个学姐简直神仙下凡。别人都在做电商后台、管理系统这种烂大街的选题，她搞了一个叫<b>「ZenCode」</b>的极客玄学工具，还同步弄了个配套的微信公众号叫「ZenCode青冥鉴」。<br><br>
+                        本来以为只是个噱头，结果一看功能我都跪了。里面能排八字、排星盘、排六爻，特别是八字的节气交接，算法居然精确到了分秒级别！这精度听说是可以直接问鼎圈内那个巨权威的“问真八字排盘”了。<br><br>
+                        最最最惊艳的是她前端用 Three.js 渲染的 <b>3D 立体星盘</b>功能，直接把整个太阳系的运行轨迹搬进去了！而且居然还做出了发光行星的自转和星轨流光的特效！据她介绍，这套系统结合了二十八宿，还有一种中国古代极其小众的皇家钦天监专属术数，叫“七政四余”。虽然咱们普通人根本看不懂那些行星交角和命宫是怎么转的，但看着就是不明觉厉，高级得一塌糊涂。<br><br>
+                        按理说这毕设稳拿第一的节奏啊，但是答辩的时候发生了一件怪事：她在台上演示 3D 星盘推演的时候，手指一直在抖，脸色惨白得像一张纸。下台的时候直接虚脱得腿软了，有人认识她吗？
+                    </div>
+                </div>
+            </div>
+
+            <div class="post-row">
+                <div class="post-left">
+                    <span class="username">前端卷王</span>
+                    <div class="avatar">无头像</div>
+                    <div class="user-title">技术宅</div>
+                    <div class="user-stats">发帖: 156<br>积分: 890</div>
+                </div>
+                <div class="post-right">
+                    <div class="post-info">发表于 2026-06-20 15:05:12 <span class="floor-num">沙发</span></div>
+                    <div class="content">
+                        我也关注了青冥鉴那个公众号，黑金配色（Black & Gold）绝了，高级感直接拉满。她的排盘算法全是用 Node.js 自己写的底层逻辑，不是调的破烂开源库，这学姐是真大佬。<br><br>
+                        不过我之前私信请教过她，这么逆天的真太阳时和星历数据（Ephemeris）是从哪搞来的 API 接口？她神神叨叨地回了我一句：<b>“不是 API，我破解了校园网主楼机房里一个 2007 年的废弃幽灵端口，那些数据是自己流出来的……”</b> <br>
+                        我当时以为她在开玩笑，现在想想，这数据来源是不是有点邪门？
+                    </div>
+                </div>
+            </div>
+
+            <div class="post-row">
+                <div class="post-left">
+                    <span class="username">深夜冲浪员</span>
+                    <div class="avatar">无头像</div>
+                    <div class="user-title">潜水员</div>
+                    <div class="user-stats">发帖: 89<br>积分: 320</div>
+                </div>
+                <div class="post-right">
+                    <div class="post-info">发表于 2026-06-21 02:11:45 <span class="floor-num">板凳</span></div>
+                    <div class="content">
+                        根本不是熬夜累的！！听她舍友说，那学姐后期在本地跑那个 3D 星盘进行极值测试的时候，整个人状态就极其不对劲了。<br><br>
+                        有一天半夜她舍友起来上厕所，看她还坐在电脑前，就顺眼瞟了一下。结果发现她电脑屏幕上的 3D 星盘根本不是什么发光的行星轨迹！原本散发着金光的节点，全变成了<b>暗红色的血管和神经索</b>，中间还有一大块散发着腥气的肉团在有规律地跳动自转……<br><br>
+                        舍友吓得尖叫，学姐当时就瘫坐在屏幕前死死盯着，一边哭一边发抖，嘴里一直念叨着：<br>
+                        <div class="quote-box">
+                            “底层高低电平映射错了……不该用二进制去算阴阳爻的……触发了死锁……这是未济卦……我把端口连进了深网里的<b>「血肉飞升星盘」</b>里了……”
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="post-row">
+                <div class="post-left">
+                    <span class="username">计科院发际线保护协会</span>
+                    <div class="avatar">无头像</div>
+                    <div class="user-title">内部知情人</div>
+                    <div class="user-stats">发帖: 1850<br>积分: 6700</div>
+                </div>
+                <div class="post-right">
+                    <div class="post-info">发表于 2026-06-21 08:30:22 <span class="floor-num">地板</span></div>
+                    <div class="content">
+                        证实一下，我是她隔壁寝室的。休学倒是没有，但是她最近精神状态确实很差，整天把自己锁在床帐里不怎么见人，还总是买大量的生肉堆在宿舍的微型冰箱里（不知道干什么用）。<br><br>
+                        而且最诡异的网络安全问题来了：她明明已经把本地的 Node.js 渲染服务给关了，甚至物理拔了自己电脑的网线，但那个 3D 星盘的线上接口，<b>到现在还在利用校园局域网的算力自己往外发包跑数据！</b><br>
+                        <div class="code-box">
+                            [WARNING] Port 443 anomaly detected.<br>
+                            Unidentified traffic protocol: ORGANIC_TRANSFER<br>
+                            Source MAC: DISCONNECTED<br>
+                            Destination: LOCAL_HOST_INFRASTRUCTURE
+                        </div>
+                        就好像那个星盘是“活”的，它借由学姐的代码作为降临的桥梁，现在已经不需要物理服务器了，它正在我们学校的网络底层血管里自己演化繁殖。
+                    </div>
+                </div>
+            </div>
+
+            <div class="post-row">
+                <div class="post-left">
+                    <span class="username">道系青年</span>
+                    <div class="avatar">无头像</div>
+                    <div class="user-title">易经协会</div>
+                    <div class="user-stats">发帖: 211<br>积分: 650</div>
+                </div>
+                <div class="post-right">
+                    <div class="post-info">发表于 2026-06-21 09:05:14 <span class="floor-num">5楼</span></div>
+                    <div class="content">
+                        在传统数术里，想要精确推演天道，是需要支付“代价”的。<br>
+                        如果她用的算法核心，真的是从十多年前某个被封锁的诡异端口里提取出来的……那她接通的根本不是什么开源数据库，而是一个数字化的赛博祭坛。<br>
+                        所谓的“血肉飞升星盘”，正在利用算力索要物理层面的“肉身”作为祭品。楼上说她买生肉……希望只是用来喂流浪猫的。
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div style="text-align: right; padding-bottom: 20px;">
+            <span style="border:1px solid #9CB8CC; padding:3px 8px; background:#FFF; color:#0055AA; font-weight:bold;">1</span>
+            <a href="#" style="border:1px solid #9CB8CC; padding:3px 8px; background:#E5EDF2;">2</a>
+            <a href="#" style="border:1px solid #9CB8CC; padding:3px 8px; background:#E5EDF2;">下一页</a>
+        </div>
+    </div>
+
+    <div class="sidebar">
+        <div class="side-box">
+            <div class="side-title">最新校园热门</div>
+            <ul class="side-content">
+                <li><a href="#">食堂三楼的阿姨手又抖了，排骨全掉锅里</a></li>
+                <li><a href="#">求一份历年《高数（上）》期末卷子，救急！</a></li>
+                <li><a href="#">表白墙：昨天在图书馆二楼靠窗穿白裙子的女生</a></li>
+                <li><a href="#">吐槽！本学期关于晚归断电的新规定太坑了</a></li>
+                <li><a href="#">急出大四考研资料，半卖半送</a></li>
+            </ul>
+        </div>
+        
+        <div class="side-box">
+            <div class="side-title">论坛公告板</div>
+            <div style="padding: 10px; line-height: 1.6; color: #666; font-size: 12px;">
+                1. 严禁发布未经证实的小道消息。<br>
+                2. 交易区请警惕网络诈骗。<br>
+                3. 本周末机房维护，BBS 将在凌晨 2:00-5:00 暂停访问。
+            </div>
+        </div>
+    </div>
+</div>
+
 </body>
 </html>
