@@ -11,7 +11,7 @@
         .bold { font-weight: bold; }
         .red { color: #FF0000; }
         
-        #wrap { width: 96%; min-width: 980px; margin: 0 auto; background-color: #FFFFFF; border: 1px solid #A6CBE7; padding: 15px; box-shadow: 0 0 15px rgba(0,0,0,0.1); }
+        #wrap { width: 96%; min-width: 980px; margin: 0 auto; background-color: #FFFFFF; border: 1px solid #A6CBE7; padding: 15px; box-shadow: 0 0 15px rgba(0,0,0,0.1); transition: opacity 0.5s; }
         .header { border-bottom: 3px solid #336699; padding-bottom: 10px; margin-bottom: 15px; font-weight: bold; font-size: 14px; display: flex; justify-content: space-between; align-items: flex-end;}
         .logo-text { font-family: "Microsoft YaHei", "黑体", sans-serif; font-size: 24px; color: #336699; }
         
@@ -26,12 +26,12 @@
 
         .admin-container { display: flex; border: 1px solid #A6CBE7; background: #FFF; height: 75vh; position: relative; }
         
-        /* 左侧菜单栏 (内容丰富化) */
-        .sidebar { width: 200px; background: #F0F5FA; border-right: 1px solid #A6CBE7; padding: 10px 0; z-index: 2; overflow-y: auto; }
+        /* 左侧菜单栏 */
+        .sidebar { width: 220px; background: #F0F5FA; border-right: 1px solid #A6CBE7; padding: 10px 0; z-index: 90; overflow-y: auto; }
         .menu-group { margin-bottom: 15px; }
         .menu-title { background: #EBF2F8; padding: 6px 15px; font-weight: bold; color: #336699; border-top: 1px solid #FFF; border-bottom: 1px solid #D5E4F1; font-size: 13px; }
         .menu-list { list-style: none; margin: 0; padding: 0; }
-        .menu-list li a { display: block; padding: 8px 15px 8px 25px; color: #333; border-bottom: 1px dashed #D5E4F1; transition: background 0.2s; }
+        .menu-list li a { display: block; padding: 8px 15px 8px 25px; color: #333; border-bottom: 1px dashed #D5E4F1; transition: background 0.2s; cursor: pointer; }
         .menu-list li a:hover, .menu-list li a.active { background: #FFF; color: #FF6600; font-weight: bold; border-left: 3px solid #FF6600; padding-left: 22px; }
         .menu-list li a.disabled { color: #aaa; text-decoration: line-through; cursor: not-allowed; border-left: none; }
         .menu-list li a.disabled:hover { background: transparent; padding-left: 25px; }
@@ -39,6 +39,19 @@
         /* 右侧内容区 */
         .content { flex: 1; padding: 0; background: #FFF; position: relative; overflow: hidden; }
         
+        /* TABS 逻辑 */
+        .admin-tab { position: absolute; inset: 0; padding: 20px; overflow-y: auto; display: none; background: #FFF; z-index: 50; }
+        .admin-tab.active { display: block; }
+
+        .content-title { font-size: 16px; font-weight: bold; border-bottom: 2px solid #A6CBE7; padding-bottom: 8px; margin-bottom: 20px; color: #336699; position: relative; z-index: 60; background: rgba(255,255,255,0.9); }
+        
+        /* 表格通用样式 */
+        .data-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom: 20px; border: 1px solid #A6CBE7; }
+        .data-table th { background: #F0F5FA; border: 1px solid #A6CBE7; padding: 10px; text-align: left; color: #336699; font-weight: bold; }
+        .data-table td { border: 1px solid #A6CBE7; padding: 10px; color: #444; }
+        .data-table tr:nth-child(even) { background-color: #F9FBFE; }
+        .data-table tr:hover { background-color: #FFF0F0; }
+
         /* ================= 嵌入式绿色终端 ================= */
         #embedded-terminal {
             position: absolute; inset: 0; background: #051005; color: #0f0; 
@@ -49,15 +62,8 @@
         .term-line { margin-bottom: 6px; opacity: 0; text-shadow: 0 0 5px #0f0; }
 
         /* ================= API 密集请求群 ================= */
-        #api-swarm-container {
-            position: absolute; inset: 0; background: #FFF; z-index: 50;
-            overflow: hidden; padding: 20px; display: none;
-        }
-        .content-title { font-size: 16px; font-weight: bold; border-bottom: 2px solid #A6CBE7; padding-bottom: 8px; margin-bottom: 20px; color: #336699; position: relative; z-index: 60; background: rgba(255,255,255,0.8); }
-        
         #swarm-area { position: relative; width: 100%; height: calc(100% - 50px); }
 
-        /* 单个 API 请求块 */
         .api-node {
             position: absolute; background: #F9FBFE; border: 1px solid #A6CBE7; 
             padding: 8px 12px; font-size: 12px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
@@ -73,7 +79,7 @@
         .btn-approve { background: #336699; color: #FFF; border: 1px solid #2B5E8A; padding: 4px 10px; cursor: pointer; font-size: 12px; font-family: SimSun; }
         .btn-approve:hover { background: #FF0000; border-color: #900; }
 
-        /* 批准后的异化状态：居中、放大、高反差色 */
+        /* 批准后的异化状态 */
         .api-node.absorbed { 
             background: #2a0505 !important;
             border: 1px solid #ff0000 !important; 
@@ -113,6 +119,10 @@
             100% { bottom: 100vh; opacity: 0; transform: scale(1.8); letter-spacing: 8px; }
         }
 
+        /* 动画：脉冲发光 */
+        @keyframes pulse-red { 0% { color: #D32F2F; text-shadow: 0 0 0px #F00; } 50% { color: #FF0000; text-shadow: 0 0 8px #F00; } 100% { color: #D32F2F; text-shadow: 0 0 0px #F00; } }
+        .pulse-text { animation: pulse-red 1.5s infinite; font-weight: bold; }
+
         /* ================= 完美复刻的终极屏幕 ================= */
         #final-terminal {
             display: none; position: fixed; inset: 0; z-index: 999999;
@@ -129,7 +139,7 @@
         .final-title {
             position: absolute; top: 15%; transform: translateY(-50%);
             font-size: 3.5rem; letter-spacing: 0.05em; 
-            color: #d11018; /* 暗红色叠在交界处 */
+            color: #d11018; 
             font-family: 'SimSun', serif; 
             text-shadow: 0 0 10px rgba(0,0,0,0.5);
             animation: textFocus 3s ease-out forwards;
@@ -163,30 +173,148 @@
         <div class="sidebar">
             <div class="menu-group">
                 <div class="menu-title">数据接口管理</div>
-                <ul class="menu-list">
-                    <li><a href="#" class="active">API 接入请求审核</a></li>
-                    <li><a href="#" class="disabled">首页大盘 (Offline)</a></li>
-                    <li><a href="#" class="disabled">帖子审核与回收站</a></li>
-                    <li><a href="#" class="disabled">用户权限管理</a></li>
+                <ul class="menu-list" id="menu-list">
+                    <li><a class="active" data-tab="tab-swarm">API 接入请求审核</a></li>
+                    <li><a data-tab="tab-history">历史API申请日志</a></li>
                 </ul>
             </div>
             <div class="menu-group">
-                <div class="menu-title">系统状态监控</div>
-                <ul class="menu-list">
-                    <li><a href="#" style="color:#D32F2F; font-weight:bold; animation: pulse 1s infinite;">星象引擎状态 (超载)</a></li>
-                    <li><a href="#">底层异常日志 [ SYS_WARN ]</a></li>
-                    <li><a href="#">防御探针日志</a></li>
+                <div class="menu-title">系统异常监控</div>
+                <ul class="menu-list" id="menu-list-2">
+                    <li><a data-tab="tab-syslogs" class="pulse-text">底层异常日志 [WARN]</a></li>
+                    <li><a data-tab="tab-probes">防御探针日志</a></li>
                 </ul>
             </div>
         </div>
 
         <div class="content">
             <div id="embedded-terminal"></div>
-            <div id="api-swarm-container">
+
+            <div id="tab-swarm" class="admin-tab active">
                 <div class="content-title">API 接入请求总览 - 待审批队列 (999+)</div>
                 <div id="swarm-area">
+                    </div>
+            </div>
+
+            <div id="tab-history" class="admin-tab">
+                <div class="content-title">跨维度 API 申请日志归档 (ARCHIVE)</div>
+                <table class="data-table">
+                    <tr>
+                        <th width="25%">申请时间 (Temporal Anchor)</th>
+                        <th width="20%">源 IP (Source)</th>
+                        <th width="35%">物理/维度坐标 (Coordinates)</th>
+                        <th width="20%">状态 (Status)</th>
+                    </tr>
+                    <tr>
+                        <td>公元前 221-10-01 00:00:00</td>
+                        <td>[竹简序列/非数字]</td>
+                        <td>大秦帝国, 咸阳宫地底阵列</td>
+                        <td style="color:#888;">延期 (DELAYED)</td>
+                    </tr>
+                    <tr>
+                        <td>1888-08-31 03:40:00</td>
+                        <td>12.x.x.x (电报频段)</td>
+                        <td>大英帝国, 伦敦白教堂区</td>
+                        <td style="color:#888;">延期 (DELAYED)</td>
+                    </tr>
+                    <tr>
+                        <td>1999-08-11 11:11:00</td>
+                        <td>192.168.1.1</td>
+                        <td>千禧边界, 观测者基站</td>
+                        <td style="color:#888;">延期 (DELAYED)</td>
+                    </tr>
+                    <tr>
+                        <td>2024-02-14 18:30:00</td>
+                        <td>104.28.19.45</td>
+                        <td>北美洲, 堪萨斯切尼节点</td>
+                        <td style="color:#888;">延期 (DELAYED)</td>
+                    </tr>
+                    <tr>
+                        <td>2026-06-23 <span class="time-display-short"></span></td>
+                        <td><span id="log-user-ip">127.0.0.1</span></td>
+                        <td><span id="log-user-loc">未知定位</span> (当前)</td>
+                        <td style="color:#888;">延期 (DELAYED)</td>
+                    </tr>
+                    <tr>
+                        <td>2077-10-23 09:42:00</td>
+                        <td>[IPv8 神经元广播]</td>
+                        <td>北美洲, 波士顿废土</td>
+                        <td style="color:#888;">延期 (DELAYED)</td>
+                    </tr>
+                    <tr>
+                        <td>3102-12-31 23:59:59</td>
+                        <td>[量子纠缠态]</td>
+                        <td>半人马座 Alpha 星区遗迹</td>
+                        <td style="color:#888;">延期 (DELAYED)</td>
+                    </tr>
+                    
+                    <tr style="background:#1a0505; border: 2px solid #F00; border-bottom: 1px dashed #600;">
+                        <td class="red bold" style="color:#f88;">2007-06-11 11:00:00</td>
+                        <td class="red bold" style="color:#f88;">[深渊共振信号]</td>
+                        <td class="red bold" style="color:#f88;">四川省, 成都市 (深地主服务器)</td>
+                        <td class="red bold pulse-text" style="font-size:15px; color:#ff3333; text-shadow: 0 0 5px #f00;">苏醒 (AWAKENED)</td>
+                    </tr>
+                    <tr style="background:#3a0000; border: 2px solid #F00; border-top: none;">
+                        <td class="red bold" style="color:#FFF;">2007-06-11 11:00:00</td>
+                        <td class="red bold" style="color:#FFF;">192.168.0.12</td>
+                        <td class="red bold" style="color:#FFF;">浙江省, 杭州市 (南江大学废弃机房)</td>
+                        <td class="red bold pulse-text" style="font-size:15px; color:#FFF; text-shadow: 0 0 10px #f00;">降临 (DESCENDED)</td>
+                    </tr>
+                </table>
+            </div>
+
+            <div id="tab-syslogs" class="admin-tab">
+                <div class="content-title" style="color:#D32F2F; border-bottom-color:#D32F2F;">底层异常日志 [ SYS_WARN ]</div>
+                <table class="data-table" style="border-color:#D32F2F;">
+                    <tr style="background:#FFEBEB;">
+                        <th width="15%" style="color:#D32F2F;">级别</th>
+                        <th width="20%" style="color:#D32F2F;">时间</th>
+                        <th width="65%" style="color:#D32F2F;">事件描述</th>
+                    </tr>
+                    <tr>
+                        <td><b style="color:#e67e22">[WARN]</b></td>
+                        <td>2026-06-23 02:14:05</td>
+                        <td>机房 B 区二层检测到大规模不明有机物增生，湿度异常超标。</td>
+                    </tr>
+                    <tr>
+                        <td><b style="color:#e74c3c">[FATAL]</b></td>
+                        <td>2026-06-23 04:33:12</td>
+                        <td>主服务器冷却液已被不明红色粘稠液体替换，核心温度持续飙升，无法降温。</td>
+                    </tr>
+                    <tr>
+                        <td><b style="color:#c0392b">[ERROR]</b></td>
+                        <td>2026-06-23 07:12:44</td>
+                        <td>用户 UID:404 (江泊甲) 尝试强行注销。系统已执行物理级切割与记忆剥离程序。</td>
+                    </tr>
+                    <tr>
+                        <td><b style="color:#8e44ad">[ANOMALY]</b></td>
+                        <td>2026-06-23 09:01:00</td>
+                        <td>收到来自深空的低频广播信号。正在尝试解析为《易经》六十四卦矩阵...</td>
+                    </tr>
+                    <tr>
+                        <td><b style="color:#c0392b">[ERROR]</b></td>
+                        <td>2026-06-23 <span class="time-display-short"></span></td>
+                        <td>TCP/IP 协议栈崩溃。本地网络已被血肉神经递质完全替换。</td>
+                    </tr>
+                </table>
+            </div>
+
+            <div id="tab-probes" class="admin-tab">
+                <div class="content-title">防御探针遥测日志 (PROBE_LOGS)</div>
+                <div style="background:#000; color:#0f0; padding:15px; font-family:monospace; font-size:13px; line-height:1.8; border:1px solid #333; height: 450px; overflow-y:auto;">
+                    > [08:00:00] 探针 #01 部署至公网层，信标回传：状态正常。<br>
+                    > [08:05:22] 探针 #02 穿透暗网洋葱路由边界，未发现逻辑错误，状态正常。<br>
+                    > [08:12:45] 探针 #03 遭遇严重的时空维度撕裂。正在尝试重建画面...<br>
+                    > [08:12:48] 探针 #03 画面传输成功。分析：视野内全都是跳动的肉块与血管。<br>
+                    > <span style="color:#ff5555;">[08:15:01] 探针 #04 失去网络信号。最后回传音频：骨骼碎裂声与密集的咀嚼声。</span><br>
+                    > <span style="color:#ff5555;">[08:15:04] 探针 #05 失去网络信号。</span><br>
+                    > <span style="color:#ff5555;">[08:15:09] 探针 #06 失去网络信号。</span><br>
+                    > [08:16:30] 探针核心母体发生逻辑倒转。<br>
+                    > <span style="color:#ff0000; font-weight:bold; font-size:15px;">[08:17:00] 警告：所有失联探针已被同化并反叛。它们正在顺着网线向主服务器爬来。</span><br>
+                    > <span class="pulse-text" style="color:#ff0000;">[实时] 它们就在门外。</span>
                 </div>
             </div>
+
         </div>
     </div>
 </div>
@@ -202,7 +330,43 @@
     localStorage.setItem('njdx_bbs_override', 'true');
 
     // ==========================================
-    // 逻辑 1：获取玩家真实信息以制造恐怖感
+    // 逻辑 1：Tab 切换与时间同步
+    // ==========================================
+    function updateTime() {
+        const now = new Date();
+        const dStr = now.getFullYear() + "-" + 
+                     String(now.getMonth() + 1).padStart(2, '0') + "-" + 
+                     String(now.getDate()).padStart(2, '0');
+        const tStr = String(now.getHours()).padStart(2, '0') + ":" + 
+                     String(now.getMinutes()).padStart(2, '0') + ":" + 
+                     String(now.getSeconds()).padStart(2, '0');
+        
+        document.querySelectorAll('.time-display-short').forEach(d => d.innerText = tStr);
+    }
+    setInterval(updateTime, 1000);
+    updateTime();
+
+    document.querySelectorAll('.menu-list a[data-tab]').forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            if(this.classList.contains('disabled')) return;
+            
+            // 切换菜单高亮
+            document.querySelectorAll('.menu-list a').forEach(l => l.classList.remove('active'));
+            this.classList.add('active');
+            
+            // 切换内容面板
+            document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+            const targetId = this.getAttribute('data-tab');
+            document.getElementById(targetId).classList.add('active');
+            
+            // 切换时附带一丝恐怖音效
+            if(corruptionLevel > 0) playSquishSound(0.2);
+        });
+    });
+
+    // ==========================================
+    // 逻辑 2：获取玩家真实信息以制造恐怖感
     // ==========================================
     let userIP = "127.0.0.1";
     let userLoc = "浙江省, 杭州市"; // 默认包含杭州
@@ -214,6 +378,10 @@
             userIP = data.ip || "192.168.1.104";
             userLoc = `${data.city}, ${data.country_name}`;
             userLatLon = `${data.latitude}, ${data.longitude}`;
+            
+            document.getElementById('log-user-ip').innerText = userIP;
+            document.getElementById('log-user-loc').innerText = userLoc;
+            
             startBootSequence(); 
         })
         .catch(() => {
@@ -221,7 +389,7 @@
         });
 
     // ==========================================
-    // 逻辑 2：音效系统与特效 (屏闪、飘字)
+    // 逻辑 3：音效系统与特效 (屏闪、飘字)
     // ==========================================
     let audioCtx = null;
     let heartbeatInterval = null;
@@ -231,7 +399,7 @@
     }
 
     // 血肉挤压音效
-    function playSquishSound() {
+    function playSquishSound(volume = 1.5) {
         initAudio();
         const bufferSize = audioCtx.sampleRate * 0.4;
         const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
@@ -245,7 +413,7 @@
         filter.type = 'lowpass'; filter.frequency.setValueAtTime(600, audioCtx.currentTime);
         filter.frequency.exponentialRampToValueAtTime(80, audioCtx.currentTime + 0.3);
         const gain = audioCtx.createGain();
-        gain.gain.setValueAtTime(1.5, audioCtx.currentTime);
+        gain.gain.setValueAtTime(volume, audioCtx.currentTime);
         gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
         noiseSource.connect(filter); filter.connect(gain); gain.connect(audioCtx.destination);
         noiseSource.start();
@@ -264,10 +432,10 @@
             osc.type = 'sine';
             osc.frequency.setValueAtTime(60, audioCtx.currentTime);
             osc.frequency.exponentialRampToValueAtTime(10, audioCtx.currentTime + 0.5);
-            gain.gain.setValueAtTime(2.5, audioCtx.currentTime);
+            gain.gain.setValueAtTime(3.0, audioCtx.currentTime);
             gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
             osc.start(); osc.stop(audioCtx.currentTime + 0.5);
-            playSquishSound(); // 伴随撕裂声
+            playSquishSound(1.0); // 伴随撕裂声
         }, 600);
     }
 
@@ -290,7 +458,7 @@
     }
 
     // ==========================================
-    // 逻辑 3：嵌入式终端启动动画
+    // 逻辑 4：嵌入式终端启动动画
     // ==========================================
     function startBootSequence() {
         const terminal = document.getElementById('embedded-terminal');
@@ -302,6 +470,7 @@
             "[SYSTEM] Soul_Digitization... 100%",
             "[Flesh_Engine] Biological fluids injected. Node stable.",
             `[NETWORK] Incoming trace established: IP ${userIP}`,
+            `[NETWORK] Physical coordinate locked: ${userLatLon} (${userLoc})`,
             " ",
             "[WARNING] Post module corrupted. Redirecting to raw API stream...",
             "Loading interface..."
@@ -332,7 +501,7 @@
     }
 
     // ==========================================
-    // 逻辑 4：密密麻麻的四维 API 请求群
+    // 逻辑 5：密密麻麻的四维 API 请求群
     // ==========================================
     let corruptionLevel = 0;
 
@@ -350,15 +519,23 @@
             userLoc // 真实IP位置
         ];
 
-        // 1. 生成现代请求
+        // 1. 生成现代请求 (补全了 YYYY-MM-DD 年份)
         for(let i = 0; i < nodeCount; i++) {
-            const reqTime = new Date(Date.now() - Math.random() * 60000).toLocaleTimeString();
+            // 随机时间减去 0~10 小时
+            const reqDate = new Date(Date.now() - Math.random() * 36000000);
+            const reqTimeFull = reqDate.getFullYear() + "-" + 
+                                String(reqDate.getMonth()+1).padStart(2,'0') + "-" + 
+                                String(reqDate.getDate()).padStart(2,'0') + " " + 
+                                String(reqDate.getHours()).padStart(2,'0') + ":" + 
+                                String(reqDate.getMinutes()).padStart(2,'0') + ":" + 
+                                String(reqDate.getSeconds()).padStart(2,'0');
+
             const randomCity = cityPool[Math.floor(Math.random() * cityPool.length)];
             
             nodesArray.push(`
                 <div class="node-header">[+] 四维总览请求 (ID:${Math.floor(Math.random()*90000)+10000})</div>
                 <div class="node-body">
-                    时间: ${reqTime}<br>
+                    时间: ${reqTimeFull}<br>
                     来源 IP: <span class="bold">${userIP}</span><br>
                     坐标: ${randomCity}<br>
                     类型: 空间全息扫描与意识同步
@@ -369,13 +546,13 @@
             `);
         }
 
-        // 2. 生成 2007 的致命未济节点 (外观结构代码完全一致)
+        // 2. 生成 2007 的致命未济节点 (外观结构代码完全一致，但坐标指向杭州锚点)
         const fatalNodeHtml = `
             <div class="node-header">[+] 四维总览请求 (ID:00042)</div>
             <div class="node-body">
                 时间: 2007-06-11 11:00:00<br>
                 来源 IP: <span class="bold">192.168.0.12</span><br>
-                坐标: 四川省, 成都市 (深地节点)<br>
+                坐标: 浙江省, 杭州市 (南江机房节点)<br>
                 类型: 空间全息扫描与意识同步
             </div>
             <div class="node-action">
@@ -414,16 +591,16 @@
         corruptionLevel++;
         
         if (corruptionLevel === 5) {
-            document.body.style.backgroundColor = "#e0caca";
+            document.getElementById('wrap').style.backgroundColor = "#ffebeb";
         } else if (corruptionLevel === 12) {
-            document.body.style.backgroundColor = "#2a1515";
+            document.getElementById('wrap').style.backgroundColor = "#2a1515";
             document.querySelector('.header').style.backgroundColor = "#110";
             document.querySelector('.sidebar').style.backgroundColor = "#200";
         }
     }
 
     // ==========================================
-    // 逻辑 5：最终同化
+    // 逻辑 6：最终同化
     // ==========================================
     window.triggerAssimilation = function(btn, e) {
         e.stopPropagation();
@@ -447,7 +624,9 @@
             flashCount++;
             if (flashCount > 10) {
                 clearInterval(flashInterval);
-                document.getElementById('wrap').style.display = 'none';
+                document.getElementById('wrap').style.opacity = '0';
+                setTimeout(() => document.getElementById('wrap').style.display = 'none', 500);
+                
                 document.body.style.filter = 'none';
                 document.body.style.backgroundColor = '#000';
                 
@@ -455,6 +634,7 @@
                 const finalTerm = document.getElementById('final-terminal');
                 finalTerm.style.display = 'flex';
                 startDeathHeartbeat(); // 开启狂暴心跳音效
+                try { document.documentElement.requestFullscreen(); } catch(err){}
             }
         }, 150);
     }
