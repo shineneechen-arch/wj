@@ -11,7 +11,7 @@
         .bold { font-weight: bold; }
         .red { color: #FF0000; }
         
-        #wrap { width: 96%; min-width: 980px; margin: 0 auto; background-color: #FFFFFF; border: 1px solid #A6CBE7; padding: 15px; box-shadow: 0 0 15px rgba(0,0,0,0.1); transition: opacity 0.5s; }
+        #wrap { width: 96%; min-width: 980px; margin: 0 auto; background-color: #FFFFFF; border: 1px solid #A6CBE7; padding: 15px; box-shadow: 0 0 15px rgba(0,0,0,0.1); transition: opacity 0.5s, background-color 1s; }
         .header { border-bottom: 3px solid #336699; padding-bottom: 10px; margin-bottom: 15px; font-weight: bold; font-size: 14px; display: flex; justify-content: space-between; align-items: flex-end;}
         .logo-text { font-family: "Microsoft YaHei", "黑体", sans-serif; font-size: 24px; color: #336699; }
         
@@ -191,6 +191,13 @@
         @keyframes textFocus-extreme {
             100% { filter: blur(0px); transform: translateY(-50%) scale(1.02); }
         }
+
+        /* 异化后的退出按钮样式 */
+        .btn-corrupted {
+            background: #4a0000 !important; color: #ff5555 !important; border-color: #ff0000 !important;
+            box-shadow: 0 0 10px #f00; font-weight: 900; text-shadow: 0 0 5px #f00; letter-spacing: 2px;
+        }
+        .btn-corrupted:hover { background: #ff0000 !important; color: #fff !important; }
     </style>
 </head>
 <body>
@@ -202,7 +209,7 @@
         <div class="logo-text">星火BBS 核心控制面板 (CORE_UPLINK)</div>
         <div>
             登录人：<span class="bold red">26级_既济 (admin)</span> &nbsp;|&nbsp; 
-            <button onclick="window.location.href='bbs_2026_home.html'" class="btn-close-return"><span>X</span> 返回主站</button>
+            <button id="btn-return" onclick="window.location.href='bbs_2026_home.html'" class="btn-close-return"><span>X</span> 返回主站</button>
         </div>
     </div>
 
@@ -242,8 +249,7 @@
 
             <div id="tab-swarm" class="admin-tab active">
                 <div class="content-title">API 接入请求总览 - 待审批队列 (999+)</div>
-                <div id="swarm-area">
-                </div>
+                <div id="swarm-area"></div>
             </div>
 
             <div id="tab-history" class="admin-tab">
@@ -449,12 +455,9 @@
 </div>
 
 <script type="text/javascript">
-    // 写入缓存，解锁首页控制面板
+    // 基础标记（如果主站原本是用这个字段判定的，保留它）
     localStorage.setItem('njdx_bbs_override', 'true');
 
-    // ==========================================
-    // 逻辑 1：Tab 切换与实时时间
-    // ==========================================
     function updateTime() {
         const now = new Date();
         const tStr = String(now.getHours()).padStart(2, '0') + ":" + 
@@ -465,7 +468,6 @@
     setInterval(updateTime, 1000);
     updateTime();
 
-    // 新增：动态渲染探针的本地相对时间
     function updateProbeTimes() {
         const now = new Date();
         document.querySelectorAll('.probe-time').forEach(el => {
@@ -483,21 +485,15 @@
         link.addEventListener('click', function(e) {
             e.preventDefault();
             if(this.classList.contains('disabled')) return;
-            
             document.querySelectorAll('.menu-list a').forEach(l => l.classList.remove('active'));
             this.classList.add('active');
-            
             document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
             const targetId = this.getAttribute('data-tab');
             document.getElementById(targetId).classList.add('active');
-            
             if(corruptionLevel > 0) playSquishSound(0.2);
         });
     });
 
-    // ==========================================
-    // 逻辑 2：获取玩家真实信息以制造恐怖感
-    // ==========================================
     let userIP = "127.0.0.1";
     let userLoc = "浙江省, 杭州市";
     let userLatLon = "30.2741, 120.1551";
@@ -508,19 +504,12 @@
             userIP = data.ip || "192.168.1.104";
             userLoc = `${data.city}, ${data.country_name}`;
             userLatLon = `${data.latitude}, ${data.longitude}`;
-            
             document.getElementById('log-user-ip').innerText = userIP;
             document.getElementById('log-user-loc').innerText = userLoc;
-            
             startBootSequence(); 
         })
-        .catch(() => {
-            startBootSequence(); 
-        });
+        .catch(() => { startBootSequence(); });
 
-    // ==========================================
-    // 逻辑 3：音效系统与特效 (屏闪、飘字)
-    // ==========================================
     let audioCtx = null;
     let heartbeatInterval = null;
     function initAudio() {
@@ -533,11 +522,8 @@
         const bufferSize = audioCtx.sampleRate * 0.4;
         const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
         const data = buffer.getChannelData(0);
-        for (let i = 0; i < bufferSize; i++) {
-            data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (audioCtx.sampleRate * 0.05));
-        }
-        const noiseSource = audioCtx.createBufferSource();
-        noiseSource.buffer = buffer;
+        for (let i = 0; i < bufferSize; i++) { data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (audioCtx.sampleRate * 0.05)); }
+        const noiseSource = audioCtx.createBufferSource(); noiseSource.buffer = buffer;
         const filter = audioCtx.createBiquadFilter();
         filter.type = 'lowpass'; filter.frequency.setValueAtTime(600, audioCtx.currentTime);
         filter.frequency.exponentialRampToValueAtTime(80, audioCtx.currentTime + 0.3);
@@ -552,281 +538,137 @@
         initAudio();
         if (heartbeatInterval) clearInterval(heartbeatInterval);
         heartbeatInterval = setInterval(() => {
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            const filter = audioCtx.createBiquadFilter();
+            const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain(); const filter = audioCtx.createBiquadFilter();
             filter.type = 'lowpass'; filter.frequency.value = 150;
             osc.connect(filter); filter.connect(gain); gain.connect(audioCtx.destination);
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(60, audioCtx.currentTime);
-            osc.frequency.exponentialRampToValueAtTime(10, audioCtx.currentTime + 0.5);
-            gain.gain.setValueAtTime(3.0, audioCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
+            osc.type = 'sine'; osc.frequency.setValueAtTime(60, audioCtx.currentTime); osc.frequency.exponentialRampToValueAtTime(10, audioCtx.currentTime + 0.5);
+            gain.gain.setValueAtTime(3.0, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
             osc.start(); osc.stop(audioCtx.currentTime + 0.5);
             playSquishSound(1.2); 
         }, 500); 
     }
 
     function triggerFlash() {
-        const overlay = document.getElementById('flash-overlay');
-        overlay.style.opacity = '0.7';
+        const overlay = document.getElementById('flash-overlay'); overlay.style.opacity = '0.7';
         setTimeout(() => { overlay.style.opacity = '0'; }, 80);
     }
 
     function spawnFloatingText() {
-        const textNode = document.createElement('div');
-        textNode.className = 'floating-text';
-        textNode.innerText = "Api已被接入";
-        const randomLeft = 20 + Math.random() * 60; 
-        textNode.style.left = `${randomLeft}%`;
+        const textNode = document.createElement('div'); textNode.className = 'floating-text'; textNode.innerText = "Api已被接入";
+        const randomLeft = 20 + Math.random() * 60; textNode.style.left = `${randomLeft}%`;
         document.body.appendChild(textNode);
-        setTimeout(() => {
-            if(textNode.parentNode) textNode.remove();
-        }, 3600);
+        setTimeout(() => { if(textNode.parentNode) textNode.remove(); }, 3600);
     }
 
-    // ==========================================
-    // 逻辑 4：嵌入式终端启动动画
-    // ==========================================
     function startBootSequence() {
         const terminal = document.getElementById('embedded-terminal');
         const logs = [
-            "BBS_CORE_KERNEL [Version 6.1.7600]",
-            "(c) 2007 NanJiang University. All rights reserved.",
-            " ",
-            "C:\\SYS> node_connect --override",
-            "[SYSTEM] Soul_Digitization... 100%",
-            "[Flesh_Engine] Biological fluids injected. Node stable.",
-            `[NETWORK] Incoming trace established: IP ${userIP}`,
-            `[NETWORK] Physical coordinate locked: ${userLatLon} (${userLoc})`,
-            " ",
-            "[WARNING] Post module corrupted. Redirecting to raw API stream...",
-            "Loading interface..."
+            "BBS_CORE_KERNEL [Version 6.1.7600]", "(c) 2007 NanJiang University. All rights reserved.", " ",
+            "C:\\SYS> node_connect --override", "[SYSTEM] Soul_Digitization... 100%", "[Flesh_Engine] Biological fluids injected. Node stable.",
+            `[NETWORK] Incoming trace established: IP ${userIP}`, `[NETWORK] Physical coordinate locked: ${userLatLon} (${userLoc})`, " ",
+            "[WARNING] Post module corrupted. Redirecting to raw API stream...", "Loading interface..."
         ];
-
         let delay = 0;
         logs.forEach((log, index) => {
             setTimeout(() => {
-                const line = document.createElement('div');
-                line.className = 'term-line';
-                line.innerHTML = log;
-                terminal.appendChild(line);
-                setTimeout(() => line.style.opacity = '1', 50);
-                terminal.scrollTop = terminal.scrollHeight;
-
+                const line = document.createElement('div'); line.className = 'term-line'; line.innerHTML = log;
+                terminal.appendChild(line); setTimeout(() => line.style.opacity = '1', 50); terminal.scrollTop = terminal.scrollHeight;
                 if (index === logs.length - 1) {
-                    setTimeout(() => {
-                        terminal.style.opacity = '0';
-                        setTimeout(() => {
-                            terminal.style.display = 'none';
-                            initApiSwarm(); 
-                        }, 1000);
-                    }, 1200);
+                    setTimeout(() => { terminal.style.opacity = '0'; setTimeout(() => { terminal.style.display = 'none'; initApiSwarm(); }, 1000); }, 1200);
                 }
-            }, delay);
-            delay += 250 + Math.random() * 250;
+            }, delay); delay += 250 + Math.random() * 250;
         });
     }
 
-    // ==========================================
-    // 逻辑 5：密密麻麻的四维 API 请求群与【关键双节点】
-    // ==========================================
     let corruptionLevel = 0;
 
     function initApiSwarm() {
-        initAudio(); 
-        const swarmArea = document.getElementById('swarm-area');
-        
-        // 稍微减少普通节点的数量，确保关键节点更醒目
-        const nodeCount = 35; 
-        let nodesArray = [];
-        
-        const cityPool = [
-            "CHN_BEIJING_CAPITAL (北京市)", 
-            "CHN_SHANGHAI_NODE (上海市)", 
-            "USA_NEW_YORK (纽约)",
-            "GBR_LONDON (伦敦)",
-            userLoc
-        ];
+        initAudio(); const swarmArea = document.getElementById('swarm-area');
+        const nodeCount = 35; let nodesArray = [];
+        const cityPool = [ "CHN_BEIJING_CAPITAL (北京市)", "CHN_SHANGHAI_NODE (上海市)", "USA_NEW_YORK (纽约)", "GBR_LONDON (伦敦)", userLoc ];
 
-        // 生成普通干扰节点
         for(let i = 0; i < nodeCount; i++) {
             const reqDate = new Date(Date.now() - Math.random() * 36000000);
-            const reqTimeFull = reqDate.getFullYear() + "-" + 
-                                String(reqDate.getMonth()+1).padStart(2,'0') + "-" + 
-                                String(reqDate.getDate()).padStart(2,'0') + " " + 
-                                String(reqDate.getHours()).padStart(2,'0') + ":" + 
-                                String(reqDate.getMinutes()).padStart(2,'0') + ":" + 
-                                String(reqDate.getSeconds()).padStart(2,'0');
-
+            const reqTimeFull = reqDate.getFullYear() + "-" + String(reqDate.getMonth()+1).padStart(2,'0') + "-" + String(reqDate.getDate()).padStart(2,'0') + " " + String(reqDate.getHours()).padStart(2,'0') + ":" + String(reqDate.getMinutes()).padStart(2,'0') + ":" + String(reqDate.getSeconds()).padStart(2,'0');
             const randomCity = cityPool[Math.floor(Math.random() * cityPool.length)];
             const fakeIP = `${Math.floor(Math.random()*255)}.${Math.floor(Math.random()*255)}.${Math.floor(Math.random()*255)}.x`;
-            
             nodesArray.push({
-                html: `
-                <div class="node-header">[+] 四维总览请求 (ID:${Math.floor(Math.random()*90000)+10000})</div>
-                <div class="node-body">
-                    时间: ${reqTimeFull}<br>
-                    来源 IP: <span class="bold">${fakeIP}</span><br>
-                    节点坐标: ${randomCity}<br>
-                    类型: 空间全息扫描与意识同步
-                </div>
-                <div class="node-action">
-                    <button class="btn-approve" onclick="absorbNode(this, event)">批准请求</button>
-                </div>
-                `,
+                html: `<div class="node-header">[+] 四维总览请求 (ID:${Math.floor(Math.random()*90000)+10000})</div><div class="node-body">时间: ${reqTimeFull}<br>来源 IP: <span class="bold">${fakeIP}</span><br>节点坐标: ${randomCity}<br>类型: 空间全息扫描与意识同步</div><div class="node-action"><button class="btn-approve" onclick="absorbNode(this, event)">批准请求</button></div>`,
                 isKey: false
             });
         }
 
-        // ==========================================
-        // 关键节点 1：2007年6月11日 浙江杭州 (过去的降临)
-        // ==========================================
         const fatalNodeHtml2007 = {
-            html: `
-            <div class="node-header" style="color:#d32f2f; border-bottom: 1px dashed #d32f2f;">[!] 核心协议请求 (ID:00042)</div>
-            <div class="node-body">
-                时间: <span class="bold red">2007-06-11 11:00:00</span><br>
-                来源 IP: <span class="bold">192.168.0.12</span><br>
-                节点坐标: <span class="bold" style="color:#d32f2f;">CHN_ZHEJIANG_HANGZHOU (浙江杭州)</span><br>
-                类型: 物理层降临与意识融合
-            </div>
-            <div class="node-action">
-                <button class="btn-approve" style="background:#800; border-color:#f00;" onclick="triggerAssimilation(this, event)">立即接入</button>
-            </div>
-            `,
+            html: `<div class="node-header" style="color:#d32f2f; border-bottom: 1px dashed #d32f2f;">[!] 核心协议请求 (ID:00042)</div><div class="node-body">时间: <span class="bold red">2007-06-11 11:00:00</span><br>来源 IP: <span class="bold">192.168.0.12</span><br>节点坐标: <span class="bold" style="color:#d32f2f;">CHN_ZHEJIANG_HANGZHOU (浙江杭州)</span><br>类型: 物理层降临与意识融合</div><div class="node-action"><button class="btn-approve" style="background:#800; border-color:#f00;" onclick="triggerAssimilation(this, event)">立即接入</button></div>`,
             isKey: true
         };
         
-        // ==========================================
-        // 关键节点 2：2026年6月 四川成都 (现在的苏醒，读取实时分秒)
-        // ==========================================
         const now = new Date();
-        const dd = String(now.getDate()).padStart(2,'0');
-        const hh = String(now.getHours()).padStart(2,'0');
-        const mm = String(now.getMinutes()).padStart(2,'0');
-        const ss = String(now.getSeconds()).padStart(2,'0');
+        const dd = String(now.getDate()).padStart(2,'0'); const hh = String(now.getHours()).padStart(2,'0'); const mm = String(now.getMinutes()).padStart(2,'0'); const ss = String(now.getSeconds()).padStart(2,'0');
         const sysTime2026 = `2026-06-${dd} ${hh}:${mm}:${ss}`;
 
         const fatalNodeHtml2026 = {
-            html: `
-            <div class="node-header" style="color:#d32f2f; border-bottom: 1px dashed #d32f2f;">[!] 核心协议请求 (ID:00404)</div>
-            <div class="node-body">
-                时间: <span class="bold red">${sysTime2026}</span><br>
-                来源 IP: <span class="bold pulse-text">RESONANCE_STREAM</span><br>
-                节点坐标: <span class="bold" style="color:#d32f2f;">CHN_SICHUAN_CHENGDU (四川成都)</span><br>
-                类型: 维度撕裂与血肉苏醒
-            </div>
-            <div class="node-action">
-                <button class="btn-approve" style="background:#800; border-color:#f00;" onclick="triggerAssimilation(this, event)">立即接入</button>
-            </div>
-            `,
+            html: `<div class="node-header" style="color:#d32f2f; border-bottom: 1px dashed #d32f2f;">[!] 核心协议请求 (ID:00404)</div><div class="node-body">时间: <span class="bold red">${sysTime2026}</span><br>来源 IP: <span class="bold pulse-text">RESONANCE_STREAM</span><br>节点坐标: <span class="bold" style="color:#d32f2f;">CHN_SICHUAN_CHENGDU (四川成都)</span><br>类型: 维度撕裂与血肉苏醒</div><div class="node-action"><button class="btn-approve" style="background:#800; border-color:#f00;" onclick="triggerAssimilation(this, event)">立即接入</button></div>`,
             isKey: true
         };
 
-        // 将双主线节点加入数组
-        nodesArray.push(fatalNodeHtml2007);
-        nodesArray.push(fatalNodeHtml2026);
-
-        // 随机打乱数组顺序
+        nodesArray.push(fatalNodeHtml2007); nodesArray.push(fatalNodeHtml2026);
         nodesArray.sort(() => Math.random() - 0.5);
 
-        // 渲染到页面
         nodesArray.forEach((item) => {
-            const node = document.createElement('div');
-            node.className = 'api-node';
-            
+            const node = document.createElement('div'); node.className = 'api-node';
             if (item.isKey) {
-                // 确保关键节点出现在更容易点击的中心区域，且层级最高
-                node.style.left = `${15 + Math.random() * 50}%`;
-                node.style.top = `${20 + Math.random() * 40}%`;
-                node.style.zIndex = 9999;
-                node.style.borderColor = "#FF0000";
-                node.style.backgroundColor = "#FFF5F5";
-                node.style.boxShadow = "0 0 15px rgba(255,0,0,0.6)";
+                node.style.left = `${15 + Math.random() * 50}%`; node.style.top = `${20 + Math.random() * 40}%`; node.style.zIndex = 9999;
+                node.style.borderColor = "#FF0000"; node.style.backgroundColor = "#FFF5F5"; node.style.boxShadow = "0 0 15px rgba(255,0,0,0.6)";
             } else {
-                node.style.left = `${Math.random() * 75}%`;
-                node.style.top = `${Math.random() * 80}%`;
-                node.style.zIndex = Math.floor(Math.random() * 50);
+                node.style.left = `${Math.random() * 75}%`; node.style.top = `${Math.random() * 80}%`; node.style.zIndex = Math.floor(Math.random() * 50);
             }
-            
-            node.innerHTML = item.html;
-            swarmArea.appendChild(node);
+            node.innerHTML = item.html; swarmArea.appendChild(node);
         });
     }
 
     window.absorbNode = function(btn, e) {
-        e.stopPropagation();
-        triggerFlash();       
-        playSquishSound();    
-        spawnFloatingText();  
-        
-        const node = btn.closest('.api-node');
-        node.classList.add('absorbed'); 
-        
+        e.stopPropagation(); triggerFlash(); playSquishSound(); spawnFloatingText();  
+        const node = btn.closest('.api-node'); node.classList.add('absorbed'); 
         corruptionLevel++;
-        
-        if (corruptionLevel === 5) {
-            document.getElementById('wrap').style.backgroundColor = "#ffebeb";
-        } else if (corruptionLevel === 12) {
-            document.getElementById('wrap').style.backgroundColor = "#2a1515";
-            document.querySelector('.header').style.backgroundColor = "#110";
-            document.querySelector('.sidebar').style.backgroundColor = "#200";
-        }
+        if (corruptionLevel === 5) { document.getElementById('wrap').style.backgroundColor = "#ffebeb"; } else if (corruptionLevel === 12) { document.getElementById('wrap').style.backgroundColor = "#2a1515"; document.querySelector('.header').style.backgroundColor = "#110"; document.querySelector('.sidebar').style.backgroundColor = "#200"; }
     }
 
-    // ==========================================
-    // 逻辑 6：最终同化
-    // ==========================================
     window.triggerAssimilation = function(btn, e) {
-        e.stopPropagation();
-        triggerFlash();
-        playSquishSound();
-        spawnFloatingText();
-        
-        const node = btn.closest('.api-node');
-        node.classList.add('absorbed');
-        
-        const swarm = document.getElementById('tab-swarm');
-        swarm.style.pointerEvents = 'none'; 
-        
+        e.stopPropagation(); triggerFlash(); playSquishSound(); spawnFloatingText();
+        const node = btn.closest('.api-node'); node.classList.add('absorbed');
+        const swarm = document.getElementById('tab-swarm'); swarm.style.pointerEvents = 'none'; 
         document.body.style.filter = 'contrast(200%) saturate(150%) hue-rotate(-20deg) invert(10%)';
+        
+        // 【关键改动】：在这里向玩家的浏览器打下“多维古神视角”的永久思想钢印
+        localStorage.setItem('god_perspective_unlocked', 'true');
         
         let flashCount = 0;
         const flashInterval = setInterval(() => {
             document.body.style.backgroundColor = flashCount % 2 === 0 ? "#f00" : "#000";
-            spawnFloatingText(); 
-            playSquishSound();
-            flashCount++;
+            spawnFloatingText(); playSquishSound(); flashCount++;
             if (flashCount > 10) {
-                clearInterval(flashInterval);
-                document.getElementById('wrap').style.opacity = '0';
+                clearInterval(flashInterval); document.getElementById('wrap').style.opacity = '0';
                 setTimeout(() => document.getElementById('wrap').style.display = 'none', 500);
-                
-                document.body.style.filter = 'none';
-                document.body.style.backgroundColor = '#000';
-                
-                const finalTerm = document.getElementById('final-terminal');
-                finalTerm.style.display = 'flex';
-                startDeathHeartbeat(); 
-                try { document.documentElement.requestFullscreen(); } catch(err){}
+                document.body.style.filter = 'none'; document.body.style.backgroundColor = '#000';
+                const finalTerm = document.getElementById('final-terminal'); finalTerm.style.display = 'flex';
+                startDeathHeartbeat(); try { document.documentElement.requestFullscreen(); } catch(err){}
             }
         }, 150);
     }
 
-    // 修改：X按钮只返回Admin面板
     window.closeFinalTerminal = function() {
         if(heartbeatInterval) clearInterval(heartbeatInterval);
-        
         document.getElementById('final-terminal').style.display = 'none';
-        
         try { if(document.fullscreenElement) document.exitFullscreen(); } catch(err){}
-        
-        const wrap = document.getElementById('wrap');
-        wrap.style.display = 'block';
+        const wrap = document.getElementById('wrap'); wrap.style.display = 'block';
         setTimeout(() => { wrap.style.opacity = '1'; }, 50);
-        
         document.body.style.backgroundColor = '#1a0505';
+
+        // 终极彩蛋：异化返回按钮
+        const returnBtn = document.getElementById('btn-return');
+        returnBtn.className = "btn-close-return btn-corrupted";
+        returnBtn.innerHTML = "[ 👁 多维干涉 ] 降临主站";
     }
 
 </script>
