@@ -103,7 +103,7 @@ body.zen-mode #ctrl-bar:hover{opacity:1}
 }
 .picker-col {
     flex: 1; overflow-y: scroll; scroll-snap-type: y mandatory;
-    scrollbar-width: none; -ms-overflow-style: none; /* Firefox & IE */
+    scrollbar-width: none; -ms-overflow-style: none;
     text-align: center; font-family: 'Noto Sans TC', sans-serif;
     -webkit-overflow-scrolling: touch;
 }
@@ -421,7 +421,7 @@ input::placeholder{color:rgba(255,255,255,.17)}
 <div id="time-bar">
   <button class="tbtn" id="tb-play">▶ 播放</button>
   <button class="tbtn gold" onclick="openPicker()">⚙ 精確調整</button>
-  <button class="tbtn" id="tb-reset" onclick="if(window.resetTime) window.resetTime()">重置</button>
+  <div id="time-lbl" style="display:none;"></div> <button class="tbtn" id="tb-reset" onclick="if(window.resetTime) window.resetTime()">重置</button>
 </div>
 <div id="tip"><h4 id="tip-h"></h4><p id="tip-p"></p></div>
 <div id="asc-hint">☽ 测者中心已完美锁定，中天直指螢幕正上方</div>
@@ -527,6 +527,28 @@ const LANGS = {
     dst:{off:'标准时',on:'夏令时 +1h',label:'夏令时（DST）',hint:'开启后自动 +1 小时'},
     dom:{modalTitle:'星象坐标系',modalSub:'真3D地心仪 · 昼夜更替 · 二十八宿',lblNm:'命主姓名',lblDt:'出生日期（公历）',lblTm:'出生时间（24小时）',lblLoc:'出生地经纬度与时区',plhNm:'姓名（可留空）',btnSub:'观 测 星 象 能 量',btnDemo:'→ 载入演示（2002.12.24 子夜 · 东经109 · 北纬31）',tbTitle:'星象坐标系 · 天球仪',tbSub:'GEOCENTRIC ASTROLABE · 物理光影宇宙',tbPlay:'▶ 播放',tbPause:'⏸ 暂停',tbReset:'重置',timeLbl:'当前时间',loadTxt:'载入星象引擎与高精贴图…',drwLbl:'星象资料',pEcl:'星象 · 视黄道度数',pAna:'命盘分析摘要',pHou:'黄道十二宫 · 宫位星曜',pHouM:'黄道十二宫',ascAligned:'☽ 测者中心已完美锁定，中天直指螢幕正上方'},
     ctrl:{zen:'沉浸星空',spin:'时间自转 (流逝)',zenith:'对齐天顶 (2D星盘)',helio:'切换日心/地心',sys:'切换回归/恒星',out:'三王星',ecl:'黄道环',eq:'赤道环',man:'二十八宿',pl:'星体显示',asp:'相位连线',tm:'时间推移',orb:'黄纬垂线',btnSysT:'归',btnSysS:'恒',btnOut:'王',btnMan:'宿',btnPl:'政',btnHelio:'日'}
+  },
+  'en':{
+    zod:['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagitt.','Capric.','Aquarius','Pisces'],
+    man:['Jiao','Kang','Di','Fang','Xin','Wei','Ji','Dou','Niu','Nu','Xu','Wei2','Shi','Bi','Kui','Lou','Wei3','Mao','Bi2','Zi','Shen','Jing','Gui','Liu','Xing','Zhang','Yi','Zhen'],
+    pl:{sun:'Sun',moon:'Moon',mercury:'Mercury',venus:'Venus',mars:'Mars',jupiter:'Jupiter',saturn:'Saturn',uranus:'Uranus',neptune:'Neptune',pluto:'Pluto',rahu:'Rahu',ketu:'Ketu',yapo:'Lilith',ziqi:'Ziqi',fortune:'Fortune'},
+    wx:{sun:'Pure Yang·Father',moon:'Pure Yin·Mother',mercury:'Yang Water·Mind',venus:'Yin Metal·Wealth',mars:'Yang Fire·Action',jupiter:'Yang Wood·Luck',saturn:'Yin Earth·Karma',rahu:'Fire Remainder',ketu:'Earth Remainder',yapo:'Water Remainder',ziqi:'Wood Remainder',uranus:'Yang Earth·Revolution',neptune:'Yin Wood·Illusion',pluto:'Yin Fire·Rebirth',fortune:'Luck & Opportunities'},
+    ui:{eq:'Equator',ecl:'Ecliptic',asc:'ASC',dsc:'DSC',mc:'MC Midheaven',ic:'IC Nadir',mansion:' M.',house:'H.',p1:'New Moon',p2:'1st Qtr',p3:'Full Moon',p4:'Last Qtr',p5:'Dark Moon',deg:'Elong.',trop:'Tropical',sid:'Sidereal',helio:'Heliocentric',helioMsg:'☉ Heliocentric Mode · Fixed Sidereal Frame · Tropical NA',zenith:'Zenith'},
+    al:{asc:'ASC in',sun:'Sun in',moon:'Moon in',phase:'Phase',rahu:'S.Node in',jup:'Jupiter in',sat:'Saturn in'},
+    dst:{off:'Standard',on:'DST +1h',label:'Daylight Saving Time',hint:'Adds +1h to birth time'},
+    dom:{modalTitle:'Astro Coordinates',modalSub:'True 3D Geocentric Astrolabe',lblNm:'Native Name',lblDt:'Birth Date (Gregorian)',lblTm:'Birth Time (24h)',lblLoc:'Location & Timezone',plhNm:'Name (Optional)',btnSub:'OBSERVE ASTRO ENERGY',btnDemo:'→ Load Demo (2002.12.24 Midnight · 109°E · 31°N)',tbTitle:'Geocentric Astrolabe',tbSub:'TRUE 3D PHYSICAL UNIVERSE',tbPlay:'▶ Play',tbPause:'⏸ Pause',tbReset:'Reset',timeLbl:'Current Time',loadTxt:'Loading Engine...',drwLbl:'Astro Data',pEcl:'Ecliptic Longitudes',pAna:'Chart Summary',pHou:'12 Zodiac Houses',pHouM:'Zodiac Houses',ascAligned:'☽ Topocentric focus locked, MC points straight up'},
+    ctrl:{zen:'Zen Mode',spin:'Time Spin',zenith:'Align Zenith (2D Chart)',helio:'Toggle Helio/Geo',sys:'Toggle Trop/Sid',out:'Outer Planets',ecl:'Ecliptic',eq:'Equator',man:'Mansions',pl:'Planets',asp:'Aspects',tm:'Time Control',orb:'Latitude Lines',btnSysT:'Trop',btnSysS:'Sid',btnOut:'Out',btnMan:'Man',btnPl:'Pl',btnHelio:'Sun'}
+  },
+  'ko':{
+    zod:['백양','황소','쌍둥이','게','사자','처녀','천칭','전갈','사수','염소','물병','물고기'],
+    man:['각','항','저','방','심','미','기','두','우','여','허','위','실','벽','규','루','위2','묘','필','자','삼','정','귀','류','성','장','익','진'],
+    pl:{sun:'태양',moon:'달',mercury:'수성',venus:'금성',mars:'화성',jupiter:'목성',saturn:'토성',uranus:'천왕성',neptune:'해왕성',pluto:'명왕성',rahu:'라후',ketu:'케투',yapo:'월패',ziqi:'자기',fortune:'포춘'},
+    wx:{sun:'순양·아버지',moon:'순음·어머니',mercury:'양수·사고',venus:'음금·재물',mars:'양화·행동',jupiter:'양목·복',saturn:'음토·책임',rahu:'화의 여기',ketu:'토의 여기',yapo:'수의 여기',ziqi:'목의 여기',uranus:'양토·개혁',neptune:'음목·환상',pluto:'음화·재생',fortune:'행운과 기회'},
+    ui:{eq:'적도',ecl:'황도',asc:'ASC 상승',dsc:'DSC 하강',mc:'MC 중천',ic:'IC 천저',mansion:'수',house:'궁',p1:'신월',p2:'상현',p3:'만월',p4:'하현',p5:'그믐',deg:'이각',trop:'회귀 황도',sid:'항성 황도',helio:'일심 황도',helioMsg:'☉ 일심 모드 · 항성 기준계 고정 · 시황도 비적용',zenith:'천정'},
+    al:{asc:'명궁:',sun:'태양:',moon:'달:',phase:'위상',rahu:'남교점:',jup:'목성:',sat:'토성:'},
+    dst:{off:'표준시',on:'서머타임 +1h',label:'서머타임(DST)',hint:'+1시간 자동 추가'},
+    dom:{modalTitle:'점성술 좌표계',modalSub:'3D 지구 중심 천구의',lblNm:'이름',lblDt:'생년월일 (양력)',lblTm:'태어난 시간 (24시간)',lblLoc:'출생지 좌표 및 시간대',plhNm:'이름 (선택)',btnSub:'천 체 관 측',btnDemo:'→ 데모 불러오기 (2002.12.24 자정 · 동경 109 · 북위 31)',tbTitle:'지구 중심 천구의',tbSub:'3D 물리적 우주 시뮬레이션',tbPlay:'▶ 재생',tbPause:'⏸ 일시정지',tbReset:'초기화',timeLbl:'현재 시간',loadTxt:'엔진 불러오는 중...',drwLbl:'점성술 데이터',pEcl:'황도 좌표',pAna:'차트 요약',pHou:'12 하우스',pHouM:'하우스',ascAligned:'☽ 관측 지표가 화면 정중앙에 정렬되었습니다 (MC 위)'},
+    ctrl:{zen:'몰입 모드',spin:'시간 회전',zenith:'천정 정렬 (2D 차트)',helio:'일심/지심 전환',sys:'회귀/항성 전환',out:'외행성',ecl:'황도환',eq:'적도환',man:'28수',pl:'행성',asp:'애스펙트',tm:'시간 제어',orb:'황위 수직선',btnSysT:'회귀',btnSysS:'항성',btnOut:'외',btnMan:'수',btnPl:'성',btnHelio:'일'}
   }
 };
 
@@ -587,7 +609,7 @@ window.switchLang = function(l) {
     
     const tbPlay = document.getElementById('tb-play');
     if (tbPlay) tbPlay.textContent = playingTime ? d.dom.tbPause : d.dom.tbPlay;
-    set('tb-reset', d.dom.tbReset); set('loading-text-el', d.dom.loadTxt);
+    set('loading-text-el', d.dom.loadTxt);
 
     updateHelioBadge();
 
@@ -787,9 +809,22 @@ function jdn(y, m, d, h = 12, mn = 0) {
 }
 const T_jd = jd => (jd - 2451545.0) / 36525;
 
-function stCorr(lng, tz) { 
-  if(isNaN(lng) || isNaN(tz)) return 0;
-  return Math.round((lng - tz * 15) * 4);
+function jdToGregorian(jd) {
+    let Z = Math.floor(jd + 0.5);
+    let F = (jd + 0.5) - Z;
+    let A = Z;
+    if (Z >= 2299161) {
+        let alpha = Math.floor((Z - 1867216.25) / 36524.25);
+        A = Z + 1 + alpha - Math.floor(alpha / 4);
+    }
+    let B = A + 1524;
+    let C = Math.floor((B - 122.1) / 365.25);
+    let D = Math.floor(365.25 * C);
+    let E = Math.floor((B - D) / 30.6001);
+    let day = B - D - Math.floor(30.6001 * E) + F;
+    let month = (E < 14) ? E - 1 : E - 13;
+    let year = (month > 2) ? C - 4716 : C - 4715;
+    return { year, month, day: Math.floor(day) };
 }
 
 const zodiac = lon => ({ s: LANGS[currLang].zod[Math.floor(lon/30)], sym: ZSYM[Math.floor(lon/30)], d: (lon%30).toFixed(1) });
@@ -1429,7 +1464,7 @@ window.submitForm = function() {
       let newH = ((effectiveH + Math.floor(totalM / 60)) % 24 + 24) % 24;
       let newM = ((totalM % 60) + 60) % 60;
 
-      userData = { name, y, m, d, h:newH, mn:newM, lng, lat, tz, dst, jd:jd_utc };
+      userData = { name, y, m, d, h:newH, mn:newM, lng, lat, tz, dst, jd:jd_utc, initJd: jd_utc };
       launch();
       checkHorrorEvent(y, m, d);
 
@@ -1444,6 +1479,7 @@ window.loadDemo = function() {
 
 function updatePositions() {
   if (!userData || !userData.jd || isNaN(userData.jd)) return;
+  
   const res = calcAll(T_jd(userData.jd), userData.jd, userData.lng, userData.lat, S.sidereal);
   curGeo = res.geo; curHelio = res.helio; currentGMST = res.gmst;
   if(isNaN(currentGMST)) return; 
@@ -1498,19 +1534,116 @@ function launch() {
   }
 }
 
+// ==========================================
+// 重新引入所有 UI 按键绑定的 setupEvents
+// ==========================================
+const setupEvents = () => {
+    ['f-y','f-m','f-d','f-h','f-mi','f-lg','f-lat','f-tz'].forEach(id => { const el = document.getElementById(id); if (el) el.addEventListener('input', window.hst); });
+    const bindClick = (id, fn) => { const el = document.getElementById(id); if(el) el.addEventListener('click', fn); };
+    bindClick('btn-sub', window.submitForm); bindClick('btn-demo', window.loadDemo);
+    const dstEl = document.getElementById('f-dst'); if(dstEl) dstEl.addEventListener('change', () => { window.toggleDST(); window.hst(); });
+    if(isMobile) bindClick('mobile-drawer-handle', window.toggleDrawer);
+    
+    // 控制列绑定
+    bindBtn('cb-zen','zen',()=>document.body.classList.add('zen-mode'),()=>document.body.classList.remove('zen-mode'));
+    bindBtn('cb-spin','spin', () => { if(!playingTime && document.getElementById('tb-play')) document.getElementById('tb-play').click(); }, () => { if(playingTime && document.getElementById('tb-play')) document.getElementById('tb-play').click(); });
+    bindClick('cb-zenith', pointCameraAtBirthplace);
+    
+    const helioBtn = document.getElementById('cb-helio');
+    if(helioBtn) {
+      helioBtn.addEventListener('click', () => {
+        S.helio = !S.helio;
+        helioBtn.classList.toggle('on', S.helio);
+        setHelioUIState(S.helio);
+        if(userData.jd) updatePositions();
+      });
+    }
+    
+    bindBtn('cb-ecl','ecliptic',()=>eclRingG.visible=true, ()=>eclRingG.visible=false);
+    bindBtn('cb-eq', 'equator', ()=>{ if(!S.helio) eqRingG.visible=true; }, ()=>eqRingG.visible=false);
+    bindBtn('cb-man','mansion', ()=>manG.visible=true,  ()=>manG.visible=false);
+    bindBtn('cb-pl', 'planets', ()=>plG.visible=true,   ()=>plG.visible=false);
+    
+    const btnAsp = document.getElementById('cb-asp');
+    if(btnAsp) {
+      btnAsp.addEventListener('click', () => {
+        S.aspects = !S.aspects;
+        btnAsp.classList.toggle('on', S.aspects);
+        if(userData.jd) {
+          if (S.aspects) { aspG.visible = true; buildAspects(curGeo, curHelio); } 
+          else clearGroup(aspG);
+        }
+      });
+    }
+    
+    const btnSys = document.getElementById('cb-sys');
+    if(btnSys) btnSys.addEventListener('click', () => {
+        S.sidereal=!S.sidereal; btnSys.classList.toggle('on',S.sidereal); 
+        btnSys.textContent = S.sidereal ? LANGS[currLang].ctrl.btnSysS : LANGS[currLang].ctrl.btnSysT;
+        if (userData.jd) updatePositions();
+    });
+    
+    const btnOut = document.getElementById('cb-out');
+    if(btnOut) btnOut.addEventListener('click', () => { S.showOut=!S.showOut; btnOut.classList.toggle('on',S.showOut); if(userData.jd)updatePositions(); });
+    
+    const tb = document.getElementById('time-bar'), btnTm = document.getElementById('cb-tm');
+    if(btnTm && tb) btnTm.addEventListener('click', () => { 
+        S.time=!S.time; btnTm.classList.toggle('on',S.time); 
+        S.time ? tb.classList.add('show') : (tb.classList.remove('show'), window.resetTime()); 
+    });
+    
+    const btnOrb = document.getElementById('cb-orb');
+    if(btnOrb) btnOrb.addEventListener('click', () => { 
+        S.orb=!S.orb; btnOrb.classList.toggle('on',S.orb); 
+        if (!S.orb) Object.values(dropLines).forEach(dl=>{dl.visible=false;}); 
+        else if (userData.jd) updatePositions(); 
+    });
+
+    const tbPlay = document.getElementById('tb-play');
+    if (tbPlay) {
+        tbPlay.addEventListener('click', function() {
+          if (playingTime) { clearInterval(playInterval); playingTime = false; this.textContent = LANGS[currLang].dom.tbPlay; return; }
+          if (!userData.jd) return;
+          playingTime = true; this.textContent = LANGS[currLang].dom.tbPause;
+          playInterval = setInterval(() => {
+              userData.jd += 0.5; // 每帧快进半天
+              updatePositions();
+              const gDate = jdToGregorian(userData.jd);
+              const tLbl = document.getElementById('time-lbl');
+              if(tLbl) {
+                  tLbl.style.display = 'block';
+                  tLbl.textContent = `${gDate.year}.${String(gDate.month).padStart(2,'0')}.${String(gDate.day).padStart(2,'0')} 運行中`;
+              }
+              checkHorrorEvent(gDate.year, gDate.month, gDate.day);
+          }, 80);
+        });
+    }
+    
+    window.resetTime = function() {
+      clearInterval(playInterval); playingTime = false; 
+      if (tbPlay) tbPlay.textContent = LANGS[currLang].dom.tbPlay;
+      if (userData.initJd) {
+          userData.jd = userData.initJd;
+          updatePositions();
+      }
+      const tLbl = document.getElementById('time-lbl');
+      if(tLbl) { tLbl.style.display = 'none'; }
+    };
+};
+
 /* ==========================================
    iOS 齿轮拨盘时间选择器 (iOS Picker Logic)
 ========================================== */
 window.openPicker = function() {
     if (!userData.jd) return;
     document.getElementById('ios-picker-modal').style.display = 'flex';
-    
-    // 初始化齿轮列表
-    initPickerCol('y', 1900, 2100, userData.y);
-    initPickerCol('m', 1, 12, userData.m);
-    initPickerCol('d', 1, 31, userData.d);
-    initPickerCol('h', 0, 23, userData.h);
-    initPickerCol('min', 0, 59, userData.mn);
+    const gDate = jdToGregorian(userData.jd);
+    initPickerCol('y', 1900, 2100, gDate.year);
+    initPickerCol('m', 1, 12, gDate.month);
+    initPickerCol('d', 1, 31, gDate.day);
+    // Rough estimate for hours/mins from JD fractions can be tricky, using current state:
+    initPickerCol('h', 0, 23, userData.h || 12);
+    initPickerCol('min', 0, 59, userData.mn || 0);
 };
 
 window.closePicker = function() {
@@ -1520,20 +1653,16 @@ window.closePicker = function() {
 let scrollTimers = {};
 function initPickerCol(id, min, max, currentVal) {
     const col = document.getElementById('col-' + id);
-    col.innerHTML = '';
-    // 首尾增加空元素，实现滚动居中
-    col.innerHTML += '<div class="picker-item"></div><div class="picker-item"></div>';
+    col.innerHTML = '<div class="picker-item"></div><div class="picker-item"></div>';
     for (let i = min; i <= max; i++) {
         const valStr = String(i).padStart(2, '0');
         col.innerHTML += `<div class="picker-item" data-val="${i}">${valStr}</div>`;
     }
     col.innerHTML += '<div class="picker-item"></div><div class="picker-item"></div>';
     
-    // 强制滚动到当前值
     const items = col.querySelectorAll('.picker-item[data-val]');
     const targetIndex = Array.from(items).findIndex(el => parseInt(el.getAttribute('data-val')) === currentVal);
     if (targetIndex !== -1) {
-        // 等待DOM渲染后设置scrollTop
         setTimeout(() => {
             col.scrollTop = targetIndex * 40;
             updatePickerHighlight(col);
@@ -1544,11 +1673,8 @@ function initPickerCol(id, min, max, currentVal) {
 window.onScrollPicker = function(id) {
     const col = document.getElementById('col-' + id);
     clearTimeout(scrollTimers[id]);
-    
-    // 滚动中的视觉反馈
     updatePickerHighlight(col);
     
-    // 滚动结束后的事件处理
     scrollTimers[id] = setTimeout(() => {
         updatePickerHighlight(col);
         applyPickerTime();
@@ -1573,11 +1699,10 @@ function applyPickerTime() {
     };
     
     const py = getVal('y'), pm = getVal('m'), pd = getVal('d'), ph = getVal('h'), pmin = getVal('min');
-    if (!py || !pm || !pd) return; // 避免滑动未完成时的报错
+    if (!py || !pm || !pd) return; 
     
-    // 实时更新 userData 和 3D 渲染
     const effectiveH = userData.dst ? ph + 1 : ph; 
-    const newJd = jdn(py, pm, pd, effectiveH - userData.tz, pmin);
+    const newJd = jdn(py, pm, pd, effectiveH - (userData.tz||8), pmin);
     
     if (!isNaN(newJd)) {
         userData.y = py; userData.m = pm; userData.d = pd;
@@ -1585,15 +1710,162 @@ function applyPickerTime() {
         
         updatePositions();
         
-        const tgt = new Date(Date.UTC(py, pm-1, pd, ph, pmin));
-        const tLbl = document.getElementById('time-lbl');
-        if(tLbl) tLbl.textContent = `${tgt.getUTCFullYear()}.${String(tgt.getUTCMonth()+1).padStart(2,'0')}.${String(tgt.getUTCDate()).padStart(2,'0')} ${String(tgt.getUTCHours()).padStart(2,'0')}:${String(tgt.getUTCMinutes()).padStart(2,'0')}`;
         const dateEl = document.getElementById('tb-date'); 
         if(dateEl) dateEl.textContent = `${py}.${String(pm).padStart(2,'0')}.${String(pd).padStart(2,'0')} ${String(ph).padStart(2,'0')}:${String(pmin).padStart(2,'0')}${userData.dst?' (DST)':''}`;
 
-        // 滑动齿轮时检测是否进入恐怖时间
         checkHorrorEvent(py, pm, pd);
     }
+}
+
+// ==========================================
+// 血肉飞升异化模块 (Flesh Ascension Module)
+// ==========================================
+window.isInfected = false;
+window.infectionTime = 0;
+window.eyeShown = false;
+window.ascensionShown = false;
+
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+let isHeartbeatPlaying = false;
+
+function playHeartbeat() {
+    if (isHeartbeatPlaying) return;
+    isHeartbeatPlaying = true;
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    
+    setInterval(() => {
+        if(!window.ascensionShown) { 
+            createHeartbeatSound(50, 0.4); 
+            setTimeout(() => createHeartbeatSound(45, 0.6), 300); 
+        }
+    }, 1200);
+}
+
+function createHeartbeatSound(freq, duration) {
+    const osc = audioCtx.createOscillator();
+    const gainNode = audioCtx.createGain();
+    const filter = audioCtx.createBiquadFilter(); 
+    filter.type = 'lowpass'; filter.frequency.value = 150;
+    
+    osc.connect(filter); filter.connect(gainNode); gainNode.connect(audioCtx.destination);
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+    gainNode.gain.setValueAtTime(2.0, audioCtx.currentTime); 
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+    
+    osc.start(audioCtx.currentTime); osc.stop(audioCtx.currentTime + duration);
+}
+
+function checkHorrorEvent(y, m, d) {
+    if (window.isInfected) return;
+    if ((y === 1999 && m === 8 && d === 11) || (y === 2007 && m === 6 && d === 11) || (y === 2007 && m === 6 && d === 5)) {
+        triggerFleshAscension();
+    }
+}
+
+function triggerFleshAscension() {
+    window.isInfected = true;
+    if (playingTime) document.getElementById('tb-play').click();
+    
+    playHeartbeat();
+
+    const fOverlay = document.getElementById('flesh-overlay');
+    fOverlay.style.opacity = '1';
+    fOverlay.classList.add('pulsing');
+
+    setInterval(() => {
+        if(window.ascensionShown) return; 
+        document.body.classList.add('severe-glitch');
+        setTimeout(() => document.body.classList.remove('severe-glitch'), 150 + Math.random() * 200);
+    }, 1500 + Math.random() * 4000);
+
+    const titleEl = document.getElementById('tb-title');
+    const subEl = document.getElementById('tb-sub');
+    titleEl.innerHTML = "【 警告：偵測到高維血肉侵蝕 】";
+    titleEl.style.color = "#FF0000";
+    titleEl.style.textShadow = "0 0 28px rgba(255,0,0,0.8)";
+    subEl.innerHTML = "FLESH_ASCENSION_PROTOCOL_ENGAGED";
+    subEl.style.color = "#FF4444";
+
+    document.querySelectorAll('.lbl').forEach(l => l.style.color = '#8B0000');
+
+    mutateThreeJSPlanets();
+}
+
+function mutateThreeJSPlanets() {
+    scene.background = new THREE.Color(0x0a0000);
+    scene.fog = new THREE.FogExp2(0x110000, 0.008); 
+    sunLight.color.setHex(0xff0000);
+    fleshLight.intensity = 1500; 
+
+    // 核心性能優化：合併頂點，避免創建數萬個獨立的 Line 物件
+    function growVeinsOptimized(group) {
+        const pts = [];
+        group.traverse(child => {
+            if ((child.isLine || child.isLineSegments) && child.geometry && !child.userData.isVein) {
+                child.material.color.setHex(0x550000);
+                child.material.opacity = 0.2;
+                
+                const posAttr = child.geometry.getAttribute('position');
+                if (posAttr) {
+                    for(let i=0; i<posAttr.count - 1; i++) {
+                        for(let v = 0; v < 3; v++) { // 每段長出 3 條隨機畸變血管
+                            let x1 = posAttr.getX(i) + (Math.random() - 0.5) * 1.5;
+                            let y1 = posAttr.getY(i) + (Math.random() - 0.5) * 1.5;
+                            let z1 = posAttr.getZ(i) + (Math.random() - 0.5) * 1.5;
+                            
+                            let x2 = posAttr.getX(i+1) + (Math.random() - 0.5) * 1.5;
+                            let y2 = posAttr.getY(i+1) + (Math.random() - 0.5) * 1.5;
+                            let z2 = posAttr.getZ(i+1) + (Math.random() - 0.5) * 1.5;
+                            
+                            pts.push(new THREE.Vector3(x1,y1,z1), new THREE.Vector3(x2,y2,z2));
+                        }
+                    }
+                }
+            }
+        });
+        if (pts.length > 0) {
+            const vg = new THREE.BufferGeometry().setFromPoints(pts);
+            const vm = new THREE.LineBasicMaterial({ color: 0xaa0000, transparent: true, opacity: 0.6 });
+            const vLine = new THREE.LineSegments(vg, vm);
+            vLine.userData.isVein = true; 
+            group.add(vLine);
+        }
+    }
+
+    growVeinsOptimized(eclRingG);
+    growVeinsOptimized(eqRingG);
+    growVeinsOptimized(manG);
+
+    if (earthMesh) {
+        earthMesh.traverse(child => {
+            if (child.isMesh) {
+                child.material = new THREE.MeshStandardMaterial({
+                    color: 0x440000, emissive: 0x220000,
+                    roughness: 0.1, metalness: 0.1 
+                });
+                child.userData.isFlesh = true;
+                child.userData.baseScale = child.scale.clone();
+                child.userData.seed = Math.random() * 100;
+            }
+        });
+        growVeinsOptimized(earthMesh); 
+    }
+
+    Object.values(pMesh).forEach(pm => {
+        pm.traverse(child => {
+            if (child.isMesh) {
+                child.material = new THREE.MeshStandardMaterial({
+                    color: 0x660000, emissive: 0x330000,
+                    roughness: 0.1, metalness: 0.2
+                });
+                child.userData.isFlesh = true;
+                child.userData.baseScale = child.scale.clone();
+                child.userData.seed = Math.random() * 100;
+            }
+        });
+    });
 }
 
 // ==========================================
@@ -1664,9 +1936,7 @@ function buildEarth() {
     roughness: 0.8, metalness: 0.1
   });
   earthMesh = new THREE.Mesh(new THREE.SphereGeometry(1.5, 64, 64), mat);
-  
   earthMesh.rotation.y = Math.PI / 2; 
-  
   earthMathGroup.add(earthMesh);
   
   const graticuleGeo = new THREE.SphereGeometry(1.51, 24, 12);
@@ -1711,19 +1981,13 @@ function buildPlanet(pc) {
   } else {
     if (tex) {
       mat = new THREE.MeshStandardMaterial({
-        map: tex,
-        emissive: 0xffffff,
-        emissiveMap: tex,
-        emissiveIntensity: 0.15,
-        roughness: 0.9,
-        metalness: 0.05
+        map: tex, emissive: 0xffffff, emissiveMap: tex, emissiveIntensity: 0.15,
+        roughness: 0.9, metalness: 0.05
       });
     } else {
       const em = EMISSIVE[pc.id] || { col: pc.col, i: 0.1 };
       mat = new THREE.MeshStandardMaterial({
-        color: pc.col,
-        emissive: new THREE.Color(em.col),
-        emissiveIntensity: em.i,
+        color: pc.col, emissive: new THREE.Color(em.col), emissiveIntensity: em.i,
         roughness: 0.8, metalness: 0.1
       });
     }
@@ -1883,11 +2147,8 @@ function animate() {
 Promise.all(texPromises).then(() => {
     buildBaseMeshes();
     
-    // 初始化事件绑定 (不在此处绑定时间轴输入，统一交由 setupEvents 处理)
-    const bindClick = (id, fn) => { const el = document.getElementById(id); if(el) el.addEventListener('click', fn); };
-    bindClick('btn-sub', window.submitForm); bindClick('btn-demo', window.loadDemo);
-    const dstEl = document.getElementById('f-dst'); if(dstEl) dstEl.addEventListener('change', () => { window.toggleDST(); window.hst(); });
-    if(isMobile) bindClick('mobile-drawer-handle', window.toggleDrawer);
+    // 初始化所有UI按键和交互
+    setupEvents();
     
     window.switchLang(currLang);
     window.hst();
