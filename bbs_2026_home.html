@@ -122,14 +122,14 @@
                 <div class="top10-title">🔥 溯源热榜 (Top 10)</div>
                 <div class="top10-list">
                     <div class="top10-item"><span class="rank rank-hot">1</span> <a href="thread_zencode.html" class="bold red">【八卦】今年计科系的毕业设计居然有人交了个算命排盘系统？</a></div>
-                    <div class="top10-item"><span class="rank">6</span> <a href="#" class="bold">【求助】求一份历年《高数（上）》期末卷子，救急！</a></div>
+                    <div class="top10-item"><span class="rank">6</span> <a href="thread_math.html" class="bold">【求助】求一份历年《高数（上）》期末卷子，救急！</a></div>
                     <div class="top10-item"><span class="rank rank-hot">2</span> <a href="bz.html" class="bold">【闲聊】深夜玄学探讨：你们到底信不信生辰八字？</a></div>
-                    <div class="top10-item"><span class="rank">7</span> <a href="#">【吐槽】本学期关于晚归断电的新规定太坑了</a></div>
-                    <div class="top10-item"><span class="rank">3</span> <a href="#">【吐槽】食堂三楼的阿姨手又抖了，排骨全掉锅里</a></div>
-                    <div class="top10-item"><span class="rank">8</span> <a href="#">【表白墙】昨天在图书馆二楼靠窗穿白裙子的女生</a></div>
+                    <div class="top10-item"><span class="rank">7</span> <a href="thread_rules.html">【吐槽】本学期关于晚归断电的新规定太坑了</a></div>
+                    <div class="top10-item"><span class="rank">3</span> <a href="thread_canteen.html">【吐槽】食堂三楼的阿姨手又抖了，排骨全掉锅里</a></div>
+                    <div class="top10-item"><span class="rank">8</span> <a href="thread_love.html">【表白墙】昨天在图书馆二楼靠窗穿白裙子的女生</a></div>
                     <div class="top10-item"><span class="rank">4</span> <a href="fire.html" class="bold">【都市传说】知不知道我们学校附近以前发生过大火灾？</a></div>
                     <div class="top10-item"><span class="rank">9</span> <a href="index.html" style="color:#777;">【深夜水】南门外支巷新开的那家数据恢复店，有点邪门。</a></div>
-                    <div class="top10-item"><span class="rank">5</span> <a href="#">【二手】急出大四考研专业课资料，半卖半送</a></div>
+                    <div class="top10-item"><span class="rank">5</span> <a href="thread_sale.html">【二手】急出大四考研专业课资料，半卖半送</a></div>
                     <div class="top10-item"><span class="rank">10</span> <a href="thread_fu.html" style="color:#777;">【寻物】谁在机房落了一个移动硬盘？上面贴着画红线的黄纸...</a></div>
                 </div>
             </div>
@@ -494,6 +494,9 @@
 
     // 当页面加载时，检查是否已经登录过
     window.onload = function() {
+        // 全局事件监听器必须在页面加载时绑定
+        bindClickInterceptor();
+
         if(localStorage.getItem('njdx_bbs_override') === 'true') {
             applyLoggedInState(false); // 不播放黑屏动画，直接保持登录
         } else {
@@ -501,6 +504,33 @@
             triggerRandomGlitch();
         }
     };
+
+    // ================= 访客权限拦截系统 (实体隔离协议) =================
+    function bindClickInterceptor() {
+        document.addEventListener('click', function(e) {
+            // 向上层级查找触发点击的 <a> 标签
+            const targetLink = e.target.closest('a');
+            
+            // 如果点的不是链接，直接放行
+            if (!targetLink) return;
+
+            const href = targetLink.getAttribute('href');
+            
+            // 放行控制面板、登录按钮、以及带有 # 或 javascript: 的系统级操作链接
+            if (!href || href === '#' || href.startsWith('javascript:')) return;
+
+            // 检查本地存储中的覆写状态
+            if (localStorage.getItem('njdx_bbs_override') !== 'true') {
+                e.preventDefault(); // 强行阻断页面跳转
+                
+                // 触发符合设定的赛博玄学拦截警告
+                alert("【SYSTEM HALT：访问拒绝】\n\n访客权限不足。当前底层数据卷宗存在重度高维算力污染。\n为防止观测者发生精神熵增，请先通过 [控制面板] 完成物理实体覆盖与权限阵列验证。");
+                
+                // 阻断后自动唤起安全校验面板
+                showLogin();
+            }
+        });
+    }
 
     // 随机频闪触发器 (极速闪烁一帧 2007 画面)
     function triggerRandomGlitch() {
@@ -585,14 +615,33 @@
                 const successMsg = document.createElement('div');
                 successMsg.id = 'success-broadcast';
                 successMsg.style.cssText = "background: #E8F5E9; border: 1px solid #4CAF50; padding: 15px; margin-bottom: 20px; color: #2E7D32; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 0 10px rgba(76, 175, 80, 0.3);";
-                successMsg.innerHTML = "【系统广播】权限覆盖完毕。19年前的散逸算力已被安全重定向。<br>时空死局已解，南江大学节点恢复正常运转。感谢您的介入。<br><br><span style='font-size:12px; color:#666; cursor:pointer;' onclick='resetGame()'>[点击此处可重置游戏状态并刷新]</span>";
+                successMsg.innerHTML = "【系统广播】权限覆盖完毕。19年前的散逸算力已被安全重定向。<br>时空死局已解，南江大学节点恢复正常运转。感谢您的介入。<br><br><span style='font-size:12px; color:#666; cursor:pointer;' onclick='resetGame()'>[点击此处可重置游戏状态并清除阵列缓存]</span>";
                 mainWrap.insertBefore(successMsg, mainWrap.children[1]);
             }
             
+            // ================= 修正后的 2026 Admin 连环锁逻辑 =================
             const cpLink = document.getElementById('nav-control-panel');
-            cpLink.innerHTML = "控制面板 (已解锁)";
-            cpLink.style.color = "#FF0000";
-            cpLink.onclick = function() { window.location.href = "bbs_admin.html"; };
+            
+            // 检查是否已经从真正的 2026 Admin 页面获取了逆向授权
+            const isAdminVerified = localStorage.getItem('njdx_bbs_2026_admin_verified') === 'true';
+
+            if (isAdminVerified) {
+                // 彻底解锁状态
+                cpLink.innerHTML = "控制面板 (高维阵眼已贯通)";
+                cpLink.style.color = "#00AA00"; // 变成幽绿色代表最终解密
+                cpLink.onclick = function(e) { 
+                    e.preventDefault();
+                    window.location.href = "bbs_2026_admin.html"; 
+                };
+            } else {
+                // 仅登录，但未找到真正的 Admin 入口
+                cpLink.innerHTML = "控制面板 (阵眼缺失)";
+                cpLink.style.color = "#FF0000";
+                cpLink.onclick = function(e) { 
+                    e.preventDefault(); // 阻止默认跳转
+                    alert("【SYSTEM WARNING：控制台物理链路断裂】\n\n您虽已取得当前表层节点(2026)的观测权，但核心控制台的物理链路已被隐藏。\n必须先在数据残骸中找到真正的【2026溯源管理终端】入口，建立底层通信协议后才能彻底贯通高维通道！");
+                };
+            }
         };
 
         if (playAnimation) {
@@ -610,9 +659,10 @@
         }
     }
 
-    // 后门：重置游戏状态
+    // 后门：重置所有游戏状态
     function resetGame() {
         localStorage.removeItem('njdx_bbs_override');
+        localStorage.removeItem('njdx_bbs_2026_admin_verified');
         window.location.reload();
     }
 
