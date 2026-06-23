@@ -133,7 +133,7 @@
         /* 高级特效：带数码故障损坏、失焦模糊与色彩溶解的血肉星盘 */
         #final-bg-image {
             position: absolute; inset: 0;
-            background-image: url('image_2884fd.jpg'); /* 确保文件名正确 */
+            background-image: url('image_2884fd.jpg'); /* !!! 这里加载血肉巨眼背景图 !!! */
             background-size: cover; background-position: center;
             opacity: 0.55;
             mix-blend-mode: overlay;
@@ -229,7 +229,7 @@
             <div id="tab-swarm" class="admin-tab active">
                 <div class="content-title">API 接入请求总览 - 待审批队列 (999+)</div>
                 <div id="swarm-area">
-                </div>
+                    </div>
             </div>
 
             <div id="tab-history" class="admin-tab">
@@ -364,7 +364,7 @@
 </div>
 
 <script type="text/javascript">
-    // 注入缓存，解锁首页控制面板
+    // 写入缓存，解锁首页控制面板
     localStorage.setItem('njdx_bbs_override', 'true');
 
     // ==========================================
@@ -452,6 +452,7 @@
     function startDeathHeartbeat() {
         initAudio();
         if (heartbeatInterval) clearInterval(heartbeatInterval);
+        // 提高心跳频率和强度
         heartbeatInterval = setInterval(() => {
             const osc = audioCtx.createOscillator();
             const gain = audioCtx.createGain();
@@ -461,10 +462,11 @@
             osc.type = 'sine';
             osc.frequency.setValueAtTime(60, audioCtx.currentTime);
             osc.frequency.exponentialRampToValueAtTime(10, audioCtx.currentTime + 0.5);
-            gain.gain.setValueAtTime(3.5, audioCtx.currentTime);
+            gain.gain.setValueAtTime(3.0, audioCtx.currentTime);
             gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
             osc.start(); osc.stop(audioCtx.currentTime + 0.5);
-            playSquishSound(1.3); 
+            // 每次心跳伴随撕裂噪音
+            playSquishSound(1.2); 
         }, 500); 
     }
 
@@ -499,6 +501,7 @@
             "[SYSTEM] Soul_Digitization... 100%",
             "[Flesh_Engine] Biological fluids injected. Node stable.",
             `[NETWORK] Incoming trace established: IP ${userIP}`,
+            `[NETWORK] Physical coordinate locked: ${userLatLon} (${userLoc})`,
             " ",
             "[WARNING] Post module corrupted. Redirecting to raw API stream...",
             "Loading interface..."
@@ -529,7 +532,7 @@
     }
 
     // ==========================================
-    // 逻辑 5：密密麻麻的四维 API 请求群 (已修复空白Bug)
+    // 逻辑 5：密密麻麻的四维 API 请求群 (修复了空白问题)
     // ==========================================
     let corruptionLevel = 0;
 
