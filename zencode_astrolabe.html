@@ -390,10 +390,11 @@ let playingTime = false, ascHintTimer = null;
 let earthMesh = null, birthMarker = null, earthMathGroup = null;
 let zenithLine = null, zenithLabel = null;
 const pMesh = {}, pLbl = {}, dropLines = {};
+
 // ─── 恐怖状态机 ───
 const HORROR = {
   active: false,
-  phase: 0,            // 0=idle 1=earth_pulse 2=jupiter_pulse 3=labels_gone 4=fur 5=veins 6=jupiter_eye 7=finale
+  phase: 0,
   t: 0,
   earthPulseAmp: 0,
   jupiterPulseAmp: 0,
@@ -402,11 +403,12 @@ const HORROR = {
   eyeProgress: 0,
   flashCooldown: 0
 };
+
 // ─── Audio ───
 let audioCtx = null;
 function getAudioCtx() {
   if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-return audioCtx;
+  return audioCtx;
 }
 let heartbeatInterval = null;
 let heartbeatGain = null;
@@ -414,56 +416,56 @@ function startHeartbeat(volume = 0.3) {
   try {
     const ctx = getAudioCtx();
     if (ctx.state === 'suspended') ctx.resume();
-if (!heartbeatGain) {
+    if (!heartbeatGain) {
       heartbeatGain = ctx.createGain();
       heartbeatGain.connect(ctx.destination);
     }
     heartbeatGain.gain.setTargetAtTime(volume, ctx.currentTime, 0.3);
-if (heartbeatInterval) return;
+    if (heartbeatInterval) return;
     heartbeatInterval = setInterval(() => {
       if (!HORROR.active) return;
       _beat(55, 0.38); setTimeout(() => _beat(48, 0.55), 280);
     }, 1100);
-} catch(e) { console.warn('Audio:', e); }
+  } catch(e) { console.warn('Audio:', e); }
 }
 
 function setHeartbeatVolume(v) {
   try {
     if (heartbeatGain) heartbeatGain.gain.setTargetAtTime(v, getAudioCtx().currentTime, 0.15);
-} catch(e) {}
+  } catch(e) {}
 }
 
 function _beat(freq, dur) {
   try {
     const ctx = getAudioCtx();
     const osc = ctx.createOscillator();
-const g = ctx.createGain();
+    const g = ctx.createGain();
     const filt = ctx.createBiquadFilter();
     filt.type = 'lowpass'; filt.frequency.value = 160;
     osc.connect(filt); filt.connect(g); g.connect(heartbeatGain || ctx.destination);
-osc.type = 'sine';
+    osc.type = 'sine';
     osc.frequency.setValueAtTime(freq, ctx.currentTime);
     osc.frequency.exponentialRampToValueAtTime(0.01, ctx.currentTime + dur);
     g.gain.setValueAtTime(2.5, ctx.currentTime);
     g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + dur);
     osc.start(); osc.stop(ctx.currentTime + dur);
-} catch(e) {}
+  } catch(e) {}
 }
 
 function playFlashSound() {
   try {
     const ctx = getAudioCtx();
     if (ctx.state === 'suspended') ctx.resume();
-const buf = ctx.createBuffer(1, ctx.sampleRate * 0.06, ctx.sampleRate);
+    const buf = ctx.createBuffer(1, ctx.sampleRate * 0.06, ctx.sampleRate);
     const data = buf.getChannelData(0);
-for (let i = 0; i < data.length; i++) data[i] = (Math.random() * 2 - 1) * (1 - i / data.length);
-const src = ctx.createBufferSource(); src.buffer = buf;
+    for (let i = 0; i < data.length; i++) data[i] = (Math.random() * 2 - 1) * (1 - i / data.length);
+    const src = ctx.createBufferSource(); src.buffer = buf;
     const g = ctx.createGain(); g.gain.value = 0.6;
     const filt = ctx.createBiquadFilter();
-filt.type = 'bandpass'; filt.frequency.value = 800;
+    filt.type = 'bandpass'; filt.frequency.value = 800;
     src.connect(filt); filt.connect(g); g.connect(ctx.destination);
     src.start();
-} catch(e) {}
+  } catch(e) {}
 }
 
 // ─── Planet element data ───
@@ -510,75 +512,65 @@ function makeProceduralTexture(id, sz) {
   const c = document.createElement('canvas');
   c.width = sz; c.height = sz;
   const ctx = c.getContext('2d');
-if (id === 'sun') {
+  if (id === 'sun') {
     const grad = ctx.createRadialGradient(sz/2,sz/2,0,sz/2,sz/2,sz/2);
     grad.addColorStop(0,   '#FFFFFF');
     grad.addColorStop(0.3, '#FFEE44');
     grad.addColorStop(0.7, '#FFAA00');
-grad.addColorStop(1.0, '#FF6600');
+    grad.addColorStop(1.0, '#FF6600');
     ctx.fillStyle = grad; ctx.fillRect(0,0,sz,sz);
-    // sunspots
     for (let i=0;i<12;i++) {
       const x=Math.random()*sz, y=Math.random()*sz, r=2+Math.random()*6;
-ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2);
+      ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2);
       ctx.fillStyle = 'rgba(100,40,0,0.5)'; ctx.fill();
     }
   } else if (id === 'moon') {
     ctx.fillStyle = '#AAAAAA';
-ctx.fillRect(0,0,sz,sz);
+    ctx.fillRect(0,0,sz,sz);
     for (let i=0;i<30;i++) {
       const x=Math.random()*sz, y=Math.random()*sz, r=2+Math.random()*14;
       const g=ctx.createRadialGradient(x,y,0,x,y,r);
       g.addColorStop(0,'rgba(60,60,60,0.7)'); g.addColorStop(1,'rgba(120,120,120,0)');
       ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2);
-ctx.fillStyle=g; ctx.fill();
+      ctx.fillStyle=g; ctx.fill();
     }
   } else if (id === 'earth') {
-    // ocean
     ctx.fillStyle = '#1a4080';
-ctx.fillRect(0,0,sz,sz);
-    // continents
+    ctx.fillRect(0,0,sz,sz);
     ctx.fillStyle = '#3a7a30';
     const blobs = [[0.15,0.35,0.18,0.20],[0.55,0.30,0.25,0.22],[0.72,0.55,0.15,0.18],[0.32,0.60,0.12,0.10],[0.62,0.70,0.08,0.06]];
-blobs.forEach(([cx,cy,rw,rh]) => {
+    blobs.forEach(([cx,cy,rw,rh]) => {
       ctx.beginPath();
       ctx.ellipse(cx*sz,cy*sz,rw*sz,rh*sz,Math.random()*Math.PI,0,Math.PI*2);
       ctx.fill();
     });
-// cloud patches
     ctx.fillStyle = 'rgba(255,255,255,0.25)';
     for (let i=0;i<8;i++) {
       ctx.beginPath();
       ctx.ellipse(Math.random()*sz,Math.random()*sz,20+Math.random()*40,5+Math.random()*12,Math.random()*Math.PI,0,Math.PI*2);
-ctx.fill();
+      ctx.fill();
     }
-    // polar ice
     ctx.fillStyle = 'rgba(240,248,255,0.8)';
     ctx.beginPath(); ctx.ellipse(sz/2,0,sz/3,sz*0.08,0,0,Math.PI*2); ctx.fill();
     ctx.beginPath(); ctx.ellipse(sz/2,sz,sz/3,sz*0.06,0,0,Math.PI*2); ctx.fill();
-} else if (id === 'saturn_ring') {
+  } else if (id === 'saturn_ring') {
     ctx.clearRect(0,0,sz,sz);
-for (let i=0;i<sz;i++) {
+    for (let i=0;i<sz;i++) {
       const t = i/sz;
-      const alpha = t < 0.12 ?
-0 : t < 0.25 ? (t-0.12)/0.13*0.5 :
-                    t < 0.32 ?
-0.05 : t < 0.38 ? 0.55 :
-                    t < 0.45 ?
-0.65 : t < 0.52 ? 0.45 :
-                    t < 0.58 ?
-0.70 : t < 0.68 ? 0.40 :
-                    t < 0.75 ?
-0.55 : t < 0.85 ? 0.20 : 0;
+      const alpha = t < 0.12 ? 0 : t < 0.25 ? (t-0.12)/0.13*0.5 :
+                    t < 0.32 ? 0.05 : t < 0.38 ? 0.55 :
+                    t < 0.45 ? 0.65 : t < 0.52 ? 0.45 :
+                    t < 0.58 ? 0.70 : t < 0.68 ? 0.40 :
+                    t < 0.75 ? 0.55 : t < 0.85 ? 0.20 : 0;
       const r = Math.round((0.88+t*0.1)*220), g = Math.round((0.78+t*0.05)*200), b = Math.round((0.55+t*0.15)*160);
-ctx.fillStyle = `rgba(${r},${g},${b},${alpha})`;
+      ctx.fillStyle = `rgba(${r},${g},${b},${alpha})`;
       ctx.fillRect(i, 0, 1, sz);
     }
   } else {
     const bands = PLANET_BANDS[id];
-if (bands) {
+    if (bands) {
       const bh = sz / bands.length;
-bands.forEach(([r,g,b], i) => {
+      bands.forEach(([r,g,b], i) => {
         const grad = ctx.createLinearGradient(0, i*bh, 0, (i+1)*bh);
         const noise = () => (Math.random()-0.5)*0.08;
         const c1 = `rgb(${Math.round((r+noise())*255)},${Math.round((g+noise())*255)},${Math.round((b+noise())*255)})`;
@@ -586,28 +578,26 @@ bands.forEach(([r,g,b], i) => {
         grad.addColorStop(0,c1); grad.addColorStop(1,c2);
         ctx.fillStyle = grad; ctx.fillRect(0, i*bh, sz, bh+1);
       });
-// wavy band edges
       if (id === 'jupiter' || id === 'saturn') {
         for (let i=1;i<bands.length;i++) {
           ctx.beginPath();
-for (let x=0;x<=sz;x+=4) {
+          for (let x=0;x<=sz;x+=4) {
             const y = (i/bands.length)*sz + Math.sin(x*0.06)*4 + Math.sin(x*0.14)*2;
-x===0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
+            x===0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
           }
           ctx.strokeStyle = 'rgba(0,0,0,0.15)';
-ctx.lineWidth = 2; ctx.stroke();
+          ctx.lineWidth = 2; ctx.stroke();
         }
-        // Great Red Spot for Jupiter
         if (id === 'jupiter') {
           const gx=sz*0.55, gy=sz*0.62, gr=ctx.createRadialGradient(gx,gy,0,gx,gy,sz*0.07);
-gr.addColorStop(0,'rgba(180,60,30,0.8)'); gr.addColorStop(1,'rgba(180,60,30,0)');
+          gr.addColorStop(0,'rgba(180,60,30,0.8)'); gr.addColorStop(1,'rgba(180,60,30,0)');
           ctx.beginPath(); ctx.ellipse(gx,gy,sz*0.07,sz*0.04,0.3,0,Math.PI*2);
           ctx.fillStyle=gr; ctx.fill();
         }
       }
     } else {
       ctx.fillStyle = '#888';
-ctx.fillRect(0,0,sz,sz);
+      ctx.fillRect(0,0,sz,sz);
     }
   }
   const tex = new THREE.CanvasTexture(c);
@@ -646,7 +636,7 @@ const LANGS = {
     ui:{eq:'赤道',ecl:'黃道',asc:'ASC上升',dsc:'DSC下降',mc:'MC中天',ic:'IC天底',mansion:'宿',house:'宫',p1:'新月(朔)',p2:'上弦月',p3:'滿月(望)',p4:'下弦月',p5:'晦日',deg:'距角',trop:'回歸黃道',sid:'恆星黃道',helio:'日心黃道',helioMsg:'☉ 日心模式 · 恆星參考系固定 · 視黃道不適用',zenith:'天頂'},
     al:{asc:'命宫在',sun:'太阳在',moon:'月在',phase:'月相',rahu:'南交點在',jup:'福星在',sat:'剋星在'},
     dst:{off:'標準時',on:'夏令時 +1h',label:'夏令時（DST）',hint:'開啟後自動 +1 小時'},
-    dom:{modalTitle:'星象座標系',modalSub:'真3D地心儀 · 晝夜更替 · 二十八宿',lblNm:'命主姓名',lblDt:'出生日期（公曆）',lblTm:'出生時間（24小時）',lblLoc:'出生地經緯度與時區',plhNm:'姓名（可留空）',btnSub:'觀 測 星 象 能 量',btnDemo:'→ 載入演示（2002.12.24 子夜 · 東經109 · 北緯31）',tbTitle:'星象座標系 · 天球儀',tbSub:'GEOCENTRIC ASTROLABE · 物理光影宇宙',tbPlay:'▶ 播放',tbPause:'⏸ 暫停',tbReset:'重置',timeLbl:'當前時間',loadTxt:'載入星象引擎與高精貼圖…',drwLbl:'星象資料',pEcl:'星象 · 視黃道度數',pAna:'命盤分析摘要',pHou:'黃道十二宮 · 宮位星曜',pHouM:'黃道十二宮',ascAligned:'☽ 测者中心已完美鎖定，中天直指螢幕正上方'},
+    dom:{modalTitle:'星象座標系',modalSub:'真3D地心儀 · 晝夜更替 · 二十八宿',lblNm:'命主姓名',lblDt:'出生日期（公曆）',lblTm:'出生時間（24小時）',lblLoc:'出生地經緯度與時區',plhNm:'姓名（可留空）',btnSub:'觀 測 星 象 能 量',btnDemo:'→ 載入演示（2002.12.24 子夜 · 東經109 · 北緯31）',tbTitle:'星象座標系 · 天球儀',tbSub:'GEOCENTRIC ASTROLABE · 物理光影宇宙',tbPlay:'▶ 播放',tbPause:'⏸ 暫停',tbReset:'重置',timeLbl:'當前時間',loadTxt:'載入星象引擎與高精貼圖…',drwLbl:'星象資料',pEcl:'星象 · 視黃道度数',pAna:'命盤分析摘要',pHou:'黃道十二宮 · 宮位星曜',pHouM:'黃道十二宮',ascAligned:'☽ 测者中心已完美鎖定，中天直指螢幕正上方'},
     ctrl:{zen:'沉浸星空',spin:'時間自轉',zenith:'對齊天頂',helio:'切換日心/地心',sys:'切換回歸/恆星',out:'三王星',ecl:'黃道環',eq:'赤道環',man:'二十八宿',pl:'星体顯示',asp:'相位連線',tm:'時間推移',orb:'黃緯垂線',btnSysT:'歸',btnSysS:'恆',btnOut:'王',btnMan:'宿',btnPl:'政',btnHelio:'日'}
   },
   'zh-CN':{
@@ -669,9 +659,9 @@ window.switchLang = function(l) {
     if (!LANGS[l]) return;
     currLang = l;
     localStorage.setItem('zc_lang', l);
-document.querySelectorAll('.mlbtn').forEach(b => b.classList.toggle('active', b.dataset.lang === l));
+    document.querySelectorAll('.mlbtn').forEach(b => b.classList.toggle('active', b.dataset.lang === l));
     const d = LANGS[l];
-document.querySelectorAll('[data-3d-type]').forEach(el => {
+    document.querySelectorAll('[data-3d-type]').forEach(el => {
       const t = el.getAttribute('data-3d-type'), id = el.getAttribute('data-3d-id');
       if (t === 'zod') el.innerHTML = d.zod[id];
       if (t === 'man') el.innerHTML = d.man[id] + d.ui.mansion;
@@ -679,35 +669,36 @@ document.querySelectorAll('[data-3d-type]').forEach(el => {
       if (t === 'ui')  el.innerHTML = d.ui[id];
       if (t === 'raw') el.innerHTML = id;
     });
-const set = (id,v) => { const e=document.getElementById(id); if(e) e.textContent=v; };
-    const setHTML = (id,v) => { const e=document.getElementById(id);
-if(e) e.innerHTML=v; };
+    const set = (id,v) => { const e=document.getElementById(id); if(e) e.textContent=v; };
+    const setHTML = (id,v) => { const e=document.getElementById(id); if(e) e.innerHTML=v; };
     if (!window.isInfected) { set('tb-title',d.dom.tbTitle); set('tb-sub',d.dom.tbSub); }
     set('modal-title',d.dom.modalTitle); set('modal-sub',d.dom.modalSub);
     set('lbl-nm',d.dom.lblNm); set('lbl-dt',d.dom.lblDt); set('lbl-tm',d.dom.lblTm); set('lbl-loc',d.dom.lblLoc);
     setHTML('lbl-dst',d.dst.label+'<br><span style="font-size:.44rem;opacity:.55">'+d.dst.hint+'</span>');
-const fNm = document.getElementById('f-nm'); if(fNm) fNm.placeholder = d.dom.plhNm;
+    const fNm = document.getElementById('f-nm'); if(fNm) fNm.placeholder = d.dom.plhNm;
     set('btn-sub',d.dom.btnSub); set('btn-demo',d.dom.btnDemo);
     set('mobile-drawer-label',d.dom.drwLbl);
-['pct-ecl','pct-ana','pct-hou','pct-ecl-m','pct-ana-m','pct-hou-m','asc-hint'].forEach((id,i) => {
+    ['pct-ecl','pct-ana','pct-hou','pct-ecl-m','pct-ana-m','pct-hou-m','asc-hint'].forEach((id,i) => {
       set(id, d.dom[['pEcl','pAna','pHou','pEcl','pAna','pHouM','ascAligned'][i]]);
     });
-const dstChk = document.getElementById('f-dst'), dstBdg = document.getElementById('dst-badge');
-    if(dstChk && dstBdg) { dstBdg.textContent = dstChk.checked ? d.dst.on : d.dst.off; dstBdg.className='dst-badge'+(dstChk.checked?' active':'');
-}
+    const dstChk = document.getElementById('f-dst'), dstBdg = document.getElementById('dst-badge');
+    if(dstChk && dstBdg) { dstBdg.textContent = dstChk.checked ? d.dst.on : d.dst.off; dstBdg.className='dst-badge'+(dstChk.checked?' active':''); }
     const cbH = document.getElementById('cb-helio'); if(cbH) cbH.textContent = d.ctrl.btnHelio;
     const cbS = document.getElementById('cb-sys');
-if(cbS) cbS.textContent = S.sidereal ? d.ctrl.btnSysS : d.ctrl.btnSysT;
+    if(cbS) cbS.textContent = S.sidereal ? d.ctrl.btnSysS : d.ctrl.btnSysT;
     updateHelioBadge();
-    if (userData.jd) { renderPlanetList(curGeo,S.sidereal,userData.jd,''); renderPlanetList(curGeo,S.sidereal,userData.jd,'-m'); renderHouseGrid(curGeo,S.sidereal,userData.jd,''); renderHouseGrid(curGeo,S.sidereal,userData.jd,'-m'); renderAnalysis(curGeo,S.sidereal,userData.jd,''); renderAnalysis(curGeo,S.sidereal,userData.jd,'-m');
-}
+    if (userData.jd) { 
+      renderPlanetList(curGeo,S.sidereal,userData.jd,''); renderPlanetList(curGeo,S.sidereal,userData.jd,'-m'); 
+      renderHouseGrid(curGeo,S.sidereal,userData.jd,''); renderHouseGrid(curGeo,S.sidereal,userData.jd,'-m'); 
+      renderAnalysis(curGeo,S.sidereal,userData.jd,''); renderAnalysis(curGeo,S.sidereal,userData.jd,'-m');
+    }
   } catch(e) { console.error(e); }
 };
 
 window.toggleDrawer = () => { const d=document.getElementById('mobile-drawer'); if(d) d.classList.toggle('open'); };
+
 // ─── Orbital mechanics ───
-function auToR(au) { return au===0 ? 0 : 18 * Math.pow(au, 0.42);
-}
+function auToR(au) { return au===0 ? 0 : 18 * Math.pow(au, 0.42); }
 function solveKepler(M,e) {
   let E=M;
   for(let i=0;i<10;i++){const dE=(E-e*Math.sin(E)-M)/(1-e*Math.cos(E)); E-=dE; if(Math.abs(dE)<1e-6)break;}
@@ -715,7 +706,7 @@ function solveKepler(M,e) {
 }
 function getHelio(id,d) {
   const p=PE[id];
-const M=norm(p.L+p.n*d-p.w);
+  const M=norm(p.L+p.n*d-p.w);
   const E=solveKepler(M*DEG,p.e);
   const xv=p.a*(Math.cos(E)-p.e), yv=p.a*Math.sqrt(1-p.e*p.e)*Math.sin(E);
   const l_j=Math.atan2(yv,xv)*R2D+p.w;
@@ -730,13 +721,13 @@ function getAstroPositions(jd) {
   const xe=Math.cos(norm(pos.sun+180)*DEG), ye=Math.sin(norm(pos.sun+180)*DEG);
   const D=norm(297.85036+12.190749*d), M=norm(357.52772+0.985600*d), Mp=norm(134.96298+13.064992*d), F=norm(93.27191+13.229350*d);
   pos.moon=norm(218.3165+13.176396*d+6.289*Math.sin(Mp*DEG)+1.274*Math.sin((2*D-Mp)*DEG)+0.658*Math.sin(2*D*DEG)+0.214*Math.sin(2*Mp*DEG)-0.186*Math.sin(M*DEG)-0.114*Math.sin(2*F*DEG));
-['mercury','venus','mars','jupiter','saturn','uranus','neptune','pluto'].forEach(id => {
+  ['mercury','venus','mars','jupiter','saturn','uranus','neptune','pluto'].forEach(id => {
     const h=getHelio(id,d), rP=h.r*Math.cos(h.lat*DEG);
     const X=rP*Math.cos(h.l*DEG)-xe, Y=rP*Math.sin(h.l*DEG)-ye;
     pos[id]=norm(Math.atan2(Y,X)*R2D);
     pos[id+'_lat']=Math.atan2(h.r*Math.sin(h.lat*DEG),Math.sqrt(X*X+Y*Y))*R2D;
   });
-const ascNode=norm(125.04452-0.0529538*d);
+  const ascNode=norm(125.04452-0.0529538*d);
   pos.ketu=ascNode; pos.rahu=norm(ascNode+180);
   pos.moon_lat=5.145*Math.sin((pos.moon-pos.ketu)*DEG);
   pos.yapo=norm(norm(83.3532465+0.11140353*d)+180);
@@ -745,12 +736,20 @@ const ascNode=norm(125.04452-0.0529538*d);
 }
 function calcAll(T,jd,lng,lat,isSid) {
   const d=jd-2451545.0, geo=getAstroPositions(jd);
-  geo.sun_lat=0; geo.rahu_lat=0; geo.ketu_lat=0; geo.yapo_lat=0;
-geo.ziqi_lat=0;
+  geo.sun_lat=0; geo.rahu_lat=0; geo.ketu_lat=0; geo.yapo_lat=0; geo.ziqi_lat=0;
   const posPrev=getAstroPositions(jd-0.02);
   geo.retrograde={};
-  for(let id in geo){if(id.includes('_lat'))continue; if(id==='sun'||id==='moon'||id==='yapo'||id==='ziqi')geo.retrograde[id]=false; else if(id==='rahu'||id==='ketu')geo.retrograde[id]=true; else if(posPrev[id]!==undefined){let diff=geo[id]-posPrev[id]; if(diff>180)diff-=360; if(diff<-180)diff+=360;
-geo.retrograde[id]=diff<0;}}
+  for(let id in geo){
+    if(id.includes('_lat'))continue; 
+    if(id==='sun'||id==='moon'||id==='yapo'||id==='ziqi')geo.retrograde[id]=false; 
+    else if(id==='rahu'||id==='ketu')geo.retrograde[id]=true; 
+    else if(posPrev[id]!==undefined){
+      let diff=geo[id]-posPrev[id]; 
+      if(diff>180)diff-=360; 
+      if(diff<-180)diff+=360;
+      geo.retrograde[id]=diff<0;
+    }
+  }
   const gmst=280.46061837+360.98564736629*d+0.000387933*T*T, lst=norm(gmst+lng)*DEG, lat_r=lat*DEG;
   let rawAsc=norm(Math.atan2(Math.cos(lst),-(Math.sin(lst)*Math.cos(OBL)+Math.tan(lat_r)*Math.sin(OBL)))*R2D);
   let rawMc=norm(Math.atan2(Math.sin(lst),Math.cos(lst)*Math.cos(OBL))*R2D);
@@ -759,7 +758,7 @@ geo.retrograde[id]=diff<0;}}
   geo.fortune=(!isNaN(rawAsc)&&!isNaN(geo.sun)&&!isNaN(geo.moon))?(isDay?norm(rawAsc+geo.moon-geo.sun):norm(rawAsc+geo.sun-geo.moon)):0;
   geo.fortune_lat=0; geo.retrograde.fortune=false;
   const aya=24.03+d*(50.29/36525);
-const helio={};
+  const helio={};
   helio.sun={l:0,r:0,lat:0};
   helio.earth={l:norm(geo.sun+180),r:1.0,lat:0};
   ['mercury','venus','mars','jupiter','saturn','uranus','neptune','pluto'].forEach(id=>{helio[id]=getHelio(id,d);});
@@ -767,19 +766,18 @@ const helio={};
     const l_g=geo[id]*DEG, lat_g=(geo[id+'_lat']||0)*DEG, r_g=0.3;
     const dx=r_g*Math.cos(lat_g)*Math.cos(l_g), dy=r_g*Math.cos(lat_g)*Math.sin(l_g), dz=r_g*Math.sin(lat_g);
     const ex=Math.cos(helio.earth.l*DEG)*helio.earth.r, ey=Math.sin(helio.earth.l*DEG)*helio.earth.r;
-    const hx=ex+dx, hy=ey+dy, hz=ez=dz;
+    const hz=dz, hx=ex+dx, hy=ey+dy;
     helio[id]={l:norm(Math.atan2(hy,hx)*R2D),r:Math.sqrt(hx*hx+hy*hy+hz*hz),lat:Math.atan2(hz,Math.sqrt(hx*hx+hy*hy))*R2D};
   });
-if(isSid){
+  if(isSid){
     const latKeys=new Set(Object.keys(geo).filter(k=>k.endsWith('_lat')));
     for(const k in geo){if(!latKeys.has(k)&&typeof geo[k]==='number')geo[k]=norm(geo[k]-aya);}
     geo.asc=norm(rawAsc-aya); geo.mc=norm(rawMc-aya); geo.dsc=norm(rawDsc-aya); geo.ic=norm(rawIc-aya);
-for(const k in helio){if(helio[k]&&typeof helio[k].l==='number'&&k!=='sun')helio[k].l=norm(helio[k].l-aya);}
+    for(const k in helio){if(helio[k]&&typeof helio[k].l==='number'&&k!=='sun')helio[k].l=norm(helio[k].l-aya);}
     const ascSign=Math.floor(geo.asc/30); geo.houses=[];
     for(let i=0;i<12;i++)geo.houses.push(norm((ascSign+i)*30));
   } else {
-    geo.asc=rawAsc;
-geo.mc=rawMc; geo.dsc=rawDsc; geo.ic=rawIc;
+    geo.asc=rawAsc; geo.mc=rawMc; geo.dsc=rawDsc; geo.ic=rawIc;
     const q1=norm(geo.ic-geo.asc), q2=norm(geo.dsc-geo.ic), q3=norm(geo.mc-geo.dsc), q4=norm(geo.asc-geo.mc);
     geo.houses=[geo.asc,norm(geo.asc+q1/3),norm(geo.asc+2*q1/3),geo.ic,norm(geo.ic+q2/3),norm(geo.ic+2*q2/3),geo.dsc,norm(geo.dsc+q3/3),norm(geo.dsc+2*q3/3),geo.mc,norm(geo.mc+q4/3),norm(geo.mc+2*q4/3)];
   }
@@ -788,6 +786,7 @@ geo.mc=rawMc; geo.dsc=rawDsc; geo.ic=rawIc;
 }
 function jdn(y,m,d,h=12,mn=0){if(m<=2){y--;m+=12;}const A=Math.floor(y/100),B=2-A+Math.floor(A/4);return Math.floor(365.25*(y+4716))+Math.floor(30.6001*(m+1))+d+B-1524.5+(h+mn/60)/24;}
 const T_jd=jd=>(jd-2451545.0)/36525;
+
 // ─── THREE.js setup ───
 const wrap = document.getElementById('three-canvas');
 const scene = new THREE.Scene();
@@ -811,8 +810,7 @@ const bloom = new UnrealBloomPass(new THREE.Vector2(window.innerWidth,window.inn
 composer.addPass(bloom);
 composer.addPass(new OutputPass());
 const OCtrl = new TrackballControls(camera, renderer.domElement);
-OCtrl.rotateSpeed = isMobile ?
-2.5 : 3.5;
+OCtrl.rotateSpeed = isMobile ? 2.5 : 3.5;
 OCtrl.zoomSpeed = isMobile ? 0.8 : 1.2;
 OCtrl.noPan = true;
 OCtrl.staticMoving = false;
@@ -823,6 +821,7 @@ OCtrl.maxDistance = 800;
 // ─── Stars ───
 function mkStars(n,sz,sp,col,op){const pos=new Float32Array(n*3);for(let i=0;i<n*3;i++)pos[i]=(Math.random()-.5)*sp;const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(pos,3));return new THREE.Points(g,new THREE.PointsMaterial({size:sz,color:col,transparent:true,opacity:op,sizeAttenuation:true}));}
 [mkStars(5000,.45,600,0xCCDDFF,.65),mkStars(1500,.85,500,0xFFFFFF,.42),mkStars(500,1.3,460,0xFFEEDD,.32)].forEach(l=>scene.add(l));
+
 // ─── Meteors ───
 const meteors=[];
 function spawnMeteor(m){m.dir=new THREE.Vector3((Math.random()-.5)*1.2,-.5-Math.random()*.6,(Math.random()-.5)*1.2).normalize();m.origin=new THREE.Vector3((Math.random()-.5)*280,50+Math.random()*60,(Math.random()-.5)*280);m.speed=90+Math.random()*130;m.len=10+Math.random()*22;m.life=0;m.maxLife=.6+m.len/m.speed;m.active=true;m.cooldown=0;}
@@ -835,6 +834,7 @@ sunLight.position.set(0,10,50); scene.add(sunLight);
 scene.add(new THREE.AmbientLight(0xffffff, 0.07));
 const horrorPointLight = new THREE.PointLight(0xFF1100, 0, 800);
 horrorPointLight.position.set(0,0,0); scene.add(horrorPointLight);
+
 // ─── Scene groups ───
 const universeG=new THREE.Group(); universeG.rotation.x=-Math.PI/2; scene.add(universeG);
 const eclRingG=new THREE.Group(); universeG.add(eclRingG);
@@ -848,10 +848,8 @@ const manG=new THREE.Group(); universeG.add(manG);
 const plG=new THREE.Group(); universeG.add(plG);
 const aspG=new THREE.Group(); universeG.add(aspG);
 const furG=new THREE.Group(); universeG.add(furG);
-// fur particles
-const veinG=new THREE.Group(); universeG.add(veinG);      // inter-planet veins
+const veinG=new THREE.Group(); universeG.add(veinG);
 const jupEyeG=new THREE.Group(); universeG.add(jupEyeG);
-// jupiter eye replacement
 
 // ─── Ring geometry for equator/ecliptic ───
 eqRingG.add(new THREE.Mesh(new THREE.TorusGeometry(40,.065,16,200),new THREE.MeshBasicMaterial({color:0x5599DD,transparent:true,opacity:.72})));
@@ -869,8 +867,10 @@ for(let i=0;i<12;i++){const a=i/12*Math.PI*2;eclRingG.add(new THREE.Line(new THR
 const mR=54,mO=57.8;
 {const pts=[];for(let i=0;i<=240;i++)pts.push(new THREE.Vector3(Math.cos(i/240*Math.PI*2)*mR,Math.sin(i/240*Math.PI*2)*mR,0));manG.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),new THREE.LineBasicMaterial({color:0x3A8C5C,transparent:true,opacity:.4})));}
 MANS.forEach(m=>{const a0=m.s*DEG,a1=(m.s+m.w)*DEG;manG.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(Math.cos(a0)*mR,Math.sin(a0)*mR,0),new THREE.Vector3(Math.cos(a0)*mO,Math.sin(a0)*mO,0)]),new THREE.LineBasicMaterial({color:0x7DE09A,transparent:true,opacity:.65})));const arc=[];for(let t=0;t<=24;t++){const aa=a0+(a1-a0)*t/24;arc.push(new THREE.Vector3(Math.cos(aa)*(mR+.5),Math.sin(aa)*(mR+.5),0));}manG.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(arc),new THREE.LineBasicMaterial({color:0x7DE09A,transparent:true,opacity:.5})));lbl2D(manG,'lman',61,a0+(a1-a0)/2,'man',m.id);});
+
 // Helio orbits
 ['mercury','venus','earth','mars','jupiter','saturn','uranus','neptune','pluto'].forEach(id=>{const pts=[];if(id==='earth'){const r=auToR(1.0);for(let i=0;i<=64;i++)pts.push(new THREE.Vector3(Math.cos(i/64*Math.PI*2)*r,Math.sin(i/64*Math.PI*2)*r,0));}else{const p=PE[id];for(let i=0;i<=64;i++){const E=(i/64)*Math.PI*2,xv=p.a*(Math.cos(E)-p.e),yv=p.a*Math.sqrt(1-p.e*p.e)*Math.sin(E);const r_au=Math.sqrt(xv*xv+yv*yv),l=norm(Math.atan2(yv,xv)*R2D+p.w),lat=p.i*Math.sin((l-p.Node)*DEG),r_m=auToR(r_au),z=r_m*Math.sin(lat*DEG)*Z_EXAG,rProj=r_m*Math.cos(lat*DEG);pts.push(new THREE.Vector3(Math.cos(l*DEG)*rProj,Math.sin(l*DEG)*rProj,z));}}const pc=PCONF.find(p=>p.id===id);const col=id==='earth'?0x5599DD:(pc?pc.col:0x888888);const ol=new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),new THREE.LineBasicMaterial({color:col,transparent:true,opacity:.3}));if(pc&&pc.isOut)ol.userData.isOut=true;helioOrbitsG.add(ol);});
+
 // ─── Helio helpers ───
 function clearGroup(g){if(!g||!g.children)return;for(let i=g.children.length-1;i>=0;i--){const c=g.children[i];if(c.isCSS2DObject&&c.element)c.element.remove();if(c.geometry)c.geometry.dispose();if(c.material)c.material.dispose();g.remove(c);}}
 function updateHelioBadge(){const badge=document.getElementById('helio-badge');if(!badge)return;const D=LANGS[currLang];badge.classList.toggle('show',S.helio);if(D.ui.helioMsg)badge.textContent=D.ui.helioMsg;}
@@ -887,7 +887,7 @@ const ASP_A=[0,60,90,120,150,180];
 const ASP_C=[0xFFFF00,0x44FF88,0xFF4444,0x44AAFF,0xFF8844,0xFF4444];
 function placePlanets(geo,helio,lst,aya){
   currentLST=lst; currentAscDeg=geo.asc;
-if(S.helio){
+  if(S.helio){
     helioOrbitsG.visible=true;houseG.visible=false;
     const eA=helio.earth.l*DEG,eR=auToR(1.0),eX=Math.cos(eA)*eR,eY=Math.sin(eA)*eR;
     earthContainer.position.set(eX,eY,0);
@@ -895,7 +895,7 @@ if(S.helio){
     manG.rotation.z=S.sidereal?0:aya*DEG;
     aspG.visible=S.aspects;
     PCONF.forEach(pc=>{const vis=!pc.isOut||S.showOut;let x,y,z;if(pc.id==='sun'){x=0;y=0;z=0;}else if(pc.id==='moon'||pc.type==='fict'){const l_g=geo[pc.id];if(l_g===undefined||isNaN(l_g))return;const a=l_g*DEG,beta=(geo[pc.id+'_lat']||0)*DEG,rVis=3,rP=Math.cos(beta)*rVis;x=eX+Math.cos(a)*rP;y=eY+Math.sin(a)*rP;z=Math.sin(beta)*rVis*(pc.id==='moon'?1.5:Z_EXAG);}else{const h=helio[pc.id];if(!h)return;const r_m=auToR(h.r),lat_r=h.lat*DEG,l_r=h.l*DEG;z=r_m*Math.sin(lat_r)*Z_EXAG;const rP=r_m*Math.cos(lat_r);x=Math.cos(l_r)*rP;y=Math.sin(l_r)*rP;}if(pMesh[pc.id]){pMesh[pc.id].position.set(x,y,z);pMesh[pc.id].visible=vis;}if(pLbl[pc.id]){pLbl[pc.id].position.set(x+.2,y+.2,z+pc.sz+.5);pLbl[pc.id].element.style.display=vis?'flex':'none';}if(dropLines[pc.id])dropLines[pc.id].visible=false;});
-if(S.aspects)buildAspects(geo,helio);else clearGroup(aspG);
+    if(S.aspects)buildAspects(geo,helio);else clearGroup(aspG);
   }else{
     helioOrbitsG.visible=false;houseG.visible=true;
     earthContainer.position.set(0,0,0);
@@ -903,7 +903,7 @@ if(S.aspects)buildAspects(geo,helio);else clearGroup(aspG);
     aspG.visible=S.aspects;
     PCONF.forEach(pc=>{const vis=!pc.isOut||S.showOut;const lon=geo[pc.id];if(lon===undefined||isNaN(lon))return;const a=lon*DEG,beta=(geo[pc.id+'_lat']||0)*DEG,rProj=Math.cos(beta)*pc.R;const x=Math.cos(a)*rProj,y=Math.sin(a)*rProj,z=Math.sin(beta)*pc.R*(pc.id==='moon'?1.5:Z_EXAG);if(pMesh[pc.id]){pMesh[pc.id].position.set(x,y,z);pMesh[pc.id].visible=vis;}if(pLbl[pc.id]){pLbl[pc.id].position.set(x+.2,y+.2,z+pc.sz+.3);pLbl[pc.id].element.style.display=vis?'flex':'none';const rEl=document.getElementById('r_'+pc.id);if(rEl)rEl.textContent=(geo.retrograde&&geo.retrograde[pc.id])?'(逆)':'';}const dl=dropLines[pc.id];if(dl){const show=vis&&S.orb&&Math.abs(z)>.05;dl.visible=show;if(show){dl.userData.buf[0]=x;dl.userData.buf[1]=y;dl.userData.buf[2]=z;dl.userData.buf[3]=x;dl.userData.buf[4]=y;dl.userData.buf[5]=0;dl.userData.pa.needsUpdate=true;}}});
     if(S.aspects)buildAspects(geo,helio);else clearGroup(aspG);
-clearGroup(houseG);
+    clearGroup(houseG);
     if(geo.houses&&geo.houses.length===12){for(let i=0;i<12;i++){const a=geo.houses[i]*DEG;if(isNaN(a))continue;let isAxis=false,col=0xFFFFFF;if(!S.sidereal){isAxis=(i===0||i===3||i===6||i===9);col=(i===0||i===6)?0xFF4444:((i===3||i===9)?0x7DE09A:0xFFFFFF);houseG.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(Math.cos(a)*17,Math.sin(a)*17,0),new THREE.Vector3(Math.cos(a)*(isAxis?43:40.5),Math.sin(a)*(isAxis?43:40.5),0)]),new THREE.LineBasicMaterial({color:col,transparent:true,opacity:isAxis?.68:.18})));if(i===0)lbl2D(houseG,'lasc',46,a,'ui','asc');else if(i===6)lbl2D(houseG,'ldsc',46,a,'ui','dsc');else if(i===9)lbl2D(houseG,'lmc',46,a,'ui','mc');else if(i===3)lbl2D(houseG,'lmc',46,a,'ui','ic');else lbl2D(houseG,'lax',43,a,'raw',i+1);}else{houseG.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(Math.cos(a)*17,Math.sin(a)*17,0),new THREE.Vector3(Math.cos(a)*40.5,Math.sin(a)*40.5,0)]),new THREE.LineBasicMaterial({color:0x888888,transparent:true,opacity:.18})));lbl2D(houseG,'lax',43,a,'raw',i+1);}}if(S.sidereal){const ascA=geo.asc*DEG,dscA=geo.dsc*DEG,mcA=geo.mc*DEG,icA=geo.ic*DEG;if(!isNaN(ascA)&&!isNaN(dscA)){houseG.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(Math.cos(dscA)*43,Math.sin(dscA)*43,0),new THREE.Vector3(Math.cos(ascA)*43,Math.sin(ascA)*43,0)]),new THREE.LineBasicMaterial({color:0xFF4444,transparent:true,opacity:.68})));lbl2D(houseG,'lasc',46,ascA,'ui','asc');lbl2D(houseG,'ldsc',46,dscA,'ui','dsc');}if(!isNaN(mcA)&&!isNaN(icA)){houseG.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(Math.cos(icA)*43,Math.sin(icA)*43,0),new THREE.Vector3(Math.cos(mcA)*43,Math.sin(mcA)*43,0)]),new THREE.LineBasicMaterial({color:0x7DE09A,transparent:true,opacity:.68})));lbl2D(houseG,'lmc',46,mcA,'ui','mc');lbl2D(houseG,'lmc',46,icA,'ui','ic');}}}
   }
   updateEarthOrientation();
@@ -918,7 +918,7 @@ function buildAspects(geo,helio){
     let vj=S.helio?(bp[j]==='moon'||PCONF.find(p=>p.id===bp[j]).type==='fict'?geo[bp[j]]:helio[bp[j]]?.l):geo[bp[j]];
     if(vi===undefined||vj===undefined||isNaN(vi)||isNaN(vj))continue;
     const diff=Math.min(norm(vi-vj),norm(vj-vi)),orb=(bp[i]==='sun'||bp[j]==='sun'||bp[i]==='moon'||bp[j]==='moon')?10:8;
-for(let k=0;k<ASP_A.length;k++){if(Math.abs(diff-ASP_A[k])<orb){const p1=pMesh[bp[i]]?pMesh[bp[i]].position.clone():new THREE.Vector3(),p2=pMesh[bp[j]]?pMesh[bp[j]].position.clone():new THREE.Vector3();let cDiff=Math.abs(vi-vj);if(cDiff>180)cDiff=360-cDiff;let pDiff=0;if(geo.prev&&geo.prev[bp[i]]!==undefined&&geo.prev[bp[j]]!==undefined){pDiff=Math.abs(geo.prev[bp[i]]-geo.prev[bp[j]]);if(pDiff>180)pDiff=360-pDiff;}else pDiff=cDiff+1;const isA=Math.abs(cDiff-ASP_A[k])<Math.abs(pDiff-ASP_A[k]);const gl=new THREE.BufferGeometry().setFromPoints([p1,p2]);let mat=isA?new THREE.LineBasicMaterial({color:ASP_C[k],transparent:true,opacity:.65}):new THREE.LineDashedMaterial({color:ASP_C[k],transparent:true,opacity:.25,dashSize:1.5,gapSize:1.5});const line=new THREE.Line(gl,mat);if(!isA)line.computeLineDistances();aspG.add(line);break;}}
+    for(let k=0;k<ASP_A.length;k++){if(Math.abs(diff-ASP_A[k])<orb){const p1=pMesh[bp[i]]?pMesh[bp[i]].position.clone():new THREE.Vector3(),p2=pMesh[bp[j]]?pMesh[bp[j]].position.clone():new THREE.Vector3();let cDiff=Math.abs(vi-vj);if(cDiff>180)cDiff=360-cDiff;let pDiff=0;if(geo.prev&&geo.prev[bp[i]]!==undefined&&geo.prev[bp[j]]!==undefined){pDiff=Math.abs(geo.prev[bp[i]]-geo.prev[bp[j]]);if(pDiff>180)pDiff=360-pDiff;}else pDiff=cDiff+1;const isA=Math.abs(cDiff-ASP_A[k])<Math.abs(pDiff-ASP_A[k]);const gl=new THREE.BufferGeometry().setFromPoints([p1,p2]);let mat=isA?new THREE.LineBasicMaterial({color:ASP_C[k],transparent:true,opacity:.65}):new THREE.LineDashedMaterial({color:ASP_C[k],transparent:true,opacity:.25,dashSize:1.5,gapSize:1.5});const line=new THREE.Line(gl,mat);if(!isA)line.computeLineDistances();aspG.add(line);break;}}
   }
 }
 
@@ -932,13 +932,14 @@ function renderHouseGrid(geo,isSid,jd,sfx=''){const g=document.getElementById('h
 function renderAnalysis(geo,isSid,jd,sfx=''){const el=document.getElementById('abody'+sfx);if(!el)return;if(!geo||geo.sun===undefined||isNaN(geo.sun)){el.innerHTML='';return;}el.innerHTML=analyzeChart(geo,isSid,jd).map(l=>`<div class="al">${l}</div>`).join('');}
 function showTip(e,h,p){document.getElementById('tip-h').textContent=h;document.getElementById('tip-p').innerHTML=p;const t=document.getElementById('tip');t.style.display='block';t.style.left=Math.min(e.clientX+16,window.innerWidth-215)+'px';t.style.top=Math.max(e.clientY-14,8)+'px';}
 const hideTip=()=>{document.getElementById('tip').style.display='none';};
+
 // ─── DST / form ───
 window.toggleDST=function(){const c=document.getElementById('f-dst'),b=document.getElementById('dst-badge');if(c&&b){b.textContent=c.checked?LANGS[currLang].dst.on:LANGS[currLang].dst.off;b.className='dst-badge'+(c.checked?' active':'');}};
 window.hst=function(){try{const lngEl=document.getElementById('f-lg'),tzEl=document.getElementById('f-tz'),hEl=document.getElementById('f-h'),mEl=document.getElementById('f-mi');if(!lngEl||!tzEl||!hEl||!mEl)return;const lng=lngEl.value===''?NaN:parseFloat(lngEl.value),tz=tzEl.value===''?NaN:parseInt(tzEl.value);let h=hEl.value===''?0:parseInt(hEl.value),mn=mEl.value===''?0:parseInt(mEl.value);const dstEl=document.getElementById('f-dst');const dst=dstEl?dstEl.checked:false;if(dst)h+=1;const hint=document.getElementById('st-hint');if(!isNaN(lng)&&!isNaN(tz)&&!isNaN(h)&&!isNaN(mn)){let totalM=mn+Math.round((lng-tz*15)*4);let newH=((h+Math.floor(totalM/60))%24+24)%24;let newM=((totalM%60)+60)%60;if(hint){hint.textContent=`✦ 真太陽時${dst?'[DST+1h]':''} → 校正後 ${String(newH).padStart(2,'0')}:${String(newM).padStart(2,'0')}`;hint.style.display='block';}}else{if(hint)hint.style.display='none';}}catch(e){console.error(e);}};
 window.submitForm=function(){try{const nmEl=document.getElementById('f-nm');const name=nmEl?nmEl.value.trim()||'命主':'命主';const y=parseInt(document.getElementById('f-y').value),m=parseInt(document.getElementById('f-m').value),d=parseInt(document.getElementById('f-d').value);let h=parseInt(document.getElementById('f-h').value)||0,mn=parseInt(document.getElementById('f-mi').value)||0;if(isNaN(y)||isNaN(m)||isNaN(d)||isNaN(h)||isNaN(mn)){alert('請輸入完整的年月日時分！');return;}const lng=parseFloat(document.getElementById('f-lg').value)||120,lat=parseFloat(document.getElementById('f-lat').value)||30,tz=parseInt(document.getElementById('f-tz').value)||8;const dstEl=document.getElementById('f-dst');const dst=dstEl?dstEl.checked:false;const effectiveH=dst?h+1:h;const jd_utc=jdn(y,m,d,effectiveH-tz,mn);if(isNaN(jd_utc)){alert('时间计算错误，请检查输入');return;}let totalM=mn+Math.round((lng-tz*15)*4);let newH=((effectiveH+Math.floor(totalM/60))%24+24)%24;let newM=((totalM%60)+60)%60;userData={name,y,m,d,h:newH,mn:newM,lng,lat,tz,dst,jd:jd_utc};launch();checkHorrorEvent(y,m,d);}catch(e){alert('计算模组出错: '+e.message);console.error(e);}};
 window.loadDemo=function(){['f-nm','f-y','f-m','f-d','f-h','f-mi','f-lg','f-lat','f-tz'].forEach((id,i)=>{const el=document.getElementById(id);if(el)el.value=['演示','2002','12','24','0','0','109','31','8'][i];});const dstEl=document.getElementById('f-dst');if(dstEl)dstEl.checked=false;if(window.toggleDST)window.toggleDST();if(window.submitForm)window.submitForm();};
 function updatePositions(){if(!userData||!userData.jd||isNaN(userData.jd))return;const res=calcAll(T_jd(userData.jd),userData.jd,userData.lng,userData.lat,S.sidereal);curGeo=res.geo;curHelio=res.helio;currentGMST=res.gmst;if(isNaN(currentGMST))return;if(!S.helio)manG.rotation.z=S.sidereal?0:res.aya*DEG;placePlanets(curGeo,curHelio,res.lst,res.aya);renderPlanetList(curGeo,S.sidereal,userData.jd,'');renderPlanetList(curGeo,S.sidereal,userData.jd,'-m');renderHouseGrid(curGeo,S.sidereal,userData.jd,'');renderHouseGrid(curGeo,S.sidereal,userData.jd,'-m');renderAnalysis(curGeo,S.sidereal,userData.jd,'');renderAnalysis(curGeo,S.sidereal,userData.jd,'-m');}
-function launch(){updatePositions();pointCameraAtBirthplace();const nameEl=document.getElementById('tb-name');if(nameEl)nameEl.textContent=userData.name;const dateEl=document.getElementById('tb-date');if(dateEl)dateEl.textContent=`${userData.y}.${String(userData.m).padStart(2,'0')}.${String(userData.d).padStart(2,'0')} ${String(userData.h).padStart(2,'0')}:${String(userData.mn).padStart(2,'0')}${userData.dst?'(DST)':''}`;const infoEl=document.getElementById('tb-info');if(infoEl)infoEl.style.display='block';const drw=document.getElementById('mobile-drawer'),lp=document.getElementById('lp'),rp=document.getElementById('rp');if(isMobile){if(drw)drw.style.display='flex';if(lp)lp.style.display='none';if(rp)rp.style.display='none';}else{if(lp)lp.style.display='flex';if(rp)rp.style.display='flex';if(drw)drw.style.display='none';}const mw=document.getElementById('mw');if(mw&&mw.style.display!=='none'){mw.style.transition='opacity .6s';mw.style.opacity='0';mw.style.pointerEvents='none';setTimeout(()=>{mw.style.display='none';},600);}}
+function launch(){updatePositions();pointCameraAtBirthplace();const nameEl=document.getElementById('tb-name');if(nameEl)nameEl.textContent=userData.name;const dateEl=document.getElementById('tb-date');if(dateEl)dateEl.textContent=`${userData.y}.${String(userData.m).padStart(2,'0')}.${String(userData.d).padStart(2,'0')} ${String(userData.h).padStart(2,'0')}:${String(userData.mn).padStart(2,'0')}${userData.dst?' (DST)':''}`;const infoEl=document.getElementById('tb-info');if(infoEl)infoEl.style.display='block';const drw=document.getElementById('mobile-drawer'),lp=document.getElementById('lp'),rp=document.getElementById('rp');if(isMobile){if(drw)drw.style.display='flex';if(lp)lp.style.display='none';if(rp)rp.style.display='none';}else{if(lp)lp.style.display='flex';if(rp)rp.style.display='flex';if(drw)drw.style.display='none';}const mw=document.getElementById('mw');if(mw&&mw.style.display!=='none'){mw.style.transition='opacity .6s';mw.style.opacity='0';mw.style.pointerEvents='none';setTimeout(()=>{mw.style.display='none';},600);}}
 
 // ══════════════════════════════════════════════════════════
 //  iOS PICKER (完整实现)
@@ -956,7 +957,7 @@ function initPickerFromForm() {
   const fM = parseInt(document.getElementById('f-m')?.value)||1;
   const fD = parseInt(document.getElementById('f-d')?.value)||1;
   const fH = parseInt(document.getElementById('f-h')?.value)||0;
-const fMi= parseInt(document.getElementById('f-mi')?.value)||0;
+  const fMi= parseInt(document.getElementById('f-mi')?.value)||0;
   pickerState.y=fY; pickerState.m=fM; pickerState.d=fD; pickerState.h=fH; pickerState.min=fMi;
 }
 
@@ -973,8 +974,7 @@ function buildPickerCols() {
       item.textContent = String(val).padStart(col.id==='col-y'?4:2,'0');
       item.dataset.val = val;
       el.appendChild(item);
-   
- });
+    });
     for (let i=0;i<2;i++) { const p=document.createElement('div'); p.className='picker-item'; p.style.height='35px'; el.appendChild(p); }
     scrollPickerTo(col, pickerState[col.key], false);
     el.addEventListener('scroll', () => onPickerScroll(col, el), { passive:true });
@@ -985,15 +985,15 @@ function scrollPickerTo(col, val, smooth) {
   const el = document.getElementById(col.id);
   if (!el) return;
   const idx = col.items.indexOf(Number(val));
-if (idx < 0) return;
+  if (idx < 0) return;
   const target = idx * 35;
-el.scrollTo({ top: target, behavior: smooth ? 'smooth' : 'instant' });
+  el.scrollTo({ top: target, behavior: smooth ? 'smooth' : 'instant' });
 }
 
 let pickerScrollTimers = {};
 function onPickerScroll(col, el) {
   clearTimeout(pickerScrollTimers[col.key]);
-pickerScrollTimers[col.key] = setTimeout(() => {
+  pickerScrollTimers[col.key] = setTimeout(() => {
     const idx = Math.round(el.scrollTop / 35);
     const clampedIdx = Math.max(0, Math.min(idx, col.items.length-1));
     pickerState[col.key] = col.items[clampedIdx];
@@ -1027,19 +1027,17 @@ window.closePicker = function() {
 window.confirmPicker = function() {
   const {y,m,d,h,min} = pickerState;
   const setVal = (id,v) => { const el=document.getElementById(id); if(el) el.value=v; };
-setVal('f-y',y); setVal('f-m',m); setVal('f-d',d); setVal('f-h',h); setVal('f-mi',min);
+  setVal('f-y',y); setVal('f-m',m); setVal('f-d',d); setVal('f-h',h); setVal('f-mi',min);
   if (window.hst) window.hst();
   window.closePicker();
-  // If chart already loaded, update live
   if (userData.jd) {
     const lng=parseFloat(document.getElementById('f-lg')?.value)||120;
-const lat=parseFloat(document.getElementById('f-lat')?.value)||30;
+    const lat=parseFloat(document.getElementById('f-lat')?.value)||30;
     const tz=parseInt(document.getElementById('f-tz')?.value)||8;
     const dstEl=document.getElementById('f-dst'); const dst=dstEl?dstEl.checked:false;
     const effH = dst ? h+1 : h;
     userData.jd = jdn(y,m,d,effH-tz,min);
-    userData.y=y;
-userData.m=m; userData.d=d; userData.h=h; userData.mn=min;
+    userData.y=y; userData.m=m; userData.d=d; userData.h=h; userData.mn=min;
     updatePositions();
   }
 };
@@ -1048,75 +1046,69 @@ userData.m=m; userData.d=d; userData.h=h; userData.mn=min;
 //  HORROR ENGINE
 // ══════════════════════════════════════════════════════════
 window.isInfected = false;
-// Fur particle system per planet
-const furSystems = {}; // id -> Points
+const furSystems = {}; 
 
 function buildFurForPlanet(id, pos, radius, count=400) {
   if (furSystems[id]) { plG.remove(furSystems[id]);
-furSystems[id].geometry.dispose(); furSystems[id].material.dispose(); delete furSystems[id]; }
+    furSystems[id].geometry.dispose(); furSystems[id].material.dispose(); delete furSystems[id]; 
+  }
   const positions = new Float32Array(count * 3);
   const velocities = new Float32Array(count * 3);
-for (let i=0; i<count; i++) {
+  for (let i=0; i<count; i++) {
     const phi   = Math.acos(2*Math.random()-1);
     const theta = 2*Math.PI*Math.random();
-const r = radius;
+    const r = radius;
     const x = r*Math.sin(phi)*Math.cos(theta), y = r*Math.sin(phi)*Math.sin(theta), z = r*Math.cos(phi);
-positions[i*3]   = pos.x + x;
+    positions[i*3]   = pos.x + x;
     positions[i*3+1] = pos.y + y;
     positions[i*3+2] = pos.z + z;
     velocities[i*3]=x; velocities[i*3+1]=y; velocities[i*3+2]=z;
-}
+  }
   const geo = new THREE.BufferGeometry();
   geo.setAttribute('position', new THREE.BufferAttribute(positions.slice(),3));
   geo.setAttribute('velocity', new THREE.BufferAttribute(velocities,3));
-const mat = new THREE.PointsMaterial({ color:0xCC2200, size:0.15, transparent:true, opacity:0, sizeAttenuation:true });
+  const mat = new THREE.PointsMaterial({ color:0xCC2200, size:0.15, transparent:true, opacity:0, sizeAttenuation:true });
   const pts = new THREE.Points(geo, mat);
   plG.add(pts);
-furSystems[id] = pts;
+  furSystems[id] = pts;
 }
 
-// Vein system: catmull-rom tubes between planet pairs
 const veinLines = [];
-// { line, progress, srcId, dstId, color }
 
 function buildVeins() {
   clearGroup(veinG);
   veinLines.length = 0;
-const pairs = [
+  const pairs = [
     ['mercury','venus',0xFF2200],['venus','earth',0x0044FF],['earth','mars',0xFF1100],
     ['mars','jupiter',0x0055FF],['mercury','mars',0xFF3300],['venus','jupiter',0x2200FF],
     ['moon','earth',0xFF4400],['saturn','jupiter',0x0033CC],['earth','jupiter',0xFF0022],
     ['mars','saturn',0x0066FF],['sun','mercury',0xCC1100],['sun','venus',0x0033FF],
     ['moon','jupiter',0xFF0000],['earth','saturn',0x0088FF],
   ];
-pairs.forEach(([srcId, dstId, col]) => {
+  pairs.forEach(([srcId, dstId, col]) => {
     const srcMesh = pMesh[srcId], dstMesh = pMesh[dstId];
     if (!srcMesh || !dstMesh) return;
 
-    // Build spline with slight offset mid-point for organic curve
     const src = srcMesh.position, dst = dstMesh.position;
     const mid = new THREE.Vector3().addVectors(src, dst).multiplyScalar(0.5);
     mid.x += (Math.random()-0.5)*8; mid.y += (Math.random()-0.5)*8; mid.z += (Math.random()-0.5)*5;
     const curve = new THREE.CatmullRomCurve3([src.clone(), mid.clone(), dst.clone()]);
 
-    // Start with just 2 points (src), will grow in animate
     const maxPts = 60;
-   
     const allPts = curve.getPoints(maxPts);
     const positions = new Float32Array(maxPts * 3);
 
     const geo = new THREE.BufferGeometry();
     const pa = new THREE.BufferAttribute(positions, 3);
     pa.setUsage(THREE.DynamicDrawUsage);
-// Fill all initially with src pos
     for(let i=0;i<maxPts;i++){pa.setXYZ(i,src.x,src.y,src.z);}
     geo.setAttribute('position', pa);
     geo.setDrawRange(0,2);
-const isBlue = col > 0x800000 && (col & 0x0000FF) > (col >> 16);
-const mat = new THREE.LineBasicMaterial({ color:col, transparent:true, opacity:0, linewidth:2 });
+    const isBlue = col > 0x800000 && (col & 0x0000FF) > (col >> 16);
+    const mat = new THREE.LineBasicMaterial({ color:col, transparent:true, opacity:0, linewidth:2 });
     const line = new THREE.Line(geo, mat);
     veinG.add(line);
-veinLines.push({ line, pa, allPts, progress:0, srcId, dstId, color:col, maxPts });
+    veinLines.push({ line, pa, allPts, progress:0, srcId, dstId, color:col, maxPts });
   });
 }
 
@@ -1127,12 +1119,9 @@ function updateVeins(progress) {
     if (localP <= 0) return;
 
     const drawCount = Math.max(2, Math.floor(localP * v.maxPts));
-    // Update positions from stored curve points
     for (let i=0; i<drawCount; i++) {
       const pt = v.allPts[Math.min(i, v.allPts.length-1)];
-      // Dynamic jitter for organic feel
       const jitter = (1-localP)*0.3;
-  
       v.pa.setXYZ(i, pt.x+(Math.random()-.5)*jitter, pt.y+(Math.random()-.5)*jitter, pt.z+(Math.random()-.5)*jitter);
     }
     v.pa.needsUpdate = true;
@@ -1141,49 +1130,45 @@ function updateVeins(progress) {
   });
 }
 
-// Jupiter Eye: replace jupiter mesh with eye
 let jupEyeMeshes = [];
 function buildJupiterEye(jupPos) {
   clearGroup(jupEyeG);
   jupEyeMeshes = [];
-// Sclera (white of eye) - large ellipsoid
   const scleraMat = new THREE.MeshStandardMaterial({ color:0xFFEEEE, roughness:0.6, metalness:0.1 });
-const sclera = new THREE.Mesh(new THREE.SphereGeometry(2.5, 32, 24, 0, Math.PI*2, 0, Math.PI), scleraMat);
+  const sclera = new THREE.Mesh(new THREE.SphereGeometry(2.5, 32, 24, 0, Math.PI*2, 0, Math.PI), scleraMat);
   sclera.scale.set(2.0, 0.7, 1.0);
   sclera.position.copy(jupPos);
   jupEyeG.add(sclera);
   jupEyeMeshes.push(sclera);
-// Iris
+  
   const irisTex = (() => {
     const c = document.createElement('canvas'); c.width=128; c.height=128;
     const ctx = c.getContext('2d');
     const g = ctx.createRadialGradient(64,64,4,64,64,60);
     g.addColorStop(0,'#cc2200'); g.addColorStop(0.4,'#881100'); g.addColorStop(0.7,'#440800'); g.addColorStop(1,'#220400');
     ctx.fillStyle=g; ctx.fillRect(0,0,128,128);
-    // veins in iris
     for(let i=0;i<24;i++){const ang=i/24*Math.PI*2;ctx.beginPath();ctx.moveTo(64,64);ctx.lineTo(64+Math.cos(ang)*58,64+Math.sin(ang)*58);ctx.strokeStyle='rgba(200,0,0,0.4)';ctx.lineWidth=1;ctx.stroke();}
     const t = new THREE.CanvasTexture(c); t.colorSpace=THREE.SRGBColorSpace; return t;
   })();
-const irisMat = new THREE.MeshStandardMaterial({ map:irisTex, roughness:0.4, emissive:0x330000, emissiveIntensity:0.5 });
+  const irisMat = new THREE.MeshStandardMaterial({ map:irisTex, roughness:0.4, emissive:0x330000, emissiveIntensity:0.5 });
   const iris = new THREE.Mesh(new THREE.CircleGeometry(1.2,48), irisMat);
   iris.position.copy(jupPos);
-iris.position.z += 0.05;
+  iris.position.z += 0.05;
   iris.lookAt(camera.position);
   jupEyeG.add(iris);
   jupEyeMeshes.push(iris);
 
-  // Pupil
   const pupilMat = new THREE.MeshBasicMaterial({ color:0x000000 });
-const pupil = new THREE.Mesh(new THREE.CircleGeometry(0.45,32), pupilMat);
+  const pupil = new THREE.Mesh(new THREE.CircleGeometry(0.45,32), pupilMat);
   pupil.position.copy(jupPos);
   pupil.position.z += 0.1;
   pupil.lookAt(camera.position);
   jupEyeG.add(pupil);
   jupEyeMeshes.push(pupil);
-// Reflective highlight
+  
   const hlMat = new THREE.MeshBasicMaterial({ color:0xFFFFFF, transparent:true, opacity:0.7 });
   const hl = new THREE.Mesh(new THREE.CircleGeometry(0.12,16), hlMat);
-hl.position.copy(jupPos);
+  hl.position.copy(jupPos);
   hl.position.x += 0.18; hl.position.y += 0.18; hl.position.z += 0.15;
   hl.lookAt(camera.position);
   jupEyeG.add(hl);
@@ -1197,16 +1182,15 @@ function triggerFlash(duration=120) {
   playFlashSound();
   fl.style.opacity = '0.85';
   clearTimeout(flashTimer);
-flashTimer = setTimeout(() => { fl.style.opacity='0'; }, duration);
+  flashTimer = setTimeout(() => { fl.style.opacity='0'; }, duration);
 }
 
-// ─── Screen streak effect (fur reveal flash) ───
 let flashBurstCount = 0;
 function burstFlashes(n, interval) {
   if (flashBurstCount >= n) { flashBurstCount=0; return; }
   triggerFlash(80);
   flashBurstCount++;
-setTimeout(() => burstFlashes(n, interval), interval);
+  setTimeout(() => burstFlashes(n, interval), interval);
 }
 
 // ─── Elevator effect ───
@@ -1218,12 +1202,12 @@ function startElevator() {
   ov.style.opacity = '1';
   ov.innerHTML = '';
   elevatorLines = [];
-for (let i=0;i<18;i++) {
+  for (let i=0;i<18;i++) {
     const stripe = document.createElement('div');
     stripe.className = 'elev-stripe';
     stripe.style.top = (Math.random()*100)+'%';
     stripe.style.animationDelay = (Math.random()*0.2)+'s';
-ov.appendChild(stripe);
+    ov.appendChild(stripe);
     elevatorLines.push(stripe);
   }
 }
@@ -1242,7 +1226,7 @@ function animateElevator(t) {
 // ─── Horror event trigger ───
 function checkHorrorEvent(y, m, d) {
   if (window.isInfected) return;
-if ((y===1999&&m===8&&d===11)||(y===2007&&m===6&&d===11)||(y===2007&&m===6&&d===5)) {
+  if ((y===1999&&m===8&&d===11)||(y===2007&&m===6&&d===11)||(y===2007&&m===6&&d===5)) {
     triggerHorror();
   }
 }
@@ -1250,9 +1234,8 @@ if ((y===1999&&m===8&&d===11)||(y===2007&&m===6&&d===11)||(y===2007&&m===6&&d===
 let horrorPhaseTimeout = null;
 function horrorMsg(text) {
   const titleEl=document.getElementById('tb-title'), subEl=document.getElementById('tb-sub');
-if(titleEl) { titleEl.textContent=text; titleEl.style.color='#FF4400'; titleEl.style.textShadow='0 0 28px rgba(255,68,0,.9)'; }
-  if(subEl)   { subEl.style.color='rgba(255,100,100,.65)';
-}
+  if(titleEl) { titleEl.textContent=text; titleEl.style.color='#FF4400'; titleEl.style.textShadow='0 0 28px rgba(255,68,0,.9)'; }
+  if(subEl)   { subEl.style.color='rgba(255,100,100,.65)'; }
 }
 
 function triggerHorror() {
@@ -1260,62 +1243,61 @@ function triggerHorror() {
   HORROR.active = true;
   HORROR.phase = 1;
   HORROR.t = 0;
-// Phase 1: earth pulse hint (t=0)
+  
+  // Phase 1: earth pulse hint
   horrorMsg('【 系統異常 】引力波激增 — 請放大觀察「地球」節點');
   if(document.getElementById('tb-sub')) document.getElementById('tb-sub').textContent = '異常熱訊號持續上升…滾動縮放接近地球…';
   startHeartbeat(0.2);
-// Phase 2: jupiter hint  (t=6s)
+  
+  // Phase 2: jupiter hint
   horrorPhaseTimeout = setTimeout(() => {
     HORROR.phase = 2;
     horrorMsg('【 木星警報 】坐標偏移 — 鎖定「木星」座標 ♃');
     setHeartbeatVolume(0.5);
   }, 6000);
-// Phase 3: labels vanish, all red (t=12s)
+  
+  // Phase 3: labels vanish, all red
   setTimeout(() => {
     HORROR.phase = 3;
     horrorMsg('【 維度崩潰 】觀測標記失效');
-    // Hide all 2D labels
     document.querySelectorAll('.lbl').forEach(el => {
       el.style.transition='opacity 1.5s';
       el.style.opacity='0';
       el.style.pointerEvents='none';
     });
-    // Turn all ring lines red
     scene.traverse(child => {
       if((child.isLine||child.isLineSegments)&&child.material&&!child.userData.isVein) {
         child.material.color = new THREE.Color(0x550000);
       }
- 
-   });
-    // Flash burst
+    });
     burstFlashes(6, 220);
   }, 12000);
-// Phase 4: fur grows (t=18s)
+  
+  // Phase 4: fur grows
   setTimeout(() => {
     HORROR.phase = 4;
     horrorMsg('【 有機物入侵 】星體表層異化');
     setHeartbeatVolume(0.8);
-    // Build fur on all planets
     PCONF.forEach(pc => {
       if(pMesh[pc.id] && !['rahu','ketu','yapo','ziqi','fortune'].includes(pc.id)) {
         buildFurForPlanet(pc.id, pMesh[pc.id].position, pc.sz*0.6 + 0.3);
       }
     });
-    // Flash burst
     burstFlashes(10, 120);
   }, 18000);
-// Phase 5: veins (t=26s)
+  
+  // Phase 5: veins
   setTimeout(() => {
     HORROR.phase = 5;
     horrorMsg('【 血脈擴張 】維管束生長中…');
     buildVeins();
     setHeartbeatVolume(1.2);
   }, 26000);
-// Phase 6: all veins point to jupiter, jupiter becomes eye (t=50s)
+  
+  // Phase 6: jupiter becomes eye
   setTimeout(() => {
     HORROR.phase = 6;
     horrorMsg('【 眼球成形 】木星坐標突變');
-    // Hide all other planets, orbits, rings
     eclRingG.visible=false; eqRingG.visible=false; manG.visible=false; houseG.visible=false;
     PCONF.forEach(pc => {
       if(pc.id!=='jupiter') {
@@ -1324,18 +1306,19 @@ function triggerHorror() {
         if(furSystems[pc.id]) furSystems[pc.id].visible=false;
       }
     });
-    // Build 
-eye at jupiter position
+    
+    // Build eye at jupiter position
     const jupPos = pMesh['jupiter'] ? pMesh['jupiter'].position.clone() : new THREE.Vector3(26,0,0);
     buildJupiterEye(jupPos);
     pMesh['jupiter'].visible=false;
     jupEyeG.visible=true;
-    // Show eye caption
+    
     const cap = document.getElementById('eye-caption');
     if(cap){cap.textContent='它在看著你'; cap.style.opacity='1'; cap.style.top='55%';}
     setHeartbeatVolume(1.8);
   }, 50000);
-// Phase 7: finale (t=60s)
+  
+  // Phase 7: finale
   setTimeout(() => {
     HORROR.phase = 7;
     showAscensionPopup();
@@ -1345,7 +1328,6 @@ eye at jupiter position
 function showAscensionPopup() {
   const pop = document.getElementById('ascension-popup');
   if (pop) pop.style.display = 'flex';
-// Focus mobile input
   const mi = document.getElementById('asc-mobile-input');
   if (mi) {
     mi.style.display = 'block';
@@ -1355,8 +1337,7 @@ function showAscensionPopup() {
       else if (v==='n') window.handleAscN();
     });
     setTimeout(() => mi.focus(), 100);
-}
-  // Desktop key listener
+  }
   document.addEventListener('keydown', handleAscKeydown);
 }
 
@@ -1370,64 +1351,56 @@ window.handleAscY = function() {
   const box = document.getElementById('asc-box');
   if (box) box.classList.add('shaking');
   startElevator();
-  // Intensify heartbeat
   setHeartbeatVolume(3.0);
-// Flash wildly
   burstFlashes(20, 80);
   const mi = document.getElementById('asc-mobile-input');
   if (mi) mi.disabled = true;
-  // After 5s, redirect
   setTimeout(() => {
     window.location.href = 'bbs_2026_admin.html';
   }, 5000);
 };
+
 window.handleAscN = function() {
   document.removeEventListener('keydown', handleAscKeydown);
   const box = document.getElementById('asc-box');
-if(box){ box.innerHTML='<div style="color:#f00;font-family:Ma Shan Zheng,cursive;font-size:3rem;text-shadow:0 0 40px #f00">拒絕飛升的代價…<br><span style="font-size:1.5rem;opacity:.7">維度正在收縮</span></div>'; }
-  // Fake freeze
+  if(box){ box.innerHTML='<div style="color:#f00;font-family:Ma Shan Zheng,cursive;font-size:3rem;text-shadow:0 0 40px #f00">拒絕飛升的代價…<br><span style="font-size:1.5rem;opacity:.7">維度正在收縮</span></div>'; }
   document.body.style.filter='blur(0px)';
   let blurVal=0;
-const blurInterval=setInterval(()=>{ blurVal+=0.3; document.body.style.filter=`blur(${blurVal}px) brightness(${1-blurVal*0.05})`; if(blurVal>8)clearInterval(blurInterval); },100);
+  const blurInterval=setInterval(()=>{ blurVal+=0.3; document.body.style.filter=`blur(${blurVal}px) brightness(${1-blurVal*0.05})`; if(blurVal>8)clearInterval(blurInterval); },100);
 };
 
 // ─── Horror animation update ───
 function updateHorror(dt, t) {
   if (!HORROR.active) return;
-HORROR.t += dt;
+  HORROR.t += dt;
   const phase = HORROR.phase;
-
-  // Heart pulse function
   const heartBeat = Math.pow(Math.max(0, Math.sin(t * 4.8 + 0.5)), 3);
-// Phase 1: earth heartbeat
+
   if (phase >= 1) {
     HORROR.earthPulseAmp = Math.min(1, HORROR.t / 6);
-if (earthMesh) {
+    if (earthMesh) {
       const pulse = 1 + 0.15 * heartBeat * HORROR.earthPulseAmp;
       earthMesh.scale.setScalar(pulse);
-earthMesh.material.color = new THREE.Color().lerpColors(
+      earthMesh.material.color = new THREE.Color().lerpColors(
         new THREE.Color(0x224488), new THREE.Color(0xAA0000), HORROR.earthPulseAmp * 0.8
       );
-}
+    }
   }
 
-  // Phase 2: jupiter heartbeat
   if (phase >= 2 && pMesh['jupiter']) {
     HORROR.jupiterPulseAmp = Math.min(1, (HORROR.t - 6) / 6);
-const pulse = 1 + 0.18 * heartBeat * HORROR.jupiterPulseAmp;
+    const pulse = 1 + 0.18 * heartBeat * HORROR.jupiterPulseAmp;
     pMesh['jupiter'].scale.setScalar(pulse);
-pMesh['jupiter'].material.color = new THREE.Color().lerpColors(
+    pMesh['jupiter'].material.color = new THREE.Color().lerpColors(
       new THREE.Color(0xFFAA66), new THREE.Color(0xFF1100), HORROR.jupiterPulseAmp * 0.9
     );
-}
+  }
 
-  // Phase 4: fur opacity grows
   if (phase >= 4) {
     HORROR.furProgress = Math.min(1, (HORROR.t - 18) / 8);
-Object.values(furSystems).forEach((sys, i) => {
+    Object.values(furSystems).forEach((sys, i) => {
       if (!sys || !sys.material) return;
       sys.material.opacity = HORROR.furProgress * 0.8;
-      // Animate fur outward with wave
       const posAttr = sys.geometry.getAttribute('position');
       const velAttr = sys.geometry.getAttribute('velocity');
       if (!posAttr || !velAttr) return;
@@ -1435,8 +1408,7 @@ Object.values(furSystems).forEach((sys, i) => {
       const parentMesh = pMesh[parentId];
       if (!parentMesh) return;
       for (let j=0; j<posAttr.count; j++) {
- 
-       const vx=velAttr.getX(j), vy=velAttr.getY(j), vz=velAttr.getZ(j);
+        const vx=velAttr.getX(j), vy=velAttr.getY(j), vz=velAttr.getZ(j);
         const len=Math.sqrt(vx*vx+vy*vy+vz*vz)||1;
         const wave = 1 + 0.4*HORROR.furProgress*Math.sin(t*3+j*0.17);
         posAttr.setXYZ(j,
@@ -1446,32 +1418,25 @@ Object.values(furSystems).forEach((sys, i) => {
         );
       }
       posAttr.needsUpdate = true;
-  
-  });
+    });
   }
 
-  // Phase 5: vein growth
   if (phase >= 5) {
     HORROR.veinProgress = Math.min(1, (HORROR.t - 26) / 24);
-updateVeins(HORROR.veinProgress);
+    updateVeins(HORROR.veinProgress);
   }
 
-  // Phase 6: eye tracking camera
   if (phase >= 6 && jupEyeG.visible) {
     jupEyeMeshes.forEach(m => {
       if (m.isLine) return;
       m.lookAt(camera.position);
     });
-// Eye pulsing
     const eyePulse = 1 + 0.08*heartBeat;
     jupEyeG.scale.setScalar(eyePulse);
     horrorPointLight.intensity = 2 + 4*heartBeat;
-}
+  }
 
-  // Flash cooldown
   HORROR.flashCooldown -= dt;
-
-  // Elevator animation
   animateElevator(t);
 }
 
@@ -1480,25 +1445,23 @@ function bindBtn(id,key,onFn,offFn){const b=document.getElementById(id);if(!b)re
 
 // ─── Build base meshes ───
 function buildBaseMeshes() {
-  // Earth
   const earthTex = makeProceduralTexture('earth', 512);
-earthMesh = new THREE.Mesh(
+  earthMesh = new THREE.Mesh(
     new THREE.SphereGeometry(1.5, 48, 32),
     new THREE.MeshStandardMaterial({ map:earthTex, roughness:0.7, metalness:0.05 })
   );
-earthSpin.add(earthMesh);
+  earthSpin.add(earthMesh);
 
-  // Atmosphere glow for earth
   const atmoGeo = new THREE.SphereGeometry(1.65, 32, 24);
-const atmoMat = new THREE.MeshBasicMaterial({ color:0x4488FF, transparent:true, opacity:0.08, side:THREE.BackSide, blending:THREE.AdditiveBlending });
+  const atmoMat = new THREE.MeshBasicMaterial({ color:0x4488FF, transparent:true, opacity:0.08, side:THREE.BackSide, blending:THREE.AdditiveBlending });
   earthSpin.add(new THREE.Mesh(atmoGeo, atmoMat));
-// Birth marker / zenith
+  
   birthMarker = new THREE.Mesh(new THREE.SphereGeometry(0.05), new THREE.MeshBasicMaterial({color:0xff0000}));
   earthMathGroup.add(birthMarker);
-zenithLine = new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(),new THREE.Vector3(0,3,0)]),new THREE.LineBasicMaterial({color:0xff4444}));
+  zenithLine = new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(),new THREE.Vector3(0,3,0)]),new THREE.LineBasicMaterial({color:0xff4444}));
   earthMathGroup.add(zenithLine);
   zenithLabel = lbl2D(earthMathGroup,'lax',0,0,'raw','天頂');
-// Planets
+  
   PCONF.forEach(pc => {
     const tex = makeProceduralTexture(pc.id, pc.type==='fict'?32:256);
     const eConf = EMISSIVE_CONF[pc.id];
@@ -1510,8 +1473,7 @@ zenithLine = new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.
     } else {
       mat = new THREE.MeshStandardMaterial({
         map: tex, roughness:0.75, metalness:0.05,
-    
-    emissive: eConf ? new THREE.Color(eConf.col) : new THREE.Color(0),
+        emissive: eConf ? new THREE.Color(eConf.col) : new THREE.Color(0),
         emissiveIntensity: eConf ? eConf.i : 0
       });
     }
@@ -1520,11 +1482,9 @@ zenithLine = new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.
     plG.add(mesh);
     pMesh[pc.id] = mesh;
 
-    // Saturn ring
     if (pc.ring) {
       const ringTex = makeProceduralTexture('saturn_ring', 512);
       const ringGeo = new THREE.RingGeometry(pc.sz*0.65, pc.sz*1.3, 96, 3);
-      // UV fix for ring
       const uv = ringGeo.attributes.uv, pos = ringGeo.attributes.position;
       for(let i=0;i<pos.count;i++){
         const v=new THREE.Vector3(pos.getX(i),pos.getY(i),pos.getZ(i));
@@ -1537,29 +1497,25 @@ zenithLine = new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.
       mesh.add(ring);
     }
 
-    // Atmosphere glow
     if (pc.atmo && pc.type !== 'star' && pc.type !== 'fict') {
       const atR = pc.sz*0.5 + 0.18;
-const atMat = new THREE.MeshBasicMaterial({ color:pc.col, transparent:true, opacity:0.07, side:THREE.BackSide, blending:THREE.AdditiveBlending });
+      const atMat = new THREE.MeshBasicMaterial({ color:pc.col, transparent:true, opacity:0.07, side:THREE.BackSide, blending:THREE.AdditiveBlending });
       mesh.add(new THREE.Mesh(new THREE.SphereGeometry(atR, 24, 18), atMat));
-}
+    }
+    
     if (pc.id === 'sun') {
-      // Corona
       const coronaMat = new THREE.MeshBasicMaterial({ color:0xFFAA00, transparent:true, opacity:0.12, side:THREE.BackSide, blending:THREE.AdditiveBlending });
-mesh.add(new THREE.Mesh(new THREE.SphereGeometry(pc.sz*0.5*1.4, 24, 18), coronaMat));
-      // Point light at sun
+      mesh.add(new THREE.Mesh(new THREE.SphereGeometry(pc.sz*0.5*1.4, 24, 18), coronaMat));
       const sunPL = new THREE.PointLight(0xFFDD88, 1.2, 200);
-sunPL.position.set(0,0,0); mesh.add(sunPL);
+      sunPL.position.set(0,0,0); mesh.add(sunPL);
     }
 
-    // Drop lines
     const dropLine=new THREE.Line(new THREE.BufferGeometry(),new THREE.LineBasicMaterial({color:pc.col,transparent:true,opacity:.3}));
-const pa=new THREE.BufferAttribute(new Float32Array(6),3); pa.setUsage(THREE.DynamicDrawUsage);
+    const pa=new THREE.BufferAttribute(new Float32Array(6),3); pa.setUsage(THREE.DynamicDrawUsage);
     dropLine.geometry.setAttribute('position',pa); dropLine.userData={buf:pa.array,pa}; plG.add(dropLine); dropLines[pc.id]=dropLine;
 
-    // Labels
     pLbl[pc.id]=lbl2D(plG,'lpl',0,0,'raw',`<div class="lpl-ic" style="color:#${pc.col.toString(16).padStart(6,'0')}">${pc.ic}</div><div class="lpl-nm">${LANGS[currLang].pl[pc.id]||pc.id}</div><div id="r_${pc.id}" class="retro"></div>`);
-});
+  });
 }
 
 // ─── ANIMATE ───
@@ -1567,20 +1523,18 @@ const clock = new THREE.Clock();
 function animate() {
   requestAnimationFrame(animate);
   const dt = clock.getDelta();
-const t = clock.getElapsedTime();
+  const t = clock.getElapsedTime();
 
   if(OCtrl&&OCtrl.update) OCtrl.update();
 
   if (playingTime && curGeo && curGeo.retrograde && !window.isInfected) {
-    if (userData&&userData.jd) { userData.jd+=dt*0.08;
-updatePositions(); }
+    if (userData&&userData.jd) { userData.jd+=dt*0.08; updatePositions(); }
   }
 
-  // Slow planet spins
   PCONF.forEach(pc => {
     if(pMesh[pc.id]) pMesh[pc.id].rotateY(dt * 0.12);
   });
-if(earthMesh) earthMesh.rotateY(dt * 0.18);
+  if(earthMesh) earthMesh.rotateY(dt * 0.18);
 
   if (HORROR.active) updateHorror(dt, t);
 
@@ -1600,7 +1554,7 @@ function initButtons() {
 
   bindBtn('cb-zen','zen',()=>document.body.classList.add('zen-mode'),()=>document.body.classList.remove('zen-mode'));
   bindClick('cb-zenith',pointCameraAtBirthplace);
-const helioBtn=document.getElementById('cb-helio');
+  const helioBtn=document.getElementById('cb-helio');
   if(helioBtn)helioBtn.addEventListener('click',()=>{S.helio=!S.helio;helioBtn.classList.toggle('on',S.helio);setHelioUIState(S.helio);if(userData.jd)updatePositions();});
 
   bindBtn('cb-ecl','ecliptic',()=>eclRingG.visible=true,()=>eclRingG.visible=false);
@@ -1620,7 +1574,7 @@ const helioBtn=document.getElementById('cb-helio');
   bindBtn('cb-orb','orb',()=>{if(userData.jd)updatePositions();},()=>{if(userData.jd)updatePositions();});
 
   const btnTm=document.getElementById('cb-tm');
-if(btnTm)btnTm.addEventListener('click',()=>{S.time=!S.time;btnTm.classList.toggle('on',S.time);const tb=document.getElementById('time-bar');if(tb){if(S.time)tb.classList.add('show');else tb.classList.remove('show');}});
+  if(btnTm)btnTm.addEventListener('click',()=>{S.time=!S.time;btnTm.classList.toggle('on',S.time);const tb=document.getElementById('time-bar');if(tb){if(S.time)tb.classList.add('show');else tb.classList.remove('show');}});
 
   const btnSpin=document.getElementById('cb-spin');
   if(btnSpin)btnSpin.addEventListener('click',()=>{S.spin=!S.spin;btnSpin.classList.toggle('on',S.spin);playingTime=S.spin;const tbPlay=document.getElementById('tb-play');if(tbPlay)tbPlay.textContent=playingTime?'⏸ 暫停':'▶ 播放';});
@@ -1629,7 +1583,7 @@ if(btnTm)btnTm.addEventListener('click',()=>{S.time=!S.time;btnTm.classList.togg
   if(btnTbPlay)btnTbPlay.addEventListener('click',()=>{if(btnSpin)btnSpin.click();});
 
   window.resetTime=function(){if(window.submitForm)window.submitForm();};
-window.addEventListener('resize',()=>{
+  window.addEventListener('resize',()=>{
     camera.aspect=window.innerWidth/window.innerHeight;camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth,window.innerHeight);composer.setSize(window.innerWidth,window.innerHeight);
     bloom.setSize(window.innerWidth,window.innerHeight);lblR.setSize(window.innerWidth,window.innerHeight);
