@@ -6,163 +6,132 @@
 <title>青冥鉴 · 四维观测系统</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <style>
-/* ================= 基础与色彩重置 ================= */
+/* ================= 基础重置 ================= */
 * { box-sizing: border-box; margin: 0; padding: 0; }
-body { background: #05080a; font-family: 'Courier New', Consolas, monospace; overflow: hidden; -webkit-font-smoothing: antialiased; color: #e0e0e0; }
+body { background: #000; font-family: 'Courier New', monospace; overflow: hidden; -webkit-font-smoothing: antialiased; }
 
-/* 核心配色：抛弃浑浊的半透明，改用高对比度纯色 */
-:root {
-  --bg-dark: #090e12;
-  --bg-panel: #111a22;
-  --border-line: #1f2d3d;
-  --text-main: #c5d4e8;
-  --text-mute: #6c8299;
-  
-  --color-l2: #ff4d4d; /* 死盘：纯正的赤红 */
-  --color-l3: #00e5ff; /* 活盘：高亮的荧光青 */
-  --color-conflict: #ffffff; /* 伏吟：绝对的纯白 */
-  --color-gold: #d4a017; /* 青冥鉴铜金 */
-}
-
-/* ================= 1. 青冥鉴 (全新视觉适配) ================= */
+/* ================= 1. 青冥鉴：复刻级视觉外设 ================= */
 #mirror-overlay { 
-  position: fixed; inset: 0; z-index: 9999; 
-  background: radial-gradient(circle at center, #0a111a 0%, #020305 100%); 
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
+    position: fixed; inset: 0; z-index: 9999; 
+    background: radial-gradient(circle at center, #070d14 0%, #010203 100%); 
+    display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 15px; 
 }
 
-/* 繁星背景 */
-.starfield { position: absolute; inset: 0; pointer-events: none; opacity: 0.6; background-image: radial-gradient(1px 1px at 10% 20%, #fff 100%, transparent), radial-gradient(1.5px 1.5px at 30% 50%, #fff 100%, transparent), radial-gradient(1px 1px at 60% 80%, #fff 100%, transparent), radial-gradient(2px 2px at 80% 30%, #fff 100%, transparent), radial-gradient(1px 1px at 40% 90%, #fff 100%, transparent); background-size: 200px 200px; }
+/* 模拟图片中的星空背景 */
+.starfield { 
+    position: absolute; inset: 0; pointer-events: none; opacity: 0.5; 
+    background-image: radial-gradient(1.5px 1.5px at 10% 20%, #fff 100%, transparent), radial-gradient(1px 1px at 30% 50%, #fff 100%, transparent), radial-gradient(2px 2px at 60% 80%, #fff 100%, transparent); 
+    background-size: 250px 250px; 
+}
 
-/* 镜体容器 */
+/* 镜框容器：自适应正方形 */
 #mirror-wrap { 
-  position: relative; width: 75vmin; height: 75vmin; max-width: 500px; max-height: 500px; 
-  border-radius: 50%; box-shadow: 0 0 80px rgba(0,0,0,0.9);
+    position: relative; width: 85vmin; height: 85vmin; max-width: 550px; max-height: 550px; 
+    border-radius: 50%; box-shadow: 0 0 50px rgba(0,0,0,0.9); 
 }
 
-/* 深渊镜面 */
+/* 镜面深渊与文字 */
 #mirror-glass {
-  position: absolute; inset: 4%; border-radius: 50%;
-  background: radial-gradient(circle at 50% 40%, #152233 0%, #050a0f 60%, #000000 100%);
-  box-shadow: inset 0 0 30px #000;
-  display: flex; align-items: center; justify-content: center;
+    position: absolute; inset: 6%; border-radius: 50%;
+    background: radial-gradient(circle at 40% 30%, #1a2a3a 0%, #071018 50%, #000 100%);
+    box-shadow: inset 0 0 40px #000;
+    display: flex; align-items: center; justify-content: center;
+    z-index: 2;
 }
-
-/* 青冥鉴 刻字 */
 .mirror-title {
-  font-family: "STKaiti", "KaiTi", serif;
-  font-size: clamp(36px, 10vmin, 64px);
-  color: var(--color-gold);
-  text-shadow: 0 2px 10px rgba(212, 160, 23, 0.4), 0 -1px 1px #fff;
-  writing-mode: vertical-rl;
-  letter-spacing: 0.3em;
-  opacity: 0.9;
+    font-family: "STKaiti", "KaiTi", serif;
+    font-size: clamp(40px, 12vmin, 80px);
+    color: #cda45a;
+    text-shadow: 0 2px 15px rgba(205, 164, 90, 0.5), 0 -1px 1px #fff;
+    writing-mode: vertical-rl;
+    letter-spacing: 0.25em;
+    opacity: 0.95;
 }
 
-/* 高清黄铜外框 */
-#mirror-svg-frame { position: absolute; inset: -5%; width: 110%; height: 110%; pointer-events: none; }
+/* 一比一复刻的高清青铜外框 SVG */
+#mirror-svg-frame { position: absolute; inset: -4%; width: 108%; height: 108%; pointer-events: none; z-index: 5; }
 
-.mirror-text-container { margin-top: 6vmin; text-align: center; z-index: 10; }
-.mirror-text { color: #a0b4c8; font-size: clamp(13px, 3.5vmin, 15px); line-height: 1.8; letter-spacing: 0.1em; }
-.mirror-text .highlight { color: var(--color-gold); font-weight: bold; }
+/* 摄像头/噪点底层 */
+#mirror-video { 
+    position: absolute; inset: 6%; width: 88%; height: 88%; border-radius: 50%; 
+    object-fit: cover; opacity: 0; transition: opacity 1s; 
+    filter: grayscale(100%) contrast(150%) brightness(50%); z-index: 1;
+}
+#mirror-noise { position: absolute; inset: 6%; width: 88%; height: 88%; border-radius: 50%; opacity: 0.3; z-index: 1; }
+
+.mirror-text-container { margin-top: 4vmin; display: flex; flex-direction: column; align-items: center; gap: 12px; z-index: 10; }
+.mirror-text { color: #8fbc8f; font-size: clamp(12px, 3.5vmin, 14px); text-align: center; line-height: 1.8; letter-spacing: 0.1em; text-shadow: 0 0 5px #000; }
+.mirror-text .cold { color: #546e7a; font-size: 0.9em; }
 
 #mirror-btn { 
-  margin-top: 15px; padding: 12px 40px; background: rgba(0,0,0,0.6); 
-  border: 1px solid var(--color-gold); color: var(--color-gold); 
-  font-family: inherit; font-size: 14px; cursor: pointer; letter-spacing: 0.1em; 
-  transition: 0.3s; box-shadow: inset 0 0 10px rgba(212,160,23,0);
+    padding: 10px 30px; background: rgba(0,0,0,0.6); border: 1px solid #7c6a2a; 
+    color: #cda45a; font-family: 'Courier New', monospace; font-size: 14px; 
+    cursor: pointer; letter-spacing: 0.15em; transition: all 0.3s; 
 }
-#mirror-btn:hover { background: rgba(212,160,23,0.1); box-shadow: inset 0 0 20px rgba(212,160,23,0.3); text-shadow: 0 0 5px var(--color-gold); }
+#mirror-btn:hover { border-color: #d4a017; color: #fff; box-shadow: 0 0 15px rgba(212, 160, 23, 0.4) inset; }
 
-/* ================= 2. 主观测界面与侧边栏 (去浑浊，高对比) ================= */
+/* ================= 2. 展开动画与系统界面 ================= */
+#mirror-expand { position: fixed; inset: 0; z-index: 9998; display: none; pointer-events: none; }
+#mirror-expand canvas { width: 100%; height: 100%; }
+
+/* 主观测界面 */
 #app { display: none; width: 100vw; height: 100vh; position: relative; }
-#map { position: absolute; inset: 0; background: #020304; z-index: 1; }
+#map { position: absolute; inset: 0; background: #000; z-index: 1; }
 
-/* 独立浮动说明按钮 */
-#help-btn {
-  position: absolute; top: 15px; left: 15px; z-index: 1000;
-  background: var(--bg-panel); border: 1px solid var(--color-l3); color: var(--color-l3);
-  padding: 8px 15px; border-radius: 4px; cursor: pointer; font-weight: bold;
-  box-shadow: 0 0 10px rgba(0,0,0,0.8); transition: 0.2s;
-}
-#help-btn:hover { background: var(--color-l3); color: #000; }
-
-/* 侧边栏 */
+/* 侧边栏卡片 (回归经典排版) */
 #sidebar { 
-  position: absolute; top: 0; right: 0; z-index: 1000; 
-  background: var(--bg-panel); border-left: 1px solid var(--border-line); 
-  height: 100%; width: 320px; display: flex; flex-direction: column; 
-  box-shadow: -5px 0 20px rgba(0,0,0,0.8);
+    position: absolute; top: 0; right: 0; z-index: 1000; 
+    background: rgba(5,13,15,0.92); border-left: 1px solid #1a3a3a; 
+    height: 100%; width: 280px; display: flex; flex-direction: column; 
+    backdrop-filter: blur(5px); 
 }
 
-.tab-content { display: flex; flex: 1; overflow-y: auto; padding: 20px; gap: 15px; flex-direction: column; }
+#tab-bar { display: flex; border-bottom: 1px solid #1a3a3a; flex-shrink: 0; }
+.tab { flex: 1; padding: 12px 4px; font-size: 12px; text-align: center; color: #2a5a5a; cursor: pointer; border: none; background: transparent; font-family: inherit; font-weight: bold; transition: 0.2s; }
+.tab.active { color: #00ffcc; border-bottom: 2px solid #00ffcc; background: rgba(0,255,204,0.05); }
 
-h4 { font-size: 14px; color: var(--text-main); border-left: 3px solid var(--color-l3); padding-left: 8px; margin-bottom: 5px; }
+.tab-content { display: none; flex: 1; overflow-y: auto; padding: 15px; gap: 10px; flex-direction: column; }
+.tab-content.active { display: flex; }
 
-/* 表单控件清晰化 */
-.sec { background: var(--bg-dark); border: 1px solid var(--border-line); padding: 12px; border-radius: 4px; }
-.sec label { font-size: 12px; color: var(--text-mute); display: block; margin-bottom: 6px; }
-.sec input, .sec select { 
-  width: 100%; background: #000; border: 1px solid #334455; color: #fff; 
-  font-size: 13px; padding: 8px; border-radius: 3px; font-family: inherit; margin-bottom: 8px; outline: none;
-}
-.sec input:focus, .sec select:focus { border-color: var(--color-l3); }
-.sec-val { font-size: 12px; color: #8fa6c0; line-height: 1.6; background: #000; padding: 8px; border: 1px dashed #334455; }
+h4 { font-size: 12px; color: #00ffcc88; letter-spacing: 0.1em; margin-bottom: 4px; border-left: 2px solid #00ffcc88; padding-left: 6px; }
+.sec { background: rgba(10,26,26,0.6); border: 1px solid #1a3a3a; padding: 10px; border-radius: 4px; }
+.sec label { font-size: 11px; color: #3a7a7a; display: block; margin-bottom: 5px; }
+.sec input, .sec select { width: 100%; background: #050d0f; border: 1px solid #1a3a3a; color: #7fbfbf; font-size: 12px; padding: 6px; border-radius: 3px; font-family: inherit; outline: none; margin-bottom: 5px; }
+.sec-val { font-size: 11px; color: #4a8a8a; line-height: 1.6; margin-top: 5px; white-space: pre-line; background: #000; padding: 6px; border-radius: 3px; }
 
-.apply-btn { 
-  width: 100%; padding: 10px; background: #1a2a3a; border: 1px solid #334455; 
-  color: #fff; font-family: inherit; font-size: 13px; cursor: pointer; transition: 0.2s; 
-}
-.apply-btn:hover { border-color: var(--color-l3); color: var(--color-l3); }
+.apply-btn { width: 100%; padding: 8px; background: transparent; border: 1px solid #00ffcc44; color: #00ffccaa; font-family: inherit; font-size: 12px; cursor: pointer; transition: 0.2s; border-radius: 3px; margin-top: 5px; }
+.apply-btn:hover { border-color: #00ffcc; color: #00ffcc; background: rgba(0,255,204,0.1); }
 
 /* 九宫格面板 */
-#nine-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-top: 10px; }
-.gong { padding: 10px 4px; text-align: center; border: 1px solid var(--border-line); background: var(--bg-dark); cursor: pointer; }
-.gong .gn { font-size: 13px; font-weight: bold; color: var(--text-main); margin-bottom: 6px; }
-.gong .gm { font-size: 12px; font-weight: bold; }
+#nine-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; margin-top: 10px; }
+.gong { padding: 8px 2px; border-radius: 3px; text-align: center; border: 1px solid #1a3a3a; background: #050d0f; color: #546e7a; cursor: pointer; transition: 0.2s; }
+.gong .gn { font-size: 12px; font-weight: bold; margin-bottom: 4px; }
+.gong .gm { font-size: 11px; }
+.gong.dead { border-color: #7c3a3a; color: #cd5c5c; }
+.gong.live { border-color: #00ffcc66; color: #00ffcc; }
+.gong.conflict { border-color: #fff; color: #fff; background: rgba(255,255,255,0.1); animation: flicker 0.5s infinite alternate; }
 
-/* 高级配色指示 */
-.status-indicator { margin-top: 15px; font-size: 12px; line-height: 2; border: 1px solid var(--border-line); padding: 10px; background: #000; }
-.c-l2 { color: var(--color-l2); font-weight: bold; }
-.c-l3 { color: var(--color-l3); font-weight: bold; }
-.c-cf { color: var(--color-conflict); font-weight: bold; text-shadow: 0 0 5px #fff; }
+@keyframes flicker { from { box-shadow: 0 0 2px #fff inset; } to { box-shadow: 0 0 8px #fff inset; } }
 
-/* 报错终端面板 */
-#error-terminal { display: none; background: #220000; border: 1px solid #ff0000; padding: 10px; color: #ff5555; font-size: 12px; margin-top: 10px; font-family: monospace; }
+/* 说明面板卡片 */
+.info-card{ background:#0a1a1a; border:1px solid #1a3a3a; border-radius:4px; padding:10px; font-size:11px; color:#6c8299; line-height:1.6; }
+.info-card h5{ font-size:12px; color:#00ffccaa; margin-bottom:6px; letter-spacing:1px; }
+.ji{color:#2e7d32} .xiong{color:#cd5c5c} .ping{color:#1565c0}
 
 /* 宫位详情独立弹窗 */
-#gong-detail { 
-  display: none; position: absolute; z-index: 1001; 
-  background: var(--bg-panel); border: 1px solid var(--border-line); 
-  box-shadow: 0 10px 30px rgba(0,0,0,0.9); border-radius: 4px; padding: 15px; 
-  min-width: 220px; color: #fff; 
-}
-#gong-detail h5 { font-size: 14px; color: var(--text-main); border-bottom: 1px solid var(--border-line); padding-bottom: 8px; margin-bottom: 10px; }
-#gong-detail .close-btn { position: absolute; top: 10px; right: 10px; background: none; border: none; color: #888; cursor: pointer; font-size: 16px; }
-.detail-row { margin-bottom: 8px; font-size: 12px; }
+#gong-detail { display: none; position: absolute; z-index: 1001; background: rgba(5,13,15,0.95); border: 1px solid #1a3a3a; box-shadow: 0 0 20px rgba(0,0,0,0.8); border-radius: 6px; padding: 15px; min-width: 200px; color: #7fbfbf; line-height: 1.8; backdrop-filter: blur(5px); }
+#gong-detail h5 { font-size: 13px; color: #00ffcc; margin-bottom: 8px; border-bottom: 1px dashed #1a3a3a; padding-bottom: 5px; }
+#gong-detail .close-btn { position: absolute; top: 12px; right: 12px; background: none; border: none; color: #546e7a; cursor: pointer; font-size: 14px; }
 
-/* 奇门说明 Modal */
-#help-modal {
-  display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 2000;
-  align-items: center; justify-content: center;
-}
-.help-content {
-  background: var(--bg-panel); border: 1px solid var(--color-l3); width: 90%; max-width: 500px;
-  padding: 25px; color: var(--text-main); line-height: 1.8; position: relative;
-}
-.help-content h3 { color: var(--color-l3); margin-bottom: 15px; border-bottom: 1px solid var(--border-line); padding-bottom: 10px; }
-.help-close { position: absolute; top: 15px; right: 20px; font-size: 20px; cursor: pointer; color: var(--text-mute); }
-.help-close:hover { color: #fff; }
-
-/* ================= 移动端适配 ================= */
+/* 移动端适配 */
 @media (max-width: 768px) {
-  #sidebar { top: auto; bottom: 0; width: 100%; height: 45%; border-left: none; border-top: 2px solid var(--border-line); }
-  #map { height: 55%; }
-  #gong-detail { top: 10%; left: 50%; transform: translateX(-50%); width: 85%; }
-  .sec { display: flex; flex-wrap: wrap; gap: 8px; }
-  .sec label { width: 100%; margin: 0; }
-  .sec input, .sec select { width: 48%; margin: 0; }
-  .apply-btn { width: 100%; }
+    #sidebar { top: auto; bottom: 0; width: 100%; height: 45%; border-left: none; border-top: 1px solid #00ffcc44; }
+    #map { height: 55%; }
+    #gong-detail { top: 10%; left: 50%; transform: translateX(-50%); width: 80%; max-width: 300px; }
+    .sec { display: flex; flex-wrap: wrap; gap: 5px; align-items: center; }
+    .sec label { width: 100%; margin: 0; }
+    .sec select, .sec input { width: 48%; margin: 0; }
+    .apply-btn { width: 100%; margin-top: 5px; }
 }
 </style>
 </head>
@@ -171,43 +140,52 @@ h4 { font-size: 14px; color: var(--text-main); border-left: 3px solid var(--colo
 <div id="mirror-overlay">
   <div class="starfield"></div>
   <div id="mirror-wrap">
+    
     <svg id="mirror-svg-frame" viewBox="0 0 1000 1000" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="500" cy="500" r="480" fill="none" stroke="#6b5119" stroke-width="15"/>
-      <circle cx="500" cy="500" r="460" fill="none" stroke="#d4a017" stroke-width="3" opacity="0.8"/>
-      <circle cx="500" cy="500" r="445" fill="none" stroke="#a37b12" stroke-width="8" stroke-dasharray="20 10"/>
-      <circle cx="500" cy="500" r="430" fill="none" stroke="#523d0e" stroke-width="2"/>
+      <defs>
+        <linearGradient id="bronze" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#5a4220" />
+          <stop offset="50%" stop-color="#a68442" />
+          <stop offset="100%" stop-color="#3d2a10" />
+        </linearGradient>
+      </defs>
+      <circle cx="500" cy="500" r="480" fill="none" stroke="#111" stroke-width="25" opacity="0.8"/>
+      <circle cx="500" cy="500" r="460" fill="none" stroke="url(#bronze)" stroke-width="12"/>
+      <circle cx="500" cy="500" r="448" fill="none" stroke="#2a1e0e" stroke-width="8"/>
+      <circle cx="500" cy="500" r="435" fill="none" stroke="#8a6b32" stroke-width="2" stroke-dasharray="10 5"/>
       
-      <circle cx="500" cy="20" r="15" fill="#111" stroke="#d4a017" stroke-width="3"/>
-      <circle cx="500" cy="980" r="15" fill="#111" stroke="#d4a017" stroke-width="3"/>
-      <circle cx="20" cy="500" r="15" fill="#111" stroke="#d4a017" stroke-width="3"/>
-      <circle cx="980" cy="500" r="15" fill="#111" stroke="#d4a017" stroke-width="3"/>
+      <g fill="#1a1208" stroke="#a68442" stroke-width="1.5">
+        <path d="M460,35 Q500,-15 540,35 Q520,55 500,45 Q480,55 460,35 Z" />
+        <circle cx="500" cy="20" r="6" fill="#a68442"/>
+        <circle cx="480" cy="40" r="3" fill="#5a4220"/>
+        <circle cx="520" cy="40" r="3" fill="#5a4220"/>
+        <path d="M460,965 Q500,1015 540,965 Q520,945 500,955 Q480,945 460,965 Z" />
+        <circle cx="500" cy="980" r="6" fill="#a68442"/>
+        <path d="M35,460 Q-15,500 35,540 Q55,520 45,500 Q55,480 35,460 Z" />
+        <circle cx="20" cy="500" r="6" fill="#a68442"/>
+        <path d="M965,460 Q1015,500 965,540 Q945,520 955,500 Q945,480 965,460 Z" />
+        <circle cx="980" cy="500" r="6" fill="#a68442"/>
+      </g>
+      
+      <circle cx="500" cy="500" r="415" fill="none" stroke="#5a4220" stroke-width="1" opacity="0.6"/>
     </svg>
 
     <div id="mirror-glass">
       <div class="mirror-title">青冥鉴</div>
     </div>
+    <video id="mirror-video" autoplay playsinline muted></video>
+    <canvas id="mirror-noise"></canvas>
   </div>
   
   <div class="mirror-text-container">
-      <div class="mirror-text">引擎加载完毕。<br>时空坐标系已锚定：<span class="highlight">南江大学·原点</span></div>
-      <button id="mirror-btn">拨开迷雾，降维观测</button>
+      <div class="mirror-text"><span class="cold">[ 引擎协议握手成功 ]<br>已锁定观测者物理终端。</span></div>
+      <button id="mirror-btn">▶ 开启四维观测</button>
   </div>
 </div>
 
-<div id="help-modal">
-  <div class="help-content">
-    <div class="help-close" onclick="document.getElementById('help-modal').style.display='none'">✕</div>
-    <h3>[ 指南 ] 四维奇门系统说明</h3>
-    <p><span class="c-l2">■ 红色线框 (L2 死盘)</span>：永远停滞在 2007年6月11日的灾难快照。</p>
-    <p><span class="c-l3">■ 青色虚线 (L3 活盘)</span>：跟随您当前终端时间实时流转的高维投影。</p>
-    <p><span class="c-cf">■ 纯白刺芒 (伏吟死锁)</span>：当活盘与死盘在同一空间坐标内星门数据完全重合时，发生“星门伏吟”。能量无法流转，导致时空崩塌警告。</p>
-    <p style="margin-top: 10px; font-size: 12px; color: #888;">* 交互提示：点击地图上的宫格或右侧九宫格，可查看该区域的具体参数。</p>
-  </div>
-</div>
+<div id="mirror-expand"><canvas id="expand-canvas"></canvas></div>
 
 <div id="app">
-  <button id="help-btn" onclick="document.getElementById('help-modal').style.display='flex'">📖 奇门指南</button>
-  
   <div id="map"></div>
 
   <div id="gong-detail">
@@ -217,35 +195,42 @@ h4 { font-size: 14px; color: var(--text-main); border-left: 3px solid var(--colo
   </div>
 
   <div id="sidebar">
-    <div class="tab-content active">
-      
-      <div id="error-terminal"></div> <h4>L2 死盘锚点 (2007定格)</h4>
+    <div id="tab-bar">
+      <button class="tab active" data-tab="paipan">排盘</button>
+      <button class="tab" data-tab="jiugong">九宫</button>
+      <button class="tab" data-tab="shiming">说明</button>
+    </div>
+
+    <div class="tab-content active" id="tab-paipan">
+      <h4>L2 死盘 (历史定格)</h4>
       <div class="sec">
-        <label>发生时刻</label>
+        <label>锁定时间</label>
         <input type="datetime-local" id="dead-time" value="2007-06-11T11:00"/>
         <select id="dead-ju-override">
-          <option value="auto">系统推算遁局</option>
+          <option value="auto">自动推算遁局</option>
           <option value="1">阳遁一局</option><option value="2">阳遁二局</option><option value="3">阳遁三局</option>
         </select>
-        <div class="sec-val" id="dead-info">初始化中...</div>
-        <button class="apply-btn" id="apply-dead">应用 L2 物理量</button>
+        <div class="sec-val" id="dead-info">计算中...</div>
+        <button class="apply-btn" id="apply-dead">应用死盘</button>
       </div>
 
-      <h4>L3 活盘变量 (高维实时)</h4>
+      <h4>L3 活盘 (实时变量)</h4>
       <div class="sec">
-        <label>终端时间</label>
+        <label>排盘时间</label>
         <input type="datetime-local" id="live-time"/>
         <select id="live-ju-override">
-          <option value="auto">系统推算遁局</option>
+          <option value="auto">自动推算遁局</option>
         </select>
-        <div class="sec-val" id="live-info">初始化中...</div>
-        <div style="display:flex; gap:8px; margin-top:8px;">
-            <button class="apply-btn" id="use-now-btn" style="margin:0;">同步现世</button>
-            <button class="apply-btn" id="apply-live" style="margin:0;">应用 L3</button>
+        <div class="sec-val" id="live-info">读取中...</div>
+        <div style="display:flex; gap:5px; margin-top:5px; width:100%;">
+            <button class="apply-btn" id="use-now-btn" style="margin-top:0;">同步系统</button>
+            <button class="apply-btn" id="apply-live" style="margin-top:0;">应用活盘</button>
         </div>
       </div>
+    </div>
 
-      <h4>阵列物理干涉状态</h4>
+    <div class="tab-content" id="tab-jiugong">
+      <h4>阵列实时干涉状态</h4>
       <div id="nine-grid">
         <div class="gong" id="g4"><div class="gn">巽四</div><div class="gm">—</div></div>
         <div class="gong" id="g9"><div class="gn">离九</div><div class="gm">—</div></div>
@@ -257,11 +242,27 @@ h4 { font-size: 14px; color: var(--text-main); border-left: 3px solid var(--colo
         <div class="gong" id="g1"><div class="gn">坎一</div><div class="gm">—</div></div>
         <div class="gong" id="g6"><div class="gn">乾六</div><div class="gm">—</div></div>
       </div>
-      
-      <div class="status-indicator">
-        <span class="c-l2">■ 红色：L2 死盘</span><br>
-        <span class="c-l3">■ 青色：L3 活盘</span><br>
-        <span class="c-cf">⚠ 纯白：伏吟死锁</span>
+      <div style="font-size:11px;color:#546e7a;margin-top:10px;text-align:center;line-height:1.6;">
+        <span style="color:#cd5c5c">■ L2死盘</span> <span style="color:#00ffcc">■ L3活盘</span><br>
+        <span style="color:#fff; animation:flicker .5s infinite alternate; font-weight:bold;">⚠ 伏吟：算力死锁</span>
+      </div>
+    </div>
+    
+    <div class="tab-content" id="tab-shiming">
+      <h4>奇门遁甲 · 操作指南</h4>
+      <div class="info-card">
+        <h5>图层说明</h5>
+        <span class="xiong">L2 红色线框</span>：锚定在 2007年 的灾难物理场。<br>
+        <span style="color:#00ffcc">L3 青色虚框</span>：跟随当前终端时间流转的高维投影。
+      </div>
+      <div class="info-card">
+        <h5>伏吟警报</h5>
+        当 L2 与 L3 的星门数据完全重合时，称为<span style="color:#fff; font-weight:bold;">伏吟</span>。<br>
+        能量无法流转，地图该区域将闪烁纯白警报。这正是当年引发灾难的底层原因。
+      </div>
+      <div class="info-card">
+        <h5>交互提示</h5>
+        点击地图上的宫格或右侧九宫格，可调出各宫位的详细参量比对面板。
       </div>
     </div>
   </div>
@@ -269,25 +270,136 @@ h4 { font-size: 14px; color: var(--text-main); border-left: 3px solid var(--colo
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-// ================= 1. 青冥鉴入场逻辑 =================
+// ================= 1. 青冥鉴渲染逻辑 (噪点画布) =================
+(function(){
+  const canvas = document.getElementById('mirror-noise');
+  const ctx = canvas.getContext('2d');
+  
+  function resizeCanvas() {
+    canvas.width = canvas.parentElement.clientWidth;
+    canvas.height = canvas.parentElement.clientHeight;
+  }
+  window.addEventListener('resize', resizeCanvas);
+  resizeCanvas();
+
+  let snow = false;
+  if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia){
+    navigator.mediaDevices.getUserMedia({video:{facingMode:'user'}})
+      .then(stream => {
+        const v = document.getElementById('mirror-video');
+        v.srcObject = stream;
+        v.style.opacity = '.15'; // 降低透明度让古文更清晰
+        canvas.style.display = 'none';
+      }).catch(() => { snow = true; });
+  } else { snow = true; }
+
+  function drawNoise(){
+    if(!snow || canvas.style.display === 'none') return;
+    const w = canvas.width, h = canvas.height;
+    if(w === 0) return;
+    const idata = ctx.createImageData(w, h);
+    const d = idata.data;
+    for(let i=0; i<d.length; i+=4){
+      const v = Math.random()*255|0;
+      d[i] = v*.1; d[i+1] = v*.3; d[i+2] = v*.5; d[i+3] = 100;
+    }
+    ctx.putImageData(idata,0,0);
+    requestAnimationFrame(drawNoise);
+  }
+  if(snow) drawNoise();
+})();
+
+// ================= 2. 交互过渡与系统启动 =================
+function playExpandAnim(cb){
+  const overlay = document.getElementById('mirror-expand');
+  const canvas = document.getElementById('expand-canvas');
+  overlay.style.display = 'block';
+  
+  function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+  window.addEventListener('resize', resize);
+  resize();
+
+  const ctx = canvas.getContext('2d');
+  let cx = canvas.width/2, cy = canvas.height/2;
+  const maxR = Math.sqrt(cx*cx + cy*cy)*1.1;
+  let r = Math.min(canvas.width, canvas.height)*0.35;
+  let alpha = 1, phase = 0;
+
+  function frame(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    cx = canvas.width/2; cy = canvas.height/2;
+
+    if(phase === 0){
+      ctx.save();
+      ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI*2);
+      ctx.strokeStyle = `rgba(205,164,90,${alpha*.8})`;
+      ctx.lineWidth = 3; ctx.stroke();
+      
+      const rg = ctx.createRadialGradient(cx,cy,r*.3,cx,cy,r);
+      rg.addColorStop(0, 'rgba(0,255,204,0.05)');
+      rg.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = rg;
+      ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI*2); ctx.fill();
+      ctx.restore();
+      
+      r += maxR*.04;
+      if(r > maxR) phase = 1;
+    } else {
+      alpha -= .05;
+      ctx.fillStyle = `rgba(0,0,0,${Math.max(0, 1-alpha)})`;
+      ctx.fillRect(0,0,canvas.width,canvas.height);
+      if(alpha <= 0){
+        overlay.style.display = 'none';
+        window.removeEventListener('resize', resize);
+        cb(); return;
+      }
+    }
+    requestAnimationFrame(frame);
+  }
+  frame();
+}
+
 document.getElementById('mirror-btn').onclick = () => {
   document.getElementById('mirror-overlay').style.display = 'none';
-  document.getElementById('app').style.display = 'block';
-  // 延迟加载地图以防 Leaflet 宽高计算错误
-  setTimeout(initMap, 100);
+  playExpandAnim(() => {
+    const app = document.getElementById('app');
+    app.style.display = 'block';
+    
+    // 【核心修复】强制 Leaflet 重新计算容器尺寸，防止投影地图失效
+    if (!map) {
+        initMap();
+    } else {
+        map.invalidateSize();
+    }
+  });
 };
 
-// ================= 2. 奇门算法内核 (容错强化) =================
+// ================= 3. UI 选项卡切换 =================
+document.querySelectorAll('.tab').forEach(btn => {
+  btn.onclick = () => {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+  };
+});
+
+document.getElementById('close-detail').onclick = () => {
+  document.getElementById('gong-detail').style.display = 'none';
+};
+
+// ================= 4. 奇门排盘核心与地图投影 (解决颜色糊在一起的问题) =================
 const LON=120.12;
 const CENTER=[30.2558, 120.1222];
-const SPAN=0.0035; // 扩大网格使其更清晰
+const SPAN=0.0035; 
 const NAMES={4:'巽',9:'离',2:'坤',3:'震',5:'中',7:'兑',8:'艮',1:'坎',6:'乾'};
 const SHI=['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
 const GONG_OFF={4:[SPAN,-SPAN],9:[SPAN,0],2:[SPAN,SPAN],3:[0,-SPAN],5:[0,0],7:[0,SPAN],8:[-SPAN,-SPAN],1:[-SPAN,0],6:[-SPAN,SPAN]};
 const JSTARS={1:'天蓬',2:'天芮',3:'天冲',4:'天辅',5:'天禽',6:'天心',7:'天柱',8:'天任',9:'天英'};
 const BMYANG=['休','死','伤','杜','景','开','惊','生','景'];
 const BMYIN=['休','生','伤','杜','景','死','惊','开','景'];
-// 节气简表 (年:[[月,日,时,分]...])
+const MNJI={休:'吉',生:'吉',开:'吉',伤:'凶',杜:'平',景:'平',死:'凶',惊:'凶'};
+const MNCOLOR={吉:'#2e7d32',平:'#1565c0',凶:'#cd5c5c'};
 const JIEQI={
   2007:[[1,20,16,1],[2,4,10,18],[2,19,6,8],[3,21,7,7],[4,5,11,4],[4,20,18,6],[5,6,4,19],[5,21,17,12],[6,6,8,18],[6,22,1,6],[7,7,18,30],[7,23,11,0],[8,8,2,30],[8,23,17,8],[9,8,5,18],[9,23,2,51],[10,8,21,1],[10,23,16,15],[11,7,12,24],[11,22,9,50],[12,7,18,13],[12,22,7,8]],
   2026:[[1,20,9,44],[2,3,21,22],[2,18,17,1],[3,20,16,45],[4,4,21,48],[4,20,4,56],[5,5,15,8],[5,21,4,1],[6,5,19,7],[6,21,12,24],[7,7,5,30],[7,22,22,13],[8,7,11,23],[8,23,2,8],[9,7,14,17],[9,23,11,45],[10,8,6,1],[10,23,15,11],[11,7,9,12],[11,22,6,30],[12,7,12,18],[12,21,21,49]]
@@ -304,7 +416,7 @@ function getJuAuto(date){
     const tb=JIEQI[y]||JIEQI[2026]; let ji=0, lm=0;
     for(let i=0;i<tb.length;i++){const ms=jqMs(y,i); if(ms&&ms<=ts&&ms>lm){lm=ms; ji=i;}}
     return {ju: (yang?YJIDX:YINJIDX)[ji] || 1, yang};
-  } catch(e) { return {ju: 1, yang: true}; } // 容错保底
+  } catch(e) { return {ju: 1, yang: true}; }
 }
 function parseJuOv(val){
   if(val==='auto') return null;
@@ -328,8 +440,7 @@ function getStars(zfg){
 }
 function fmtDate(d){return `${d.getFullYear()}/${d.getMonth()+1}/${d.getDate()} ${SHI[shiIdx(trueSolar(d))]}时`;}
 
-// ================= 3. 地图与引擎渲染 =================
-let map, projectionGroup;
+let map, deadLayers=[], liveLayers=[];
 let deadDateObj = new Date(2007,5,11,11,0);
 let liveDateObj = new Date();
 let lastDeadData = {}, lastLiveData = {};
@@ -348,129 +459,114 @@ function showGongDetail(pos){
   
   const detail = document.getElementById('gong-detail');
   if(window.innerWidth > 768) {
-      detail.style.top = '20px'; detail.style.right = '340px'; 
+      detail.style.top = '20px'; detail.style.right = '300px'; 
       detail.style.left = 'auto'; detail.style.bottom = 'auto';
   }
-  document.getElementById('detail-title').textContent = `${NAMES[pos]}${pos}宫 拓扑数据`;
+  document.getElementById('detail-title').textContent = `${NAMES[pos]}${pos}宫 参量比对`;
+  const mc = MNCOLOR[MNJI[l.men]] || '#546e7a';
   document.getElementById('detail-body').innerHTML = `
-    <div class="detail-row"><span class="c-l2">L2 死盘：</span> 星[${d.star}] 门[${d.men}]</div>
-    <div class="detail-row"><span class="c-l3">L3 活盘：</span> 星[${l.star}] 门[${l.men}]</div>
-    ${conflict ? `<div class="c-cf" style="margin-top:10px; border-top:1px solid #fff; padding-top:8px;">⚠ 致命干涉：星门伏吟</div>` : `<div style="color:#6c8299; margin-top:10px;">状态：变量流转正常</div>`}
+    <div style="color:#cd5c5c; font-size:12px; margin-bottom:4px;">L2 死盘</div>
+    <div style="margin-bottom:10px;">星：${d.star} / 门：${d.men}</div>
+    <div style="color:#00ffcc; font-size:12px; margin-bottom:4px;">L3 活盘</div>
+    <div>星：${l.star} / 门：<span style="color:${mc}">${l.men} (${MNJI[l.men]||'—'})</span></div>
+    ${conflict ? `<div style="margin-top:12px; color:#fff; font-weight:bold; animation:flicker .5s infinite alternate; border-top:1px dashed #fff; padding-top:6px;">⚠ 星门伏吟 算力死锁</div>` : ''}
   `;
   detail.style.display = 'block';
 }
-document.getElementById('close-detail').onclick = () => document.getElementById('gong-detail').style.display='none';
 
 function initMap(){
   setNow();
-  map = L.map('map',{zoomControl:false, attributionControl:false}).setView(CENTER, 18);
+  map = L.map('map',{zoomControl:true, attributionControl:false}).setView(CENTER, 18);
   L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{maxZoom:20}).addTo(map);
-  
-  // 使用统一的 LayerGroup 管理所有投影，防止内存泄漏和失效
-  projectionGroup = L.layerGroup().addTo(map);
 
-  // 绘制中心基准点
+  // 简明标点
   L.marker(CENTER, {icon: L.divIcon({
-    html: '<div style="color:#00e5ff; font-weight:bold; text-shadow:0 0 5px #00e5ff; font-size:14px; white-space:nowrap;">南江大学·空间原点</div>',
-    className: '', iconAnchor: [50, 20]
+    html: '<div style="color:#00e5ff; font-weight:bold; font-size:12px; white-space:nowrap; text-shadow: 0 0 5px #000;">南江大学·原点</div>',
+    className: '', iconAnchor: [40, 10]
   })}).addTo(map);
 
   updateEngine();
 }
 
-function displayError(msg) {
-  const term = document.getElementById('error-terminal');
-  term.style.display = 'block';
-  term.innerHTML = `[SYS_ERR] ${msg}`;
-}
+function clearLayers(arr){ arr.forEach(l => map.removeLayer(l)); arr.length = 0; }
 
 function updateEngine(){
-  try {
-    document.getElementById('error-terminal').style.display = 'none';
+  const deadJu = getJuForDate(deadDateObj, document.getElementById('dead-ju-override').value);
+  const deadSi = shiIdx(trueSolar(deadDateObj));
+  const deadZF = zhiFu(deadJu.ju, deadJu.yang, deadSi);
+  const deadMen = getBaMen(deadZF, deadJu.yang);
+  const deadStars = getStars(deadZF);
 
-    const deadJu = getJuForDate(deadDateObj, document.getElementById('dead-ju-override').value);
-    const deadSi = shiIdx(trueSolar(deadDateObj));
-    const deadZF = zhiFu(deadJu.ju, deadJu.yang, deadSi);
-    const deadMen = getBaMen(deadZF, deadJu.yang);
-    const deadStars = getStars(deadZF);
+  const liveJu = getJuForDate(liveDateObj, document.getElementById('live-ju-override').value);
+  const liveSi = shiIdx(trueSolar(liveDateObj));
+  const liveZF = zhiFu(liveJu.ju, liveJu.yang, liveSi);
+  const liveMen = getBaMen(liveZF, liveJu.yang);
+  const liveStars = getStars(liveZF);
 
-    const liveJu = getJuForDate(liveDateObj, document.getElementById('live-ju-override').value);
-    const liveSi = shiIdx(trueSolar(liveDateObj));
-    const liveZF = zhiFu(liveJu.ju, liveJu.yang, liveSi);
-    const liveMen = getBaMen(liveZF, liveJu.yang);
-    const liveStars = getStars(liveZF);
+  document.getElementById('dead-info').textContent = `[${fmtDate(deadDateObj)}]\n${deadJu.yang?'阳':'阴'}遁${deadJu.ju}局 | 值符：${NAMES[deadZF]}`;
+  document.getElementById('live-info').textContent = `[${fmtDate(liveDateObj)}]\n${liveJu.yang?'阳':'阴'}遁${liveJu.ju}局 | 值符：${NAMES[liveZF]}`;
 
-    document.getElementById('dead-info').textContent = `[${fmtDate(deadDateObj)}]\n${deadJu.yang?'阳':'阴'}遁${deadJu.ju}局 | 值符：${NAMES[deadZF]}`;
-    document.getElementById('live-info').textContent = `[${fmtDate(liveDateObj)}]\n${liveJu.yang?'阳':'阴'}遁${liveJu.ju}局 | 值符：${NAMES[liveZF]}`;
+  clearLayers(deadLayers);
+  clearLayers(liveLayers);
 
-    // 清空旧的投影
-    projectionGroup.clearLayers();
+  Object.entries(GONG_OFF).forEach(([posStr, [dlat, dlng]]) => {
+    const pos = parseInt(posStr);
+    const lat = CENTER[0] + dlat, lng = CENTER[1] + dlng;
+    const dm = deadMen[pos], lm = liveMen[pos];
+    const conflict = (dm === lm);
 
-    Object.entries(GONG_OFF).forEach(([posStr, [dlat, dlng]]) => {
-      const pos = parseInt(posStr);
-      const lat = CENTER[0] + dlat, lng = CENTER[1] + dlng;
-      const dm = deadMen[pos], lm = liveMen[pos];
-      const conflict = (dm === lm);
+    lastDeadData[pos] = {men: dm, star: deadStars[pos]};
+    lastLiveData[pos] = {men: lm, star: liveStars[pos]};
 
-      lastDeadData[pos] = {men: dm, star: deadStars[pos]};
-      lastLiveData[pos] = {men: lm, star: liveStars[pos]};
+    // ================= 解决颜色糊在一起：放弃透明填充，使用纯净高亮边框 =================
+    const bounds = [[lat-SPAN/2, lng-SPAN/2], [lat+SPAN/2, lng+SPAN/2]];
+    
+    // L2 物理框 (暗红) - 仅描边
+    const dr = L.rectangle(bounds, {
+      color: conflict ? '#ffffff' : '#cd5c5c', 
+      fillColor: conflict ? '#ffffff' : 'transparent', 
+      fillOpacity: conflict ? 0.15 : 0, 
+      weight: conflict ? 2 : 1
+    }).addTo(map);
+    dr.on('click', () => showGongDetail(pos));
+    deadLayers.push(dr);
 
-      // 地图方格投影
-      const bounds = [[lat-SPAN/2, lng-SPAN/2], [lat+SPAN/2, lng+SPAN/2]];
-      
-      // L2 物理基底框 (赤红)
-      const rectL2 = L.rectangle(bounds, {
-        color: conflict ? '#ffffff' : '#ff4d4d', 
-        fillColor: conflict ? '#ffffff' : '#000000', 
-        fillOpacity: conflict ? 0.3 : 0, 
-        weight: conflict ? 2 : 1
-      });
-      rectL2.on('click', () => showGongDetail(pos));
-      rectL2.addTo(projectionGroup);
+    // L3 变量框 (青色虚线)
+    if(!conflict) {
+      const boundsL3 = [[lat-SPAN/2 + 0.00008, lng-SPAN/2 + 0.00008], [lat+SPAN/2 - 0.00008, lng+SPAN/2 - 0.00008]];
+      const lr = L.rectangle(boundsL3, {
+        color: '#00ffcc', fillOpacity: 0, weight: 1.5, dashArray: '4 4'
+      }).addTo(map);
+      lr.on('click', () => showGongDetail(pos));
+      liveLayers.push(lr);
+    }
 
-      // L3 变量覆盖框 (荧光青)
-      if(!conflict) {
-        const boundsL3 = [[lat-SPAN/2 + 0.0001, lng-SPAN/2 + 0.0001], [lat+SPAN/2 - 0.0001, lng+SPAN/2 - 0.0001]];
-        const rectL3 = L.rectangle(boundsL3, {
-          color: '#00e5ff', fillOpacity: 0, weight: 1, dashArray: '4 4'
-        });
-        rectL3.on('click', () => showGongDetail(pos));
-        rectL3.addTo(projectionGroup);
-      }
+    // 宫名文字标识
+    const lbl = L.marker([lat, lng], {icon: L.divIcon({
+      html: `<div style="font-size:14px; font-weight:bold; color:${conflict?'#fff':'#546e7a'}; text-shadow: 0 0 ${conflict?'8px #fff':'3px #000'}; cursor:pointer;">${NAMES[pos]}${pos}</div>`,
+      className: '', iconAnchor: [15, 10]
+    })}).addTo(map);
+    lbl.on('click', () => showGongDetail(pos));
+    liveLayers.push(lbl);
 
-      // 中心文字标识
-      const txtColor = conflict ? '#ffffff' : '#6c8299';
-      const txtShadow = conflict ? '0 0 10px #ffffff' : 'none';
-      const lbl = L.marker([lat, lng], {icon: L.divIcon({
-        html: `<div style="font-size:16px; font-weight:bold; color:${txtColor}; text-shadow:${txtShadow}; text-align:center; transform:translate(-50%,-50%);">${NAMES[pos]}<br><span style="font-size:10px;">${pos}</span></div>`,
-        className: ''
-      })});
-      lbl.on('click', () => showGongDetail(pos));
-      lbl.addTo(projectionGroup);
-
-      // 侧边栏 UI 更新
-      const el = document.getElementById('g'+pos);
-      el.className = 'gong';
-      if(conflict) {
-        el.style.borderColor = 'var(--color-conflict)';
-        el.style.backgroundColor = 'rgba(255,255,255,0.1)';
-        el.querySelector('.gm').style.color = 'var(--color-conflict)';
-        el.querySelector('.gm').textContent = '伏吟';
-      } else {
-        el.style.borderColor = 'var(--border-line)';
-        el.style.backgroundColor = 'var(--bg-dark)';
-        el.querySelector('.gm').innerHTML = `<span style="color:var(--color-l2)">${dm}</span> / <span style="color:var(--color-l3)">${lm}</span>`;
-      }
-      el.onclick = () => showGongDetail(pos);
-    });
-
-  } catch(err) {
-    console.error(err);
-    displayError("阵列计算崩溃: " + err.message);
-  }
+    // 侧边栏 HUD 同步更新
+    const el = document.getElementById('g'+pos);
+    el.className = 'gong';
+    if(conflict) {
+      el.style.borderColor = '#fff';
+      el.style.backgroundColor = 'rgba(255,255,255,0.1)';
+      el.querySelector('.gm').style.color = '#fff';
+      el.querySelector('.gm').innerHTML = '伏吟';
+    } else {
+      el.style.borderColor = '#1a3a3a';
+      el.style.backgroundColor = '#050d0f';
+      el.querySelector('.gm').innerHTML = `<span style="color:#cd5c5c">${dm}</span> <span style="color:#00ffcc">${lm}</span>`;
+    }
+    el.onclick = () => showGongDetail(pos);
+  });
 }
 
-// 控件绑定
+// 控件事件绑定
 document.getElementById('use-now-btn').onclick = () => { setNow(); updateEngine(); };
 document.getElementById('apply-dead').onclick = () => {
   const v = document.getElementById('dead-time').value;
