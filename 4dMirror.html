@@ -16,11 +16,13 @@ body { background: #020304; font-family: 'Courier New', Consolas, monospace; ove
   --border-line: #1f2d3d;
   --text-main: #c5d4e8;
   --text-mute: #6c8299;
-  --color-l1: #4a6b8c;
+  --color-l1: #ffb703; /* L1改为高亮亮色，用于框出南江大学 */
   --color-l2: #a33131;
   --color-l3: #00e5ff;
   --color-conflict: #ffffff;
   --color-gold: #cda45a;
+  
+  --label-scale: 1; /* 地图字体动态缩放基准 */
 }
 
 /* ================= 1. 高精密宇宙背景与青冥鉴 ================= */
@@ -29,28 +31,22 @@ body { background: #020304; font-family: 'Courier New', Consolas, monospace; ove
   display: flex; flex-direction: column; align-items: center; justify-content: center;
 }
 
-/* 高精密多图层星空画布 */
 #bg-stars { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
 
-/* 镜体主容器 */
 #mirror-wrap { 
   position: relative; width: 80vmin; height: 80vmin; max-width: 550px; max-height: 550px; 
   border-radius: 50%; box-shadow: 0 0 80px #000, inset 0 0 20px #000; z-index: 10;
 }
 
-/* 镜面材质层 (严格限制内部画面不出界) */
 #mirror-glass {
   position: absolute; inset: 4%; border-radius: 50%;
   background: #050a0f; box-shadow: inset 0 0 60px #000;
   overflow: hidden; z-index: 2;
-  /* 镜面玻璃的反光高光 */
   background-image: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 40%, rgba(255,255,255,0) 100%);
 }
 
-/* 高清真实金属光影 SVG 框 */
 #mirror-svg-frame { position: absolute; inset: -10%; width: 120%; height: 120%; pointer-events: none; z-index: 5; }
 
-/* 摄像头影像：高维模糊滤镜 */
 #mirror-video { 
   position: absolute; width: 110%; height: 110%; top: -5%; left: -5%;
   object-fit: cover; opacity: 0; transition: opacity 2s ease;
@@ -58,10 +54,8 @@ body { background: #020304; font-family: 'Courier New', Consolas, monospace; ove
   mix-blend-mode: hard-light;
 }
 
-/* 拒绝摄像头时的雪花屏 */
 #mirror-noise { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; transition: opacity 1s; mix-blend-mode: screen; }
 
-/* 操作控制台 */
 .mirror-text-container { margin-top: 5vmin; z-index: 10; text-align: center; }
 .mirror-text { color: #5a738a; font-size: clamp(12px, 3vmin, 14px); line-height: 2; letter-spacing: 0.15em; text-shadow: 0 0 5px #000; }
 .mirror-text .highlight { color: var(--color-gold); font-weight: bold; }
@@ -71,17 +65,31 @@ body { background: #020304; font-family: 'Courier New', Consolas, monospace; ove
   border: 1px solid #6b5119; color: var(--color-gold); 
   font-family: inherit; font-size: 14px; cursor: pointer; letter-spacing: 0.2em; 
   transition: 0.5s; box-shadow: inset 0 0 10px rgba(0,0,0,0.8);
-  display: none; /* 初始隐藏，允许摄像头后显示 */
+  display: none; 
 }
 #mirror-btn:hover { background: rgba(205,164,90,0.1); border-color: var(--color-gold); color: #fff; box-shadow: 0 0 20px rgba(212, 160, 23, 0.3) inset, 0 0 10px rgba(212,160,23,0.5); }
 
-/* 电影级缓慢展开层 */
 #mirror-expand { position: fixed; inset: 0; z-index: 9998; display: none; pointer-events: none; }
 #mirror-expand canvas { width: 100%; height: 100%; }
 
 /* ================= 2. 主观测系统与地图 ================= */
 #app { display: none; width: 100vw; height: 100vh; position: relative; }
 #map { position: absolute; inset: 0; background: #000; z-index: 1; }
+
+/* 北标仪 (North Indicator) */
+#north-indicator {
+  position: absolute; top: 30px; right: 320px; z-index: 1000;
+  display: flex; flex-direction: column; align-items: center;
+  pointer-events: none; opacity: 0.8;
+}
+.n-arrow {
+  width: 0; height: 0;
+  border-left: 12px solid transparent; border-right: 12px solid transparent;
+  border-bottom: 35px solid var(--color-l1);
+  filter: drop-shadow(0 0 8px var(--color-l1));
+  margin-bottom: 5px;
+}
+.n-text { color: var(--color-l1); font-weight: bold; font-size: 24px; text-shadow: 0 0 10px var(--color-l1); }
 
 /* 剧情引导弹窗 */
 #narrative-dialog {
@@ -95,7 +103,7 @@ body { background: #020304; font-family: 'Courier New', Consolas, monospace; ove
 #narrative-dialog button { background: transparent; border: 1px solid var(--color-gold); color: #fff; padding: 10px 25px; cursor: pointer; font-family: inherit; transition: 0.3s; }
 #narrative-dialog button:hover { background: var(--color-gold); color: #000; }
 
-/* PS风格图层控制器 (左上角) */
+/* PS图层控制器 */
 #layer-panel {
   position: absolute; top: 20px; left: 20px; z-index: 1000;
   background: rgba(13,21,28,0.9); border: 1px solid var(--border-line);
@@ -119,7 +127,7 @@ body { background: #020304; font-family: 'Courier New', Consolas, monospace; ove
 .layer-name { flex: 1; margin-left: 10px; display: flex; flex-direction: column; }
 .layer-desc { font-size: 10px; color: var(--text-mute); margin-top: 2px; }
 
-/* 侧边栏 (右侧) */
+/* 侧边栏 */
 #sidebar { 
   position: absolute; top: 0; right: 0; z-index: 1000; 
   background: rgba(9,14,18,0.95); border-left: 1px solid var(--border-line); 
@@ -134,23 +142,39 @@ h4 { font-size: 13px; color: #8fa6c0; border-left: 2px solid var(--color-l3); pa
 .apply-btn { width: 100%; padding: 10px; background: transparent; border: 1px solid #334455; color: #8fa6c0; font-family: inherit; font-size: 12px; cursor: pointer; transition: 0.2s; border-radius: 3px; margin-top: 5px; }
 .apply-btn:hover { border-color: var(--color-l3); color: var(--color-l3); background: rgba(0,229,255,0.05); }
 
-/* ================= 移动端适配 ================= */
+/* ================= 地图动态文字缩放控制 ================= */
+.map-label-l1 { 
+  font-family: 'Courier New', monospace; 
+  /* 核心：利用 CSS 变量根据 Zoom 层级进行动态缩放 */
+  font-size: calc(14px * var(--label-scale)) !important; 
+  color: #fff; background: rgba(10,20,30,0.8); 
+  border: 1px solid #4a6b8c; border-radius: 4px; 
+  padding: calc(4px * var(--label-scale)) calc(8px * var(--label-scale)); 
+  white-space: nowrap; text-align: center; text-shadow: 0 0 5px #000; 
+  box-shadow: 0 0 10px rgba(0,0,0,0.8); transition: font-size 0.2s, padding 0.2s;
+}
+.map-label-l1.danger { border-color: #a33131; color: #ffcccc; background: rgba(40,10,10,0.9); }
+.map-label-l1.highlight-zone { border-color: var(--color-l1); color: var(--color-l1); background: rgba(0,0,0,0.9); }
+
+/* 宫格内文字动态缩放 */
+.gong-label {
+  font-size: calc(14px * var(--label-scale));
+  font-weight: bold; text-align: center; white-space: nowrap; transition: 0.2s;
+}
+
+/* 移动端适配 */
 @media (max-width: 768px) {
   #sidebar { top: auto; bottom: 0; width: 100%; height: 40%; border-left: none; border-top: 1px solid var(--border-line); }
   #layer-panel { top: 10px; left: 10px; width: calc(100% - 20px); }
+  #north-indicator { top: 20px; right: 20px; }
   #map { height: 60%; }
 }
-
-/* 地图文字标识样式重置 (保证放大缩小不失真) */
-.map-label-l1 { font-family: 'Courier New', monospace; font-size: 13px !important; color: #fff; background: rgba(10,20,30,0.8); border: 1px solid #4a6b8c; padding: 4px 8px; border-radius: 4px; white-space: nowrap; text-align: center; text-shadow: 0 0 5px #000; box-shadow: 0 0 10px rgba(0,0,0,0.8); }
-.map-label-l1.danger { border-color: #a33131; color: #ffcccc; background: rgba(40,10,10,0.9); }
 </style>
 </head>
 <body>
 
 <div id="mirror-overlay">
   <canvas id="bg-stars"></canvas>
-  
   <div id="mirror-wrap">
     <svg id="mirror-svg-frame" viewBox="0 0 1000 1000" xmlns="http://www.w3.org/2000/svg">
       <defs>
@@ -168,15 +192,11 @@ h4 { font-size: 13px; color: #8fa6c0; border-left: 2px solid var(--color-l3); pa
           <feDropShadow dx="0" dy="5" stdDeviation="15" flood-color="#000" flood-opacity="1"/>
         </filter>
       </defs>
-
       <circle cx="500" cy="500" r="460" fill="none" stroke="#000" stroke-width="30" filter="url(#shadow-ext)"/>
-      
       <circle cx="500" cy="500" r="450" fill="none" stroke="url(#bronze)" stroke-width="20"/>
       <circle cx="500" cy="500" r="438" fill="none" stroke="#1a120a" stroke-width="4"/>
       <circle cx="500" cy="500" r="428" fill="none" stroke="url(#bronze)" stroke-width="8" stroke-dasharray="15 8"/>
-      
       <circle cx="500" cy="500" r="418" fill="none" stroke="url(#bronze)" stroke-width="4" filter="url(#shadow-int)"/>
-
       <g fill="#0a0704" stroke="url(#bronze)" stroke-width="2">
         <circle cx="500" cy="50" r="10"/><circle cx="500" cy="950" r="10"/>
         <circle cx="50" cy="500" r="10"/><circle cx="950" cy="500" r="10"/>
@@ -184,13 +204,11 @@ h4 { font-size: 13px; color: #8fa6c0; border-left: 2px solid var(--color-l3); pa
         <circle cx="182" cy="818" r="7"/><circle cx="818" cy="182" r="7"/>
       </g>
     </svg>
-
     <div id="mirror-glass">
       <video id="mirror-video" autoplay playsinline muted></video>
       <canvas id="mirror-noise"></canvas>
     </div>
   </div>
-  
   <div class="mirror-text-container">
       <div class="mirror-text" id="init-text">
         [ 正在请求光学阵列权限... ]<br>
@@ -204,25 +222,27 @@ h4 { font-size: 13px; color: #8fa6c0; border-left: 2px solid var(--color-l3); pa
 
 <div id="app">
   <div id="map"></div>
+  
+  <div id="north-indicator">
+    <div class="n-arrow"></div>
+    <div class="n-text">N</div>
+  </div>
 
   <div id="narrative-dialog">
-    <p>“你现在可以同时看见过去和未来。<br><br>去找地图上的阵法锚点，<br>那个<span style="color:#ff4d4d; font-weight:bold;">南门废弃仓库</span>。”</p>
-    <button onclick="document.getElementById('narrative-dialog').style.display='none'">[ 明白 ]</button>
+    <p>“你可以同时看见过去和未来。<br><br>现在，找到地图正南方的阵法锚点，<br>那个被锁死的<span style="color:#ff4d4d; font-weight:bold;">南门废弃仓库</span>。”</p>
+    <button onclick="document.getElementById('narrative-dialog').style.display='none'">[ 观测确认 ]</button>
   </div>
 
   <div id="layer-panel">
     <div class="layer-title">多维干涉图层控制器 (Z-Index)</div>
-    
     <div class="layer-item layer-l3 active" id="btn-l3" onclick="toggleLayer('L3')">
       <div class="eye">👁</div>
       <div class="layer-name">L3 实时投影<div class="layer-desc">当前时间终端变量</div></div>
     </div>
-    
     <div class="layer-item layer-l2 active" id="btn-l2" onclick="toggleLayer('L2')">
       <div class="eye">👁</div>
       <div class="layer-name">L2 历史死盘<div class="layer-desc">定格: 2007-06-11</div></div>
     </div>
-    
     <div class="layer-item layer-l1 active" id="btn-l1" onclick="toggleLayer('L1')">
       <div class="eye">👁</div>
       <div class="layer-name">L1 拓扑基底<div class="layer-desc">南江大学物理地图</div></div>
@@ -256,18 +276,11 @@ h4 { font-size: 13px; color: #8fa6c0; border-left: 2px solid var(--color-l3); pa
     const canvas = document.getElementById('bg-stars');
     const ctx = canvas.getContext('2d');
     let stars = [];
-    
     function resize() {
         canvas.width = window.innerWidth; canvas.height = window.innerHeight;
         stars = [];
         for(let i=0; i<400; i++) {
-            stars.push({
-                x: Math.random() * canvas.width,
-                y: Math.random() * canvas.height,
-                z: Math.random() * 3 + 0.5, 
-                o: Math.random(),
-                d: (Math.random() * 0.02) - 0.01
-            });
+            stars.push({ x: Math.random()*canvas.width, y: Math.random()*canvas.height, z: Math.random()*3+0.5, o: Math.random(), d: (Math.random()*0.02)-0.01 });
         }
     }
     window.addEventListener('resize', resize); resize();
@@ -275,14 +288,11 @@ h4 { font-size: 13px; color: #8fa6c0; border-left: 2px solid var(--color-l3); pa
     function renderStars() {
         if(document.getElementById('mirror-overlay').style.display === 'none') return;
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        
         stars.forEach(s => {
-            // 缓慢漂移，带出宇宙深邃感
             s.x -= 0.2 / s.z; s.y -= 0.1 / s.z;
             if(s.x < 0) s.x = canvas.width; if(s.y < 0) s.y = canvas.height;
             s.o += s.d; if(s.o > 1 || s.o < 0.1) s.d = -s.d;
-            
-            ctx.beginPath(); ctx.arc(s.x, s.y, 1.5 / s.z, 0, Math.PI*2);
+            ctx.beginPath(); ctx.arc(s.x, s.y, 1.5/s.z, 0, Math.PI*2);
             ctx.fillStyle = `rgba(180, 210, 255, ${s.o})`; ctx.fill();
         });
         requestAnimationFrame(renderStars);
@@ -290,7 +300,7 @@ h4 { font-size: 13px; color: #8fa6c0; border-left: 2px solid var(--color-l3); pa
     renderStars();
 })();
 
-// ================= 2. 摄像头接入与模拟雪花屏 =================
+// ================= 2. 摄像头与雪花屏逻辑 =================
 (function initMirror() {
     const video = document.getElementById('mirror-video');
     const noiseCanvas = document.getElementById('mirror-noise');
@@ -299,49 +309,37 @@ h4 { font-size: 13px; color: #8fa6c0; border-left: 2px solid var(--color-l3); pa
     const text = document.getElementById('init-text');
     let isNoise = false;
 
-    function resizeNoise() {
-        noiseCanvas.width = noiseCanvas.parentElement.clientWidth;
-        noiseCanvas.height = noiseCanvas.parentElement.clientHeight;
-    }
+    function resizeNoise() { noiseCanvas.width = noiseCanvas.parentElement.clientWidth; noiseCanvas.height = noiseCanvas.parentElement.clientHeight; }
     window.addEventListener('resize', resizeNoise); resizeNoise();
 
     function drawNoise() {
         if(!isNoise || noiseCanvas.style.display === 'none') return;
         const idata = noiseCtx.createImageData(noiseCanvas.width, noiseCanvas.height);
         const d = idata.data;
-        for(let i=0; i<d.length; i+=4) {
-            const v = Math.random() * 255 | 0;
-            d[i]=v; d[i+1]=v; d[i+2]=v; d[i+3]=80; // 灰白噪点，透明度80
-        }
+        for(let i=0; i<d.length; i+=4) { const v = Math.random()*255|0; d[i]=v; d[i+1]=v; d[i+2]=v; d[i+3]=80; }
         noiseCtx.putImageData(idata, 0, 0);
         requestAnimationFrame(drawNoise);
     }
 
-    // 触发摄像头权限
     if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         navigator.mediaDevices.getUserMedia({video: {facingMode: 'user'}})
         .then(stream => {
-            video.srcObject = stream;
-            video.style.opacity = '1';
+            video.srcObject = stream; video.style.opacity = '1';
             text.innerHTML = "[ 光学阵列已贯通 ]<br>物理特征捕获完毕，请注视深渊。";
             btn.style.display = 'inline-block';
         })
         .catch(() => {
-            // 拒绝时的雪花屏处理
-            isNoise = true;
-            noiseCanvas.style.opacity = '1';
-            drawNoise();
+            isNoise = true; noiseCanvas.style.opacity = '1'; drawNoise();
             text.innerHTML = "<span style='color:#a33131;'>[ 光学阵列被拒绝 ]</span><br>物理特征丢失，系统采用盲视降维协议。";
             btn.style.display = 'inline-block';
         });
     } else {
         isNoise = true; noiseCanvas.style.opacity = '1'; drawNoise();
-        text.innerHTML = "[ 设备异常 ]<br>启动备用盲视协议。";
-        btn.style.display = 'inline-block';
+        text.innerHTML = "[ 设备异常 ]<br>启动备用盲视协议。"; btn.style.display = 'inline-block';
     }
 })();
 
-// ================= 3. 电影级沉重缓动展开 =================
+// ================= 3. 展开动画 =================
 function playCinematicExpand(cb){
   const overlay = document.getElementById('mirror-expand');
   const canvas = document.getElementById('expand-canvas');
@@ -362,27 +360,17 @@ function playCinematicExpand(cb){
 
     if(phase === 0){
       ctx.save();
-      // 外层黑场
       ctx.beginPath(); ctx.rect(0, 0, canvas.width, canvas.height); ctx.arc(cx, cy, r, 0, Math.PI*2, true); 
       ctx.fillStyle = `rgba(2, 3, 5, ${alpha})`; ctx.fill();
-
-      // 金色撕裂边沿
       ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI*2);
       ctx.strokeStyle = `rgba(205,164,90,${alpha * 0.8})`; ctx.lineWidth = 4; ctx.stroke();
       ctx.restore();
-      
-      // 缓动膨胀：带阻尼的厚重感
       r += Math.max((maxR - r) * 0.04, 2);
       if(r > maxR) phase = 1;
     } else {
       alpha -= 0.02;
-      ctx.fillStyle = `rgba(2, 3, 5, ${Math.max(0, alpha)})`;
-      ctx.fillRect(0,0,canvas.width,canvas.height);
-      if(alpha <= 0){
-        overlay.style.display = 'none';
-        window.removeEventListener('resize', resize);
-        cb(); return;
-      }
+      ctx.fillStyle = `rgba(2, 3, 5, ${Math.max(0, alpha)})`; ctx.fillRect(0,0,canvas.width,canvas.height);
+      if(alpha <= 0){ overlay.style.display = 'none'; window.removeEventListener('resize', resize); cb(); return; }
     }
     requestAnimationFrame(frame);
   }
@@ -390,53 +378,59 @@ function playCinematicExpand(cb){
 }
 
 document.getElementById('mirror-btn').onclick = () => {
-  // 停止摄像头
   const video = document.getElementById('mirror-video');
   if(video.srcObject) video.srcObject.getTracks().forEach(t => t.stop());
-  
   document.getElementById('mirror-overlay').style.display = 'none';
   playCinematicExpand(() => {
     document.getElementById('app').style.display = 'block';
     if(!map) { initMap(); } else { map.invalidateSize(); }
-    
-    // 弹出剧情引导
-    setTimeout(() => {
-        document.getElementById('narrative-dialog').style.display = 'block';
-    }, 800);
+    setTimeout(() => { document.getElementById('narrative-dialog').style.display = 'block'; }, 800);
   });
 };
 
-// ================= 4. PS图层与地图引擎重构 =================
+// ================= 4. 严谨拓扑地理引擎重构 =================
 let map;
-let l1Group, l2Group, l3Group; // 独立的 Leaflet LayerGroup
+let l1Group, l2Group, l3Group;
 
 // 物理常量 (调整 SPAN 让九宫格严格不出南江大学范围)
 const CENTER = [30.2558, 120.1222];
-const SPAN = 0.0016; // 缩小跨度
-const NAMES = {4:'巽',9:'离',2:'坤',3:'震',5:'中',7:'兑',8:'艮',1:'坎',6:'乾'};
-const GONG_OFF={4:[SPAN,-SPAN],9:[SPAN,0],2:[SPAN,SPAN],3:[0,-SPAN],5:[0,0],7:[0,SPAN],8:[-SPAN,-SPAN],1:[-SPAN,0],6:[-SPAN,SPAN]};
+const SPAN = 0.0018; 
+const NAMES = {1:'坎',8:'艮',3:'震',4:'巽',9:'离',2:'坤',7:'兑',6:'乾',5:'中'};
+
+// 严格遵循地图坐标系：Lat(北为正)，Lng(东为正)
+// 北标向上。上北下南，左西右东。
+// 坎一宫(正北) -> Lat+  |  离九宫(正南) -> Lat-
+const GONG_OFF = {
+    1: [SPAN, 0],       // 坎北
+    8: [SPAN, SPAN],    // 艮东北
+    3: [0, SPAN],       // 震东
+    4: [-SPAN, SPAN],   // 巽东南
+    9: [-SPAN, 0],      // 离南 (物理南大门与废弃仓库)
+    2: [-SPAN, -SPAN],  // 坤西南
+    7: [0, -SPAN],      // 兑西
+    6: [SPAN, -SPAN],   // 乾西北
+    5: [0, 0]           // 中
+};
+
 const BMYANG=['休','死','伤','杜','景','开','惊','生','景'];
 const BMYIN=['休','生','伤','杜','景','死','惊','开','景'];
 
-// 南江大学专属多边形边界
+// 高亮南江大学专属矩形框范围 (比九宫阵列略大)
 const campusBounds = [
-    [30.2585, 120.1190], [30.2588, 120.1255], 
-    [30.2530, 120.1260], [30.2525, 120.1185]
+    [CENTER[0] + SPAN*1.6, CENTER[1] - SPAN*1.6],
+    [CENTER[0] + SPAN*1.6, CENTER[1] + SPAN*1.6],
+    [CENTER[0] - SPAN*1.6, CENTER[1] + SPAN*1.6],
+    [CENTER[0] - SPAN*1.6, CENTER[1] - SPAN*1.6]
 ];
 
-// 图层控制变量
 let layersState = { L1: true, L2: true, L3: true };
 
-// 伪算法 (用于UI展示)
+// 伪算法 (用于UI展示逻辑)
 function pseudoCalc(dateObj, isLive) {
-    const h = dateObj.getHours();
-    const seed = dateObj.getDate() + (isLive ? h : 0);
-    const zfg = [1,2,3,4,5,6,7,8,9][seed % 9];
-    const ma = isLive ? BMYIN : BMYANG;
-    const si = [1,2,3,4,5,6,7,8,9].indexOf(zfg);
-    const res = {};
-    [1,2,3,4,5,6,7,8,9].forEach((g,i)=>{ res[g] = ma[(si+i)%9]; });
-    return res;
+    const h = dateObj.getHours(); const seed = dateObj.getDate() + (isLive ? h : 0);
+    const zfg = [1,2,3,4,5,6,7,8,9][seed % 9]; const ma = isLive ? BMYIN : BMYANG;
+    const si = [1,2,3,4,5,6,7,8,9].indexOf(zfg); const res = {};
+    [1,2,3,4,5,6,7,8,9].forEach((g,i)=>{ res[g] = ma[(si+i)%9]; }); return res;
 }
 
 let deadDateObj = new Date(2007,5,11,11,0);
@@ -454,6 +448,15 @@ function initMap() {
   map = L.map('map',{zoomControl:false, attributionControl:false}).setView(CENTER, 17);
   L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{maxZoom:20}).addTo(map);
   
+  // 绑定动态文字缩放事件 (核心修复)
+  map.on('zoom', function() {
+      const baseZoom = 17; // 基准层级
+      const currentZoom = map.getZoom();
+      // 计算缩放比例 (随地图放大，字号等比增大，防止变小错觉)
+      const scale = Math.pow(1.3, currentZoom - baseZoom);
+      document.documentElement.style.setProperty('--label-scale', scale);
+  });
+  
   l1Group = L.layerGroup().addTo(map);
   l2Group = L.layerGroup().addTo(map);
   l3Group = L.layerGroup().addTo(map);
@@ -462,29 +465,27 @@ function initMap() {
   updateL2L3();
 }
 
-// 绘制 L1：地图底图与专属框框
 function drawL1() {
   l1Group.clearLayers();
   
-  // 南江大学发光边界
+  // 南江大学亮色发光边界
   L.polygon(campusBounds, { 
-      color: 'var(--color-l1)', weight: 3, fillOpacity: 0.1, dashArray: '5 5'
+      color: 'var(--color-l1)', weight: 3, fillOpacity: 0.05, dashArray: '10 5', opacity: 1
   }).addTo(l1Group);
   
-  // 核心地标 (Zoom-independent text)
+  // 中心阵眼
   L.marker(CENTER, {icon: L.divIcon({
-    html: `<div class="map-label-l1">南江大学核心阵眼</div>`,
+    html: `<div class="map-label-l1 highlight-zone">南江大学核心阵眼</div>`,
     className: '', iconAnchor: [60, 15]
   })}).addTo(l1Group);
 
-  // 目标废弃仓库 (震三宫位置附近)
-  L.marker([CENTER[0], CENTER[1]-SPAN], {icon: L.divIcon({
+  // 严格正南方 (离九宫区域) 的废弃仓库
+  L.marker([CENTER[0]-SPAN, CENTER[1]], {icon: L.divIcon({
     html: `<div class="map-label-l1 danger">南门废弃仓库</div>`,
     className: '', iconAnchor: [50, 15]
   })}).addTo(l1Group);
 }
 
-// 渲染 L2 与 L3 独立图层
 function updateL2L3() {
   l2Group.clearLayers();
   l3Group.clearLayers();
@@ -500,14 +501,14 @@ function updateL2L3() {
 
     const bounds = [[lat-SPAN/2, lng-SPAN/2], [lat+SPAN/2, lng+SPAN/2]];
     
-    // L2 物理框渲染
+    // L2 物理框
     L.rectangle(bounds, {
       color: conflict ? '#ffffff' : 'var(--color-l2)', 
       fillOpacity: conflict ? 0.2 : 0, 
       weight: conflict ? 2 : 1
     }).addTo(l2Group);
 
-    // L3 变量投影渲染
+    // L3 变量投影
     if(!conflict) {
       const boundsL3 = [[lat-SPAN/2+0.0001, lng-SPAN/2+0.0001], [lat+SPAN/2-0.0001, lng+SPAN/2-0.0001]];
       L.rectangle(boundsL3, {
@@ -515,15 +516,14 @@ function updateL2L3() {
       }).addTo(l3Group);
     }
 
-    // 组合信息 Label (将跟随 L2 隐藏/显示)
+    // 宫格文字也受动态缩放影响
     L.marker([lat, lng], {icon: L.divIcon({
-      html: `<div style="font-size:14px; font-weight:bold; color:${conflict?'#fff':'#6c8299'}; text-align:center;">${NAMES[pos]}<br><span style="font-size:10px">${dm}</span></div>`,
-      className: '', iconAnchor: [15, 15]
+      html: `<div class="gong-label" style="color:${conflict?'#fff':'#6c8299'}; text-shadow:${conflict?'0 0 5px #fff':'0 0 2px #000'};">${NAMES[pos]}${pos}宫<br><span style="font-size:0.8em">${dm}</span></div>`,
+      className: '', iconAnchor: [20, 20]
     })}).addTo(l2Group);
   });
 }
 
-// PS 风格图层控制开关
 function toggleLayer(layerName) {
     layersState[layerName] = !layersState[layerName];
     const btn = document.getElementById(`btn-${layerName.toLowerCase()}`);
