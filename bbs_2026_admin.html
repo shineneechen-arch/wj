@@ -128,7 +128,6 @@
             display: none; position: fixed; inset: 0; z-index: 999999;
             background: linear-gradient(to bottom, #121212 15%, #b30006 15%);
             overflow: hidden;
-            width: 100vw; height: 100vh; /* 强化屏幕锁定 */
         }
 
         /* 高级特效：带数码故障损坏、失焦模糊与色彩溶解的血肉星盘 */
@@ -141,10 +140,11 @@
             filter: blur(3px) contrast(150%) saturate(140%);
             animation: digital-corruption-loop 0.25s infinite linear;
             z-index: 1;
-            /* 【精准修复】强制开启 GPU 硬件加速，修复移动端图片不显示的问题 */
-            -webkit-transform: translate3d(0,0,0);
-            transform: translate3d(0,0,0);
-            will-change: transform, filter;
+            /* 【精准修复2】: 强制调用底层硬件3D加速，解决手机浏览器渲染重度滤镜图片直接黑屏的问题 */
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            -webkit-transform: translate3d(0, 0, 0);
+            transform: translate3d(0, 0, 0);
         }
         
         /* CRT 模拟垂直扫描线 */
@@ -179,23 +179,23 @@
         .final-close-btn:hover { color: #ffffff; transform: scale(1.1); text-shadow: 0 0 10px #f00; }
         
         .final-title {
-            /* 【精准修复】增加 width:100%, text-align:center, left:0, white-space:nowrap 保证无论如何缩放都在一行且居中 */
-            position: absolute; top: 15%; left: 0; width: 100%; text-align: center; transform: translateY(-50%);
-            font-size: 4rem; letter-spacing: 0.1em; 
+            position: absolute; top: 15%; transform: translateY(-50%);
+            /* 【精准修复1】: 强制100%宽度居中并禁止折行 */
+            left: 0; width: 100%; text-align: center; white-space: nowrap; 
+            font-size: 3.8rem; letter-spacing: 0.1em; 
             color: #e60000; 
             font-family: 'SimSun', serif; font-weight: bold;
             text-shadow: 3px 3px 15px rgba(0,0,0,0.9), 0 0 30px rgba(255,0,0,0.6);
             animation: textFocus-extreme 4s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
             filter: blur(8px);
-            white-space: nowrap; 
         }
         .final-subtitle {
-            /* 【精准修复】同步增加防换行处理 */
-            position: absolute; bottom: 20%; left: 0; width: 100%; text-align: center;
+            position: absolute; bottom: 20%;
+            /* 【精准修复1】: 强制100%宽度居中并禁止折行 */
+            left: 0; width: 100%; text-align: center; white-space: nowrap;
             font-size: 1.5rem; color: #3a0000; 
             font-family: 'Courier New', Courier, monospace; letter-spacing: 0.2em;
             font-weight: bold; text-shadow: 0 0 5px rgba(0,0,0,0.5);
-            white-space: nowrap;
         }
         @keyframes textFocus-extreme {
             100% { filter: blur(0px); transform: translateY(-50%) scale(1.02); }
@@ -464,7 +464,7 @@
 </div>
 
 <script type="text/javascript">
-    // 基础标记（如果主站原本是用这个字段判定的，保留它）
+    // 基础标记（保留主站解锁字段）
     localStorage.setItem('njdx_bbs_override', 'true');
 
     function updateTime() {
