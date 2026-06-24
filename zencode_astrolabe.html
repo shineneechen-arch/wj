@@ -984,47 +984,50 @@ const veinLines = [];
 function buildVeins() {
   clearGroup(veinG);
   veinLines.length = 0;
-  const bp = ['sun','moon','mercury','venus','earth','mars','jupiter','saturn','uranus','neptune','pluto'];
+  
+  // 排除木星，獲取所有即將被吸乾的祭品星體
+  const bp = ['sun','moon','mercury','venus','earth','mars','saturn','uranus','neptune','pluto'];
   const colors = [0xff0000, 0xaa0000, 0x550000, 0xff3300, 0x880000];
   
-  // 建立密集交錯網路
-  for(let i=0; i<bp.length; i++) {
-    for(let j=i+1; j<bp.length; j++) {
-      if(Math.random() > 0.1) { // 90% 概率產生連結
-        const srcMesh = pMesh[bp[i]] || earthMesh; // Earth is special handled sometimes but let's map loosely
-        const dstMesh = pMesh[bp[j]] || earthMesh;
-        if (!srcMesh || !dstMesh) continue;
-        
-        let srcPos = bp[i]==='earth' ? new THREE.Vector3(0,0,0) : srcMesh.position;
-        let dstPos = bp[j]==='earth' ? new THREE.Vector3(0,0,0) : dstMesh.position;
+  // 獲取最終的孵化母體：木星
+  const jupMesh = pMesh['jupiter'];
+  if (!jupMesh) return;
 
-        const strands = 3 + Math.floor(Math.random() * 4); // 3-6 根纖維管
-        const col = colors[Math.floor(Math.random() * colors.length)];
+  // 讓所有的星體，都向木星伸出粗壯的血肉臍帶
+  for(let i=0; i<bp.length; i++) {
+      const srcMesh = pMesh[bp[i]] || (bp[i] === 'earth' ? earthMesh : null);
+      if (!srcMesh) continue;
+      
+      let srcPos = bp[i] === 'earth' ? new THREE.Vector3(0,0,0) : srcMesh.position;
+      let dstPos = jupMesh.position; // 終點全部指向木星
+
+      const strands = 6 + Math.floor(Math.random() * 6); // 每顆星球被抽出 6-11 根血管
+      
+      for(let s=0; s<strands; s++) {
+        const mid = new THREE.Vector3().addVectors(srcPos, dstPos).multiplyScalar(0.5);
+        // 讓血管在宇宙空間中扭曲、蜿蜒
+        mid.x += (Math.random()-0.5)*35;
+        mid.y += (Math.random()-0.5)*35;
+        mid.z += (Math.random()-0.5)*35;
         
-        for(let s=0; s<strands; s++) {
-          const mid = new THREE.Vector3().addVectors(srcPos, dstPos).multiplyScalar(0.5);
-          mid.x += (Math.random()-0.5)*20;
-          mid.y += (Math.random()-0.5)*20;
-          mid.z += (Math.random()-0.5)*20;
-          
-          const curve = new THREE.CatmullRomCurve3([srcPos.clone(), mid.clone(), dstPos.clone()]);
-          const maxPts = 50;
-          const allPts = curve.getPoints(maxPts);
-          const positions = new Float32Array(maxPts * 3);
-          const pa = new THREE.BufferAttribute(positions, 3);
-          pa.setUsage(THREE.DynamicDrawUsage);
-          for(let k=0; k<maxPts; k++){pa.setXYZ(k,srcPos.x,srcPos.y,srcPos.z);}
-          
-          const geo = new THREE.BufferGeometry();
-          geo.setAttribute('position', pa);
-          geo.setDrawRange(0,2);
-          const mat = new THREE.LineBasicMaterial({ color:col, transparent:true, opacity:0, blending:THREE.AdditiveBlending });
-          const line = new THREE.Line(geo, mat);
-          veinG.add(line);
-          veinLines.push({ line, pa, allPts, maxPts });
-        }
+        const curve = new THREE.CatmullRomCurve3([srcPos.clone(), mid.clone(), dstPos.clone()]);
+        const maxPts = 60;
+        const allPts = curve.getPoints(maxPts);
+        const positions = new Float32Array(maxPts * 3);
+        const pa = new THREE.BufferAttribute(positions, 3);
+        pa.setUsage(THREE.DynamicDrawUsage);
+        for(let k=0; k<maxPts; k++){pa.setXYZ(k,srcPos.x,srcPos.y,srcPos.z);}
+        
+        const geo = new THREE.BufferGeometry();
+        geo.setAttribute('position', pa);
+        geo.setDrawRange(0,2);
+        
+        const col = colors[Math.floor(Math.random() * colors.length)];
+        const mat = new THREE.LineBasicMaterial({ color:col, transparent:true, opacity:0, blending:THREE.AdditiveBlending });
+        const line = new THREE.Line(geo, mat);
+        veinG.add(line);
+        veinLines.push({ line, pa, allPts, maxPts });
       }
-    }
   }
 }
 
@@ -1055,132 +1058,88 @@ function buildJupiterEye(jupPos) {
 
     const eyeScale = 4.5; 
 
-    // 1. 肉塊底座
+    // 1. 構建 3D 肉塊本體 (木星被取代後的肉球底座)
     const meatMat = new THREE.MeshStandardMaterial({ 
-        color: 0x8b0000, 
-        roughness: 0.3, 
+        color: 0x3a0000, 
+        roughness: 0.7, 
         metalness: 0.1, 
-        emissive: 0x440000 
+        emissive: 0x110000 
     });
-    const meat = new THREE.Mesh(new THREE.SphereGeometry(1.8 * eyeScale, 64, 64), meatMat);
-    meat.position.copy(jupPos);
-    meat.scale.set(1.1, 0.9, 1.05); 
-    jupEyeG.add(meat);
-    jupEyeMeshes.push(meat); 
-
-    // 2. 佈滿血絲的眼白(Sclera)
-    const scleraCanvas = document.createElement('canvas');
-    scleraCanvas.width = 512; scleraCanvas.height = 512;
-    const sCtx = scleraCanvas.getContext('2d');
-    sCtx.fillStyle = '#ffeaea'; sCtx.fillRect(0,0,512,512);
-    for(let i=0; i<300; i++) {
-        sCtx.beginPath();
-        let sx = Math.random()*512;
-        let sy = Math.random() > 0.5 ? 0 : 512; 
-        sCtx.moveTo(sx, sy);
-        for(let j=0; j<5; j++) {
-            sx += (Math.random()-0.5)*40;
-            sy += (sy < 256 ? 1 : -1) * (20 + Math.random()*40);
-            sCtx.lineTo(sx, sy);
-        }
-        sCtx.strokeStyle = 'rgba(200, 0, 0, '+(Math.random()*0.5+0.1)+')';
-        sCtx.lineWidth = Math.random()*3;
-        sCtx.stroke();
-    }
-    const scleraTex = new THREE.CanvasTexture(scleraCanvas);
-    scleraTex.colorSpace = THREE.SRGBColorSpace;
-    const scleraMat = new THREE.MeshStandardMaterial({ 
-        map: scleraTex, roughness: 0.1, metalness: 0.2, emissive: 0x220000 
-    });
-
-    const eyeball = new THREE.Mesh(new THREE.SphereGeometry(1.75 * eyeScale, 64, 64), scleraMat);
-    eyeball.position.copy(jupPos);
-    jupEyeG.add(eyeball);
-    jupEyeMeshes.push(eyeball); 
-
-    // 3. 上下眼皮 (大幅度撕開)
-    const topLid = new THREE.Mesh(
-        new THREE.SphereGeometry(1.82 * eyeScale, 64, 64, 0, Math.PI*2, 0, Math.PI/2 - 0.7), 
-        meatMat
-    );
-    topLid.position.copy(jupPos);
-    jupEyeG.add(topLid);
-    jupEyeMeshes.push(topLid);
-
-    const bottomLid = new THREE.Mesh(
-        new THREE.SphereGeometry(1.82 * eyeScale, 64, 64, 0, Math.PI*2, Math.PI/2 + 0.7, Math.PI/2), 
-        meatMat
-    );
-    bottomLid.position.copy(jupPos);
-    jupEyeG.add(bottomLid);
-    jupEyeMeshes.push(bottomLid);
-
-    // 4. 深淵虹膜與豎瞳
-    const irisGroup = new THREE.Group();
-
-    const c = document.createElement('canvas'); c.width=512; c.height=512;
-    const ctx = c.getContext('2d');
-    const g = ctx.createRadialGradient(256,256,20,256,256,240);
-    g.addColorStop(0,'#ffff00'); 
-    g.addColorStop(0.15,'#ff0000'); 
-    g.addColorStop(0.5,'#550000'); 
-    g.addColorStop(0.8,'#110000'); 
-    g.addColorStop(1,'#000000');
-    ctx.fillStyle=g; ctx.fillRect(0,0,512,512);
-    for(let i=0; i<150; i++){
-        const ang = i/150*Math.PI*2 + (Math.random()*0.1);
-        ctx.beginPath();
-        ctx.moveTo(256,256);
-        let r = 0;
-        let cx = 256, cy = 256;
-        while(r < 240) {
-           r += 10 + Math.random()*15;
-           const a = ang + (Math.random()-0.5)*0.3;
-           cx = 256 + Math.cos(a)*r;
-           cy = 256 + Math.sin(a)*r;
-           ctx.lineTo(cx, cy);
-        }
-        ctx.strokeStyle = Math.random()>0.5 ? 'rgba(255,0,0,0.8)' : 'rgba(100,0,0,0.6)';
-        ctx.lineWidth = 1.5 + Math.random()*2;
-        ctx.stroke();
-    }
-    const irisTex = new THREE.CanvasTexture(c); 
-    irisTex.colorSpace = THREE.SRGBColorSpace;
-
-    const irisMat = new THREE.MeshBasicMaterial({ map: irisTex });
+    const meatSphere = new THREE.Mesh(new THREE.SphereGeometry(1.65 * eyeScale, 64, 64), meatMat);
     
-    // 平面貼合在眼球正前方
-    const iris = new THREE.Mesh(new THREE.CircleGeometry(0.8 * eyeScale, 48), irisMat);
-    iris.position.z = 1.75 * eyeScale + 0.05; 
-    irisGroup.add(iris);
+    // 2. 載入寫實眼球圖片
+    const textureLoader = new THREE.TextureLoader();
+    const eyeTex = textureLoader.load('flesh_eye.jpg');
+    eyeTex.colorSpace = THREE.SRGBColorSpace;
 
-    // 豎直裂隙瞳孔
-    const pupilMat = new THREE.MeshBasicMaterial({ color: 0x000000 });
-    const pupil = new THREE.Mesh(new THREE.CircleGeometry(0.4 * eyeScale, 32), pupilMat);
-    pupil.scale.set(0.18, 1.4, 1); 
-    pupil.position.z = 1.75 * eyeScale + 0.08;
-    irisGroup.add(pupil);
-    jupEyeMeshes.push(pupil); 
+    // 3. 創建邊緣柔化遮罩 (Alpha Map)，讓圖片邊緣完美融進肉塊
+    const maskCanvas = document.createElement('canvas');
+    maskCanvas.width = 512; maskCanvas.height = 512;
+    const mCtx = maskCanvas.getContext('2d');
+    const grad = mCtx.createRadialGradient(256, 256, 140, 256, 256, 250);
+    grad.addColorStop(0, 'rgba(255, 255, 255, 1)');
+    grad.addColorStop(1, 'rgba(255, 255, 255, 0)');
+    mCtx.fillStyle = grad;
+    mCtx.fillRect(0, 0, 512, 512);
+    const alphaTex = new THREE.CanvasTexture(maskCanvas);
 
-    const hlMat = new THREE.MeshBasicMaterial({ color: 0xFFFFFF, transparent: true, opacity: 0.7 });
-    const hl = new THREE.Mesh(new THREE.CircleGeometry(0.12 * eyeScale, 16), hlMat);
-    hl.position.set(0.3 * eyeScale, 0.3 * eyeScale, 1.75 * eyeScale + 0.1);
-    irisGroup.add(hl);
+    // 4. 核心：將 2D 平面用數學公式彎曲成 3D 弧面 (避免球面極點拉伸變形)
+    const size = 3.8 * eyeScale; 
+    const curveGeo = new THREE.PlaneGeometry(size, size, 64, 64);
+    const pos = curveGeo.attributes.position;
+    const radius = 1.7 * eyeScale; // 弧面的曲率半徑，與肉球貼合
+    
+    for (let i = 0; i < pos.count; i++) {
+        const x = pos.getX(i);
+        const y = pos.getY(i);
+        const distSq = x * x + y * y;
+        // 計算球面 Z 偏移：z = sqrt(R^2 - x^2 - y^2) - R
+        if (radius * radius > distSq) {
+            const z = Math.sqrt(radius * radius - distSq) - radius;
+            pos.setZ(i, z);
+        } else {
+            // 超出半徑的部分直接向後壓縮捨棄
+            pos.setZ(i, -radius);
+        }
+    }
+    curveGeo.computeVertexNormals();
 
-    irisGroup.position.copy(jupPos);
-    jupEyeG.add(irisGroup);
-    jupEyeMeshes.push(irisGroup); 
+    // 賦予眼球高光與濕潤感
+    const eyeMat = new THREE.MeshStandardMaterial({ 
+        map: eyeTex,
+        alphaMap: alphaTex,
+        transparent: true,
+        roughness: 0.1,  // 0.1 代表非常光滑，看起來水潤
+        metalness: 0.3,
+        depthWrite: false
+    });
 
-    // 5. 加入血霧特效 (Blood Mist)
+    const eyeCurve = new THREE.Mesh(curveGeo, eyeMat);
+    // 將彎曲的眼球推到肉球表面最前方
+    eyeCurve.position.z = radius - 0.05;
+    
+    // 5. 創建一個容器來包裹【肉球】和【眼球】，形成完整的 3D 實體
+    const eyeContainer = new THREE.Group();
+    eyeContainer.add(meatSphere);
+    eyeContainer.add(eyeCurve);
+    eyeContainer.position.copy(jupPos);
+    
+    // 讓眼球初始朝向相機
+    eyeContainer.lookAt(camera.position);
+
+    jupEyeG.add(eyeContainer);
+    jupEyeMeshes.push(eyeContainer); // 保存供動畫調用
+
+    // 6. 加入血霧特效增加立體感
     eyeMistG = new THREE.Group();
     const mistCanvas = document.createElement('canvas');
     mistCanvas.width = 128; mistCanvas.height = 128;
-    const mCtx = mistCanvas.getContext('2d');
-    const mGrad = mCtx.createRadialGradient(64,64,0,64,64,64);
+    const mCtx2 = mistCanvas.getContext('2d');
+    const mGrad = mCtx2.createRadialGradient(64,64,0,64,64,64);
     mGrad.addColorStop(0, 'rgba(255, 0, 0, 0.8)');
     mGrad.addColorStop(0.4, 'rgba(150, 0, 0, 0.4)');
     mGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
-    mCtx.fillStyle = mGrad; mCtx.fillRect(0,0,128,128);
+    mCtx2.fillStyle = mGrad; mCtx2.fillRect(0,0,128,128);
     const mistTex = new THREE.CanvasTexture(mistCanvas);
     mistTex.colorSpace = THREE.SRGBColorSpace;
     
@@ -1188,17 +1147,17 @@ function buildJupiterEye(jupPos) {
     const mistPts = [];
     for(let i=0; i<80; i++){
         mistPts.push(
-          (Math.random()-0.5)*eyeScale*4.5, 
-          (Math.random()-0.5)*eyeScale*4.5, 
-          (Math.random()-0.5)*eyeScale*2 + eyeScale*0.5
+          (Math.random()-0.5)*eyeScale*3.5, 
+          (Math.random()-0.5)*eyeScale*3.5, 
+          (Math.random()-0.5)*eyeScale*1 + eyeScale*0.5
         );
     }
     mistGeo.setAttribute('position', new THREE.Float32BufferAttribute(mistPts, 3));
     const mistMat = new THREE.PointsMaterial({
-        size: 4.5 * eyeScale,
+        size: 5 * eyeScale,
         map: mistTex,
         transparent: true,
-        opacity: 0.7,
+        opacity: 0.6,
         depthWrite: false,
         blending: THREE.AdditiveBlending
     });
@@ -1334,11 +1293,15 @@ function triggerHorror() {
     setHeartbeatVolume(1.2);
   }, 26000);
   
-  // Phase 6: jupiter becomes eye
+  // Phase 6: jupiter becomes eye (第50秒触发)
   setTimeout(() => {
     HORROR.phase = 6;
     horrorMsg('【 眼球成形 】木星坐標突變');
+    
+    // 隐藏其他干扰视线的星环和文字
     eclRingG.visible=false; eqRingG.visible=false; manG.visible=false; houseG.visible=false;
+    
+    // 抹杀其他星体（被吸干了）
     PCONF.forEach(pc => {
       if(pc.id!=='jupiter') {
         if(pMesh[pc.id]) pMesh[pc.id].visible=false;
@@ -1347,11 +1310,21 @@ function triggerHorror() {
       }
     });
     
+    // 讓所有供養完畢的血管瞬間枯萎、發黑
+    veinLines.forEach(v => {
+        if(v.line && v.line.material) {
+            v.line.material.color = new THREE.Color(0x110000); 
+            v.line.material.opacity = 0.15; 
+        }
+    });
+
+    // 獻祭完成，載入 3D 巨型圖片眼球！
     const jupPos = pMesh['jupiter'] ? pMesh['jupiter'].position.clone() : new THREE.Vector3(26,0,0);
-    buildJupiterEye(jupPos);
-    pMesh['jupiter'].visible=false;
-    jupEyeG.visible=true;
+    buildJupiterEye(jupPos); 
+    pMesh['jupiter'].visible=false; 
+    jupEyeG.visible=true; 
     
+    // 屏幕中央浮现血字
     const cap = document.getElementById('eye-caption');
     if(cap){cap.textContent='它在看著你'; cap.style.opacity='1'; cap.style.top='55%';}
     setHeartbeatVolume(1.8);
@@ -1506,33 +1479,28 @@ function updateHorror(dt, t) {
     jupEyeMeshes.forEach((m, idx) => {
       if (m.isLine) return;
       
-      const target = camera.position.clone();
-      target.x += Math.sin(t * 12) * 3;
-      target.y += Math.cos(t * 15) * 3;
-      m.lookAt(target);
-
-      // 肉塊与眼皮蠕動
-      if (idx === 0 || idx === 2 || idx === 3) { 
-          m.scale.set(
-              1.0 + 0.05 * Math.sin(t * 8 + idx),
-              0.95 + 0.05 * Math.cos(t * 7 + idx),
-              1.02 + 0.05 * Math.sin(t * 9)
-          );
-      }
-      // 瞳孔縮放 (竖瞳心跳收缩)
-      if (idx === 5) { 
-          const dilate = 0.18 + 0.05 * Math.sin(t * 5);
-          m.scale.set(dilate, 1.4, 1); 
-      }
+      // 讓這顆 3D 巨眼在宇宙中緩慢、神經質地四處轉動掃視
+      m.rotation.x = Math.sin(t * 1.2) * 0.15;
+      m.rotation.y += dt * 0.15 + Math.sin(t * 3.5) * 0.005; 
+      
+      // 呼吸般的肉塊蠕動與心跳收縮
+      m.scale.set(
+          1.0 + 0.03 * Math.sin(t * 6),
+          0.97 + 0.03 * Math.cos(t * 5),
+          1.0 + 0.02 * Math.sin(t * 7)
+      );
     });
 
     if (eyeMistG) {
-        eyeMistG.rotation.z += dt * 0.5; // 血雾缓缓旋转
+        eyeMistG.rotation.z += dt * 0.4; // 血霧緩緩旋轉
     }
 
-    const eyePulse = 1 + 0.12 * heartBeat;
+    const eyePulse = 1 + 0.15 * heartBeat;
     jupEyeG.scale.setScalar(eyePulse);
-    horrorPointLight.intensity = 4 + 8 * heartBeat;
+    
+    // 增強打在眼球表面的高光，凸顯濕潤感
+    horrorPointLight.position.copy(camera.position); 
+    horrorPointLight.intensity = 8 + 12 * heartBeat;
   }
 
   HORROR.flashCooldown -= dt;
