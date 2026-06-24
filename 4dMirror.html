@@ -8,23 +8,42 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:#000;font-family:'Courier New',monospace;overflow:hidden}
-#mirror-overlay{position:fixed;inset:0;z-index:9999;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center}
-#mirror-canvas{border-radius:50%;border:3px solid #7c6a2a;box-shadow:0 0 40px #b8960088,0 0 80px #7c6a2a44;max-width:min(70vw,400px);max-height:min(70vw,400px);width:min(70vw,400px);height:min(70vw,400px)}
-.mirror-text{color:#8fbc8f;font-size:clamp(10px,2vw,13px);text-align:center;margin-top:16px;line-height:1.8;max-width:520px;padding:0 20px;letter-spacing:.05em}
-.mirror-text .cold{color:#546e7a;font-size:.9em}
-#mirror-btn{margin-top:24px;padding:10px 28px;background:none;border:1px solid #7c6a2a;color:#b8960088;font-family:'Courier New',monospace;font-size:13px;cursor:pointer;letter-spacing:.1em;transition:all .3s}
+
+/* 青冥镜全屏 */
+#mirror-overlay{position:fixed;inset:0;z-index:9999;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px}
+#mirror-wrap{position:relative;width:min(calc(100vw - 32px),calc(100vh - 160px));height:min(calc(100vw - 32px),calc(100vh - 160px));max-width:900px;max-height:900px}
+#mirror-canvas{width:100%;height:100%;border-radius:50%;border:4px solid #7c6a2a;box-shadow:0 0 60px #b8960088,0 0 120px #7c6a2a44,inset 0 0 40px #00000088}
+#mirror-video{position:absolute;inset:0;border-radius:50%;object-fit:cover;opacity:0;transition:opacity 1s}
+.mirror-text{color:#8fbc8f;font-size:clamp(11px,1.8vw,14px);text-align:center;margin-top:12px;line-height:1.8;max-width:600px;padding:0 16px;letter-spacing:.05em}
+.mirror-text .cold{color:#546e7a}
+#mirror-btn{margin-top:20px;padding:10px 32px;background:none;border:1px solid #7c6a2a;color:#b8960088;font-family:'Courier New',monospace;font-size:13px;cursor:pointer;letter-spacing:.1em;transition:all .3s}
 #mirror-btn:hover{border-color:#d4a017;color:#d4a017;box-shadow:0 0 12px #d4a01744}
+
+/* 教程 */
 #tutorial-overlay{position:fixed;inset:0;z-index:9998;background:#00000099;display:none;align-items:center;justify-content:center}
 #tutorial-box{background:#050d0f;border:1px solid #1a3a3a;border-radius:8px;padding:28px;max-width:480px;width:90%;color:#7fbfbf;font-size:12px;line-height:2}
 #tutorial-box h2{font-size:14px;color:#00ffff88;margin-bottom:12px;letter-spacing:.15em}
-#tutorial-box .key{color:#00ffcc;font-weight:bold}
+.key{color:#00ffcc;font-weight:bold}
 #tutorial-start{margin-top:18px;padding:8px 24px;background:none;border:1px solid #00ffcc44;color:#00ffcc88;font-family:'Courier New',monospace;font-size:12px;cursor:pointer;letter-spacing:.1em}
 #tutorial-start:hover{border-color:#00ffcc;color:#00ffcc}
+
+/* 主界面 */
 #app{display:none;width:100vw;height:100vh;position:relative}
 #map{width:100%;height:100%;background:#000}
-#hud{position:absolute;top:12px;right:12px;z-index:1000;background:#050d0fcc;border:1px solid #1a3a3a;border-radius:6px;padding:12px;width:clamp(180px,28vw,240px);font-size:11px;color:#546e7a}
-#hud h4{font-size:11px;color:#00ffcc88;margin-bottom:8px;letter-spacing:.1em}
-#nine-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;margin-top:6px}
+
+/* 侧边工具栏 */
+#sidebar{position:absolute;top:0;right:0;z-index:1000;background:#050d0fdd;border-left:1px solid #1a3a3a;height:100%;width:clamp(200px,26vw,260px);display:flex;flex-direction:column;padding:12px;gap:8px;overflow-y:auto}
+#sidebar h4{font-size:11px;color:#00ffcc88;letter-spacing:.1em;margin-bottom:2px}
+.sec{background:#0a1a1a;border:1px solid #1a3a3a;border-radius:4px;padding:8px;font-size:11px;color:#546e7a}
+.sec label{font-size:10px;color:#2a5a5a;display:block;margin-bottom:3px}
+.sec input[type=range]{width:100%;accent-color:#00ffcc;margin:3px 0}
+.sec input[type=datetime-local]{width:100%;background:#050d0f;border:1px solid #1a3a3a;color:#7fbfbf;font-size:10px;padding:3px;border-radius:3px;font-family:'Courier New',monospace}
+.sec select{width:100%;background:#050d0f;border:1px solid #1a3a3a;color:#7fbfbf;font-size:10px;padding:3px;border-radius:3px;font-family:'Courier New',monospace}
+.sec-val{font-size:10px;color:#2a6a6a;line-height:1.7;margin-top:3px}
+.apply-btn{width:100%;padding:5px;background:none;border:1px solid #00ffcc44;color:#00ffcc88;font-family:'Courier New',monospace;font-size:10px;cursor:pointer;border-radius:3px;margin-top:4px}
+.apply-btn:hover{border-color:#00ffcc;color:#00ffcc}
+hr.dim{border:none;border-top:1px solid #1a3a3a}
+#nine-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;margin-top:4px}
 .gong{padding:4px 2px;border-radius:3px;font-size:9px;text-align:center;border:1px solid #1a3a3a;background:#050d0f;color:#546e7a;line-height:1.5}
 .gong .gn{font-size:10px;font-weight:bold}
 .gong .gm{font-size:8px}
@@ -32,41 +51,89 @@ body{background:#000;font-family:'Courier New',monospace;overflow:hidden}
 .gong.live{border-color:#00ffcc44;color:#00ffcc}
 .gong.conflict{border-color:#fff;color:#fff;background:#ffffff22;animation:flicker .3s infinite}
 @keyframes flicker{0%,100%{opacity:1}50%{opacity:.4}}
-#notify{display:none;position:absolute;bottom:16px;left:50%;transform:translateX(-50%);background:#050d0fee;border:1px solid #7c6a2a;border-radius:6px;padding:10px 16px;font-size:11px;color:#b8960088;z-index:1000;text-align:center;white-space:nowrap}
+
+#notify{display:none;position:absolute;bottom:16px;left:calc(50% - 130px);background:#050d0fee;border:1px solid #7c6a2a;border-radius:6px;padding:10px 16px;font-size:11px;color:#b8960088;z-index:1000;text-align:center;white-space:nowrap}
 #notify button{margin:6px 4px 0;padding:3px 10px;font-size:10px;border:1px solid #7c6a2a44;border-radius:3px;background:none;color:#b8960088;cursor:pointer}
 #notify button:hover{border-color:#d4a017;color:#d4a017}
-#layer-info{position:absolute;bottom:16px;right:12px;z-index:1000;font-size:9px;color:#1a3a3a;line-height:1.8}
 </style>
 </head>
 <body>
 
+<!-- 青冥镜 -->
 <div id="mirror-overlay">
-  <canvas id="mirror-canvas" width="400" height="400"></canvas>
+  <div id="mirror-wrap">
+    <canvas id="mirror-canvas" width="800" height="800"></canvas>
+    <video id="mirror-video" autoplay playsinline muted></video>
+  </div>
   <div class="mirror-text">
     <span class="cold">[ 引擎协议握手成功 ]<br>已通过阵列锁定当前观测者的物理终端。<br>请勿移开视线。</span>
   </div>
-  <div class="mirror-text" style="margin-top:12px">您已是高维生物<br>是否开启四维观测视角？</div>
+  <div class="mirror-text" style="margin-top:8px">您已是高维生物<br>是否开启四维观测视角？</div>
   <button id="mirror-btn">▶ 开启四维观测</button>
 </div>
 
+<!-- 教程 -->
 <div id="tutorial-overlay">
   <div id="tutorial-box">
     <h2>[ 四维观测系统 · 操作协议 ]</h2>
     <div><span class="key">L1</span> 拓扑基底 — 三维地理空间承载面，静态</div>
     <div><span class="key">L2</span> 死盘锚点 — 2007-06-11 11:02 灾难快照，铜红色</div>
-    <div><span class="key">L3</span> 活盘变量 — 实时高维场，青色荧光，与L2产生差值</div>
-    <div style="margin-top:8px;color:#546e7a">当L2与L3某宫位数据完全吻合时<br>像素叠加产生<span style="color:#fff">纯白刺芒</span>——星门伏吟，系统熔毁</div>
-    <div style="margin-top:8px;color:#546e7a">右上角 <span class="key">九宫面板</span> 显示实时宫位状态<br>时辰更替时系统将提示是否刷新活盘</div>
+    <div><span class="key">L3</span> 活盘变量 — 实时高维场，青色荧光</div>
+    <div style="margin-top:8px;color:#546e7a">L2与L3宫位吻合时产生<span style="color:#fff">纯白刺芒</span>——星门伏吟</div>
+    <div style="margin-top:6px;color:#546e7a">右侧面板可手动调整<span class="key">排盘时间</span>与<span class="key">局数</span></div>
     <button id="tutorial-start">[ 进入观测 ]</button>
   </div>
 </div>
 
+<!-- 主界面 -->
 <div id="app">
   <div id="map"></div>
-  <div id="hud">
-    <h4>奇门观测 · 实时</h4>
-    <div id="hud-dead" style="font-size:10px;color:#cd5c5c88;margin-bottom:4px">L2死盘：计算中...</div>
-    <div id="hud-live" style="font-size:10px;color:#00ffcc88">L3活盘：读取中...</div>
+  <div id="sidebar">
+    <h4>未济 · 四维观测</h4>
+
+    <!-- L2死盘控制 -->
+    <div class="sec">
+      <label>L2 死盘时间（锁定）</label>
+      <input type="datetime-local" id="dead-time" value="2007-06-11T11:00"/>
+      <label style="margin-top:6px">遁局手动覆盖</label>
+      <select id="dead-ju-override">
+        <option value="auto">自动推算</option>
+        <option value="1">阳遁一局</option><option value="2">阳遁二局</option><option value="3">阳遁三局</option>
+        <option value="4">阳遁四局</option><option value="5">阳遁五局</option><option value="6">阳遁六局</option>
+        <option value="7">阳遁七局</option><option value="8">阳遁八局</option><option value="9">阳遁九局</option>
+        <option value="y1">阴遁一局</option><option value="y2">阴遁二局</option><option value="y3">阴遁三局</option>
+        <option value="y4">阴遁四局</option><option value="y5">阴遁五局</option><option value="y6">阴遁六局</option>
+        <option value="y7">阴遁七局</option><option value="y8">阴遁八局</option><option value="y9">阴遁九局</option>
+      </select>
+      <div class="sec-val" id="dead-info">计算中...</div>
+      <button class="apply-btn" id="apply-dead">应用死盘</button>
+    </div>
+
+    <hr class="dim"/>
+
+    <!-- L3活盘控制 -->
+    <div class="sec">
+      <label>L3 活盘时间</label>
+      <input type="datetime-local" id="live-time"/>
+      <button class="apply-btn" id="use-now-btn">使用当前时间</button>
+      <label style="margin-top:6px">遁局手动覆盖</label>
+      <select id="live-ju-override">
+        <option value="auto">自动推算</option>
+        <option value="1">阳遁一局</option><option value="2">阳遁二局</option><option value="3">阳遁三局</option>
+        <option value="4">阳遁四局</option><option value="5">阳遁五局</option><option value="6">阳遁六局</option>
+        <option value="7">阳遁七局</option><option value="8">阳遁八局</option><option value="9">阳遁九局</option>
+        <option value="y1">阴遁一局</option><option value="y2">阴遁二局</option><option value="y3">阴遁三局</option>
+        <option value="y4">阴遁四局</option><option value="y5">阴遁五局</option><option value="y6">阴遁六局</option>
+        <option value="y7">阴遁七局</option><option value="y8">阴遁八局</option><option value="y9">阴遁九局</option>
+      </select>
+      <div class="sec-val" id="live-info">读取中...</div>
+      <button class="apply-btn" id="apply-live">应用活盘</button>
+    </div>
+
+    <hr class="dim"/>
+
+    <!-- 九宫状态 -->
+    <div style="font-size:10px;color:#2a5a5a;margin-bottom:2px">九宫状态</div>
     <div id="nine-grid">
       <div class="gong" id="g4"><div class="gn">巽四</div><div class="gm">—</div></div>
       <div class="gong" id="g9"><div class="gn">离九</div><div class="gm">—</div></div>
@@ -78,54 +145,82 @@ body{background:#000;font-family:'Courier New',monospace;overflow:hidden}
       <div class="gong" id="g1"><div class="gn">坎一</div><div class="gm">—</div></div>
       <div class="gong" id="g6"><div class="gn">乾六</div><div class="gm">—</div></div>
     </div>
+    <div style="font-size:9px;color:#1a3a3a;margin-top:4px;line-height:1.8">
+      <span style="color:#7c3a3a88">■</span> L2死盘　<span style="color:#00ffcc88">■</span> L3活盘　<span style="color:#fff">■</span> 伏吟
+    </div>
   </div>
+
   <div id="notify">
     时辰已更，奇门局变。是否重新起局？
     <div><button id="btn-refresh">刷新起局</button><button id="btn-stay">保持当前</button></div>
   </div>
-  <div id="layer-info">L1·拓扑基底　L2·死盘2007　L3·活盘实时</div>
 </div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
+// ── 青冥镜 ──
 (function(){
   const canvas=document.getElementById('mirror-canvas');
   const ctx=canvas.getContext('2d');
-  const W=400,H=400;
-  let t=0;
+  const W=800,H=800;
+  let t=0,useCamera=false,snow=false;
+
+  // 请求摄像头
+  if(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia){
+    navigator.mediaDevices.getUserMedia({video:{facingMode:'user'}})
+      .then(stream=>{
+        const video=document.getElementById('mirror-video');
+        video.srcObject=stream;
+        video.style.opacity='.45';
+        useCamera=true;
+      })
+      .catch(()=>{snow=true;});
+  } else {snow=true;}
+
   function drawMirror(){
     ctx.clearRect(0,0,W,H);
-    const radGrad=ctx.createRadialGradient(W/2,H/2,0,W/2,H/2,W/2);
-    radGrad.addColorStop(0,'#0a1a1a');
-    radGrad.addColorStop(.7,'#050d0d');
-    radGrad.addColorStop(1,'#000');
-    ctx.fillStyle=radGrad;
-    ctx.beginPath();ctx.arc(W/2,H/2,W/2,0,Math.PI*2);ctx.fill();
-    const imgData=ctx.getImageData(0,0,W,H);
-    const d=imgData.data;
-    for(let i=0;i<d.length;i+=4){
-      const x=(i/4)%W,y=Math.floor((i/4)/W);
-      const dx=x-W/2,dy=y-H/2;
-      if(dx*dx+dy*dy>W*W/4) continue;
-      const n=Math.random();
-      if(n>.97){
-        const bright=Math.random()*180+40;
-        const hue=Math.random()>.5;
-        d[i]=hue?0:bright*.3;
-        d[i+1]=bright*.8;
-        d[i+2]=hue?bright:bright*.6;
-        d[i+3]=Math.random()*180+40;
+    ctx.save();
+    ctx.beginPath();ctx.arc(W/2,H/2,W/2-2,0,Math.PI*2);ctx.clip();
+
+    if(snow){
+      // 拒绝摄像头：雪花躁动
+      const imgData=ctx.createImageData(W,H);
+      const d=imgData.data;
+      for(let i=0;i<d.length;i+=4){
+        const v=Math.random()*255|0;
+        d[i]=v*.2;d[i+1]=v*.8;d[i+2]=v;d[i+3]=180;
       }
+      ctx.putImageData(imgData,0,0);
+    } else {
+      // 正常镜面底色
+      const rg=ctx.createRadialGradient(W/2,H/2,0,W/2,H/2,W/2);
+      rg.addColorStop(0,'#0a1a1a');rg.addColorStop(.7,'#050d0d');rg.addColorStop(1,'#000');
+      ctx.fillStyle=rg;ctx.fillRect(0,0,W,H);
+      // 噪点
+      const imgData=ctx.getImageData(0,0,W,H);
+      const d=imgData.data;
+      for(let i=0;i<d.length;i+=4){
+        if(Math.random()>.985){
+          const bright=Math.random()*160+40;
+          d[i]=0;d[i+1]=bright*.8;d[i+2]=bright;d[i+3]=Math.random()*140+40;
+        }
+      }
+      ctx.putImageData(imgData,0,0);
     }
-    ctx.putImageData(imgData,0,0);
-    for(let r=60;r<200;r+=40){
+
+    ctx.restore();
+
+    // 铜纹圆环
+    for(let r=80;r<W/2-10;r+=50){
       ctx.beginPath();ctx.arc(W/2,H/2,r,0,Math.PI*2);
-      ctx.strokeStyle=`rgba(124,106,42,${.15+Math.sin(t*.02+r*.1)*.08})`;
-      ctx.lineWidth=.8;ctx.stroke();
+      ctx.strokeStyle=`rgba(124,106,42,${.12+Math.sin(t*.02+r*.05)*.06})`;
+      ctx.lineWidth=1;ctx.stroke();
     }
-    const scanY=((t*1.5)%H);
-    ctx.fillStyle=`rgba(0,255,204,${.04+Math.sin(t*.05)*.02})`;
+    // 扫描线
+    const scanY=((t*1.2)%H);
+    ctx.fillStyle=`rgba(0,255,204,${.03+Math.sin(t*.04)*.015})`;
     ctx.fillRect(0,scanY,W,2);
+
     t++;requestAnimationFrame(drawMirror);
   }
   drawMirror();
@@ -141,7 +236,11 @@ document.getElementById('tutorial-start').onclick=()=>{
   initMap();
 };
 
-const CENTER=[30.2568,120.1228],LON=120.12,SPAN=0.010;
+// ── 奇门逻辑 ──
+const LON=120.12;
+// 南门区域中心，缩小到南门支巷范围
+const CENTER=[30.2558,120.1222];
+const SPAN=0.003; // 缩小九宫格范围，只覆盖南门巷道区域
 const NAMES={4:'巽',9:'离',2:'坤',3:'震',5:'中',7:'兑',8:'艮',1:'坎',6:'乾'};
 const SHI=['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
 const GONG_OFF={4:[SPAN,-SPAN],9:[SPAN,0],2:[SPAN,SPAN],3:[0,-SPAN],5:[0,0],7:[0,SPAN],8:[-SPAN,-SPAN],1:[-SPAN,0],6:[-SPAN,SPAN]};
@@ -157,13 +256,18 @@ const YJIDX=[1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,1,2];
 const YINJIDX=[9,8,7,6,5,4,3,2,1,9,8,7,6,5,4,3,2,1,9,8,9,8];
 
 function jqMs(y,i){const t=JIEQI[y]||JIEQI[2026];const j=t[i];return j?new Date(y,j[0]-1,j[1],j[2],j[3]).getTime():null;}
-function getJu(date){
+function getJuAuto(date){
   const y=date.getFullYear(),ts=date.getTime();
   const xz=jqMs(y,11);let yang=true;
   if(xz&&ts>=xz){const nd=jqMs(y,21);if(!nd||ts<nd)yang=false;}
   const tb=JIEQI[y]||JIEQI[2026];let ji=0,lm=0;
   for(let i=0;i<tb.length;i++){const ms=jqMs(y,i);if(ms&&ms<=ts&&ms>lm){lm=ms;ji=i;}}
   return{ju:(yang?YJIDX:YINJIDX)[ji],yang};
+}
+function parseJuOverride(val){
+  if(val==='auto') return null;
+  if(val.startsWith('y')) return{ju:parseInt(val.slice(1)),yang:false};
+  return{ju:parseInt(val),yang:true};
 }
 function trueSolar(d){return new Date(d.getTime()+(LON-120)*4*60000);}
 function shiIdx(d){return Math.floor(d.getHours()/2);}
@@ -180,14 +284,28 @@ function getStars(zfg){
   const o=[1,2,3,4,5,6,7,8,9];const si=o.indexOf(zfg);const r={};
   o.forEach((g,i)=>{r[g]=JSTARS[o[(si+i)%9]];});return r;
 }
+function fmtDate(d){
+  return `${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日 ${SHI[shiIdx(d)]}时`;
+}
 
 let map,deadLayers=[],liveLayers=[],curShi=-1,frozen=false;
+let deadDateObj=new Date(2007,5,11,11,0);
+let liveDateObj=new Date();
+
+// 初始化活盘时间输入
+function setNow(){
+  const now=new Date();
+  const local=new Date(now.getTime()-now.getTimezoneOffset()*60000);
+  document.getElementById('live-time').value=local.toISOString().slice(0,16);
+  liveDateObj=now;
+}
 
 function initMap(){
-  map=L.map('map',{zoomControl:true,attributionControl:false}).setView(CENTER,18);
+  setNow();
+  map=L.map('map',{zoomControl:true,attributionControl:false}).setView(CENTER,19);
   L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{maxZoom:20,subdomains:'abcd'}).addTo(map);
   drawL1();
-  curShi=update();
+  update();
   setInterval(()=>{
     if(frozen)return;
     const idx=shiIdx(trueSolar(new Date()));
@@ -196,58 +314,65 @@ function initMap(){
 }
 
 function drawL1(){
-  L.polyline([[30.2552,120.1170],[30.2552,120.1310]],{color:'#1a3a5a',weight:7,opacity:.9}).addTo(map);
-  L.marker([30.2553,120.1200],{icon:L.divIcon({html:'<div style="font-size:9px;color:#2a5a8a;white-space:nowrap">余杭塘路</div>',className:''})}).addTo(map);
-  L.polyline([[30.2610,120.1170],[30.2610,120.1310]],{color:'#1a3050',weight:4,opacity:.7}).addTo(map);
-  L.marker([30.2611,120.1185],{icon:L.divIcon({html:'<div style="font-size:9px;color:#1a4060;white-space:nowrap">遵义西路</div>',className:''})}).addTo(map);
-  L.polyline([[30.2552,120.1210],[30.2575,120.1210]],{color:'#0a2030',weight:3,opacity:.9}).addTo(map);
-  L.marker([30.2560,120.1205],{icon:L.divIcon({html:'<div style="font-size:9px;color:#1a4060;white-space:nowrap">未济巷</div>',className:''})}).addTo(map);
-  L.polyline([[30.2562,120.1210],[30.2562,120.1228]],{color:'#0a1a28',weight:2,opacity:.8,dashArray:'3 3'}).addTo(map);
-  L.marker([30.2564,120.1218],{icon:L.divIcon({html:'<div style="font-size:8px;color:#0a2030;white-space:nowrap">归墟里</div>',className:''})}).addTo(map);
-  L.polygon([[30.2555,120.1232],[30.2555,120.1250],[30.2558,120.1250],[30.2558,120.1232]],{color:'#0a2010',fillColor:'#0a1a10',fillOpacity:.6,weight:.5}).addTo(map);
-  L.polygon([[30.2563,120.1200],[30.2563,120.1209],[30.2570,120.1209],[30.2570,120.1200]],{color:'#0a2010',fillColor:'#0a1a10',fillOpacity:.6,weight:.5}).addTo(map);
-  [[[30.2557,120.1210],[30.2557,120.1215],[30.2561,120.1215],[30.2561,120.1210]],
-   [[30.2557,120.1216],[30.2557,120.1221],[30.2561,120.1221],[30.2561,120.1216]],
-   [[30.2557,120.1222],[30.2557,120.1227],[30.2561,120.1227],[30.2561,120.1222]],
-   [[30.2562,120.1210],[30.2562,120.1215],[30.2567,120.1215],[30.2567,120.1210]],
-   [[30.2562,120.1216],[30.2562,120.1221],[30.2567,120.1221],[30.2567,120.1216]]
+  // 余杭塘路
+  L.polyline([[30.2550,120.1170],[30.2550,120.1280]],{color:'#1a3a5a',weight:6,opacity:.9}).addTo(map);
+  L.marker([30.2551,120.1195],{icon:L.divIcon({html:'<div style="font-size:9px;color:#2a5a8a;white-space:nowrap">余杭塘路</div>',className:''})}).addTo(map);
+  // 未济巷
+  L.polyline([[30.2550,120.1205],[30.2572,120.1205]],{color:'#0a2030',weight:3}).addTo(map);
+  L.marker([30.2555,120.1200],{icon:L.divIcon({html:'<div style="font-size:9px;color:#1a4060;white-space:nowrap">未济巷</div>',className:''})}).addTo(map);
+  // 归墟里
+  L.polyline([[30.2560,120.1205],[30.2560,120.1228]],{color:'#0a1a28',weight:2,dashArray:'3 3'}).addTo(map);
+  L.marker([30.2562,120.1218],{icon:L.divIcon({html:'<div style="font-size:8px;color:#0a2030;white-space:nowrap">归墟里</div>',className:''})}).addTo(map);
+  // 绿化带
+  L.polygon([[30.2552,120.1230],[30.2552,120.1245],[30.2556,120.1245],[30.2556,120.1230]],{color:'#0a2010',fillColor:'#0a1a10',fillOpacity:.7,weight:.5}).addTo(map);
+  // 空置门面
+  [[[30.2555,120.1205],[30.2555,120.1210],[30.2559,120.1210],[30.2559,120.1205]],
+   [[30.2555,120.1211],[30.2555,120.1216],[30.2559,120.1216],[30.2559,120.1211]],
+   [[30.2555,120.1217],[30.2555,120.1222],[30.2559,120.1222],[30.2559,120.1217]],
+   [[30.2560,120.1205],[30.2560,120.1210],[30.2565,120.1210],[30.2565,120.1205]],
+   [[30.2560,120.1211],[30.2560,120.1216],[30.2565,120.1216],[30.2565,120.1211]]
   ].forEach(c=>{L.polygon(c,{color:'#1a3050',fillColor:'#050d18',fillOpacity:.9,weight:.8}).addTo(map);});
-  L.polygon([[30.2553,120.1225],[30.2553,120.1232],[30.2557,120.1232],[30.2557,120.1225]],
+  // 废弃仓库
+  L.polygon([[30.2551,120.1222],[30.2551,120.1229],[30.2555,120.1229],[30.2555,120.1222]],
     {color:'#2a4a6a',fillColor:'#0a1828',fillOpacity:.95,weight:1.2,dashArray:'4 3'}).addTo(map);
-  L.marker([30.2555,120.1228],{icon:L.divIcon({
+  L.marker([30.2553,120.1225],{icon:L.divIcon({
     html:'<div style="font-size:9px;color:#2a6a8a;white-space:nowrap;line-height:1.5">废弃仓库<br><span style="font-size:8px;color:#1a4a5a">未济·数据回收与硬件超度</span></div>',
     className:''
   })}).addTo(map);
-  [[30.2556,120.1210],[30.2560,120.1210],[30.2564,120.1210],[30.2568,120.1210]].forEach(p=>{
+  // 路灯
+  [[30.2554,120.1205],[30.2558,120.1205],[30.2562,120.1205],[30.2566,120.1205]].forEach(p=>{
     L.circleMarker(p,{radius:2,color:'#2a4a6a',fillColor:'#1a3a5a',fillOpacity:1,weight:1}).addTo(map);
   });
-  L.marker([30.2553,120.1236],{icon:L.divIcon({
+  // 南门
+  L.marker([30.2551,120.1236],{icon:L.divIcon({
     html:'<div style="font-size:10px;font-weight:bold;color:#2a6aaa;text-shadow:0 0 6px #00aaff44;white-space:nowrap">南江大学 · 南门</div>',
-    className:'',iconAnchor:[40,0]
+    className:'',iconAnchor:[50,0]
   })}).addTo(map);
 }
 
 function clearLayers(arr){arr.forEach(l=>map.removeLayer(l));arr.length=0;}
 
+function getJuForDate(date,overrideVal){
+  const ov=parseJuOverride(overrideVal);
+  if(ov) return ov;
+  return getJuAuto(trueSolar(date));
+}
+
 function update(){
-  const deadDate=new Date(2007,5,11,11,0);
-  const deadTrue=trueSolar(deadDate);
-  const deadJu=getJu(deadTrue);
-  const deadSi=shiIdx(deadTrue);
+  const deadJu=getJuForDate(deadDateObj,document.getElementById('dead-ju-override').value);
+  const deadSi=shiIdx(trueSolar(deadDateObj));
   const deadZF=zhiFu(deadJu.ju,deadJu.yang,deadSi);
   const deadMen=getBaMen(deadZF,deadJu.yang);
   const deadStars=getStars(deadZF);
 
-  const now=new Date();
-  const liveTrue=trueSolar(now);
-  const liveJu=getJu(liveTrue);
-  const liveSi=shiIdx(liveTrue);
+  const liveJu=getJuForDate(liveDateObj,document.getElementById('live-ju-override').value);
+  const liveSi=shiIdx(trueSolar(liveDateObj));
   const liveZF=zhiFu(liveJu.ju,liveJu.yang,liveSi);
   const liveMen=getBaMen(liveZF,liveJu.yang);
   const liveStars=getStars(liveZF);
 
-  document.getElementById('hud-dead').textContent=`L2死盘｜${deadJu.yang?'阳':'阴'}遁${deadJu.ju}局·${NAMES[deadZF]}${deadZF}宫`;
-  document.getElementById('hud-live').textContent=`L3活盘｜${liveJu.yang?'阳':'阴'}遁${liveJu.ju}局·${NAMES[liveZF]}${liveZF}宫·${SHI[liveSi]}时`;
+  document.getElementById('dead-info').textContent=`${fmtDate(deadDateObj)}\n${deadJu.yang?'阳':'阴'}遁${deadJu.ju}局 · 值符${NAMES[deadZF]}${deadZF}宫`;
+  document.getElementById('live-info').textContent=`${fmtDate(liveDateObj)}\n${liveJu.yang?'阳':'阴'}遁${liveJu.ju}局 · 值符${NAMES[liveZF]}${liveZF}宫`;
 
   clearLayers(deadLayers);clearLayers(liveLayers);
 
@@ -261,31 +386,28 @@ function update(){
       color:conflict?'#fff':'#7c3a3a',fillColor:'#3a0a0a',fillOpacity:.35,weight:conflict?2:1
     }).addTo(map);
     deadLayers.push(dr);
-
-    const dLabel=L.marker([lat+SPAN*.3,lng],{icon:L.divIcon({
-      html:`<div style="font-size:8px;color:${conflict?'#fff':'#cd5c5c88'};text-align:center;line-height:1.4">${ds||''}<br>${dm||''}</div>`,
-      className:'',iconAnchor:[20,8]
+    const dLbl=L.marker([lat+SPAN*.28,lng],{icon:L.divIcon({
+      html:`<div style="font-size:7px;color:${conflict?'#fff':'#cd5c5c88'};text-align:center;line-height:1.3">${ds||''}<br>${dm||''}</div>`,
+      className:'',iconAnchor:[16,6]
     })}).addTo(map);
-    deadLayers.push(dLabel);
+    deadLayers.push(dLbl);
 
-    const lr=L.rectangle([[lat-SPAN/2+.0002,lng-SPAN/2+.0002],[lat+SPAN/2-.0002,lng+SPAN/2-.0002]],{
+    const lr=L.rectangle([[lat-SPAN/2+.00005,lng-SPAN/2+.00005],[lat+SPAN/2-.00005,lng+SPAN/2-.00005]],{
       color:conflict?'#fff':'#00ffcc',fillColor:conflict?'#ffffff':'#00ffcc',
-      fillOpacity:conflict?.6:.2,weight:conflict?2.5:1,
-      dashArray:conflict?undefined:'2 2'
+      fillOpacity:conflict?.55:.18,weight:conflict?2.5:1,dashArray:conflict?undefined:'2 2'
     }).addTo(map);
     liveLayers.push(lr);
-
-    const lLabel=L.marker([lat-SPAN*.3,lng],{icon:L.divIcon({
-      html:`<div style="font-size:8px;color:${conflict?'#fff':'#00ffcc88'};text-align:center;line-height:1.4">${ls||''}<br>${lm||''}</div>`,
-      className:'',iconAnchor:[20,8]
+    const lLbl=L.marker([lat-SPAN*.28,lng],{icon:L.divIcon({
+      html:`<div style="font-size:7px;color:${conflict?'#fff':'#00ffcc88'};text-align:center;line-height:1.3">${ls||''}<br>${lm||''}</div>`,
+      className:'',iconAnchor:[16,6]
     })}).addTo(map);
-    liveLayers.push(lLabel);
+    liveLayers.push(lLbl);
 
-    const gLabel=L.marker([lat,lng],{icon:L.divIcon({
-      html:`<div style="font-size:10px;font-weight:bold;color:${conflict?'#fff':'#546e7a'};text-shadow:${conflict?'0 0 8px #fff,0 0 16px #fff':'0 0 4px #000'}">${NAMES[pos]}${pos}</div>`,
-      className:'',iconAnchor:[10,10]
+    const gLbl=L.marker([lat,lng],{icon:L.divIcon({
+      html:`<div style="font-size:9px;font-weight:bold;color:${conflict?'#fff':'#546e7a'};text-shadow:${conflict?'0 0 8px #fff':'0 0 3px #000'}">${NAMES[pos]}${pos}</div>`,
+      className:'',iconAnchor:[9,9]
     })}).addTo(map);
-    liveLayers.push(gLabel);
+    liveLayers.push(gLbl);
 
     const el=document.getElementById('g'+pos);
     el.className='gong'+(conflict?' conflict':dm===deadMen[deadZF]?' dead':lm===liveMen[liveZF]?' live':'');
@@ -296,8 +418,25 @@ function update(){
   return liveSi;
 }
 
-document.getElementById('btn-refresh').onclick=()=>{frozen=false;curShi=update();document.getElementById('notify').style.display='none';};
-document.getElementById('btn-stay').onclick=()=>{frozen=true;document.getElementById('notify').style.display='none';};
+// 控件事件
+document.getElementById('use-now-btn').onclick=setNow;
+document.getElementById('apply-dead').onclick=()=>{
+  const v=document.getElementById('dead-time').value;
+  if(v) deadDateObj=new Date(v);
+  curShi=update();
+};
+document.getElementById('apply-live').onclick=()=>{
+  const v=document.getElementById('live-time').value;
+  if(v) liveDateObj=new Date(v);
+  curShi=update();
+};
+document.getElementById('btn-refresh').onclick=()=>{
+  frozen=false;setNow();curShi=update();
+  document.getElementById('notify').style.display='none';
+};
+document.getElementById('btn-stay').onclick=()=>{
+  frozen=true;document.getElementById('notify').style.display='none';
+};
 </script>
 </body>
 </html>
