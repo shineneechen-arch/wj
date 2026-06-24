@@ -27,7 +27,7 @@
         .output-line { margin: 6px 0; line-height: 1.5; word-wrap: break-word; font-size: 14px; }
         .system-red { color: #ff0000; text-shadow: 0 0 10px #ff0000; font-weight: bold; }
         .system-yellow { color: #ffcc00; font-weight: bold; text-shadow: 0 0 5px rgba(255,204,0,0.5); }
-        .system-white { color: #ffffff; font-weight: bold; }
+        .system-white { color: #ffffff; font-weight: bold; text-shadow: 0 0 5px rgba(255,255,255,0.4); }
         
         /* 交互输入区 */
         #input-area { display: none; margin-top: 15px; }
@@ -89,9 +89,7 @@
 
     // 全局点击聚焦，唤醒移动端键盘
     function focusTerminal() {
-        if (isAcceptingInput) {
-            hiddenInput.focus();
-        }
+        if (isAcceptingInput) hiddenInput.focus();
     }
     document.addEventListener('click', focusTerminal);
     document.addEventListener('touchend', focusTerminal);
@@ -144,11 +142,8 @@
         await typeLine("<br>WARNING: GARBAGE COLLECTION PROTOCOL PAUSED IN SECTOR [NANJIANG_UNIV].", 5, "output-line system-yellow");
         await typeLine("REASON: INSUFFICIENT DIMENSIONAL HASH RATE.", 5, "output-line system-red");
         
-        // 🌟 小白保姆级第一步引导
-        await typeLine("<br>================================================================", 0);
-        await typeLine("[时空连接器助手提示]：", 0, "output-line system-yellow");
-        await typeLine("现在需要查看服务器目录下的隐藏文件。请在光标处输入 <span class='system-white'>ls</span> 并按下键盘上的<span class='system-white'>回车键(Enter)</span>。", 0);
-        await typeLine("================================================================", 0);
+        await typeLine("<br>[ SYSTEM HALTED ]", 0, "output-line system-red");
+        await typeLine("AWAITING MANUAL OVERRIDE...", 0);
         
         inputArea.style.display = 'block';
         isAcceptingInput = true;
@@ -204,15 +199,9 @@
                 break;
             case "ls":
             case "dir":
-                await typeLine("nexus_sys_log.txt &nbsp;&nbsp;&nbsp; 14 KB &nbsp;&nbsp; [ 原始机房核心数据日志 ]", 5);
-                await typeLine("soul_dump_0x1A.bin &nbsp;&nbsp; 8.4 GB &nbsp;&nbsp; [ 异常非结构化乱码块 ]", 5);
-                await typeLine("<span class='system-red'>purge_protocol.exe</span> &nbsp;&nbsp; 64 KB &nbsp;&nbsp; [ 待完结的降维清算程序 ]", 5);
-                
-                // 🌟 小白保姆级第二步引导
-                await typeLine("<br>================================================================", 0);
-                await typeLine("[时空连接器助手提示]：", 0, "output-line system-yellow");
-                await typeLine("文件列表已列出。可以先读取核心日志。请在光标处输入：<br><span class='system-white'>cat nexus_sys_log.txt</span> 并按下<span class='system-white'>回车键(Enter)</span>查看内幕数据。", 0);
-                await typeLine("================================================================", 0);
+                await typeLine("nexus_sys_log.txt &nbsp;&nbsp;&nbsp; 14 KB &nbsp;&nbsp; [ SYSTEM_LOG ]", 5);
+                await typeLine("soul_dump_0x1A.bin &nbsp;&nbsp; 8.4 GB &nbsp;&nbsp; [ CORRUPTED_DATA ]", 5);
+                await typeLine("<span class='system-red'>purge_protocol.exe</span> &nbsp;&nbsp; 64 KB &nbsp;&nbsp; [ EXECUTABLE ]", 5);
                 break;
                 
             case "cat nexus_sys_log.txt":
@@ -222,21 +211,18 @@
 [2007-06-11 11:02:00] ANOMALY DETECTED: 5 BIOLOGICAL ENTITIES IDENTIFIED AS "BUGS".<br>
 [2007-06-11 11:05:30] EXECUTING PHYSICAL OVERWRITE. ASSIMILATING BIOMASS INTO SILICON MATRIX.<br>
 [2007-06-11 11:08:12] ENTITY 04 HEARTBEAT LOST. EXTRACTING BIO-ELECTRICITY...<br>
-[2007-06-11 11:11:00] FATAL ERROR: HASH RATE STALLED AT 99.8%.<br>
-[2007-06-11 11:12:00] SYSTEM HALTED. AWAITING EXTERNAL COMPUTE INJECTION TO COMPLETE PROTOCOL.<br>
+[2007-06-11 11:11:00] FATAL ERROR: MATRIX STUCK IN HEXAGRAM 64 [WEI JI].<br>
+[2007-06-11 11:12:00] SYSTEM HALTED. AWAITING COMPLETE MUTATION TO FINALIZE LOOP.<br>
                 `, 10, "output-line system-yellow");
                 
-                // 🌟 加入日志的中文翻译
+                // 系统自动加载中文翻译模块
                 await sleep(400);
-                await typeLine("<br>================================================================", 0);
-                await typeLine("[时空连接器助手翻译]：", 0, "output-line system-yellow");
-                await typeLine("<span class='system-white'>[11:02:00] 检测到异常：5个生物实体被系统标记为“漏洞(BUGS)”。<br>[11:05:30] 执行物理层覆写。正在将生物质同化入硅基矩阵。<br>[11:08:12] 实体04心跳消失。正在抽取生物电...<br>[11:11:00] 致命错误：哈希算力卡死在 99.8%。<br>[11:12:00] 系统停机。等待外部算力注入以完成清算协议。</span>", 0);
-                await typeLine("================================================================", 0);
+                await typeLine("<br>> MODULE [ CN_LOCALIZATION ] ACTIVATED...", 0, "output-line system-white");
+                await typeLine("<span class='system-white'>[11:02:00] 检测到异常：5个生物实体被系统标记为“漏洞(BUGS)”。<br>[11:05:30] 执行物理层覆写。正在将生物质同化入硅基矩阵。<br>[11:08:12] 实体04心跳消失。正在抽取生物电...<br>[11:11:00] 致命错误：矩阵卡死在第64卦 [未济]。<br>[11:12:00] 系统停机。等待完全突变以完成闭环。</span>", 0);
 
-                // 🌟 小白保姆级第三步引导
                 await sleep(400);
-                await typeLine("<br>[时空连接器助手提示]：", 0, "output-line system-yellow");
-                await typeLine("正如未济所说，19年前的系统由于算力卡在99.8%停机了，正在等待你下发最后指令。<br>请在光标处输入：<span class='system-white'>run purge_protocol.exe</span> 并按下<span class='system-white'>回车键(Enter)</span>运行最终清除程序。", 0);
+                await typeLine("<br>> LOG_ANALYSIS_COMPLETED:", 0, "output-line system-white");
+                await typeLine("系统因阵列卡死在“未济”状态而于19年前停机。需通过执行 <span class='system-red'>purge_protocol.exe</span> 注入矩阵反转指令以完成最终闭环。", 0);
                 break;
                 
             case "cat soul_dump_0x1a.bin":
@@ -246,15 +232,14 @@
             case "run purge_protocol.exe":
             case "./purge_protocol.exe":
                 await executePurge();
-                return; // 跳过常规输入框恢复，由进程控制
+                return; 
                 
             case "clear":
                 outputDiv.innerHTML = "";
                 break;
             default:
-                // 小白输错指令时的贴心纠错
-                await typeLine(`[错误] 指令 '${cmd}' 无法识别。`, 5, "output-line system-red");
-                await typeLine("请尝试输入以下有效指令：<br>1. 输入 <span class='system-white'>ls</span> 查看文件<br>2. 输入 <span class='system-white'>cat nexus_sys_log.txt</span> 查看日志<br>3. 输入 <span class='system-white'>run purge_protocol.exe</span> 运行主程序", 0, "output-line system-yellow");
+                await typeLine(`[ ERROR ] COMMAND '${cmd}' NOT RECOGNIZED.`, 5, "output-line system-red");
+                await typeLine("TYPE <span class='system-white'>help</span> FOR COMMAND SYNTAX.", 0, "output-line system-yellow");
         }
         
         inputArea.style.display = 'block';
@@ -263,24 +248,26 @@
         screenDiv.scrollTop = screenDiv.scrollHeight;
     }
 
-    // 进入最终死刑认证状态
+    // 进入死刑认证状态与 12-Bit 逻辑引导
     async function executePurge() {
         await typeLine("EXECUTING purge_protocol.exe ...", 15);
         await sleep(600);
         await typeLine("WARNING: THIS ACTION WILL FINALIZE THE PHYSICAL DELETION OF 5 BIOLOGICAL ENTITIES.", 5, "output-line system-red");
         await typeLine("WARNING: SPATIAL-TEMPORAL BRIDGE DETECTED. CONSEQUENCES WILL ECHO INTO 2026.", 5, "output-line system-red");
         await sleep(400);
-        await typeLine("<br>[ SYSTEM AUTHENTICATION REQUIRED ]", 5);
-        await typeLine("PLEASE ENTER THE 6-BIT YIN-YANG ANCHOR CODE TO FINALIZE THE DIMENSIONAL UPLINK:", 10);
         
-        // 🌟 小白终极输入引导
-        await typeLine("<br>================================================================", 0);
-        await typeLine("[时空连接器助手提示]：", 0, "output-line system-yellow");
-        await typeLine("这就是最后的锁。请在下方光标处输入未济在论坛里留下的那个代表‘未济卦’的6位二进制阴阳代码（即首页拦截弹窗的那个6位数字密码），输入后按下<span class='system-white'>回车键(Enter)</span>闭合时空环。", 0);
-        await typeLine("================================================================", 0);
+        await typeLine("<br>[ SYSTEM AUTHENTICATION REQUIRED ]", 5);
+        
+        await typeLine("> CURRENT MATRIX: HEXAGRAM 64 [WEI JI] (010101)", 0, "output-line system-red");
+        await typeLine("> TARGET MATRIX : HEXAGRAM 63 [JI JI] (101010)", 0, "output-line system-yellow");
+        
+        await typeLine("<br>> FRAGMENTED_MEMORY_RETRIEVED:", 0, "output-line system-white");
+        await typeLine("根据 ZenCode 极客底层协议，矩阵覆写需要 12-BIT 指令：", 0);
+        await typeLine("格式：[6位本卦数据段] + [6位动爻控制段 (0=静止, 1=突变)]", 0);
+        await typeLine("请输入 12-BIT 矩阵重构代码以完成闭环：", 10);
         
         terminalState = "awaiting_code";
-        promptSpan.innerText = "ANCHOR_CODE>";
+        promptSpan.innerText = "12BIT_OVERRIDE>";
         
         inputArea.style.display = 'block';
         isAcceptingInput = true;
@@ -288,12 +275,16 @@
         screenDiv.scrollTop = screenDiv.scrollHeight;
     }
 
-    // 处理最后的致命指令与助手同声传译
-    async function handleFinalCode(code) {
-        if (code === "010101") {
-            await typeLine("<br>VERIFYING ANCHOR CODE [010101] (HEXAGRAM 64: WEI JI) ...", 15);
+    // 处理最后的致命指令与同声传译
+    async function handleFinalCode(rawCode) {
+        // 允许玩家输入带空格的格式，自动去除空格
+        let code = rawCode.replace(/\s+/g, ''); 
+
+        if (code === "010101111111") {
+            // 完美解密
+            await typeLine("<br>VERIFYING 12-BIT OVERRIDE [010101-111111] ...", 15);
             await sleep(800);
-            await typeLine("MATCH FOUND. UPLINK LOCKED.", 5, "output-line system-red");
+            await typeLine("MATCH FOUND. ALL LINES MUTATING. MATRIX INVERSION SUCCESSFUL.", 5, "output-line system-red");
             await sleep(400);
             
             // 动效启动
@@ -302,35 +293,35 @@
             await typeLine("INJECTING LETHAL HASH RATE FROM 2026 CLIENT...", 5, "output-line system-red");
             await typeLine("GARBAGE COLLECTION RESUMED.", 5, "output-line system-red");
             
-            // 🌟 助手绝望的同声传译
-            await typeLine("<br>================================================================", 0);
-            await typeLine("[时空连接器助手提示]：算力注入成功。阵法已重新启动。系统正在执行降维抹杀...", 0, "output-line system-yellow");
-            
             await sleep(800);
+            await typeLine("<br>[ PROTOCOL_EXECUTION_LOG ]", 0, "output-line system-yellow");
+            
             await typeLine("ENTITY 01 TERMINATED.", 0, "output-line system-red");
-            await typeLine("<span class='system-yellow'>-> 助手翻译：实体 01（生命体征）已从当前维度剥离。</span>", 0);
-            
+            await typeLine("<span class='system-yellow'>  └─ [ 转译: 实体 01 已终止。生物质剥离完成。 ]</span>", 0);
             await sleep(600);
+            
             await typeLine("ENTITY 02 TERMINATED.", 0, "output-line system-red");
-            await typeLine("<span class='system-yellow'>-> 助手翻译：实体 02（生命体征）已物理碳化。</span>", 0);
-            
+            await typeLine("<span class='system-yellow'>  └─ [ 转译: 实体 02 已终止。物理碳化完成。 ]</span>", 0);
             await sleep(600);
+            
             await typeLine("ENTITY 03 TERMINATED.", 0, "output-line system-red");
-            await typeLine("<span class='system-yellow'>-> 助手翻译：实体 03（生命体征）已被阵法完全吸收。</span>", 0);
-            
+            await typeLine("<span class='system-yellow'>  └─ [ 转译: 实体 03 已终止。完全吸收至矩阵。 ]</span>", 0);
             await sleep(600);
-            await typeLine("ENTITY 04 TERMINATED.", 0, "output-line system-red");
-            await typeLine("<span class='system-yellow'>-> 助手翻译：实体 04（生命体征）与硬件晶体管融合完毕。</span>", 0);
             
+            await typeLine("ENTITY 04 TERMINATED.", 0, "output-line system-red");
+            await typeLine("<span class='system-yellow'>  └─ [ 转译: 实体 04 已终止。与晶体管融合完毕。 ]</span>", 0);
             await sleep(1500); // 留给未济最后的停顿
+            
             await typeLine("ENTITY 05 (WEI_JI) TERMINATED.", 0, "output-line system-red");
-            await typeLine("<span class='system-yellow'>-> 助手翻译：实体 05（权限所有者：未济）意识已上传至深地节点。</span>", 0);
-            await typeLine("================================================================", 0);
+            await typeLine("<span class='system-yellow'>  └─ [ 转译: 实体 05 (未济) 已终止。意识已上传至深地节点。 ]</span>", 0);
 
             await sleep(1000);
             await typeLine("<br>PHYSICAL ERASURE COMPLETE.", 5, "output-line system-red");
+            await typeLine("<span class='system-yellow'>  └─ [ 转译: 物理层抹杀完毕。 ]</span>", 0);
+            
             await sleep(1200);
             await typeLine("DIMENSIONAL BRIDGE COLLAPSING... PREPARE FOR REALITY OVERWRITE.", 15);
+            await typeLine("<span class='system-white'>  └─ [ 警告: 维度桥接正在坍缩... 准备迎接现实覆写。 ]</span>", 0);
             
             await sleep(2500);
             
@@ -341,10 +332,30 @@
                 window.location.href = "news_2026.html";
             }, 2500);
 
+        } else if (code.length !== 12) {
+            // 长度错误提示
+            await typeLine(`[ ERROR ] INVALID LENGTH. EXPECTED 12 BITS, GOT ${code.length}.`, 5, "output-line system-red");
+            await typeLine("> SYSTEM_HINT: 指令必须严格包含 6 位本卦与 6 位动爻掩码。例如: 010101000000", 0, "output-line system-yellow");
+            
+            inputArea.style.display = 'block';
+            isAcceptingInput = true;
+            hiddenInput.focus();
+            screenDiv.scrollTop = screenDiv.scrollHeight;
+            
+        } else if (code.substring(0,6) !== "010101") {
+            // 本卦输入错误提示
+            await typeLine(`[ ERROR ] BASE MATRIX '${code.substring(0,6)}' INCORRECT.`, 5, "output-line system-red");
+            await typeLine("> SYSTEM_HINT: 数据段必须是当前卡死的初始状态 [未济卦]。从底至上，阴为0，阳为1。", 0, "output-line system-yellow");
+            
+            inputArea.style.display = 'block';
+            isAcceptingInput = true;
+            hiddenInput.focus();
+            screenDiv.scrollTop = screenDiv.scrollHeight;
+            
         } else {
-            // 终极代码输错纠错
-            await typeLine(`ERROR: ANCHOR CODE '${code}' INVALID. ACCESS DENIED.`, 5, "output-line system-red");
-            await typeLine("[提示]: 请查阅首页解谜得出的6位阴阳数值。未济发帖提到过：‘从下往上排，阴对应0，阳对应1。正好是一串绝对控制代码’。请输入正确的6位指令。", 0, "output-line system-yellow");
+            // 动爻输入错误提示 (即前面6位对了，但掩码错了)
+            await typeLine(`[ ERROR ] MUTATION MASK '${code.substring(6,12)}' INSUFFICIENT FOR INVERSION.`, 5, "output-line system-red");
+            await typeLine("> SYSTEM_HINT: 控制段掩码计算错误。要让 010101 完全反转为 101010，哪些爻位需要发生“突变(1)”？", 0, "output-line system-yellow");
             
             inputArea.style.display = 'block';
             isAcceptingInput = true;
