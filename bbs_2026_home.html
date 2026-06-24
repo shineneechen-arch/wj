@@ -485,6 +485,35 @@
     setInterval(updateTime, 1000);
     updateTime();
 
+    // ================= 访客权限拦截系统 (实体隔离协议) =================
+    // 立即执行函数 (IIFE)，不等待 window.onload，脚本加载到这里立刻挂载拦截器
+    (function bindClickInterceptor() {
+        // 第三个参数传入 { capture: true }，在事件向下传递的“捕获阶段”最高层直接拦截
+        document.addEventListener('click', function(e) {
+            const targetLink = e.target.closest('a');
+            if (!targetLink) return;
+
+            const href = targetLink.getAttribute('href');
+            // 如果是锚点或 JS 触发，放行
+            if (!href || href === '#' || href.startsWith('javascript:')) return;
+
+            const isGod = localStorage.getItem('god_perspective_unlocked') === 'true';
+            const isLogged = localStorage.getItem('njdx_bbs_override') === 'true';
+
+            // 只要没拿到任何权限，就拦截
+            if (!isLogged && !isGod) {
+                // 阻止页面跳转
+                e.preventDefault(); 
+                // 阻止事件继续向下传播或触发其他监听器，彻底物理隔离
+                e.stopPropagation();
+                e.stopImmediatePropagation();
+                
+                alert("【SYSTEM HALT：访问拒绝】\n\n访客权限不足。当前底层数据卷宗存在重度高维算力污染。\n为防止观测者发生精神熵增，请先通过 [控制面板] 完成物理实体覆盖与权限阵列验证。");
+                showLogin();
+            }
+        }, { capture: true }); // 开启事件捕获
+    })();
+
     // ================= 全局状态控制与【真·恐怖随机频闪】逻辑 =================
     const layer2026 = document.getElementById('layer-2026');
     const layer2007 = document.getElementById('layer-2007');
@@ -492,10 +521,8 @@
     let isGlitching = true;
     let flashTimeout;
 
-    // 当页面加载时，检查各种权限状态
+    // 当页面加载完毕时，只处理视觉状态和特效
     window.onload = function() {
-        bindClickInterceptor();
-
         const isGod = localStorage.getItem('god_perspective_unlocked') === 'true';
         const isLogged = localStorage.getItem('njdx_bbs_override') === 'true';
 
@@ -506,27 +533,6 @@
             triggerRandomGlitch();
         }
     };
-
-    // ================= 访客权限拦截系统 (实体隔离协议) =================
-    function bindClickInterceptor() {
-        document.addEventListener('click', function(e) {
-            const targetLink = e.target.closest('a');
-            if (!targetLink) return;
-
-            const href = targetLink.getAttribute('href');
-            if (!href || href === '#' || href.startsWith('javascript:')) return;
-
-            const isGod = localStorage.getItem('god_perspective_unlocked') === 'true';
-            const isLogged = localStorage.getItem('njdx_bbs_override') === 'true';
-
-            // 只要没拿到任何权限，就拦截
-            if (!isLogged && !isGod) {
-                e.preventDefault(); 
-                alert("【SYSTEM HALT：访问拒绝】\n\n访客权限不足。当前底层数据卷宗存在重度高维算力污染。\n为防止观测者发生精神熵增，请先通过 [控制面板] 完成物理实体覆盖与权限阵列验证。");
-                showLogin();
-            }
-        });
-    }
 
     // 随机频闪触发器 (极速闪烁一帧 2007 画面)
     function triggerRandomGlitch() {
