@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>未济 · 四维观测系统</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#000;font-family:'Courier New',monospace;overflow:hidden}
+#mirror-overlay{position:fixed;inset:0;z-index:9999;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center}
+#mirror-canvas{border-radius:50%;border:3px solid #7c6a2a;box-shadow:0 0 40px #b8960088,0 0 80px #7c6a2a44;max-width:min(70vw,400px);max-height:min(70vw,400px);width:min(70vw,400px);height:min(70vw,400px)}
+.mirror-text{color:#8fbc8f;font-size:clamp(10px,2vw,13px);text-align:center;margin-top:16px;line-height:1.8;max-width:520px;padding:0 20px;letter-spacing:.05em}
+.mirror-text .cold{color:#546e7a;font-size:.9em}
+#mirror-btn{margin-top:24px;padding:10px 28px;background:none;border:1px solid #7c6a2a;color:#b8960088;font-family:'Courier New',monospace;font-size:13px;cursor:pointer;letter-spacing:.1em;transition:all .3s}
+#mirror-btn:hover{border-color:#d4a017;color:#d4a017;box-shadow:0 0 12px #d4a01744}
+#tutorial-overlay{position:fixed;inset:0;z-index:9998;background:#00000099;display:none;align-items:center;justify-content:center}
+#tutorial-box{background:#050d0f;border:1px solid #1a3a3a;border-radius:8px;padding:28px;max-width:480px;width:90%;color:#7fbfbf;font-size:12px;line-height:2}
+#tutorial-box h2{font-size:14px;color:#00ffff88;margin-bottom:12px;letter-spacing:.15em}
+#tutorial-box .key{color:#00ffcc;font-weight:bold}
+#tutorial-start{margin-top:18px;padding:8px 24px;background:none;border:1px solid #00ffcc44;color:#00ffcc88;font-family:'Courier New',monospace;font-size:12px;cursor:pointer;letter-spacing:.1em}
+#tutorial-start:hover{border-color:#00ffcc;color:#00ffcc}
+#app{display:none;width:100vw;height:100vh;position:relative}
+#map{width:100%;height:100%;background:#000}
+#hud{position:absolute;top:12px;right:12px;z-index:1000;background:#050d0fcc;border:1px solid #1a3a3a;border-radius:6px;padding:12px;width:clamp(180px,28vw,240px);font-size:11px;color:#546e7a}
+#hud h4{font-size:11px;color:#00ffcc88;margin-bottom:8px;letter-spacing:.1em}
+#nine-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;margin-top:6px}
+.gong{padding:4px 2px;border-radius:3px;font-size:9px;text-align:center;border:1px solid #1a3a3a;background:#050d0f;color:#546e7a;line-height:1.5}
+.gong .gn{font-size:10px;font-weight:bold}
+.gong .gm{font-size:8px}
+.gong.dead{border-color:#7c3a3a88;color:#cd5c5c88}
+.gong.live{border-color:#00ffcc44;color:#00ffcc}
+.gong.conflict{border-color:#fff;color:#fff;background:#ffffff22;animation:flicker .3s infinite}
+@keyframes flicker{0%,100%{opacity:1}50%{opacity:.4}}
+#notify{display:none;position:absolute;bottom:16px;left:50%;transform:translateX(-50%);background:#050d0fee;border:1px solid #7c6a2a;border-radius:6px;padding:10px 16px;font-size:11px;color:#b8960088;z-index:1000;text-align:center;white-space:nowrap}
+#notify button{margin:6px 4px 0;padding:3px 10px;font-size:10px;border:1px solid #7c6a2a44;border-radius:3px;background:none;color:#b8960088;cursor:pointer}
+#notify button:hover{border-color:#d4a017;color:#d4a017}
+#layer-info{position:absolute;bottom:16px;right:12px;z-index:1000;font-size:9px;color:#1a3a3a;line-height:1.8}
+</style>
+</head>
+<body>
+
+<div id="mirror-overlay">
+  <canvas id="mirror-canvas" width="400" height="400"></canvas>
+  <div class="mirror-text">
+    <span class="cold">[ 引擎协议握手成功 ]<br>已通过阵列锁定当前观测者的物理终端。<br>请勿移开视线。</span>
+  </div>
+  <div class="mirror-text" style="margin-top:12px">您已是高维生物<br>是否开启四维观测视角？</div>
+  <button id="mirror-btn">▶ 开启四维观测</button>
+</div>
+
+<div id="tutorial-overlay">
+  <div id="tutorial-box">
+    <h2>[ 四维观测系统 · 操作协议 ]</h2>
+    <div><span class="key">L1</span> 拓扑基底 — 三维地理空间承载面，静态</div>
+    <div><span class="key">L2</span> 死盘锚点 — 2007-06-11 11:02 灾难快照，铜红色</div>
+    <div><span class="key">L3</span> 活盘变量 — 实时高维场，青色荧光，与L2产生差值</div>
+    <div style="margin-top:8px;color:#546e7a">当L2与L3某宫位数据完全吻合时<br>像素叠加产生<span style="color:#fff">纯白刺芒</span>——星门伏吟，系统熔毁</div>
+    <div style="margin-top:8px;color:#546e7a">右上角 <span class="key">九宫面板</span> 显示实时宫位状态<br>时辰更替时系统将提示是否刷新活盘</div>
+    <button id="tutorial-start">[ 进入观测 ]</button>
+  </div>
+</div>
+
+<div id="app">
+  <div id="map"></div>
+  <div id="hud">
+    <h4>奇门观测 · 实时</h4>
+    <div id="hud-dead" style="font-size:10px;color:#cd5c5c88;margin-bottom:4px">L2死盘：计算中...</div>
+    <div id="hud-live" style="font-size:10px;color:#00ffcc88">L3活盘：读取中...</div>
+    <div id="nine-grid">
+      <div class="gong" id="g4"><div class="gn">巽四</div><div class="gm">—</div></div>
+      <div class="gong" id="g9"><div class="gn">离九</div><div class="gm">—</div></div>
+      <div class="gong" id="g2"><div class="gn">坤二</div><div class="gm">—</div></div>
+      <div class="gong" id="g3"><div class="gn">震三</div><div class="gm">—</div></div>
+      <div class="gong" id="g5"><div class="gn">中五</div><div class="gm">—</div></div>
+      <div class="gong" id="g7"><div class="gn">兑七</div><div class="gm">—</div></div>
+      <div class="gong" id="g8"><div class="gn">艮八</div><div class="gm">—</div></div>
+      <div class="gong" id="g1"><div class="gn">坎一</div><div class="gm">—</div></div>
+      <div class="gong" id="g6"><div class="gn">乾六</div><div class="gm">—</div></div>
+    </div>
+  </div>
+  <div id="notify">
+    时辰已更，奇门局变。是否重新起局？
+    <div><button id="btn-refresh">刷新起局</button><button id="btn-stay">保持当前</button></div>
+  </div>
+  <div id="layer-info">L1·拓扑基底　L2·死盘2007　L3·活盘实时</div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+(function(){
+  const canvas=document.getElementById('mirror-canvas');
+  const ctx=canvas.getContext('2d');
+  const W=400,H=400;
+  let t=0;
+  function drawMirror(){
+    ctx.clearRect(0,0,W,H);
+    const radGrad=ctx.createRadialGradient(W/2,H/2,0,W/2,H/2,W/2);
+    radGrad.addColorStop(0,'#0a1a1a');
+    radGrad.addColorStop(.7,'#050d0d');
+    radGrad.addColorStop(1,'#000');
+    ctx.fillStyle=radGrad;
+    ctx.beginPath();ctx.arc(W/2,H/2,W/2,0,Math.PI*2);ctx.fill();
+    const imgData=ctx.getImageData(0,0,W,H);
+    const d=imgData.data;
+    for(let i=0;i<d.length;i+=4){
+      const x=(i/4)%W,y=Math.floor((i/4)/W);
+      const dx=x-W/2,dy=y-H/2;
+      if(dx*dx+dy*dy>W*W/4) continue;
+      const n=Math.random();
+      if(n>.97){
+        const bright=Math.random()*180+40;
+        const hue=Math.random()>.5;
+        d[i]=hue?0:bright*.3;
+        d[i+1]=bright*.8;
+        d[i+2]=hue?bright:bright*.6;
+        d[i+3]=Math.random()*180+40;
+      }
+    }
+    ctx.putImageData(imgData,0,0);
+    for(let r=60;r<200;r+=40){
+      ctx.beginPath();ctx.arc(W/2,H/2,r,0,Math.PI*2);
+      ctx.strokeStyle=`rgba(124,106,42,${.15+Math.sin(t*.02+r*.1)*.08})`;
+      ctx.lineWidth=.8;ctx.stroke();
+    }
+    const scanY=((t*1.5)%H);
+    ctx.fillStyle=`rgba(0,255,204,${.04+Math.sin(t*.05)*.02})`;
+    ctx.fillRect(0,scanY,W,2);
+    t++;requestAnimationFrame(drawMirror);
+  }
+  drawMirror();
+})();
+
+document.getElementById('mirror-btn').onclick=()=>{
+  document.getElementById('mirror-overlay').style.display='none';
+  document.getElementById('tutorial-overlay').style.display='flex';
+};
+document.getElementById('tutorial-start').onclick=()=>{
+  document.getElementById('tutorial-overlay').style.display='none';
+  document.getElementById('app').style.display='block';
+  initMap();
+};
+
+const CENTER=[30.2568,120.1228],LON=120.12,SPAN=0.010;
+const NAMES={4:'巽',9:'离',2:'坤',3:'震',5:'中',7:'兑',8:'艮',1:'坎',6:'乾'};
+const SHI=['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
+const GONG_OFF={4:[SPAN,-SPAN],9:[SPAN,0],2:[SPAN,SPAN],3:[0,-SPAN],5:[0,0],7:[0,SPAN],8:[-SPAN,-SPAN],1:[-SPAN,0],6:[-SPAN,SPAN]};
+const JSTARS={1:'天蓬',2:'天芮',3:'天冲',4:'天辅',5:'天禽',6:'天心',7:'天柱',8:'天任',9:'天英'};
+const BMYANG=['休','死','伤','杜','景','开','惊','生','景'];
+const BMYIN=['休','生','伤','杜','景','死','惊','开','景'];
+const MNJI={休:'吉',生:'吉',开:'吉',伤:'凶',杜:'平',景:'平',死:'凶',惊:'凶'};
+const JIEQI={
+  2007:[[1,20,16,1],[2,4,10,18],[2,19,6,8],[3,21,7,7],[4,5,11,4],[4,20,18,6],[5,6,4,19],[5,21,17,12],[6,6,8,18],[6,22,1,6],[7,7,18,30],[7,23,11,0],[8,8,2,30],[8,23,17,8],[9,8,5,18],[9,23,2,51],[10,8,21,1],[10,23,16,15],[11,7,12,24],[11,22,9,50],[12,7,18,13],[12,22,7,8]],
+  2026:[[1,20,9,44],[2,3,21,22],[2,18,17,1],[3,20,16,45],[4,4,21,48],[4,20,4,56],[5,5,15,8],[5,21,4,1],[6,5,19,7],[6,21,12,24],[7,7,5,30],[7,22,22,13],[8,7,11,23],[8,23,2,8],[9,7,14,17],[9,23,11,45],[10,8,6,1],[10,23,15,11],[11,7,9,12],[11,22,6,30],[12,7,12,18],[12,21,21,49]]
+};
+const YJIDX=[1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,1,2];
+const YINJIDX=[9,8,7,6,5,4,3,2,1,9,8,7,6,5,4,3,2,1,9,8,9,8];
+
+function jqMs(y,i){const t=JIEQI[y]||JIEQI[2026];const j=t[i];return j?new Date(y,j[0]-1,j[1],j[2],j[3]).getTime():null;}
+function getJu(date){
+  const y=date.getFullYear(),ts=date.getTime();
+  const xz=jqMs(y,11);let yang=true;
+  if(xz&&ts>=xz){const nd=jqMs(y,21);if(!nd||ts<nd)yang=false;}
+  const tb=JIEQI[y]||JIEQI[2026];let ji=0,lm=0;
+  for(let i=0;i<tb.length;i++){const ms=jqMs(y,i);if(ms&&ms<=ts&&ms>lm){lm=ms;ji=i;}}
+  return{ju:(yang?YJIDX:YINJIDX)[ji],yang};
+}
+function trueSolar(d){return new Date(d.getTime()+(LON-120)*4*60000);}
+function shiIdx(d){return Math.floor(d.getHours()/2);}
+function zhiFu(ju,yang,si){
+  if(yang){const o=[1,2,3,4,5,6,7,8,9];return o[(ju-1+si)%9];}
+  else{const o=[9,8,7,6,5,4,3,2,1];return o[(9-ju+si)%9];}
+}
+function getBaMen(zfg,yang){
+  const ma=yang?BMYANG:BMYIN;const o=[1,2,3,4,5,6,7,8,9];
+  const si=o.indexOf(zfg);const r={};
+  o.forEach((g,i)=>{r[g]=ma[(si+i)%9];});return r;
+}
+function getStars(zfg){
+  const o=[1,2,3,4,5,6,7,8,9];const si=o.indexOf(zfg);const r={};
+  o.forEach((g,i)=>{r[g]=JSTARS[o[(si+i)%9]];});return r;
+}
+
+let map,deadLayers=[],liveLayers=[],curShi=-1,frozen=false;
+
+function initMap(){
+  map=L.map('map',{zoomControl:true,attributionControl:false}).setView(CENTER,18);
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{maxZoom:20,subdomains:'abcd'}).addTo(map);
+  drawL1();
+  curShi=update();
+  setInterval(()=>{
+    if(frozen)return;
+    const idx=shiIdx(trueSolar(new Date()));
+    if(idx!==curShi){curShi=idx;document.getElementById('notify').style.display='block';}
+  },60000);
+}
+
+function drawL1(){
+  L.polyline([[30.2552,120.1170],[30.2552,120.1310]],{color:'#1a3a5a',weight:7,opacity:.9}).addTo(map);
+  L.marker([30.2553,120.1200],{icon:L.divIcon({html:'<div style="font-size:9px;color:#2a5a8a;white-space:nowrap">余杭塘路</div>',className:''})}).addTo(map);
+  L.polyline([[30.2610,120.1170],[30.2610,120.1310]],{color:'#1a3050',weight:4,opacity:.7}).addTo(map);
+  L.marker([30.2611,120.1185],{icon:L.divIcon({html:'<div style="font-size:9px;color:#1a4060;white-space:nowrap">遵义西路</div>',className:''})}).addTo(map);
+  L.polyline([[30.2552,120.1210],[30.2575,120.1210]],{color:'#0a2030',weight:3,opacity:.9}).addTo(map);
+  L.marker([30.2560,120.1205],{icon:L.divIcon({html:'<div style="font-size:9px;color:#1a4060;white-space:nowrap">未济巷</div>',className:''})}).addTo(map);
+  L.polyline([[30.2562,120.1210],[30.2562,120.1228]],{color:'#0a1a28',weight:2,opacity:.8,dashArray:'3 3'}).addTo(map);
+  L.marker([30.2564,120.1218],{icon:L.divIcon({html:'<div style="font-size:8px;color:#0a2030;white-space:nowrap">归墟里</div>',className:''})}).addTo(map);
+  L.polygon([[30.2555,120.1232],[30.2555,120.1250],[30.2558,120.1250],[30.2558,120.1232]],{color:'#0a2010',fillColor:'#0a1a10',fillOpacity:.6,weight:.5}).addTo(map);
+  L.polygon([[30.2563,120.1200],[30.2563,120.1209],[30.2570,120.1209],[30.2570,120.1200]],{color:'#0a2010',fillColor:'#0a1a10',fillOpacity:.6,weight:.5}).addTo(map);
+  [[[30.2557,120.1210],[30.2557,120.1215],[30.2561,120.1215],[30.2561,120.1210]],
+   [[30.2557,120.1216],[30.2557,120.1221],[30.2561,120.1221],[30.2561,120.1216]],
+   [[30.2557,120.1222],[30.2557,120.1227],[30.2561,120.1227],[30.2561,120.1222]],
+   [[30.2562,120.1210],[30.2562,120.1215],[30.2567,120.1215],[30.2567,120.1210]],
+   [[30.2562,120.1216],[30.2562,120.1221],[30.2567,120.1221],[30.2567,120.1216]]
+  ].forEach(c=>{L.polygon(c,{color:'#1a3050',fillColor:'#050d18',fillOpacity:.9,weight:.8}).addTo(map);});
+  L.polygon([[30.2553,120.1225],[30.2553,120.1232],[30.2557,120.1232],[30.2557,120.1225]],
+    {color:'#2a4a6a',fillColor:'#0a1828',fillOpacity:.95,weight:1.2,dashArray:'4 3'}).addTo(map);
+  L.marker([30.2555,120.1228],{icon:L.divIcon({
+    html:'<div style="font-size:9px;color:#2a6a8a;white-space:nowrap;line-height:1.5">废弃仓库<br><span style="font-size:8px;color:#1a4a5a">未济·数据回收与硬件超度</span></div>',
+    className:''
+  })}).addTo(map);
+  [[30.2556,120.1210],[30.2560,120.1210],[30.2564,120.1210],[30.2568,120.1210]].forEach(p=>{
+    L.circleMarker(p,{radius:2,color:'#2a4a6a',fillColor:'#1a3a5a',fillOpacity:1,weight:1}).addTo(map);
+  });
+  L.marker([30.2553,120.1236],{icon:L.divIcon({
+    html:'<div style="font-size:10px;font-weight:bold;color:#2a6aaa;text-shadow:0 0 6px #00aaff44;white-space:nowrap">南江大学 · 南门</div>',
+    className:'',iconAnchor:[40,0]
+  })}).addTo(map);
+}
+
+function clearLayers(arr){arr.forEach(l=>map.removeLayer(l));arr.length=0;}
+
+function update(){
+  const deadDate=new Date(2007,5,11,11,0);
+  const deadTrue=trueSolar(deadDate);
+  const deadJu=getJu(deadTrue);
+  const deadSi=shiIdx(deadTrue);
+  const deadZF=zhiFu(deadJu.ju,deadJu.yang,deadSi);
+  const deadMen=getBaMen(deadZF,deadJu.yang);
+  const deadStars=getStars(deadZF);
+
+  const now=new Date();
+  const liveTrue=trueSolar(now);
+  const liveJu=getJu(liveTrue);
+  const liveSi=shiIdx(liveTrue);
+  const liveZF=zhiFu(liveJu.ju,liveJu.yang,liveSi);
+  const liveMen=getBaMen(liveZF,liveJu.yang);
+  const liveStars=getStars(liveZF);
+
+  document.getElementById('hud-dead').textContent=`L2死盘｜${deadJu.yang?'阳':'阴'}遁${deadJu.ju}局·${NAMES[deadZF]}${deadZF}宫`;
+  document.getElementById('hud-live').textContent=`L3活盘｜${liveJu.yang?'阳':'阴'}遁${liveJu.ju}局·${NAMES[liveZF]}${liveZF}宫·${SHI[liveSi]}时`;
+
+  clearLayers(deadLayers);clearLayers(liveLayers);
+
+  Object.entries(GONG_OFF).forEach(([pos,[dlat,dlng]])=>{
+    pos=parseInt(pos);
+    const lat=CENTER[0]+dlat,lng=CENTER[1]+dlng;
+    const dm=deadMen[pos],lm=liveMen[pos],ds=deadStars[pos],ls=liveStars[pos];
+    const conflict=dm===lm;
+
+    const dr=L.rectangle([[lat-SPAN/2,lng-SPAN/2],[lat+SPAN/2,lng+SPAN/2]],{
+      color:conflict?'#fff':'#7c3a3a',fillColor:'#3a0a0a',fillOpacity:.35,weight:conflict?2:1
+    }).addTo(map);
+    deadLayers.push(dr);
+
+    const dLabel=L.marker([lat+SPAN*.3,lng],{icon:L.divIcon({
+      html:`<div style="font-size:8px;color:${conflict?'#fff':'#cd5c5c88'};text-align:center;line-height:1.4">${ds||''}<br>${dm||''}</div>`,
+      className:'',iconAnchor:[20,8]
+    })}).addTo(map);
+    deadLayers.push(dLabel);
+
+    const lr=L.rectangle([[lat-SPAN/2+.0002,lng-SPAN/2+.0002],[lat+SPAN/2-.0002,lng+SPAN/2-.0002]],{
+      color:conflict?'#fff':'#00ffcc',fillColor:conflict?'#ffffff':'#00ffcc',
+      fillOpacity:conflict?.6:.2,weight:conflict?2.5:1,
+      dashArray:conflict?undefined:'2 2'
+    }).addTo(map);
+    liveLayers.push(lr);
+
+    const lLabel=L.marker([lat-SPAN*.3,lng],{icon:L.divIcon({
+      html:`<div style="font-size:8px;color:${conflict?'#fff':'#00ffcc88'};text-align:center;line-height:1.4">${ls||''}<br>${lm||''}</div>`,
+      className:'',iconAnchor:[20,8]
+    })}).addTo(map);
+    liveLayers.push(lLabel);
+
+    const gLabel=L.marker([lat,lng],{icon:L.divIcon({
+      html:`<div style="font-size:10px;font-weight:bold;color:${conflict?'#fff':'#546e7a'};text-shadow:${conflict?'0 0 8px #fff,0 0 16px #fff':'0 0 4px #000'}">${NAMES[pos]}${pos}</div>`,
+      className:'',iconAnchor:[10,10]
+    })}).addTo(map);
+    liveLayers.push(gLabel);
+
+    const el=document.getElementById('g'+pos);
+    el.className='gong'+(conflict?' conflict':dm===deadMen[deadZF]?' dead':lm===liveMen[liveZF]?' live':'');
+    el.querySelector('.gn').textContent=NAMES[pos]+pos;
+    el.querySelector('.gm').textContent=conflict?'⚠伏吟':(lm||'—')+(MNJI[lm]?'·'+MNJI[lm]:'');
+  });
+
+  return liveSi;
+}
+
+document.getElementById('btn-refresh').onclick=()=>{frozen=false;curShi=update();document.getElementById('notify').style.display='none';};
+document.getElementById('btn-stay').onclick=()=>{frozen=true;document.getElementById('notify').style.display='none';};
+</script>
+</body>
+</html>
