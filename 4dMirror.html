@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-<title>青冥鉴 · 四维拓扑观测终端</title>
+<title>青冥鉴 · 四维观测系统</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <style>
 /* ================= 基础与色彩重置 ================= */
@@ -16,13 +16,10 @@ body { background: #020304; font-family: 'Courier New', Consolas, monospace; ove
   --border-line: #1f2d3d;
   --text-main: #c5d4e8;
   --text-mute: #6c8299;
-  --color-l1: #ffb703; /* L1改为高亮亮色，用于框出南江大学 */
+  --color-l1: #ffb703; /* 南江大学边界高亮色 */
   --color-l2: #a33131;
   --color-l3: #00e5ff;
-  --color-conflict: #ffffff;
   --color-gold: #cda45a;
-  
-  --label-scale: 1; /* 地图字体动态缩放基准 */
 }
 
 /* ================= 1. 高精密宇宙背景与青冥鉴 ================= */
@@ -30,7 +27,6 @@ body { background: #020304; font-family: 'Courier New', Consolas, monospace; ove
   position: fixed; inset: 0; z-index: 9999; background: #000;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
 }
-
 #bg-stars { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
 
 #mirror-wrap { 
@@ -58,7 +54,6 @@ body { background: #020304; font-family: 'Courier New', Consolas, monospace; ove
 
 .mirror-text-container { margin-top: 5vmin; z-index: 10; text-align: center; }
 .mirror-text { color: #5a738a; font-size: clamp(12px, 3vmin, 14px); line-height: 2; letter-spacing: 0.15em; text-shadow: 0 0 5px #000; }
-.mirror-text .highlight { color: var(--color-gold); font-weight: bold; }
 
 #mirror-btn { 
   margin-top: 15px; padding: 12px 35px; background: rgba(5,10,15,0.8); 
@@ -76,22 +71,22 @@ body { background: #020304; font-family: 'Courier New', Consolas, monospace; ove
 #app { display: none; width: 100vw; height: 100vh; position: relative; }
 #map { position: absolute; inset: 0; background: #000; z-index: 1; }
 
-/* 北标仪 (North Indicator) */
+/* 北向指示器 */
 #north-indicator {
-  position: absolute; top: 30px; right: 320px; z-index: 1000;
+  position: absolute; top: 20px; right: 300px; z-index: 1000;
   display: flex; flex-direction: column; align-items: center;
-  pointer-events: none; opacity: 0.8;
+  pointer-events: none; opacity: 0.9;
 }
 .n-arrow {
   width: 0; height: 0;
-  border-left: 12px solid transparent; border-right: 12px solid transparent;
-  border-bottom: 35px solid var(--color-l1);
-  filter: drop-shadow(0 0 8px var(--color-l1));
-  margin-bottom: 5px;
+  border-left: 8px solid transparent; border-right: 8px solid transparent;
+  border-bottom: 25px solid var(--color-l1);
+  filter: drop-shadow(0 0 5px var(--color-l1));
+  margin-bottom: 3px;
 }
-.n-text { color: var(--color-l1); font-weight: bold; font-size: 24px; text-shadow: 0 0 10px var(--color-l1); }
+.n-text { color: var(--color-l1); font-weight: bold; font-size: 18px; text-shadow: 0 0 8px var(--color-l1); }
 
-/* 剧情引导弹窗 */
+/* 剧情弹窗 */
 #narrative-dialog {
   position: absolute; top: 20%; left: 50%; transform: translate(-50%, -50%);
   background: rgba(5,13,15,0.95); border: 1px solid var(--color-gold);
@@ -99,13 +94,13 @@ body { background: #020304; font-family: 'Courier New', Consolas, monospace; ove
   padding: 30px; text-align: center; color: var(--color-gold); z-index: 2000;
   border-radius: 4px; display: none; width: 85%; max-width: 450px; backdrop-filter: blur(10px);
 }
-#narrative-dialog p { font-size: 15px; line-height: 2; margin-bottom: 25px; letter-spacing: 0.1em; }
+#narrative-dialog p { font-size: 14px; line-height: 2; margin-bottom: 25px; letter-spacing: 0.1em; }
 #narrative-dialog button { 
     background: rgba(0,0,0,0.5); border: 1px solid var(--border-line); color: var(--text-mute); 
-    padding: 12px 30px; cursor: pointer; font-family: inherit; transition: 0.3s; 
-    border-radius: 3px; font-size: 15px;
+    padding: 10px 25px; cursor: pointer; font-family: inherit; transition: 0.3s; 
+    border-radius: 3px; font-size: 14px;
 }
-#narrative-dialog button:hover { border-color: #ff4d4d; box-shadow: 0 0 15px rgba(255, 77, 77, 0.2); }
+#narrative-dialog button:hover { border-color: #ff4d4d; box-shadow: 0 0 15px rgba(255, 77, 77, 0.2); color: #fff; }
 
 /* PS图层控制器 */
 #layer-panel {
@@ -131,7 +126,7 @@ body { background: #020304; font-family: 'Courier New', Consolas, monospace; ove
 .layer-name { flex: 1; margin-left: 10px; display: flex; flex-direction: column; }
 .layer-desc { font-size: 10px; color: var(--text-mute); margin-top: 2px; }
 
-/* 侧边栏 */
+/* 右侧控制栏 */
 #sidebar { 
   position: absolute; top: 0; right: 0; z-index: 1000; 
   background: rgba(9,14,18,0.95); border-left: 1px solid var(--border-line); 
@@ -146,25 +141,22 @@ h4 { font-size: 13px; color: #8fa6c0; border-left: 2px solid var(--color-l3); pa
 .apply-btn { width: 100%; padding: 10px; background: transparent; border: 1px solid #334455; color: #8fa6c0; font-family: inherit; font-size: 12px; cursor: pointer; transition: 0.2s; border-radius: 3px; margin-top: 5px; }
 .apply-btn:hover { border-color: var(--color-l3); color: var(--color-l3); background: rgba(0,229,255,0.05); }
 
-/* ================= 地图动态文字缩放控制 ================= */
-.map-label-l1 { 
-  font-family: 'Courier New', monospace; 
-  /* 核心：利用 CSS 变量根据 Zoom 层级进行动态缩放 */
-  font-size: calc(14px * var(--label-scale)) !important; 
-  color: #fff; background: rgba(10,20,30,0.8); 
-  border: 1px solid var(--border-line); border-radius: 4px; 
-  padding: calc(4px * var(--label-scale)) calc(8px * var(--label-scale)); 
-  white-space: nowrap; text-align: center; text-shadow: 0 0 5px #000; 
-  box-shadow: 0 0 10px rgba(0,0,0,0.8); transition: font-size 0.2s, padding 0.2s;
-}
-.map-label-l1.danger { border-color: #a33131; color: #ffcccc; background: rgba(40,10,10,0.9); }
-.map-label-l1.highlight-zone { border-color: var(--color-l1); color: var(--color-l1); background: rgba(0,0,0,0.9); }
+/* HUD九宫格 (保持传统视角：离上坎下) */
+#nine-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; margin-top: 5px; }
+.gong { padding: 8px 2px; border-radius: 3px; text-align: center; border: 1px solid #1a3a3a; background: #050d0f; color: #546e7a; cursor: pointer; transition: 0.2s; }
+.gong .gn { font-size: 12px; font-weight: bold; margin-bottom: 4px; }
+.gong .gm { font-size: 11px; }
+.gong.conflict { border-color: #fff; color: #fff; background: rgba(255,255,255,0.1); animation: flicker 0.5s infinite alternate; }
 
-/* 宫格内文字动态缩放 */
-.gong-label {
-  font-size: calc(14px * var(--label-scale));
-  font-weight: bold; text-align: center; white-space: nowrap; transition: 0.2s;
-}
+@keyframes flicker { from { box-shadow: 0 0 2px #fff inset; } to { box-shadow: 0 0 8px #fff inset; } }
+
+/* 宫位详情独立弹窗 */
+#gong-detail { display: none; position: absolute; z-index: 1001; background: rgba(5,13,15,0.95); border: 1px solid #1a3a3a; box-shadow: 0 0 20px rgba(0,0,0,0.8); border-radius: 6px; padding: 15px; min-width: 200px; color: #7fbfbf; line-height: 1.8; backdrop-filter: blur(5px); }
+#gong-detail h5 { font-size: 13px; color: #00ffcc; margin-bottom: 8px; border-bottom: 1px dashed #1a3a3a; padding-bottom: 5px; }
+#gong-detail .close-btn { position: absolute; top: 12px; right: 12px; background: none; border: none; color: #546e7a; cursor: pointer; font-size: 14px; }
+
+/* 地图文字标牌固定样式，防止缩放模糊 */
+.gong-label { font-family: inherit; font-size: 13px; font-weight: bold; text-align: center; white-space: nowrap; }
 
 /* 移动端适配 */
 @media (max-width: 768px) {
@@ -233,9 +225,9 @@ h4 { font-size: 13px; color: #8fa6c0; border-left: 2px solid var(--color-l3); pa
   </div>
 
   <div id="narrative-dialog">
-    <p>“你可以同时看见过去和未来。<br><br>现在，找到地图正南方的阵法锚点，<br>那个被锁死的<span style="color:#ff4d4d; font-weight:bold;">南门废弃仓库</span>。”</p>
+    <p>“你可以同时看见过去和未来。<br><br>现在，找到地图上的阵法锚点，<br>那个被死锁的<span style="color:#ff4d4d; font-weight:bold;">南门废弃仓库</span>。”</p>
     <button onclick="document.getElementById('narrative-dialog').style.display='none'">
-      [ <span style="font-size:16px;">👁</span> <span style="color:#ff4d4d; font-weight:bold;">观测</span> ]
+      [ 👁 <span style="color:#ff4d4d; font-weight:bold; padding-left: 4px;">观测</span> ]
     </button>
   </div>
 
@@ -251,8 +243,14 @@ h4 { font-size: 13px; color: #8fa6c0; border-left: 2px solid var(--color-l3); pa
     </div>
     <div class="layer-item layer-l1 active" id="btn-l1" onclick="toggleLayer('L1')">
       <div class="eye">👁</div>
-      <div class="layer-name">L1 拓扑基底<div class="layer-desc">南江大学物理地图</div></div>
+      <div class="layer-name">L1 拓扑基底<div class="layer-desc">南江大学物理坐标</div></div>
     </div>
+  </div>
+
+  <div id="gong-detail">
+    <button class="close-btn" id="close-detail">✕</button>
+    <h5 id="detail-title">宫位详情</h5>
+    <div id="detail-body"></div>
   </div>
 
   <div id="sidebar">
@@ -267,10 +265,24 @@ h4 { font-size: 13px; color: #8fa6c0; border-left: 2px solid var(--color-l3); pa
         <label>L3 活盘时间轴</label>
         <input type="datetime-local" id="live-time"/>
         <div style="display:flex; gap:8px;">
-            <button class="apply-btn" id="use-now-btn" style="margin-top:0;">系统时间</button>
+            <button class="apply-btn" id="use-now-btn" style="margin-top:0;">同步时间</button>
             <button class="apply-btn" id="apply-live" style="margin-top:0;">应用 L3</button>
         </div>
       </div>
+      
+      <h4 style="margin-top:5px;">HUD 高维监控矩阵</h4>
+      <div id="nine-grid">
+        <div class="gong" id="g4"><div class="gn">巽四</div><div class="gm">—</div></div>
+        <div class="gong" id="g9"><div class="gn">离九</div><div class="gm">—</div></div>
+        <div class="gong" id="g2"><div class="gn">坤二</div><div class="gm">—</div></div>
+        <div class="gong" id="g3"><div class="gn">震三</div><div class="gm">—</div></div>
+        <div class="gong" id="g5"><div class="gn">中五</div><div class="gm">—</div></div>
+        <div class="gong" id="g7"><div class="gn">兑七</div><div class="gm">—</div></div>
+        <div class="gong" id="g8"><div class="gn">艮八</div><div class="gm">—</div></div>
+        <div class="gong" id="g1"><div class="gn">坎一</div><div class="gm">—</div></div>
+        <div class="gong" id="g6"><div class="gn">乾六</div><div class="gm">—</div></div>
+      </div>
+      <div style="font-size:10px; color:var(--text-mute); text-align:center; margin-top:5px;">[ 提示: 离九宫在地理上映射为正南方 ]</div>
     </div>
   </div>
 </div>
@@ -390,44 +402,48 @@ document.getElementById('mirror-btn').onclick = () => {
   playCinematicExpand(() => {
     document.getElementById('app').style.display = 'block';
     if(!map) { initMap(); } else { map.invalidateSize(); }
-    setTimeout(() => { document.getElementById('narrative-dialog').style.display = 'block'; }, 800);
+    setTimeout(() => { document.getElementById('narrative-dialog').style.display = 'block'; }, 1000);
   });
 };
+
+document.getElementById('close-detail').onclick = () => { document.getElementById('gong-detail').style.display = 'none'; };
 
 // ================= 4. 严谨拓扑地理引擎重构 =================
 let map;
 let l1Group, l2Group, l3Group;
 
-const CENTER = [30.2558, 120.1222];
-const SPAN = 0.0018; 
+// 调整中心点与跨度，使得废弃仓库完美落入底部（南方）宫位
+const CENTER = [30.2568, 120.1222];
+const SPAN = 0.0015; 
 const NAMES = {1:'坎',8:'艮',3:'震',4:'巽',9:'离',2:'坤',7:'兑',6:'乾',5:'中'};
 
-// 严格遵循地图坐标系：Lat(北为正)，Lng(东为正)
+// 奇门方位与地理法则统一：坎一在北(Top)，离九在南(Bottom)。
 const GONG_OFF = {
-    1: [SPAN, 0],       // 坎北
-    8: [SPAN, SPAN],    // 艮东北
-    3: [0, SPAN],       // 震东
-    4: [-SPAN, SPAN],   // 巽东南
-    9: [-SPAN, 0],      // 离南 (物理南大门与废弃仓库)
-    2: [-SPAN, -SPAN],  // 坤西南
-    7: [0, -SPAN],      // 兑西
-    6: [SPAN, -SPAN],   // 乾西北
+    1: [SPAN, 0],       // 北 (+lat)
+    8: [SPAN, SPAN],    // 东北
+    3: [0, SPAN],       // 东
+    4: [-SPAN, SPAN],   // 东南
+    9: [-SPAN, 0],      // 南 (-lat) -> 南门与废弃仓库锚点
+    2: [-SPAN, -SPAN],  // 西南
+    7: [0, -SPAN],      // 西
+    6: [SPAN, -SPAN],   // 西北
     5: [0, 0]           // 中
 };
 
 const BMYANG=['休','死','伤','杜','景','开','惊','生','景'];
 const BMYIN=['休','生','伤','杜','景','死','惊','开','景'];
 
-// 高亮南江大学专属矩形框范围
+// 南江大学边界框 (用高亮色包含整个阵列)
 const campusBounds = [
-    [CENTER[0] + SPAN*1.6, CENTER[1] - SPAN*1.6],
-    [CENTER[0] + SPAN*1.6, CENTER[1] + SPAN*1.6],
-    [CENTER[0] - SPAN*1.6, CENTER[1] + SPAN*1.6],
-    [CENTER[0] - SPAN*1.6, CENTER[1] - SPAN*1.6]
+    [CENTER[0] + SPAN*1.8, CENTER[1] - SPAN*1.8],
+    [CENTER[0] + SPAN*1.8, CENTER[1] + SPAN*1.8],
+    [CENTER[0] - SPAN*1.8, CENTER[1] + SPAN*1.8],
+    [CENTER[0] - SPAN*1.8, CENTER[1] - SPAN*1.8]
 ];
 
 let layersState = { L1: true, L2: true, L3: true };
 
+// 简易历法推演
 function pseudoCalc(dateObj, isLive) {
     const h = dateObj.getHours(); const seed = dateObj.getDate() + (isLive ? h : 0);
     const zfg = [1,2,3,4,5,6,7,8,9][seed % 9]; const ma = isLive ? BMYIN : BMYANG;
@@ -450,14 +466,6 @@ function initMap() {
   map = L.map('map',{zoomControl:false, attributionControl:false}).setView(CENTER, 17);
   L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{maxZoom:20}).addTo(map);
   
-  // 绑定动态文字缩放事件 (核心修复)
-  map.on('zoom', function() {
-      const baseZoom = 17; 
-      const currentZoom = map.getZoom();
-      const scale = Math.pow(1.3, currentZoom - baseZoom);
-      document.documentElement.style.setProperty('--label-scale', scale);
-  });
-  
   l1Group = L.layerGroup().addTo(map);
   l2Group = L.layerGroup().addTo(map);
   l3Group = L.layerGroup().addTo(map);
@@ -466,42 +474,52 @@ function initMap() {
   updateL2L3();
 }
 
+function showGongDetail(pos){
+  const d = pseudoCalc(deadDateObj, false)[pos];
+  const l = pseudoCalc(liveDateObj, true)[pos];
+  const conflict = (d === l);
+  const detail = document.getElementById('gong-detail');
+  
+  if(window.innerWidth > 768) { detail.style.top = '20px'; detail.style.right = '320px'; detail.style.left = 'auto'; detail.style.bottom = 'auto'; }
+  document.getElementById('detail-title').textContent = `${NAMES[pos]}${pos}宫 参量比对`;
+  document.getElementById('detail-body').innerHTML = `
+    <div style="color:var(--color-l2);font-size:12px;margin-bottom:4px;">L2死盘: 门[${d}]</div>
+    <div style="color:var(--color-l3);font-size:12px;">L3活盘: 门[${l}]</div>
+    ${conflict ? `<div style="margin-top:10px;color:#fff;font-weight:bold;animation:flicker .5s infinite alternate;">⚠ 伏吟死锁</div>` : ''}
+  `;
+  detail.style.display = 'block';
+}
+
 function drawL1() {
   l1Group.clearLayers();
   
-  // 南江大学亮色发光边界
+  // 1. 南江大学亮色发光边界
   L.polygon(campusBounds, { 
-      color: 'var(--color-l1)', weight: 3, fillOpacity: 0.05, dashArray: '10 5', opacity: 1
+      color: 'var(--color-l1)', weight: 2, fillOpacity: 0, dashArray: '10 5'
   }).addTo(l1Group);
-
-  // 绘制校园内虚构的几座建筑拓扑蓝图 (增强现实感)
-  const buildings = [
-      [[CENTER[0]+0.0004, CENTER[1]-0.0006], [CENTER[0]+0.0009, CENTER[1]+0.0006]], // 主楼/图书馆
-      [[CENTER[0]+0.0002, CENTER[1]+0.0010], [CENTER[0]+0.0008, CENTER[1]+0.0013]], // 教学楼群
-      [[CENTER[0]-0.0005, CENTER[1]+0.0010], [CENTER[0]+0.0001, CENTER[1]+0.0013]], 
-      [[CENTER[0]+0.0010, CENTER[1]-0.0020], [CENTER[0]+0.0014, CENTER[1]-0.0015]], // 宿舍区
-      [[CENTER[0]+0.0010, CENTER[1]-0.0014], [CENTER[0]+0.0014, CENTER[1]-0.0009]],
-      [[CENTER[0]-0.0012, CENTER[1]-0.0022], [CENTER[0]+0.0002, CENTER[1]-0.0012]], // 操场区域
-      [[CENTER[0]-0.0010, CENTER[1]+0.0008], [CENTER[0]-0.0015, CENTER[1]+0.0015]], // 食堂
-      [[CENTER[0]-SPAN-0.0002, CENTER[1]-0.0004], [CENTER[0]-SPAN+0.0002, CENTER[1]+0.0004]] // 废弃仓库
-  ];
-
-  buildings.forEach(b => {
-      L.rectangle(b, {
-          color: 'var(--color-l1)', weight: 1, fillColor: 'var(--bg-panel)', fillOpacity: 0.6
-      }).addTo(l1Group);
-  });
   
-  // 中心阵眼
-  L.marker(CENTER, {icon: L.divIcon({
-    html: `<div class="map-label-l1 highlight-zone">南江大学核心阵眼</div>`,
-    className: '', iconAnchor: [60, 15]
+  // 2. 复刻废案原本地图的精确绘制逻辑
+  L.polyline([[30.2550,120.1170],[30.2550,120.1280]],{color:'#1a3a5a',weight:6,opacity:0.9}).addTo(l1Group);
+  L.marker([30.2551,120.1190],{icon:L.divIcon({html:'<div style="font-size:10px;color:#4a6b8c;white-space:nowrap">余杭塘路</div>',className:''})}).addTo(l1Group);
+  
+  L.polyline([[30.2550,120.1205],[30.2572,120.1205]],{color:'#0a2030',weight:3}).addTo(l1Group);
+  L.marker([30.2552,120.1200],{icon:L.divIcon({html:'<div style="font-size:10px;color:#4a6b8c;white-space:nowrap">未济巷</div>',className:''})}).addTo(l1Group);
+  
+  L.polyline([[30.2560,120.1205],[30.2560,120.1228]],{color:'#0a1a28',weight:2,dashArray:'3 3'}).addTo(l1Group);
+  L.marker([30.2562,120.1217],{icon:L.divIcon({html:'<div style="font-size:10px;color:#4a6b8c;white-space:nowrap">归墟里</div>',className:''})}).addTo(l1Group);
+  
+  // 仓库多边形 (精准落在 30.2553，完美符合下方宫位)
+  L.polygon([[30.2551,120.1221],[30.2551,120.1228],[30.2555,120.1228],[30.2555,120.1221]],
+    {color:'#2a4a6a',fillColor:'#0a1828',fillOpacity:.95,weight:1.2,dashArray:'4 3'}).addTo(l1Group);
+  
+  L.marker([30.2553,120.1224],{icon:L.divIcon({
+    html:`<div style="font-size:11px;font-family:monospace;color:#ffcccc;background:rgba(40,10,10,0.8);border:1px solid #a33131;padding:4px 8px;border-radius:4px;white-space:nowrap;text-align:center;">南门废弃仓库<br><span style="font-size:0.8em">未济·数据回收与硬件超度</span></div>`,
+    className:''
   })}).addTo(l1Group);
-
-  // 严格正南方 (离九宫区域) 的废弃仓库
-  L.marker([CENTER[0]-SPAN, CENTER[1]], {icon: L.divIcon({
-    html: `<div class="map-label-l1 danger">南门废弃仓库</div>`,
-    className: '', iconAnchor: [50, 15]
+  
+  L.marker([30.2551,120.1235],{icon:L.divIcon({
+    html:`<div style="font-size:13px;font-weight:bold;color:var(--color-l1);background:rgba(0,0,0,0.8);border:1px solid var(--color-l1);padding:4px 8px;border-radius:4px;white-space:nowrap;">南江大学 · 南大门</div>`,
+    className:'',iconAnchor:[50,0]
   })}).addTo(l1Group);
 }
 
@@ -520,23 +538,27 @@ function updateL2L3() {
 
     const bounds = [[lat-SPAN/2, lng-SPAN/2], [lat+SPAN/2, lng+SPAN/2]];
     
-    L.rectangle(bounds, {
-      color: conflict ? '#ffffff' : 'var(--color-l2)', 
-      fillOpacity: conflict ? 0.2 : 0, 
-      weight: conflict ? 2 : 1
-    }).addTo(l2Group);
+    const r2 = L.rectangle(bounds, { color: conflict ? '#ffffff' : 'var(--color-l2)', fillOpacity: conflict ? 0.2 : 0, weight: conflict ? 2 : 1 }).addTo(l2Group);
+    r2.on('click', () => showGongDetail(pos));
 
     if(!conflict) {
       const boundsL3 = [[lat-SPAN/2+0.0001, lng-SPAN/2+0.0001], [lat+SPAN/2-0.0001, lng+SPAN/2-0.0001]];
-      L.rectangle(boundsL3, {
-        color: 'var(--color-l3)', fillOpacity: 0, weight: 1.5, dashArray: '4 4'
-      }).addTo(l3Group);
+      const r3 = L.rectangle(boundsL3, { color: 'var(--color-l3)', fillOpacity: 0, weight: 1.5, dashArray: '4 4' }).addTo(l3Group);
+      r3.on('click', () => showGongDetail(pos));
     }
 
-    L.marker([lat, lng], {icon: L.divIcon({
-      html: `<div class="gong-label" style="color:${conflict?'#fff':'#6c8299'}; text-shadow:${conflict?'0 0 5px #fff':'0 0 2px #000'};">${NAMES[pos]}${pos}宫<br><span style="font-size:0.8em">${dm}</span></div>`,
+    // 宫格标记 (使用固定字号，解决缩放问题)
+    const m = L.marker([lat, lng], {icon: L.divIcon({
+      html: `<div class="gong-label" style="color:${conflict?'#fff':'#6c8299'}; text-shadow:${conflict?'0 0 5px #fff':'0 0 2px #000'};">${NAMES[pos]}${pos}宫<br><span style="font-size:0.8em;font-weight:normal;">${dm}</span></div>`,
       className: '', iconAnchor: [20, 20]
     })}).addTo(l2Group);
+    m.on('click', () => showGongDetail(pos));
+    
+    // 更新 HUD
+    const el = document.getElementById('g'+pos);
+    el.className = 'gong' + (conflict ? ' conflict' : '');
+    el.querySelector('.gm').innerHTML = conflict ? '伏吟' : `<span style="color:var(--color-l2)">${dm}</span> <span style="color:var(--color-l3)">${lm}</span>`;
+    el.onclick = () => showGongDetail(pos);
   });
 }
 
