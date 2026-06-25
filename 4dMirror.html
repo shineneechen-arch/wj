@@ -1114,15 +1114,15 @@ function getYuanByFutou(dayGanZhi) {
   const idx = jiaziIndex(dayGanZhi);
   if(idx < 0) return null;
   let futouIdx = idx;
-  while(futouIdx >= 0 && !['甲','己'].includes(JIA_ZI[futouIdx].slice(0, 1))) {
+  while(futouIdx >= 0 && JIA_ZI[futouIdx].slice(0, 1) !== '甲') {
     futouIdx -= 1;
   }
   if(futouIdx < 0) futouIdx += 60;
   const futou = JIA_ZI[futouIdx];
   const branch = futou.slice(1);
-  const yuanIndex = ['子','午','卯','酉'].includes(branch)
+  const yuanIndex = ['子','午'].includes(branch)
     ? 0
-    : (['寅','申','巳','亥'].includes(branch) ? 1 : 2);
+    : (['戌','辰'].includes(branch) ? 1 : 2);
   return { yuanIndex, futou };
 }
 
@@ -1212,8 +1212,17 @@ function isCorrectLiveJu() {
   return !!liveProfile && liveProfile.ok && document.getElementById('live-ju').value === liveProfile.juValue;
 }
 
+function hasSelectedLiveJu() {
+  return !!parseJuValue(document.getElementById('live-ju').value);
+}
+
+function isLivePanUsable() {
+  return !!livePan && hasSelectedLiveJu();
+}
+
 function getLiveDoorAt(pos) {
   if(!liveProfile || !livePan) updateLiveCalendarInfo();
+  if(!isLivePanUsable()) return '';
   return (livePan && livePan.byPalace && livePan.byPalace[pos] && livePan.byPalace[pos].door) || '';
 }
 
@@ -1238,13 +1247,6 @@ function ringIndexForPalace(palace) {
   return RING_ORDER.indexOf(palace === 5 ? 2 : palace);
 }
 
-function moveOnDoorRing(startPalace, offset, dun) {
-  const startIdx = ringIndexForPalace(startPalace);
-  if(startIdx < 0) return startPalace === 5 ? 2 : startPalace;
-  const step = dun === '阳遁' ? offset : -offset;
-  return RING_ORDER[(startIdx + step + RING_ORDER.length * 8) % RING_ORDER.length];
-}
-
 function buildRotatingLayer(homeMap, valuePalace, targetPalace, dun) {
   const forward = dun === '阳遁';
   const homeRing = RING_ORDER.map(p => homeMap[p]);
@@ -1256,6 +1258,24 @@ function buildRotatingLayer(homeMap, valuePalace, targetPalace, dun) {
   RING_ORDER.forEach((palace, i) => {
     const step = forward ? (i - targetIdx) : (targetIdx - i);
     layer[palace] = homeRing[(valueIdx + step + homeRing.length) % homeRing.length];
+  });
+  return layer;
+}
+
+function flyIndexForPalace(palace) {
+  return FLY_ORDER.indexOf(palace);
+}
+
+function buildFlyingLayer(homeMap, valuePalace, targetPalace, dun) {
+  const forward = dun === '阳遁';
+  const value = homeMap[valuePalace] || homeMap[5] || '';
+  const flyValues = FLY_ORDER.map(p => homeMap[p]);
+  const valueIdx = flyValues.indexOf(value);
+  const targetIdx = flyIndexForPalace(targetPalace);
+  const layer = {};
+  FLY_ORDER.forEach((palace, i) => {
+    const step = forward ? (i - targetIdx) : (targetIdx - i);
+    layer[palace] = flyValues[(valueIdx + step + flyValues.length) % flyValues.length];
   });
   return layer;
 }
@@ -1276,21 +1296,29 @@ function buildQimenPan(profile) {
   const hourGz = profile.bazi.hour || '甲子';
   const hourStem = hourGz.slice(0,1);
   const xun = getXunInfo(hourGz);
-  const valuePalace = ground[xun.instrument] || 1;
+  const valueFuPalace = ground[xun.instrument] || 1;
   const hourStemKey = hourStem === '甲' ? xun.instrument : hourStem;
-  const targetPalace = ground[hourStemKey] || valuePalace;
-  const doorTargetPalace = moveOnDoorRing(valuePalace, xun.offset, profile.dun);
-  const doors = buildRotatingLayer(DOOR_HOME, valuePalace, doorTargetPalace, profile.dun);
-  const stars = buildRotatingLayer(STAR_HOME, valuePalace, targetPalace, profile.dun);
-  const deities = buildDeityLayer(targetPalace, profile.dun);
+  const hourStemPalace = ground[hourStemKey] || valueFuPalace;
+  const doorTargetPalace = hourStemPalace === 5 ? 2 : hourStemPalace;
+  const doors = buildRotatingLayer(DOOR_HOME, valueFuPalace, doorTargetPalace, profile.dun);
+  const stars = buildFlyingLayer(STAR_HOME, valueFuPalace, valueFuPalace, profile.dun);
+  const deities = buildDeityLayer(valueFuPalace, profile.dun);
   const byPalace = {};
   QIMEN_ORDER.forEach(pos => {
     byPalace[pos] = { door: doors[pos] || '', star: stars[pos] || '', deity: deities[pos] || '', ground: '' };
   });
   Object.keys(ground).forEach(stem => { byPalace[ground[stem]].ground = stem; });
   const isDoorFuyin = RING_ORDER.every(pos => doors[pos] === DOOR_HOME[pos]);
-  const isStarFuyin = RING_ORDER.every(pos => stars[pos] === STAR_HOME[pos]);
-  return { doors, stars, deities, ground, byPalace, xun, valuePalace, targetPalace, doorTargetPalace, isFuyin: isDoorFuyin && isStarFuyin };
+  const isStarFuyin = FLY_ORDER.every(pos => stars[pos] === STAR_HOME[pos]);
+  return {
+    doors, stars, deities, ground, byPalace, xun,
+    valuePalace: valueFuPalace,
+    targetPalace: hourStemPalace,
+    valueFuPalace,
+    hourStemPalace,
+    doorTargetPalace,
+    isFuyin: isDoorFuyin && isStarFuyin
+  };
 }
 
 let deadDateObj = new Date(2007,5,11,11,2);
@@ -1493,7 +1521,7 @@ function updateDeadCalendarInfo() {
 function updateLiveCalendarInfo() {
   liveProfile = buildTimeProfile(liveDateObj);
   const selectedProfile = getSelectedLiveProfile();
-  livePan = buildQimenPan(selectedProfile || liveProfile);
+  livePan = selectedProfile ? buildQimenPan(selectedProfile) : null;
   const el = document.getElementById('live-calendar');
   const desc = document.getElementById('l3-layer-desc');
   const selectedJu = document.getElementById('live-ju').value;
@@ -1507,11 +1535,13 @@ function updateLiveCalendarInfo() {
       : (isCorrectLiveJu()
       ? `<span class="ok">[OK] ${selectedJu} 校验通过，L3 投影稳定。</span>`
       : `<span class="bad">[ERR] ${selectedJu} 与当前拆补定局不合，L3 投影进入漂移态。</span>`)));
-  const fuyinLine = livePan.isFuyin
-    ? `<span class="bad">[伏吟] ${selectedJu ? '活盘' : '临时影盘'}星门伏回本宫，行动被时间回声钉住。</span>`
-    : `<span class="ok">[活盘] 星门已随时干转动。</span>`;
-  const doorTraceLine = livePan.doorTargetPalace
-    ? `<span>[门盘] 值使门随时辰落 ${NAMES[livePan.doorTargetPalace]}${livePan.doorTargetPalace}宫。</span>`
+  const fuyinLine = livePan
+    ? (livePan.isFuyin
+      ? `<span class="bad">[伏吟] 活盘星门伏回本宫，行动被时间回声钉住。</span>`
+      : `<span class="ok">[活盘] 星门已随时干转动。</span>`)
+    : `<span class="warn">[活盘] 玩家尚未定局，门星投影保持遮蔽。</span>`;
+  const doorTraceLine = livePan && livePan.doorTargetPalace
+    ? `<span>[盘轴] 值符 ${NAMES[livePan.valueFuPalace]}${livePan.valueFuPalace}宫 / 时干 ${NAMES[livePan.hourStemPalace]}${livePan.hourStemPalace}宫 / 值使门 ${NAMES[livePan.doorTargetPalace]}${livePan.doorTargetPalace}宫。</span>`
     : '';
   if(desc) desc.innerHTML = selectedJu
     ? `<strong>${selectedJu}</strong><br>${isCorrectLiveJu() ? '校验通过' : '错局漂移'} / ${liveProfile.bazi.hour}时`
@@ -1531,8 +1561,9 @@ function updateLiveCalendarInfo() {
 function setNow() {
   const now = new Date();
   const local = new Date(now.getTime() - now.getTimezoneOffset()*60000);
-  document.getElementById('live-time').value = local.toISOString().slice(0,16);
-  liveDateObj = now;
+  const localValue = local.toISOString().slice(0,16);
+  document.getElementById('live-time').value = localValue;
+  liveDateObj = new Date(localValue);
   updateLiveCalendarInfo();
 }
 
@@ -1555,12 +1586,12 @@ function showGongDetail(pos){
   const pan = DEAD_PAN[pos];
   const panReady = isCorrectDeadJu();
   const d = panReady ? (pan.door || '中') : '未定';
-  if(!liveProfile || !livePan) updateLiveCalendarInfo();
+  if(!liveProfile) updateLiveCalendarInfo();
   const selectedLiveJu = document.getElementById('live-ju').value;
   const liveJuReady = !!selectedLiveJu;
   const liveJuCorrect = isCorrectLiveJu();
-  const live = livePan.byPalace[pos] || {};
-  const l = live.door || '—';
+  const live = isLivePanUsable() ? (livePan.byPalace[pos] || {}) : {};
+  const l = isLivePanUsable() ? (live.door || '—') : '—';
   const finalReady = isFinalFusionReady();
   const conflict = panReady && liveJuReady && liveJuCorrect && d !== '中' && (d === l);
   const finalLock = finalReady && pos === FUGITIVE_GONG;
@@ -1583,7 +1614,7 @@ function showGongDetail(pos){
         ${apiFusionStalled ? '这里的低电位与逃逸养料相连。让 L3 当前活盘在此处排出死门，即可读取未济_Admin 记忆日志。' : (warehouseRevealed ? '这里仍被 98.8% 死锁遮蔽。先批准艮八 API 降临。' : '此处记录被代理节点遮蔽。先处理艮八宫。')}
       </div>
     ` : ''}
-    ${livePan.isFuyin ? `<div style="margin-top:8px;color:#fff;font-size:11px;">活盘自伏吟：星门伏回本宫，行动趋于停滞。</div>` : ''}
+    ${isLivePanUsable() && livePan.isFuyin ? `<div style="margin-top:8px;color:#fff;font-size:11px;">活盘自伏吟：星门伏回本宫，行动趋于停滞。</div>` : ''}
     ${finalLock ? `<div style="margin-top:10px;color:#fff;font-weight:bold;animation:flicker .5s infinite alternate;">⚠ 坤二死门锁相：未济活体生物电已暴露</div>` : ''}
     ${conflict ? `<div style="margin-top:10px;color:#fff;font-weight:bold;animation:flicker .5s infinite alternate;">⚠ 双盘伏吟：L2 与 L3 同宫同门，形成死锁回声</div>` : ''}
   ` : `
@@ -1942,11 +1973,11 @@ function updateL2L3() {
   l2Group.clearLayers();
   l3Group.clearLayers();
 
-  if(!liveProfile || !livePan) updateLiveCalendarInfo();
+  if(!liveProfile) updateLiveCalendarInfo();
   const selectedLiveJu = document.getElementById('live-ju').value;
   const liveJuReady = !!selectedLiveJu;
   const liveJuCorrect = isCorrectLiveJu();
-  const liveMen = livePan.doors;
+  const liveMen = isLivePanUsable() ? livePan.doors : {};
   const panReady = isCorrectDeadJu();
   projectionConflictCount = 0;
 
@@ -1954,7 +1985,7 @@ function updateL2L3() {
     const pos = parseInt(posStr);
     const lat = CENTER[0] + dlat, lng = CENTER[1] + dlng;
     const pan = DEAD_PAN[pos];
-    const live = livePan.byPalace[pos] || {};
+    const live = isLivePanUsable() ? (livePan.byPalace[pos] || {}) : {};
     const dm = panReady ? (pan.door || '中') : '未定', lm = liveMen[pos] || '—';
     const finalLock = isFinalFusionReady() && pos === FUGITIVE_GONG;
     const conflict = finalLock || (panReady && liveJuReady && liveJuCorrect && dm !== '中' && (dm === lm));
