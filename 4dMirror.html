@@ -392,6 +392,7 @@ h4 { font-size: 13px; color: #8fa6c0; border-left: 2px solid var(--color-l3); pa
   border: 1px solid rgba(255,255,255,0.72); border-radius: 4px;
   background: rgba(0,0,0,0.9); padding: 18px;
   box-shadow: 0 0 46px rgba(255,0,0,0.55), inset 0 0 26px rgba(0,255,120,0.16);
+  pointer-events: auto;
 }
 .final-log {
   color: #d9ffe8; font-size: 13px; line-height: 1.75;
@@ -405,6 +406,8 @@ h4 { font-size: 13px; color: #8fa6c0; border-left: 2px solid var(--color-l3); pa
   border: 1px solid rgba(217,255,232,0.72); border-radius: 4px;
   background: rgba(0,22,14,0.86); color: #d9ffe8; font-size: 13px;
   box-shadow: 0 0 18px rgba(0,255,136,0.22), inset 0 0 12px rgba(0,255,136,0.14);
+  cursor: pointer;
+  pointer-events: auto;
 }
 .final-continue.active { display: block; }
 .final-title { font-size: 12px; line-height: 1.35; text-align: center; color: #ffcccc; text-shadow: 0 0 18px #ff0000; margin-top: 12px; display: none; }
@@ -1887,6 +1890,7 @@ function runFinalFusionSequence() {
         next.classList.add('active');
         next.onclick = () => {
           next.classList.remove('active');
+          next.onclick = null;
           if(window.confirm('记忆日志读取完成。\n\n是否允许未济使用你的 L3 参数闭合最后 1.2% 的电位差？')) {
             completeFinalFusion(log, bar, title);
           } else {
