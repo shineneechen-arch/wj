@@ -1115,15 +1115,15 @@ function getYuanByFutou(dayGanZhi) {
   const idx = jiaziIndex(dayGanZhi);
   if(idx < 0) return null;
   let futouIdx = idx;
-  while(futouIdx >= 0 && JIA_ZI[futouIdx].slice(0, 1) !== '甲') {
+  while(futouIdx >= 0 && !['甲','己'].includes(JIA_ZI[futouIdx].slice(0, 1))) {
     futouIdx -= 1;
   }
   if(futouIdx < 0) futouIdx += 60;
   const futou = JIA_ZI[futouIdx];
   const branch = futou.slice(1);
-  const yuanIndex = ['子','午'].includes(branch)
+  const yuanIndex = ['子','午','卯','酉'].includes(branch)
     ? 0
-    : (['戌','辰'].includes(branch) ? 1 : 2);
+    : (['寅','申','巳','亥'].includes(branch) ? 1 : 2);
   return { yuanIndex, futou };
 }
 
