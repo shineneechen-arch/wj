@@ -1004,17 +1004,36 @@ function getJieQiAround(dateObj) {
   return prev ? { prev, next } : null;
 }
 
-function getDunJu(dateObj, around) {
+function getYuanByFutou(dayGanZhi) {
+  const idx = jiaziIndex(dayGanZhi);
+  if(idx < 0) return null;
+  let futouIdx = idx;
+  while(futouIdx >= 0 && !['甲','己'].includes(JIA_ZI[futouIdx].slice(0, 1))) {
+    futouIdx -= 1;
+  }
+  if(futouIdx < 0) futouIdx += 60;
+  const futou = JIA_ZI[futouIdx];
+  const branch = futou.slice(1);
+  const yuanIndex = ['子','午','卯','酉'].includes(branch)
+    ? 0
+    : (['寅','申','巳','亥'].includes(branch) ? 1 : 2);
+  return { yuanIndex, futou };
+}
+
+function getDunJu(dateObj, around, dayGanZhi) {
   if(!around || !around.prev) return { dun:'阳遁', ju:1, yuan:'上元', note:'节气数据未加载，使用临时阳遁一局。' };
   const term = around.prev.name;
   const idx = JIEQI_ORDER.indexOf(term);
   const dun = idx >= 0 && idx < 12 ? '阳遁' : '阴遁';
+  const futouInfo = getYuanByFutou(dayGanZhi);
   const days = Math.max(0, Math.floor((dateObj - around.prev.date) / 86400000));
-  const yuanIndex = Math.min(2, Math.floor(days / 5));
+  const yuanIndex = futouInfo ? futouInfo.yuanIndex : Math.min(2, Math.floor(days / 5));
   const ju = (JIEQI_JU[term] || [1,7,4])[yuanIndex];
   return {
     dun, ju, yuan: YUAN_NAMES[yuanIndex],
-    note: `${term}后第${days + 1}日，拆补取${YUAN_NAMES[yuanIndex]}。`
+    note: futouInfo
+      ? `${term}后第${days + 1}日，${futouInfo.futou}符头取${YUAN_NAMES[yuanIndex]}。`
+      : `${term}后第${days + 1}日，拆补取${YUAN_NAMES[yuanIndex]}。`
   };
 }
 
@@ -1033,13 +1052,13 @@ function buildTimeProfile(dateObj) {
   const solar = Solar.fromYmdHms(dateObj.getFullYear(), dateObj.getMonth()+1, dateObj.getDate(), dateObj.getHours(), dateObj.getMinutes(), dateObj.getSeconds());
   const lunar = solar.getLunar();
   const around = getJieQiAround(dateObj);
-  const dunJu = getDunJu(dateObj, around);
   const bazi = {
     year: lunar.getYearInGanZhiExact ? lunar.getYearInGanZhiExact() : lunar.getYearInGanZhi(),
     month: lunar.getMonthInGanZhiExact ? lunar.getMonthInGanZhiExact() : lunar.getMonthInGanZhi(),
     day: lunar.getDayInGanZhiExact2 ? lunar.getDayInGanZhiExact2() : (lunar.getDayInGanZhiExact ? lunar.getDayInGanZhiExact() : lunar.getDayInGanZhi()),
     hour: lunar.getTimeInGanZhi()
   };
+  const dunJu = getDunJu(dateObj, around, bazi.day);
   const lunarYear = lunar.getYearInChinese ? lunar.getYearInChinese() : '';
   const lunarMonth = lunar.getMonthInChinese ? lunar.getMonthInChinese() : lunar.getMonth();
   const lunarDay = lunar.getDayInChinese ? lunar.getDayInChinese() : lunar.getDay();
@@ -1150,6 +1169,11 @@ let liveDateObj = new Date();
 let liveProfile = null;
 let livePan = null;
 
+function syncLiveDateFromInput() {
+  const value = document.getElementById('live-time').value;
+  if(value) liveDateObj = new Date(value);
+}
+
 function fillJuSelect(select, placeholder) {
   select.innerHTML = '<option value="">选择局数...</option>';
   if(placeholder) select.options[0].textContent = placeholder;
@@ -1253,6 +1277,7 @@ function handleDeadJuChange() {
 }
 
 function handleLiveJuChange() {
+  syncLiveDateFromInput();
   const ju = document.getElementById('live-ju').value;
   updateLiveCalendarInfo();
   updateL2L3();
@@ -1688,6 +1713,13 @@ function toggleLayer(layerName) {
 
 document.getElementById('use-now-btn').onclick = () => { setNow(); updateL2L3(); };
 document.getElementById('dead-time').oninput = () => { updateDeadCalendarInfo(); };
+function handleLiveTimeInput() {
+  syncLiveDateFromInput();
+  updateLiveCalendarInfo();
+  updateL2L3();
+}
+document.getElementById('live-time').oninput = handleLiveTimeInput;
+document.getElementById('live-time').onchange = handleLiveTimeInput;
 document.getElementById('dead-ju').onchange = handleDeadJuChange;
 document.getElementById('live-ju').onchange = handleLiveJuChange;
 document.getElementById('apply-dead').onclick = () => {
@@ -1702,7 +1734,7 @@ document.getElementById('apply-dead').onclick = () => {
 };
 document.getElementById('apply-live').onclick = () => {
   if(document.getElementById('live-time').value){
-    liveDateObj = new Date(document.getElementById('live-time').value);
+    syncLiveDateFromInput();
     updateLiveCalendarInfo();
     updateL2L3();
     const ju = document.getElementById('live-ju').value;
