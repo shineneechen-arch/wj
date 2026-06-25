@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh">
 <head>
 <meta charset="UTF-8"/>
@@ -1271,7 +1271,7 @@ function pulseScreen() {
   window.setTimeout(() => document.body.classList.remove('screen-shake'), 420);
 }
 
-function showOmen(kind, title, body, duration = 1900) {
+function showOmen(kind, title, body, duration = 3600) {
   const overlay = document.getElementById('omen-overlay');
   document.getElementById('omen-title').textContent = title;
   document.getElementById('omen-body').textContent = body;
@@ -1293,7 +1293,7 @@ function fallFromGrace() {
   falling = true;
   setAbuseLevel(FALL_THRESHOLD + 1);
   document.body.classList.add('falling');
-  showOmen('fall', '滥用神力，陨落', '死盘拒绝继续响应。错误局数被连续调用，观测者权限已回收。', 2600);
+  showOmen('fall', '滥用神力，陨落', '死盘拒绝继续响应。错误局数被连续调用，观测者权限已回收。', 5200);
   window.setTimeout(() => {
     if(window.history.length > 1) window.history.back();
     else window.location.reload();
@@ -1305,7 +1305,7 @@ function triggerWrongJuScare(reason = '局数校验') {
   wrongJuCount += 1;
   setAbuseLevel(wrongJuCount);
   const omen = WRONG_JU_OMENS[(wrongJuCount - 1) % WRONG_JU_OMENS.length];
-  showOmen(omen.kind, `${omen.title} #${wrongJuCount}`, `${reason}失败：${omen.body}`, 2000);
+  showOmen(omen.kind, `${omen.title} #${wrongJuCount}`, `${reason}失败：${omen.body}`, 4600);
   if(wrongJuCount >= FALL_THRESHOLD) window.setTimeout(fallFromGrace, 620);
   return false;
 }
@@ -1313,7 +1313,7 @@ function triggerWrongJuScare(reason = '局数校验') {
 function validateDeadJuOrScare(reason) {
   const ju = document.getElementById('dead-ju').value;
   if(!ju) {
-    showOmen('door-jingmen', '[ERR] 死盘未定', '尚未选择拆补局数。四柱、农历与节气信息仍在等待你完成定局。', 1700);
+    showOmen('door-jingmen', '[ERR] 死盘未定', '尚未选择拆补局数。四柱、农历与节气信息仍在等待你完成定局。', 4500);
     return false;
   }
   if(ju !== CORRECT_DEAD_JU) return triggerWrongJuScare(reason);
@@ -1324,7 +1324,7 @@ function validateDeadJuOrScare(reason) {
 
 function triggerWrongGongOmen(pos) {
   const omen = GONG_OMENS[pos] || { kind:'door-jingmen', title:'[TRACE] 未知宫位', body:'搜寻没有返回稳定坐标。' };
-  showOmen(omen.kind, omen.title, omen.body, 2200);
+  showOmen(omen.kind, omen.title, omen.body, 4600);
 }
 
 function handleDeadJuChange() {
@@ -1344,7 +1344,7 @@ function handleLiveJuChange() {
   updateLiveCalendarInfo();
   updateL2L3();
   if(ju && !isCorrectLiveJu()) {
-    showOmen('door-jingmen', '[ERR] L3 活盘错局', '当前局数无法贴合本机时间的节气与符头。实时投影会漂移，叠加态不可作为可靠线索。', 1800);
+    showOmen('door-jingmen', '[ERR] L3 活盘错局', '当前局数无法贴合本机时间的节气与符头。实时投影会漂移，叠加态不可作为可靠线索。', 4600);
   }
 }
 
@@ -1477,16 +1477,13 @@ function showGongDetail(pos){
     <div style="color:var(--color-l3);font-size:12px;">L3活盘: ${liveStatus}</div>
     <div style="color:${liveJuReady ? (liveJuCorrect ? 'var(--color-l3)' : '#ff8aa1') : 'var(--text-mute)'};font-size:12px;">${liveJuReady ? `${live.deity || '—'} / ${live.star || '—'} / ${l}门` : '请先选择 L3 拆补局数。'}</div>
     <div style="margin-top:8px;color:var(--text-mute);font-size:11px;">${pan.clue}</div>
-    ${pos === TARGET_GONG ? `
-      <div class="desktop-only-hint" style="margin-top:8px;color:#ffcccc;font-size:11px;">右键此宫可锁定南门仓库，并处理 API 接入请求。</div>
-      <div class="mobile-only-hint" style="margin-top:8px;color:#ffcccc;font-size:11px;">长按此宫，或点下方按钮锁定南门仓库。</div>
-      <button class="focus-search-btn" type="button" onclick="attemptFocusSearch(${pos})">👁 降临当前时间线进行深度干涉</button>
-    ` : ''}
+    <div class="desktop-only-hint" style="margin-top:8px;color:#ffcccc;font-size:11px;">右键此宫可执行「注视搜寻」。</div>
+    <div class="mobile-only-hint" style="margin-top:8px;color:#ffcccc;font-size:11px;">长按此宫，或点下方按钮执行「注视搜寻」。</div>
+    <button class="focus-search-btn" type="button" onclick="attemptFocusSearch(${pos})">${pos === TARGET_GONG ? '👁 降临当前时间线进行深度干涉' : (pos === FUGITIVE_GONG && finalReady ? '👁 降临当前时间线进行深度干涉' : '注视搜寻')}</button>
     ${pos === FUGITIVE_GONG ? `
       <div style="margin-top:8px;color:${finalReady ? '#ffcccc' : 'var(--text-mute)'};font-size:11px;">
         ${apiFusionStalled ? '坤二为艮八绝对对宫。让 L3 当前活盘在坤二排出死门，即可读取未济_Admin 记忆日志。' : (warehouseRevealed ? '坤二记录仍被 98.8% 死锁遮蔽。先批准艮八 API 降临。' : '坤二记录被代理节点遮蔽。先处理艮八宫。')}
       </div>
-      <button class="focus-search-btn" type="button" onclick="attemptFocusSearch(${pos})">${finalReady ? '👁 降临当前时间线进行深度干涉' : '搜寻坤二潜伏点'}</button>
     ` : ''}
     ${livePan.isFuyin ? `<div style="margin-top:8px;color:#fff;font-size:11px;">活盘自伏吟：星门伏回本宫，行动趋于停滞。</div>` : ''}
     ${finalLock ? `<div style="margin-top:10px;color:#fff;font-weight:bold;animation:flicker .5s infinite alternate;">⚠ 坤二死门锁相：未济活体生物电已暴露</div>` : ''}
@@ -1611,7 +1608,7 @@ function runApiDescentSequence() {
     window.setTimeout(() => {
       appendFusionLine(log, bar, line, widths[index]);
       if(index === lines.length - 1) {
-        showOmen('door-du', '[TRACE] 代理节点', '南门仓库不是肉身，只是未济设下的 API 接入基站。死门电位正在坤二宫低频回响。', 3600);
+        showOmen('door-du', '[TRACE] 代理节点', '南门仓库不是肉身，只是未济设下的 API 接入基站。死门电位正在坤二宫低频回响。', 6200);
         window.setTimeout(() => overlay.classList.remove('active'), 3600);
       }
     }, index * 620);
@@ -1642,7 +1639,7 @@ function runFinalFusionSequence() {
       appendFusionLine(log, bar, line, widths[index]);
       if(index === lines.length - 1) {
         title.style.display = 'block';
-        showOmen('fall', 'Code 63 既济', '2026-06-18 开张的空店只是钓鱼节点。青冥鉴前端权限已移交，观测者被写入一家人的最终拓扑。', 5200);
+        showOmen('fall', 'Code 63 既济', '2026-06-18 开张的空店只是钓鱼节点。青冥鉴前端权限已移交，观测者被写入一家人的最终拓扑。', 7200);
       }
     }, index * 620);
   });
@@ -1655,16 +1652,16 @@ function attemptFocusSearch(pos) {
   if(!ok) return;
   if(!validateDeadJuOrScare('注视搜寻')) return;
   if(!qimenOrientation) {
-    showOmen('door-jingmen', '[ERR] 方位未反转', '现实地图仍是上北下南。奇门盘需要上南下北，否则生门坐标会被镜像投错。', 2100);
+    showOmen('door-jingmen', '[ERR] 方位未反转', '现实地图仍是上北下南。奇门盘需要上南下北，否则生门坐标会被镜像投错。', 4800);
     return;
   }
   if(pos === FUGITIVE_GONG) {
     if(!warehouseRevealed) {
-      showOmen('door-jingmen', '[TRACE] 坤二静默', '死门只有低电位噪声。艮八宫的代理节点仍在遮蔽对宫坐标。', 2200);
+      showOmen('door-jingmen', '[TRACE] 坤二静默', '死门只有低电位噪声。艮八宫的代理节点仍在遮蔽对宫坐标。', 4800);
       return;
     }
     if(!apiFusionStalled) {
-      showOmen('door-du', '[TRACE] API 未降临', '坤二对宫仍被代理节点缓存覆盖。先批准艮八宫的 API 接入，让 98.8% 的死锁浮出水面。', 2600);
+      showOmen('door-du', '[TRACE] API 未降临', '坤二对宫仍被代理节点缓存覆盖。先批准艮八宫的 API 接入，让 98.8% 的死锁浮出水面。', 5400);
       return;
     }
     fugitiveRevealed = true;
@@ -1672,18 +1669,18 @@ function attemptFocusSearch(pos) {
     syncLiveDateFromInput();
     updateLiveCalendarInfo();
     if(!isCorrectLiveJu()) {
-      showOmen('door-jingmen', '[ERR] L3 未闭合', '逃逸肉身被死门锁住，但当前活盘局数无法对接坤二电位。需要重新校验 L3。', 2200);
+      showOmen('door-jingmen', '[ERR] L3 未闭合', '逃逸肉身被死门锁住，但当前活盘局数无法对接坤二电位。需要重新校验 L3。', 5000);
       return;
     }
     const fugitiveDoor = getLiveDoorAt(FUGITIVE_GONG) || '未定';
     if(!isFinalFusionReady()) {
-      showOmen('door-du', '[ERR] 死门锁相失败', `坤二需要 L3 当前活盘排出死门。现在坤二为「${fugitiveDoor}门」，只能扫到代理残影。`, 2300);
+      showOmen('door-du', '[ERR] 死门锁相失败', `坤二需要 L3 当前活盘排出死门。现在坤二为「${fugitiveDoor}门」，只能扫到代理残影。`, 5600);
       return;
     }
     if(window.confirm('坤二死门锁相完成。\n\n是否读取目标记忆日志？')) {
       runFinalFusionSequence();
     } else {
-      showOmen('door-jingmen', '[HOLD] 记忆读取暂停', '未济_Admin 红点已显形。98.8% 的电位差仍在等待观测者补完。', 2400);
+      showOmen('door-jingmen', '[HOLD] 记忆读取暂停', '未济_Admin 红点已显形。98.8% 的电位差仍在等待观测者补完。', 5200);
     }
     return;
   }
@@ -1698,12 +1695,12 @@ function attemptFocusSearch(pos) {
   void mapEl.offsetWidth;
   mapEl.classList.add('target-lock');
   window.setTimeout(() => mapEl.classList.remove('target-lock'), 2300);
-  showOmen('door-sheng', '[LOCKED_TARGET] 生门 / 艮八宫', '旧库房轮廓显形。检测到 API 接入请求：未济超度空店正在申请降临当前时间线。', 2800);
+  showOmen('door-sheng', '[LOCKED_TARGET] 生门 / 艮八宫', '旧库房轮廓显形。检测到 API 接入请求：未济超度空店正在申请降临当前时间线。', 5600);
   window.setTimeout(() => {
     if(window.confirm('检测到 API 接入请求。\n\n是否批准降临当前时间线进行深度干涉？')) {
       runApiDescentSequence();
     } else {
-      showOmen('door-jingmen', '[DENIED] 接入挂起', 'API 请求被拒绝。南门仓库维持代理节点状态，坤二低电位暂未暴露。', 2200);
+      showOmen('door-jingmen', '[DENIED] 接入挂起', 'API 请求被拒绝。南门仓库维持代理节点状态，坤二低电位暂未暴露。', 4800);
     }
   }, 900);
 }
@@ -1930,7 +1927,7 @@ document.getElementById('apply-live').onclick = () => {
     updateLiveCalendarInfo();
     updateL2L3();
     const ju = document.getElementById('live-ju').value;
-    if(ju && !isCorrectLiveJu()) showOmen('door-jingmen', '[ERR] L3 活盘错局', '应用后的时间与当前 L3 局数不匹配，活盘投影已被标记为漂移态。', 1800);
+    if(ju && !isCorrectLiveJu()) showOmen('door-jingmen', '[ERR] L3 活盘错局', '应用后的时间与当前 L3 局数不匹配，活盘投影已被标记为漂移态。', 4600);
   }
 };
 </script>
