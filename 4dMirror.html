@@ -1293,6 +1293,12 @@ function flyIndexForPalace(palace) {
   return FLY_ORDER.indexOf(palace);
 }
 
+function moveOnFlyOrder(startPalace, offset) {
+  const startIdx = flyIndexForPalace(startPalace);
+  if(startIdx < 0) return startPalace;
+  return FLY_ORDER[(startIdx + offset + FLY_ORDER.length * 10) % FLY_ORDER.length];
+}
+
 function buildFlyingLayer(homeMap, valuePalace, targetPalace, dun) {
   const forward = dun === '阳遁';
   const value = homeMap[valuePalace] || homeMap[5] || '';
@@ -1326,7 +1332,8 @@ function buildQimenPan(profile) {
   const valueFuPalace = ground[xun.instrument] || 1;
   const hourStemKey = hourStem === '甲' ? xun.instrument : hourStem;
   const hourStemPalace = ground[hourStemKey] || valueFuPalace;
-  const doorTargetPalace = hourStemPalace === 5 ? 2 : hourStemPalace;
+  const shiftedDoorPalace = moveOnFlyOrder(valueFuPalace, xun.offset);
+  const doorTargetPalace = shiftedDoorPalace === 5 ? 2 : shiftedDoorPalace;
   const doors = buildRotatingLayer(DOOR_HOME, valueFuPalace, doorTargetPalace, profile.dun);
   const stars = buildFlyingLayer(STAR_HOME, 1, valueFuPalace, profile.dun);
   const deities = buildDeityLayer(valueFuPalace, profile.dun);
