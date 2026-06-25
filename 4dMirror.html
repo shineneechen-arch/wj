@@ -1488,7 +1488,7 @@ function showGongDetail(pos){
     <button class="focus-search-btn" type="button" onclick="attemptFocusSearch(${pos})">${getFocusActionLabel(pos)}</button>
     ${pos === FUGITIVE_GONG ? `
       <div style="margin-top:8px;color:${finalReady ? '#ffcccc' : 'var(--text-mute)'};font-size:11px;">
-        ${apiFusionStalled ? '坤二为艮八绝对对宫。让 L3 当前活盘在坤二排出死门，即可读取未济_Admin 记忆日志。' : (warehouseRevealed ? '坤二记录仍被 98.8% 死锁遮蔽。先批准艮八 API 降临。' : '坤二记录被代理节点遮蔽。先处理艮八宫。')}
+        ${apiFusionStalled ? '这里的低电位与逃逸养料相连。让 L3 当前活盘在此处排出死门，即可读取未济_Admin 记忆日志。' : (warehouseRevealed ? '这里仍被 98.8% 死锁遮蔽。先批准艮八 API 降临。' : '此处记录被代理节点遮蔽。先处理艮八宫。')}
       </div>
     ` : ''}
     ${livePan.isFuyin ? `<div style="margin-top:8px;color:#fff;font-size:11px;">活盘自伏吟：星门伏回本宫，行动趋于停滞。</div>` : ''}
@@ -1606,15 +1606,15 @@ function runApiDescentSequence() {
     '融合进度：98.8%',
     '[ERR_64] 实体 06：[未济] 匹配失败！目标已逃逸！',
     '融合进度：98.8% ... 阵眼无法闭合。',
-    '系统诊断：南门店面无活体反应，仅存在代理服务器。',
-    '[TRACE] 请寻找逃逸的养料：艮八绝对对宫 / 坤二宫 / 西南方。'
+    '系统诊断：南门仓库无活体反应，仅存在代理应答与残留广播。',
+    '[TRACE] 请寻找逃逸的养料。生门连接之外，有一处对宫低电位仍在回响。'
   ];
   const widths = [18, 42, 64, 64, 87.4, 98.8, 98.8, 98.8, 98.8, 98.8];
   lines.forEach((line, index) => {
     window.setTimeout(() => {
       appendFusionLine(log, bar, line, widths[index]);
       if(index === lines.length - 1) {
-        showOmen('door-du', '[TRACE] 代理节点', '南门仓库不是肉身，只是未济设下的 API 接入基站。死门电位正在坤二宫低频回响。', 6200);
+        showOmen('door-du', '[TRACE] 代理节点', '南门仓库不是肉身，只剩代理应答。系统要求继续寻找逃逸的养料。', 6200);
         window.setTimeout(() => overlay.classList.remove('active'), 3600);
       }
     }, index * 620);
@@ -1663,11 +1663,11 @@ function attemptFocusSearch(pos) {
   }
   if(pos === FUGITIVE_GONG) {
     if(!warehouseRevealed) {
-      showOmen('door-jingmen', '[TRACE] 坤二静默', '死门只有低电位噪声。艮八宫的代理节点仍在遮蔽对宫坐标。', 4800);
+      showOmen('door-jingmen', '[TRACE] 低电位噪声', '这里暂时只有低电位噪声。艮八宫的代理节点仍在遮蔽逃逸坐标。', 4800);
       return;
     }
     if(!apiFusionStalled) {
-      showOmen('door-du', '[TRACE] API 未降临', '坤二对宫仍被代理节点缓存覆盖。先批准艮八宫的 API 接入，让 98.8% 的死锁浮出水面。', 5400);
+      showOmen('door-du', '[TRACE] API 未降临', '这处对宫信号仍被代理节点缓存覆盖。先批准艮八宫的 API 接入，让 98.8% 的死锁浮出水面。', 5400);
       return;
     }
     fugitiveRevealed = true;
@@ -1696,7 +1696,7 @@ function attemptFocusSearch(pos) {
   }
   if(warehouseRevealed) {
     if(apiFusionStalled) {
-      showOmen('door-du', '[TRACE] 接入已锁定', 'API 降临已经把融合进度推至 98.8%。剩余信号不在艮八，在它的绝对对宫坤二。', 5600);
+      showOmen('door-du', '[TRACE] 接入已锁定', 'API 降临已经把融合进度推至 98.8%。剩余信号不在艮八，请寻找逃逸的养料。', 5600);
       return;
     }
     if(window.confirm('检测到 API 接入请求。\n\n是否批准降临当前时间线进行深度干涉？')) {
@@ -1713,7 +1713,7 @@ function attemptFocusSearch(pos) {
   void mapEl.offsetWidth;
   mapEl.classList.add('target-lock');
   window.setTimeout(() => mapEl.classList.remove('target-lock'), 2300);
-  showOmen('door-sheng', '[LOCKED_TARGET] 生门 / 艮八宫', '旧库房轮廓显形。检测到 API 接入请求：未济超度空店正在申请降临当前时间线。请在艮八宫批准深度干涉。', 5600);
+  showOmen('door-sheng', '[LOCKED_TARGET] 生门 / 艮八宫', '南门废弃仓库轮廓显形。检测到未知 API 接入请求，等待观测者批准深度干涉。', 5600);
 }
 
 function fixedLabel(html, kind) {
