@@ -400,6 +400,13 @@ h4 { font-size: 13px; color: #8fa6c0; border-left: 2px solid var(--color-l3); pa
 }
 .fusion-progress { height: 18px; border: 1px solid #ffcccc; background: #160202; margin: 14px 0 8px; overflow: hidden; }
 .fusion-progress span { display: block; width: 0%; height: 100%; background: linear-gradient(90deg, #ff002b, #fff, #00ff88); box-shadow: 0 0 16px #ff002b; transition: width .22s linear; }
+.final-continue {
+  display: none; width: 100%; margin-top: 12px; padding: 12px;
+  border: 1px solid rgba(217,255,232,0.72); border-radius: 4px;
+  background: rgba(0,22,14,0.86); color: #d9ffe8; font-size: 13px;
+  box-shadow: 0 0 18px rgba(0,255,136,0.22), inset 0 0 12px rgba(0,255,136,0.14);
+}
+.final-continue.active { display: block; }
 .final-title { font-size: 12px; line-height: 1.35; text-align: center; color: #ffcccc; text-shadow: 0 0 18px #ff0000; margin-top: 12px; display: none; }
 #family-popup {
   position: fixed; inset: 0; z-index: 2800; display: none; pointer-events: none;
@@ -746,6 +753,7 @@ body.falling #abuse-veil { opacity: 1; background: rgba(120,0,0,0.76); }
     <div class="final-panel">
       <div class="final-log" id="final-log"></div>
       <div class="fusion-progress"><span id="fusion-progress-bar"></span></div>
+      <button class="final-continue" id="final-continue" type="button">我已读完，继续闭合最后 1.2%</button>
       <div class="final-title" id="final-title">[State: Code 63 既济] 正在转入结局页面...</div>
     </div>
   </div>
@@ -1188,7 +1196,7 @@ function parseJuValue(value) {
 }
 
 function getSelectedLiveProfile() {
-  if(!liveProfile) return null;
+  if(!liveProfile || !liveProfile.ok) return null;
   const selected = parseJuValue(document.getElementById('live-ju').value);
   if(!selected) return null;
   return {
@@ -1201,7 +1209,7 @@ function getSelectedLiveProfile() {
 }
 
 function isCorrectLiveJu() {
-  return !!liveProfile && document.getElementById('live-ju').value === liveProfile.juValue;
+  return !!liveProfile && liveProfile.ok && document.getElementById('live-ju').value === liveProfile.juValue;
 }
 
 function getLiveDoorAt(pos) {
@@ -1482,13 +1490,15 @@ function updateLiveCalendarInfo() {
   const desc = document.getElementById('l3-layer-desc');
   const selectedJu = document.getElementById('live-ju').value;
   const forbiddenLiveTime = isForbiddenLiveTime();
-  const liveJuLine = !selectedJu
+  const liveJuLine = !liveProfile.ok
+    ? `<span class="bad">[ERR] 历法核心未加载，L3 活盘不可闭合。</span>`
+    : (!selectedJu
     ? `<span class="warn">[?] 等待玩家按系统时间、节气与符头选择 L3 局数。</span>`
     : (forbiddenLiveTime
       ? `<span class="bad">[FORBIDDEN] L3 不得回拨到 2007-06-11 死盘现场。</span>`
       : (isCorrectLiveJu()
       ? `<span class="ok">[OK] ${selectedJu} 校验通过，L3 投影稳定。</span>`
-      : `<span class="bad">[ERR] ${selectedJu} 与当前拆补定局不合，L3 投影进入漂移态。</span>`));
+      : `<span class="bad">[ERR] ${selectedJu} 与当前拆补定局不合，L3 投影进入漂移态。</span>`)));
   const fuyinLine = livePan.isFuyin
     ? `<span class="bad">[伏吟] ${selectedJu ? '活盘' : '临时影盘'}星门伏回本宫，行动被时间回声钉住。</span>`
     : `<span class="ok">[活盘] 星门已随时干转动。</span>`;
@@ -1648,9 +1658,12 @@ function prepareFusionOverlay() {
   const log = document.getElementById('final-log');
   const bar = document.getElementById('fusion-progress-bar');
   const title = document.getElementById('final-title');
+  const next = document.getElementById('final-continue');
   overlay.classList.add('active');
   log.textContent = '';
   title.style.display = 'none';
+  next.classList.remove('active');
+  next.onclick = null;
   return { overlay, log, bar, title };
 }
 
@@ -1697,6 +1710,7 @@ function runFinalFusionSequence() {
   fugitiveRevealed = true;
   drawL1();
   const { log, bar, title } = prepareFusionOverlay();
+  const next = document.getElementById('final-continue');
   bar.style.width = '98.8%';
   const lines = [
     '[TRACE] 逃逸养料坐标回落：坤二宫 / 死门 / 西南方。',
@@ -1721,15 +1735,19 @@ function runFinalFusionSequence() {
     window.setTimeout(() => {
       appendFusionLine(log, bar, line, widths[index]);
       if(index === lines.length - 1) {
-        window.setTimeout(() => {
+        appendFusionLine(log, bar, '', 98.8);
+        appendFusionLine(log, bar, '[WAIT] 记忆日志已暂停。确认读完后，再允许未济调用你的 L3 参数。', 98.8);
+        next.classList.add('active');
+        next.onclick = () => {
+          next.classList.remove('active');
           if(window.confirm('记忆日志读取完成。\n\n是否允许未济使用你的 L3 参数闭合最后 1.2% 的电位差？')) {
             completeFinalFusion(log, bar, title);
           } else {
             showOmen('door-jingmen', '[HOLD] 既济暂停', '未济_Admin 的记忆仍挂在 98.8%。他没有离开，只是在等待你再次注视。', 6200);
           }
-        }, 3200);
+        };
       }
-    }, index * 1250);
+    }, index * 2200);
   });
 }
 
