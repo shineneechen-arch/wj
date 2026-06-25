@@ -1168,6 +1168,12 @@ function isFinalFusionReady() {
   return warehouseRevealed && isCorrectDeadJu() && isCorrectLiveJu() && getLiveDoorAt(FUGITIVE_GONG) === DEAD_PAN[FUGITIVE_GONG].door;
 }
 
+function getFocusActionLabel(pos) {
+  if(pos === TARGET_GONG && warehouseRevealed && !apiFusionStalled) return '👁 降临当前时间线进行深度干涉';
+  if(pos === FUGITIVE_GONG && isFinalFusionReady()) return '👁 降临当前时间线进行深度干涉';
+  return '注视搜寻';
+}
+
 function placeInstruments(dun, ju) {
   const palaceSeq = rotateFrom(FLY_ORDER, ju, dun === '阳遁');
   const ground = {};
@@ -1479,7 +1485,7 @@ function showGongDetail(pos){
     <div style="margin-top:8px;color:var(--text-mute);font-size:11px;">${pan.clue}</div>
     <div class="desktop-only-hint" style="margin-top:8px;color:#ffcccc;font-size:11px;">右键此宫可执行「注视搜寻」。</div>
     <div class="mobile-only-hint" style="margin-top:8px;color:#ffcccc;font-size:11px;">长按此宫，或点下方按钮执行「注视搜寻」。</div>
-    <button class="focus-search-btn" type="button" onclick="attemptFocusSearch(${pos})">${pos === TARGET_GONG ? '👁 降临当前时间线进行深度干涉' : (pos === FUGITIVE_GONG && finalReady ? '👁 降临当前时间线进行深度干涉' : '注视搜寻')}</button>
+    <button class="focus-search-btn" type="button" onclick="attemptFocusSearch(${pos})">${getFocusActionLabel(pos)}</button>
     ${pos === FUGITIVE_GONG ? `
       <div style="margin-top:8px;color:${finalReady ? '#ffcccc' : 'var(--text-mute)'};font-size:11px;">
         ${apiFusionStalled ? '坤二为艮八绝对对宫。让 L3 当前活盘在坤二排出死门，即可读取未济_Admin 记忆日志。' : (warehouseRevealed ? '坤二记录仍被 98.8% 死锁遮蔽。先批准艮八 API 降临。' : '坤二记录被代理节点遮蔽。先处理艮八宫。')}
@@ -1647,7 +1653,7 @@ function runFinalFusionSequence() {
 
 function attemptFocusSearch(pos) {
   const pan = DEAD_PAN[pos];
-  const actionText = pos === FUGITIVE_GONG && warehouseRevealed ? '降临当前时间线进行深度干涉？' : '注视搜寻？';
+  const actionText = getFocusActionLabel(pos).replace('👁 ', '') + '？';
   const ok = window.confirm(`选中 ${NAMES[pos]}${pos}宫（${pan.door || '中'}门）？\n\n${actionText}`);
   if(!ok) return;
   if(!validateDeadJuOrScare('注视搜寻')) return;
@@ -1688,6 +1694,18 @@ function attemptFocusSearch(pos) {
     triggerWrongGongOmen(pos);
     return;
   }
+  if(warehouseRevealed) {
+    if(apiFusionStalled) {
+      showOmen('door-du', '[TRACE] 接入已锁定', 'API 降临已经把融合进度推至 98.8%。剩余信号不在艮八，在它的绝对对宫坤二。', 5600);
+      return;
+    }
+    if(window.confirm('检测到 API 接入请求。\n\n是否批准降临当前时间线进行深度干涉？')) {
+      runApiDescentSequence();
+    } else {
+      showOmen('door-jingmen', '[DENIED] 接入挂起', 'API 请求被拒绝。南门仓库维持代理节点状态，坤二低电位暂未暴露。', 4800);
+    }
+    return;
+  }
   warehouseRevealed = true;
   drawL1();
   const mapEl = document.getElementById('map');
@@ -1695,14 +1713,7 @@ function attemptFocusSearch(pos) {
   void mapEl.offsetWidth;
   mapEl.classList.add('target-lock');
   window.setTimeout(() => mapEl.classList.remove('target-lock'), 2300);
-  showOmen('door-sheng', '[LOCKED_TARGET] 生门 / 艮八宫', '旧库房轮廓显形。检测到 API 接入请求：未济超度空店正在申请降临当前时间线。', 5600);
-  window.setTimeout(() => {
-    if(window.confirm('检测到 API 接入请求。\n\n是否批准降临当前时间线进行深度干涉？')) {
-      runApiDescentSequence();
-    } else {
-      showOmen('door-jingmen', '[DENIED] 接入挂起', 'API 请求被拒绝。南门仓库维持代理节点状态，坤二低电位暂未暴露。', 4800);
-    }
-  }, 900);
+  showOmen('door-sheng', '[LOCKED_TARGET] 生门 / 艮八宫', '旧库房轮廓显形。检测到 API 接入请求：未济超度空店正在申请降临当前时间线。请在艮八宫批准深度干涉。', 5600);
 }
 
 function fixedLabel(html, kind) {
