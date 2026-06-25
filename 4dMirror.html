@@ -1055,6 +1055,7 @@ let wrongJuCount = 0;
 let omenTimer = null;
 let falling = false;
 let projectionConflictCount = 0;
+let audioContext = null;
 const SHOW_L1_LOCATION_LABELS = false;
 
 function rotateFrom(list, startValue, forward = true) {
@@ -1227,8 +1228,21 @@ function getLiveDoorAt(pos) {
   return (livePan && livePan.byPalace && livePan.byPalace[pos] && livePan.byPalace[pos].door) || '';
 }
 
+function isFuyinDeadDoorCoincidence() {
+  return warehouseRevealed
+    && isCorrectDeadJu()
+    && isCorrectLiveJu()
+    && isLivePanUsable()
+    && livePan.isDoorFuyin
+    && getLiveDoorAt(FUGITIVE_GONG) === DEAD_PAN[FUGITIVE_GONG].door;
+}
+
 function isFinalFusionReady() {
-  return warehouseRevealed && isCorrectDeadJu() && isCorrectLiveJu() && getLiveDoorAt(FUGITIVE_GONG) === DEAD_PAN[FUGITIVE_GONG].door;
+  return warehouseRevealed
+    && isCorrectDeadJu()
+    && isCorrectLiveJu()
+    && getLiveDoorAt(FUGITIVE_GONG) === DEAD_PAN[FUGITIVE_GONG].door
+    && !isFuyinDeadDoorCoincidence();
 }
 
 function getFocusActionLabel(pos) {
@@ -1318,6 +1332,8 @@ function buildQimenPan(profile) {
     valueFuPalace,
     hourStemPalace,
     doorTargetPalace,
+    isDoorFuyin,
+    isStarFuyin,
     isFuyin: isDoorFuyin && isStarFuyin
   };
 }
@@ -1392,6 +1408,44 @@ function setAbuseLevel(level) {
   document.documentElement.style.setProperty('--abuse-alpha', alpha.toFixed(2));
 }
 
+function getAudioContext() {
+  const AudioCtor = window.AudioContext || window.webkitAudioContext;
+  if(!AudioCtor) return null;
+  if(!audioContext) audioContext = new AudioCtor();
+  if(audioContext.state === 'suspended') audioContext.resume();
+  return audioContext;
+}
+
+function playTone(type = 'ok') {
+  const ctx = getAudioContext();
+  if(!ctx) return;
+  const now = ctx.currentTime;
+  const master = ctx.createGain();
+  master.connect(ctx.destination);
+  master.gain.setValueAtTime(0.0001, now);
+  master.gain.exponentialRampToValueAtTime(type === 'ok' ? 0.09 : 0.14, now + 0.015);
+  master.gain.exponentialRampToValueAtTime(0.0001, now + (type === 'ok' ? 0.28 : 0.46));
+
+  const osc = ctx.createOscillator();
+  osc.type = type === 'ok' ? 'sine' : 'sawtooth';
+  osc.frequency.setValueAtTime(type === 'ok' ? 420 : 160, now);
+  osc.frequency.exponentialRampToValueAtTime(type === 'ok' ? 780 : 62, now + (type === 'ok' ? 0.18 : 0.34));
+  osc.connect(master);
+  osc.start(now);
+  osc.stop(now + (type === 'ok' ? 0.3 : 0.5));
+
+  if(type !== 'ok') {
+    const tremolo = ctx.createOscillator();
+    const tremoloGain = ctx.createGain();
+    tremolo.frequency.setValueAtTime(22, now);
+    tremoloGain.gain.setValueAtTime(18, now);
+    tremolo.connect(tremoloGain);
+    tremoloGain.connect(osc.frequency);
+    tremolo.start(now);
+    tremolo.stop(now + 0.42);
+  }
+}
+
 function pulseScreen() {
   document.body.classList.remove('screen-shake');
   void document.body.offsetWidth;
@@ -1430,6 +1484,7 @@ function fallFromGrace() {
 
 function triggerWrongJuScare(reason = '局数校验') {
   if(falling) return false;
+  playTone('bad');
   wrongJuCount += 1;
   setAbuseLevel(wrongJuCount);
   const omen = WRONG_JU_OMENS[(wrongJuCount - 1) % WRONG_JU_OMENS.length];
@@ -1447,6 +1502,7 @@ function validateDeadJuOrScare(reason) {
   if(ju !== CORRECT_DEAD_JU) return triggerWrongJuScare(reason);
   wrongJuCount = 0;
   setAbuseLevel(0);
+  playTone('ok');
   return true;
 }
 
@@ -1461,6 +1517,7 @@ function handleDeadJuChange() {
   if(ju === CORRECT_DEAD_JU) {
     wrongJuCount = 0;
     setAbuseLevel(0);
+    playTone('ok');
   }
   updateDeadCalendarInfo();
   updateL2L3();
@@ -1478,7 +1535,11 @@ function handleLiveJuChange() {
   updateLiveCalendarInfo();
   updateL2L3();
   if(ju && !isCorrectLiveJu()) {
-    showOmen('door-jingmen', '[ERR] L3 活盘错局', '当前局数无法贴合本机时间的节气与符头。实时投影会漂移，叠加态不可作为可靠线索。', 4600);
+    triggerWrongJuScare('L3 活盘局数选择');
+  } else if(ju && isCorrectLiveJu()) {
+    wrongJuCount = 0;
+    setAbuseLevel(0);
+    playTone('ok');
   }
 }
 
@@ -1615,6 +1676,7 @@ function showGongDetail(pos){
   const live = isLivePanUsable() ? (livePan.byPalace[pos] || {}) : {};
   const l = isLivePanUsable() ? (live.door || '—') : '—';
   const finalReady = isFinalFusionReady();
+  const fuyinCoincidence = isFuyinDeadDoorCoincidence();
   const conflict = panReady && liveJuReady && liveJuCorrect && d !== '中' && (d === l);
   const finalLock = finalReady && pos === FUGITIVE_GONG;
   const liveStatus = !liveJuReady ? 'L3局数未校验' : (liveJuCorrect ? `${selectedLiveJu} 校验通过` : `${selectedLiveJu} 错局漂移`);
@@ -1633,11 +1695,12 @@ function showGongDetail(pos){
     <button class="focus-search-btn" type="button" onclick="attemptFocusSearch(${pos})">${getFocusActionLabel(pos)}</button>
     ${pos === FUGITIVE_GONG ? `
       <div style="margin-top:8px;color:${finalReady ? '#ffcccc' : 'var(--text-mute)'};font-size:11px;">
-        ${apiFusionStalled ? '这里的低电位与逃逸养料相连。让 L3 当前活盘在此处排出死门，即可读取未济_Admin 记忆日志。' : (warehouseRevealed ? '这里仍被 98.8% 死锁遮蔽。先批准艮八 API 降临。' : '此处记录被代理节点遮蔽。先处理艮八宫。')}
+        ${apiFusionStalled ? (fuyinCoincidence ? '坤二显出死门，但活盘伏吟只是一条回声。需要另找一条非伏吟的 L3 时间线。' : '这里的低电位与逃逸养料相连。让 L3 当前活盘在此处排出死门，即可读取未济_Admin 记忆日志。') : (warehouseRevealed ? '这里仍被 98.8% 死锁遮蔽。先批准艮八 API 降临。' : '此处记录被代理节点遮蔽。先处理艮八宫。')}
       </div>
     ` : ''}
     ${isLivePanUsable() && livePan.isFuyin ? `<div style="margin-top:8px;color:#fff;font-size:11px;">活盘自伏吟：星门伏回本宫，行动趋于停滞。</div>` : ''}
     ${finalLock ? `<div style="margin-top:10px;color:#fff;font-weight:bold;animation:flicker .5s infinite alternate;">⚠ 坤二死门锁相：未济活体生物电已暴露</div>` : ''}
+    ${fuyinCoincidence && pos === FUGITIVE_GONG ? `<div style="margin-top:10px;color:#ffcccc;font-weight:bold;animation:flicker .5s infinite alternate;">⚠ 伏吟回声：需要另一条 L3 时间线</div>` : ''}
     ${conflict ? `<div style="margin-top:10px;color:#fff;font-weight:bold;animation:flicker .5s infinite alternate;">⚠ 双盘伏吟：L2 与 L3 同宫同门，形成死锁回声</div>` : ''}
   ` : `
     <div style="color:var(--color-l2);font-size:12px;margin-bottom:4px;">L2死盘: 局数未校验</div>
@@ -1874,10 +1937,22 @@ function attemptFocusSearch(pos) {
       return;
     }
     const fugitiveDoor = getLiveDoorAt(FUGITIVE_GONG) || '未定';
+    if(isFuyinDeadDoorCoincidence()) {
+      playTone('bad');
+      showOmen(
+        'door-jingmen',
+        '[REJECT] 伏吟回声',
+        '坤二确实显出死门，但这不是新的时间线，只是当前系统时辰撞回本宫的回声。未济需要一条能从未来切入 2007 的偏移轨道；请更换 L3 时间，寻找另一条非伏吟的死门闭合线。',
+        8200
+      );
+      return;
+    }
     if(!isFinalFusionReady()) {
+      playTone('bad');
       showOmen('door-du', '[ERR] 死门锁相失败', `坤二需要 L3 当前活盘排出死门。现在坤二为「${fugitiveDoor}门」，只能扫到代理残影。`, 5600);
       return;
     }
+    playTone('ok');
     if(window.confirm('坤二死门锁相完成。\n\n是否读取目标记忆日志？')) {
       runFinalFusionSequence();
     } else {
@@ -2010,8 +2085,9 @@ function updateL2L3() {
     const live = isLivePanUsable() ? (livePan.byPalace[pos] || {}) : {};
     const dm = panReady ? (pan.door || '中') : '未定', lm = liveMen[pos] || '—';
     const finalLock = isFinalFusionReady() && pos === FUGITIVE_GONG;
-    const conflict = finalLock || (panReady && liveJuReady && liveJuCorrect && dm !== '中' && (dm === lm));
-    const l3Summary = finalLock ? 'L3 死门锁' : (!liveJuReady ? 'L3待定' : (liveJuCorrect ? `L3 ${lm}门` : 'L3漂移'));
+    const fuyinCoincidence = isFuyinDeadDoorCoincidence() && pos === FUGITIVE_GONG;
+    const conflict = finalLock || fuyinCoincidence || (panReady && liveJuReady && liveJuCorrect && dm !== '中' && (dm === lm));
+    const l3Summary = finalLock ? 'L3 死门锁' : (fuyinCoincidence ? 'L3 回声' : (!liveJuReady ? 'L3待定' : (liveJuCorrect ? `L3 ${lm}门` : 'L3漂移')));
 
     const bounds = [[lat-SPAN/2, lng-SPAN/2], [lat+SPAN/2, lng+SPAN/2]];
     
@@ -2030,7 +2106,7 @@ function updateL2L3() {
     const boundsL3 = [[lat-SPAN/2+0.0001, lng-SPAN/2+0.0001], [lat+SPAN/2-0.0001, lng+SPAN/2-0.0001]];
     const liveColor = !liveJuReady ? '#5d7480' : (liveJuCorrect ? 'var(--color-l3)' : '#ff4d6d');
     const liveFill = !liveJuReady ? '#5d7480' : (liveJuCorrect ? '#00e5ff' : '#ff0033');
-    const liveText = finalLock ? '死门锁' : (!liveJuReady ? '待定' : (liveJuCorrect ? `${lm}门` : `漂移 ${lm}门`));
+    const liveText = finalLock ? '死门锁' : (fuyinCoincidence ? '伏吟回声' : (!liveJuReady ? '待定' : (liveJuCorrect ? `${lm}门` : `漂移 ${lm}门`)));
     const r3 = L.rectangle(boundsL3, {
       color: liveColor,
       fillColor: liveFill,
@@ -2043,7 +2119,7 @@ function updateL2L3() {
 
     const liveLabelOffset = conflict ? [lat + 0.00022, lng - 0.00022] : [lat + 0.00020, lng + 0.00020];
     const liveMarker = L.marker(liveLabelOffset, {icon: L.divIcon({
-      html: `<div class="fixed-label live-gong-label" style="color:${finalLock ? '#fff' : (liveJuReady ? (liveJuCorrect ? 'var(--color-l3)' : '#ff8aa1') : '#8ba4ad')}; border-color:${finalLock ? 'rgba(255,255,255,0.86)' : (liveJuReady ? (liveJuCorrect ? 'rgba(0,229,255,0.55)' : 'rgba(255,77,109,0.65)') : 'rgba(93,116,128,0.55)')};">L3 ${liveText}<br><span style="font-size:0.82em">${finalLock ? '未济暴露' : (liveJuReady ? (live.star || '—') : '局数未校验')}</span></div>`,
+      html: `<div class="fixed-label live-gong-label" style="color:${finalLock || fuyinCoincidence ? '#fff' : (liveJuReady ? (liveJuCorrect ? 'var(--color-l3)' : '#ff8aa1') : '#8ba4ad')}; border-color:${finalLock || fuyinCoincidence ? 'rgba(255,255,255,0.86)' : (liveJuReady ? (liveJuCorrect ? 'rgba(0,229,255,0.55)' : 'rgba(255,77,109,0.65)') : 'rgba(93,116,128,0.55)')};">L3 ${liveText}<br><span style="font-size:0.82em">${finalLock ? '未济暴露' : (fuyinCoincidence ? '另寻时间线' : (liveJuReady ? (live.star || '—') : '局数未校验'))}</span></div>`,
       className: 'fixed-label-icon', iconSize: [0, 0], iconAnchor: [0, 0]
     })}).addTo(l3Group);
     bindGongEvents(liveMarker, pos);
@@ -2140,7 +2216,8 @@ document.getElementById('apply-live').onclick = () => {
     updateLiveCalendarInfo();
     updateL2L3();
     const ju = document.getElementById('live-ju').value;
-    if(ju && !isCorrectLiveJu()) showOmen('door-jingmen', '[ERR] L3 活盘错局', '应用后的时间与当前 L3 局数不匹配，活盘投影已被标记为漂移态。', 4600);
+    if(ju && !isCorrectLiveJu()) triggerWrongJuScare('应用 L3 错误局数');
+    if(ju && isCorrectLiveJu()) playTone('ok');
   }
 };
 </script>
