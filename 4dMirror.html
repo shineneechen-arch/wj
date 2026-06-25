@@ -971,15 +971,15 @@ const DEAD_TIME_PROFILE = {
 };
 
 const DEAD_PAN = {
-  4: { door:'杜', star:'天辅', deity:'腾蛇', clue:'隐藏协议撕裂' },
-  9: { door:'景', star:'天英', deity:'太阴', clue:'离火探针返照' },
-  2: { door:'死', star:'天芮', deity:'六合', clue:'废弃外壳' },
-  3: { door:'伤', star:'天冲', deity:'值符', clue:'破损与冲撞' },
-  5: { door:'', star:'', deity:'常', clue:'中宫空白' },
-  7: { door:'惊', star:'天柱', deity:'勾陈', clue:'逻辑门闭合' },
-  8: { door:'生', star:'天任', deity:'九天', clue:'异常增殖源' },
-  1: { door:'休', star:'天蓬', deity:'九地', clue:'水下噪声' },
-  6: { door:'开', star:'天心', deity:'朱雀', clue:'外泄通道' }
+  4: { door:'杜', star:'天柱', deity:'腾蛇', clue:'隐藏协议撕裂' },
+  9: { door:'景', star:'天心', deity:'太阴', clue:'离火探针返照' },
+  2: { door:'死', star:'天蓬', deity:'六合', clue:'废弃外壳' },
+  3: { door:'伤', star:'天芮', deity:'值符', clue:'破损与冲撞' },
+  5: { door:'', star:'天辅', deity:'常', clue:'中宫空白' },
+  7: { door:'惊', star:'天禽', deity:'勾陈', clue:'逻辑门闭合' },
+  8: { door:'生', star:'天英', deity:'九天', clue:'异常增殖源' },
+  1: { door:'休', star:'天冲', deity:'九地', clue:'水下噪声' },
+  6: { door:'开', star:'天任', deity:'朱雀', clue:'外泄通道' }
 };
 
 const FALL_THRESHOLD = 4;
@@ -1303,7 +1303,7 @@ function buildQimenPan(profile) {
   const hourStemPalace = ground[hourStemKey] || valueFuPalace;
   const doorTargetPalace = hourStemPalace === 5 ? 2 : hourStemPalace;
   const doors = buildRotatingLayer(DOOR_HOME, valueFuPalace, doorTargetPalace, profile.dun);
-  const stars = buildFlyingLayer(STAR_HOME, valueFuPalace, valueFuPalace, profile.dun);
+  const stars = buildFlyingLayer(STAR_HOME, 1, valueFuPalace, profile.dun);
   const deities = buildDeityLayer(valueFuPalace, profile.dun);
   const byPalace = {};
   QIMEN_ORDER.forEach(pos => {
@@ -1321,6 +1321,22 @@ function buildQimenPan(profile) {
     doorTargetPalace,
     isFuyin: isDoorFuyin && isStarFuyin
   };
+}
+
+function formatPalaceMap(mapObj, suffix = '') {
+  return QIMEN_ORDER.map(pos => `${NAMES[pos]}${pos}:${mapObj[pos] || '—'}${suffix}`).join(' / ');
+}
+
+function debugQimenPan(profile, pan) {
+  if(!profile || !pan) return '';
+  const lines = [
+    `[QIMEN_DEBUG] ${profile.juValue || formatJuValue(profile)} ${profile.bazi.day}日 ${profile.bazi.hour}时`,
+    `地盘: ${formatPalaceMap(Object.fromEntries(Object.entries(pan.ground).map(([stem, palace]) => [palace, stem])))}`,
+    `旬仪: ${pan.xun.instrument} / 值符宫: ${NAMES[pan.valueFuPalace]}${pan.valueFuPalace} / 时干宫: ${NAMES[pan.hourStemPalace]}${pan.hourStemPalace}`,
+    `门盘: ${formatPalaceMap(pan.doors, '门')}`
+  ];
+  console.log(lines.join('\n'));
+  return lines;
 }
 
 let deadDateObj = new Date(2007,5,11,11,2);
@@ -1545,6 +1561,10 @@ function updateLiveCalendarInfo() {
   const doorTraceLine = livePan && livePan.doorTargetPalace
     ? `<span>[盘轴] 值符 ${NAMES[livePan.valueFuPalace]}${livePan.valueFuPalace}宫 / 时干 ${NAMES[livePan.hourStemPalace]}${livePan.hourStemPalace}宫 / 值使门 ${NAMES[livePan.doorTargetPalace]}${livePan.doorTargetPalace}宫。</span>`
     : '';
+  const debugLines = livePan ? debugQimenPan(selectedProfile, livePan) : [];
+  const debugTraceLine = debugLines.length
+    ? `<span>[DEBUG] ${debugLines.slice(1).join('<br>[DEBUG] ')}</span>`
+    : '';
   if(desc) desc.innerHTML = selectedJu
     ? `<strong>${selectedJu}</strong><br>${isCorrectLiveJu() ? '校验通过' : '错局漂移'} / ${liveProfile.bazi.hour}时`
     : `<strong>局数待定</strong><br>${liveProfile.bazi.hour}时 / ${liveProfile.yuan}`;
@@ -1555,6 +1575,7 @@ function updateLiveCalendarInfo() {
     <b>节气</b> ${liveProfile.solarTerms}<br>
     <b>拆补</b> ${liveProfile.note}<br>
     ${doorTraceLine}<br>
+    ${debugTraceLine}<br>
     ${fuyinLine}
   `;
   updateProjectionState();
