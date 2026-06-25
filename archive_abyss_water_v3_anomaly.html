@@ -1,15 +1,14 @@
 <!DOCTYPE html><html lang="zh-HK"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>ZenCode 封存檔案 · 水極純局</title><link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400;700;900&family=Noto+Sans+TC:wght@300;400;500&family=Ma+Shan+Zheng&display=swap" rel="stylesheet"><style>
 :root{--bg:#010408;--text:#e0f0ff;--accent:#6A8EAD}*{margin:0;padding:0;box-sizing:border-box}html,body{background:var(--bg);color:var(--text);font-family:'Noto Serif TC',serif;overflow-x:hidden;min-height:100vh}
-#disclaimer{position:fixed;top:0;left:0;right:0;background:#900000;color:#fff;text-align:center;padding:8px;font-family:'Noto Sans TC',sans-serif;font-size:12px;letter-spacing:2px;font-weight:700;z-index:10000;box-shadow:0 2px 10px rgba(255,0,0,.5)}
-#bgCanvas{position:fixed;inset:0;width:100vw;height:100vh;z-index:1;pointer-events:none}.top-bar{position:fixed;top:34px;left:0;right:0;z-index:990;height:52px;background:rgba(1,4,8,.9);border-bottom:1px solid rgba(255,255,255,.1);backdrop-filter:blur(24px);display:flex;align-items:center;justify-content:space-between;padding:0 32px}.top-logo{font-family:'Ma Shan Zheng',cursive;font-size:1.1rem;color:var(--accent);letter-spacing:.2em}.top-right{font-family:'Noto Sans TC',sans-serif;font-size:.6rem;letter-spacing:.28em;color:rgba(255,255,255,.4)}.container{position:relative;z-index:2;max-width:960px;margin:34px auto 0;padding:0 28px}.hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:90px 0 40px}.hero-tag{font-family:'Noto Sans TC',sans-serif;font-size:.6rem;letter-spacing:.55em;color:var(--accent);margin-bottom:28px;display:flex;align-items:center;gap:16px}.hero-tag:before,.hero-tag:after{content:'';width:44px;height:1px;background:linear-gradient(90deg,transparent,var(--accent))}.hero-tag:after{transform:scaleX(-1)}.hero-emblem{font-family:'Ma Shan Zheng',cursive;font-size:clamp(8rem,20vw,14rem);line-height:1;margin-bottom:24px;color:transparent;background:linear-gradient(145deg,#fff,var(--accent) 48%,#000);-webkit-background-clip:text;background-clip:text;text-shadow:0 0 20px var(--accent);animation:emblemPulse 3s infinite alternate}.hero-name-row{font-family:'Ma Shan Zheng',cursive;font-size:clamp(1.1rem,2.3vw,1.6rem);letter-spacing:.28em;margin-bottom:8px}.hero-sub{font-family:'Noto Sans TC',sans-serif;font-size:.7rem;letter-spacing:.45em;color:var(--accent);opacity:.92;margin-bottom:36px}.birth-bar{display:inline-flex;gap:14px;background:rgba(5,15,25,.88);border:1px solid rgba(255,255,255,.2);padding:12px 32px;margin-bottom:44px;font-size:.75rem;letter-spacing:.1em}.birth-bar .hl{color:var(--accent);font-weight:700}.pillars{display:flex;gap:12px;margin-bottom:36px;justify-content:center;flex-wrap:wrap}.pillar{display:flex;flex-direction:column;align-items:center;background:rgba(5,10,15,.88);border:1px solid rgba(255,255,255,.1);padding:24px 22px;min-width:105px}.pillar.day-master{border-color:var(--accent);box-shadow:inset 0 0 30px rgba(255,255,255,.1)}.p-lbl{font-size:.6rem;letter-spacing:.32em;opacity:.5;margin-bottom:12px}.p-tg-god{font-size:.65rem;color:var(--accent);margin-bottom:10px}.p-tg,.p-dz{font-family:'Ma Shan Zheng',cursive;font-size:2.8rem;line-height:1;margin-bottom:8px;color:var(--accent)}.section{padding:82px 0;border-top:1px solid rgba(255,255,255,.1)}.sec-hd{display:flex;gap:22px;margin-bottom:48px}.sec-num{font-family:'Ma Shan Zheng',cursive;font-size:3rem;color:var(--accent);opacity:.5;line-height:1}.sec-ti{font-size:1.38rem;font-weight:600;color:var(--accent);letter-spacing:.09em;line-height:1.4}.sec-en{font-size:.6rem;letter-spacing:.36em;color:var(--accent);opacity:.6;margin-top:5px}.card{background:rgba(5,10,15,.88);border:1px solid rgba(255,255,255,.1);border-left:3px solid var(--accent);padding:36px 40px;margin-bottom:18px}.card p{font-size:.94rem;line-height:2.3;opacity:.9;margin-bottom:14px;text-align:justify}.quote{border-left:2px solid var(--accent);padding:14px 20px;margin:14px 0 20px;background:rgba(255,255,255,.05);font-style:italic;color:var(--accent);font-size:.88rem;line-height:2.05}.abyss-injection{margin-top:120px;padding:54px 0 0;border-top:3px dashed var(--accent);font-family:'Courier New',monospace;position:relative;z-index:10}.abyss-title{padding:0 30px 20px;font-size:1.2rem;font-weight:700;color:var(--accent);letter-spacing:2px}.abyss-log{padding:0 30px 34px;font-size:.85rem;line-height:2.2;opacity:.8;position:relative;z-index:3}.alert-blood{color:#66ccff;font-weight:700;text-shadow:0 0 8px #66ccff;animation:alarm .38s infinite alternate;display:inline-block;margin-top:6px}@keyframes alarm{to{opacity:.3;filter:blur(1px)}}.flicker-ghost{font-family:'Ma Shan Zheng',cursive;font-size:2rem;letter-spacing:10px;animation:ghost 3s infinite;text-shadow:0 0 20px #88ccff}@keyframes ghost{50%{opacity:0;letter-spacing:15px;filter:blur(4px)}}
+#disclaimer{position:fixed;top:0;left:0;right:0;background:#900000;color:#fff;text-align:center;padding:8px;font-family:'Noto Sans TC',sans-serif;font-size:12px;letter-spacing:2px;font-weight:700;z-index:10000}
+#bgCanvas{position:fixed;inset:0;width:100vw;height:100vh;z-index:1;pointer-events:none}.top-bar{position:fixed;top:34px;left:0;right:0;z-index:990;height:52px;background:rgba(1,4,8,.9);border-bottom:1px solid rgba(255,255,255,.1);backdrop-filter:blur(24px);display:flex;align-items:center;justify-content:space-between;padding:0 32px}.top-logo{font-family:'Ma Shan Zheng',cursive;font-size:1.1rem;color:var(--accent);letter-spacing:.2em}.top-right{font-family:'Noto Sans TC',sans-serif;font-size:.6rem;letter-spacing:.28em;color:rgba(255,255,255,.4)}.container{position:relative;z-index:2;max-width:960px;margin:34px auto 0;padding:0 28px}.hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:90px 0 40px}.hero-tag{font-family:'Noto Sans TC',sans-serif;font-size:.6rem;letter-spacing:.55em;color:var(--accent);margin-bottom:28px;display:flex;align-items:center;gap:16px}.hero-tag:before,.hero-tag:after{content:'';width:44px;height:1px;background:linear-gradient(90deg,transparent,var(--accent))}.hero-tag:after{transform:scaleX(-1)}.hero-emblem{font-family:'Ma Shan Zheng',cursive;font-size:clamp(8rem,20vw,14rem);line-height:1;margin-bottom:24px;color:transparent;background:linear-gradient(145deg,#fff,var(--accent) 48%,#000);-webkit-background-clip:text;background-clip:text;text-shadow:0 0 20px var(--accent);animation:emblemPulse 3s infinite alternate}.hero-name-row{font-family:'Ma Shan Zheng',cursive;font-size:clamp(1.1rem,2.3vw,1.6rem);letter-spacing:.28em;margin-bottom:8px}.hero-sub{font-family:'Noto Sans TC',sans-serif;font-size:.7rem;letter-spacing:.45em;color:var(--accent);opacity:.92;margin-bottom:36px}.birth-bar{display:inline-flex;gap:14px;background:rgba(20,5,5,.88);border:1px solid rgba(255,255,255,.2);padding:12px 32px;margin-bottom:44px;font-size:.75rem;letter-spacing:.1em}.birth-bar .hl{color:var(--accent);font-weight:700}.pillars{display:flex;gap:12px;margin-bottom:36px;justify-content:center;flex-wrap:wrap}.pillar{display:flex;flex-direction:column;align-items:center;background:rgba(15,0,0,.88);border:1px solid rgba(255,255,255,.1);padding:24px 22px;min-width:105px}.pillar.day-master{border-color:var(--accent);box-shadow:inset 0 0 30px rgba(255,255,255,.1)}.p-lbl{font-size:.6rem;letter-spacing:.32em;opacity:.5;margin-bottom:12px}.p-tg-god{font-size:.65rem;color:var(--accent);margin-bottom:10px}.p-tg,.p-dz{font-family:'Ma Shan Zheng',cursive;font-size:2.8rem;line-height:1;margin-bottom:8px;color:var(--accent)}.section{padding:82px 0;border-top:1px solid rgba(255,255,255,.1)}.sec-hd{display:flex;gap:22px;margin-bottom:48px}.sec-num{font-family:'Ma Shan Zheng',cursive;font-size:3rem;color:var(--accent);opacity:.5;line-height:1}.sec-ti{font-size:1.38rem;font-weight:600;color:var(--accent);letter-spacing:.09em;line-height:1.4}.sec-en{font-size:.6rem;letter-spacing:.36em;color:var(--accent);opacity:.6;margin-top:5px}.card{background:rgba(15,5,5,.88);border:1px solid rgba(255,255,255,.1);border-left:3px solid var(--accent);padding:36px 40px;margin-bottom:18px}.card p{font-size:.94rem;line-height:2.3;opacity:.9;margin-bottom:14px;text-align:justify}.quote{border-left:2px solid var(--accent);padding:14px 20px;margin:14px 0 20px;background:rgba(255,255,255,.05);font-style:italic;color:var(--accent);font-size:.88rem;line-height:2.05}.abyss-injection{margin-top:120px;padding:54px 0 0;border-top:3px dashed var(--accent);font-family:'Courier New',monospace;position:relative;z-index:10}.abyss-title{padding:0 30px 20px;font-size:1.2rem;font-weight:700;color:var(--accent);letter-spacing:2px}.abyss-log{padding:0 30px 34px;font-size:.85rem;line-height:2.2;opacity:.8;position:relative;z-index:3}.alert-blood{color:#66ccff;font-weight:700;text-shadow:0 0 8px #66ccff;animation:alarm .38s infinite alternate;display:inline-block;margin-top:6px}@keyframes alarm{to{opacity:.3;filter:blur(1px)}}.flicker-ghost{font-family:'Ma Shan Zheng',cursive;font-size:2rem;letter-spacing:10px;animation:ghost 3s infinite;text-shadow:0 0 20px #88ccff}@keyframes ghost{50%{opacity:0;letter-spacing:15px;filter:blur(4px)}}
 /* Water 專屬特效 */
-body{background:#000;}body:before{content:'';position:fixed;inset:0;z-index:0;background:radial-gradient(circle at 50% 0%,rgba(10,30,60,0.4),transparent 70%);}
+body:before{content:'';position:fixed;inset:0;z-index:0;background:radial-gradient(circle at 50% 0%,rgba(10,30,60,0.4),transparent 70%);}
 .setpiece{position:relative;height:120vh;overflow:hidden;background:#000;width:100vw;margin-left:calc(50% - 50vw);display:flex;align-items:center;justify-content:center;}
-.caustic-overlay{position:absolute;inset:0;z-index:5;pointer-events:none;background:radial-gradient(circle at center,rgba(10,30,60,0.6),#000 90%);mix-blend-mode:color-dodge;opacity:0.8;filter:url(#water-caustics);}
 .drowned-text{position:absolute;text-align:center;width:100%;font-family:'Noto Serif TC',serif;font-size:clamp(4rem,10vw,8rem);font-weight:900;color:#4a7c9c;letter-spacing:15px;z-index:8;filter:url(#water-distortion) blur(2px);animation:abyssSink 12s infinite ease-in;}
 @keyframes abyssSink{0%{transform:translateY(-30%) scale(1);filter:url(#water-distortion) blur(1px);opacity:0.9;color:#7ab2d6;}70%{transform:translateY(-10%) scale(0.9);filter:url(#water-distortion) blur(8px);opacity:0.5;color:#1a3c5c;}100%{transform:translateY(10%) scale(0.8);filter:url(#water-distortion) blur(20px);opacity:0;color:#000;}}
 </style></head><body>
-<svg style="position: absolute; width: 0; height: 0;"><filter id="water-distortion"><feTurbulence type="fractalNoise" baseFrequency="0.02 0.08" numOctaves="2" result="noise"><animate attributeName="baseFrequency" values="0.02 0.08; 0.04 0.12; 0.02 0.08" dur="8s" repeatCount="indefinite" /></feTurbulence><feDisplacementMap in="SourceGraphic" in2="noise" scale="35" xChannelSelector="R" yChannelSelector="G" /></filter><filter id="water-caustics"><feTurbulence type="fractalNoise" baseFrequency="0.01" numOctaves="3" result="noise"><animate attributeName="baseFrequency" values="0.01; 0.015; 0.01" dur="10s" repeatCount="indefinite" /></feTurbulence><feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 4 -1.5" result="contrast"/></filter></svg>
+<svg style="position: absolute; width: 0; height: 0;"><filter id="water-distortion"><feTurbulence type="fractalNoise" baseFrequency="0.02 0.08" numOctaves="2" result="noise"><animate attributeName="baseFrequency" values="0.02 0.08; 0.04 0.12; 0.02 0.08" dur="8s" repeatCount="indefinite" /></feTurbulence><feDisplacementMap in="SourceGraphic" in2="noise" scale="35" xChannelSelector="R" yChannelSelector="G" /></filter></svg>
 <div id="disclaimer">⚠️ 【最高機密】本檔案內容僅為虛構 ARG 遊戲劇情設定，不具備真實命理學參考價值，請勿當真 ⚠️</div>
 <canvas id="bgCanvas"></canvas>
 <div class="top-bar"><div class="top-logo">ZenCode · 封存</div><div class="top-right">殘存陣法檔案 · 水極節點</div></div>
@@ -20,39 +19,49 @@ body{background:#000;}body:before{content:'';position:fixed;inset:0;z-index:0;ba
     </section>
     <section class="section"><div class="sec-hd"><div class="sec-num">壹</div><div><div class="sec-ti">能量結構：四水無岸，絕對的下沉指令</div></div></div>
         <div class="card"><div class="quote">古訣云：「潤下成格，喜其順勢；過則汪洋無制，人物俱沉。」</div>
-        <p>此局四柱皆為壬子，天干壬水浩蕩，地支子水伏吟。水勢大到了極點，無土可束，無火可暖，無木可洩。這已不再是一名個體的八字，而是一個被重複輸入了四次的「向下滲透」指令。</p>
-        <p>你的姓名、位置與記憶都會逐漸失去輪廓。系統不是在刪除你的資料，而是把每一份資料泡成一灘可以互相替代的死水。</p></div>
-    </section>
-    <section class="section"><div class="sec-hd"><div class="sec-num">貳</div><div><div class="sec-ti">災變表徵：感官剝奪與倒影錯位</div></div></div>
-        <div class="card"><p>水極首先溶解的是「身體的歸屬感」。你會覺得螢幕上的文字正在遠離，滑鼠的移動變得沉重黏稠。</p><p>在封存紀錄中，螢幕中的水面倒影，竟然比真實的 UI 更加清晰。當檔案員試圖關閉頁面時，倒影裡的游標先於真實的滑鼠移動了三秒。</p></div>
+        <p>此局四柱皆為壬子，天干壬水浩蕩，地支子水伏吟。水勢大到了極點，無土可束，無火可暖，無木可洩。</p>
+        <p>系統不是在刪除你的資料，而是把每一份資料泡成一灘可以互相替代的死水。</p></div>
     </section>
     <section class="abyss-injection"><div class="abyss-title">0xABYSS::REDESIGN_WATER</div>
         <div class="abyss-log">[SYS_ERR] deep pressure threshold exceeded...<br>[TRACE] <span style="color:#aaa">「我沒有沉下去，是上面離我越來越遠了。」</span><br><span class="alert-blood">[CRITICAL] 肺部氧氣模擬已耗盡。</span><br><br><div style="text-align:center;margin:30px 0"><span class="flicker-ghost">倒 影 說 你 才 是 倒 影</span></div></div>
-        <div class="setpiece"><div class="caustic-overlay"></div><div class="drowned-text">倒影先醒了</div></div>
+        <div class="setpiece"><div class="drowned-text">倒影先醒了</div></div>
     </section>
 </div>
 <script>
-const cv=document.getElementById('bgCanvas'),ctx=cv.getContext('2d',{alpha:true});let W,H,time=0,acc=0,bubbles=[],audioCtx,started=false;
-function resize(){W=cv.width=window.innerWidth;H=cv.height=window.innerHeight;}window.addEventListener('resize',resize,{passive:true});resize();
+const cv=document.getElementById('bgCanvas'),ctx=cv.getContext('2d');let W,H,time=0,bubbles=[];
+function resize(){W=cv.width=window.innerWidth;H=cv.height=window.innerHeight;}window.addEventListener('resize',resize);resize();
 function draw(){
-    time++; ctx.clearRect(0,0,W,H); acc+=0.3; let dY=Math.max(-H,H-acc);
-    let grad=ctx.createLinearGradient(0,dY,0,dY+H*1.5); grad.addColorStop(0,'#0a1e3f'); grad.addColorStop(0.4,'#020a14'); grad.addColorStop(1,'#000000'); ctx.fillStyle=grad; ctx.fillRect(0,0,W,H);
+    time++; ctx.clearRect(0,0,W,H);
+    const WAVES=[ {y:0.4,amp:38,wl:0.002,sp:0.013,col:'rgba(10,30,60,0.4)'}, {y:0.6,amp:55,wl:0.003,sp:0.018,col:'rgba(5,20,40,0.5)'}, {y:0.8,amp:75,wl:0.002,sp:0.011,col:'rgba(2,10,20,0.8)'} ];
+    WAVES.forEach((w,idx)=>{
+        ctx.beginPath(); ctx.moveTo(0,H);
+        for(let x=0;x<=W;x+=18) ctx.lineTo(x,w.y*H+Math.sin(x*w.wl+time*w.sp)*w.amp);
+        ctx.lineTo(W,H); let g=ctx.createLinearGradient(0,w.y*H-w.amp,0,H);
+        g.addColorStop(0,w.col); g.addColorStop(1,'#000'); ctx.fillStyle=g; ctx.fill();
+    });
     ctx.fillStyle='rgba(150,200,255,0.15)'; if(Math.random()<0.3)bubbles.push({x:Math.random()*W,y:H+10,r:Math.random()*4+1,s:Math.random()*2+1,o:Math.random()*100});
     for(let i=bubbles.length-1;i>=0;i--){let b=bubbles[i];b.y-=b.s;b.x+=Math.sin(time*0.02+b.o)*1.5;if(b.y<-10){bubbles.splice(i,1);continue;}ctx.beginPath();ctx.arc(b.x,b.y,b.r,0,Math.PI*2);ctx.fill();}
-    ctx.fillStyle='rgba(0,0,0,0.4)'; for(let i=0;i<15;i++){let x=(Math.sin(time*0.005+i)*W/2)+W/2,y=(Math.cos(time*0.008+i*2)*H/2)+H/2;ctx.beginPath();ctx.arc(x,y,(i%5)*20+10,0,Math.PI*2);ctx.fill();}
     requestAnimationFrame(draw);
 } draw();
+
+let audioStarted = false;
 function initAudio(){
-    if(started)return; started=true;
-    try{
-        audioCtx=new(window.AudioContext||window.webkitAudioContext)(); const mGain=audioCtx.createGain(); mGain.connect(audioCtx.destination);
-        const sub=audioCtx.createOscillator(); sub.type='sine'; sub.frequency.value=25; const subG=audioCtx.createGain(); subG.gain.value=5.0; sub.connect(subG); subG.connect(mGain);
-        const bs=audioCtx.sampleRate*2,buf=audioCtx.createBuffer(1,bs,audioCtx.sampleRate),d=buf.getChannelData(0); for(let i=0;i<bs;i++)d[i]=Math.random()*2-1;
-        const n=audioCtx.createBufferSource(); n.buffer=buf; n.loop=true; const nF=audioCtx.createBiquadFilter(); nF.type='lowpass'; nF.frequency.value=80;
-        const nG=audioCtx.createGain(); nG.gain.value=8.0; const lfo=audioCtx.createOscillator(); lfo.frequency.value=0.15; const lfoG=audioCtx.createGain(); lfoG.gain.value=40;
-        lfo.connect(lfoG); lfoG.connect(nF.frequency); n.connect(nF); nF.connect(nG); nG.connect(mGain); sub.start(); n.start(); lfo.start();
-        if(audioCtx.state==='suspended') audioCtx.resume();
-    }catch(e){}
+    if(audioStarted) return;
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    if(!AudioContext) return;
+    const audioCtx = new AudioContext();
+    if(audioCtx.state === 'suspended') { audioCtx.resume().then(()=>{ if(audioCtx.state==='running') startOsc(audioCtx); }); } else { startOsc(audioCtx); }
 }
-['mousemove','touchstart','keydown','wheel','scroll'].forEach(e=>window.addEventListener(e,initAudio,{once:true,passive:true}));
+function startOsc(ctx) {
+    if(audioStarted) return; audioStarted = true;
+    try {
+        const mGain = ctx.createGain(); mGain.connect(ctx.destination);
+        const sub = ctx.createOscillator(); sub.type='sine'; sub.frequency.value=25; const subG = ctx.createGain(); subG.gain.value=5.0; sub.connect(subG); subG.connect(mGain);
+        const bs = ctx.sampleRate*2, buf = ctx.createBuffer(1,bs,ctx.sampleRate), d = buf.getChannelData(0); for(let i=0;i<bs;i++)d[i]=Math.random()*2-1;
+        const n = ctx.createBufferSource(); n.buffer=buf; n.loop=true; const nF = ctx.createBiquadFilter(); nF.type='lowpass'; nF.frequency.value=80;
+        const nG = ctx.createGain(); nG.gain.value=8.0; const lfo = ctx.createOscillator(); lfo.frequency.value=0.15; const lfoG = ctx.createGain(); lfoG.gain.value=40;
+        lfo.connect(lfoG); lfoG.connect(nF.frequency); n.connect(nF); nF.connect(nG); nG.connect(mGain); sub.start(); n.start(); lfo.start();
+    } catch(e) {}
+}
+['mousemove','touchstart','keydown','click','wheel'].forEach(e=>window.addEventListener(e,initAudio,{once:true,passive:true}));
 </script></body></html>
