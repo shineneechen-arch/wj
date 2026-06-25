@@ -1250,7 +1250,6 @@ function ringIndexForPalace(palace) {
 }
 
 function buildRotatingLayer(homeMap, valuePalace, targetPalace, dun) {
-  const forward = dun === '阳遁';
   const homeRing = RING_ORDER.map(p => homeMap[p]);
   const baseValuePalace = valuePalace === 5 ? 2 : valuePalace;
   const value = homeMap[baseValuePalace] || homeMap[2];
@@ -1258,7 +1257,7 @@ function buildRotatingLayer(homeMap, valuePalace, targetPalace, dun) {
   const targetIdx = ringIndexForPalace(targetPalace);
   const layer = {5: homeMap[5] || ''};
   RING_ORDER.forEach((palace, i) => {
-    const step = forward ? (i - targetIdx) : (targetIdx - i);
+    const step = i - targetIdx;
     layer[palace] = homeRing[(valueIdx + step + homeRing.length) % homeRing.length];
   });
   return layer;
