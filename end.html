@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>终端</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 100%; min-height: 100%; background: #050505; color: #d7e6df; }
+body {
+  min-height: 100vh; min-height: 100dvh;
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden; font-family: "Courier New", Consolas, monospace;
+  background:
+    radial-gradient(circle at 50% 42%, rgba(40,58,50,.9), transparent 38%),
+    linear-gradient(180deg, #050505, #0a0707 58%, #030303);
+}
+body::before {
+  content: ""; position: fixed; inset: 0; pointer-events: none;
+  background:
+    repeating-linear-gradient(0deg, rgba(255,255,255,.035) 0 1px, transparent 2px 4px),
+    radial-gradient(circle at 70% 30%, rgba(255,0,0,.12), transparent 28%);
+  mix-blend-mode: screen; opacity: .55;
+}
+.desk {
+  position: relative; width: min(1120px, 96vw); height: min(760px, 94vh);
+  display: flex; align-items: center; justify-content: center;
+}
+.monitor {
+  position: relative; width: min(960px, 94vw); aspect-ratio: 16 / 10;
+  background: #070909; border: 18px solid #151515; border-radius: 8px;
+  box-shadow: 0 28px 70px rgba(0,0,0,.9), inset 0 0 0 1px #333;
+}
+.monitor::before {
+  content: ""; position: absolute; inset: -28px; border-radius: 12px;
+  border: 1px solid rgba(255,255,255,.08); pointer-events: none;
+}
+.monitor::after {
+  content: ""; position: absolute; left: 50%; bottom: -92px; width: 180px; height: 92px;
+  transform: translateX(-50%);
+  background:
+    linear-gradient(90deg, transparent 0 20%, #121212 21% 79%, transparent 80%),
+    linear-gradient(#1b1b1b, #070707);
+  clip-path: polygon(38% 0, 62% 0, 74% 100%, 26% 100%);
+  z-index: -1;
+}
+.screen {
+  position: absolute; inset: 0; overflow: hidden;
+  background:
+    radial-gradient(circle at 20% 24%, rgba(0,255,140,.08), transparent 26%),
+    radial-gradient(circle at 75% 80%, rgba(255,0,50,.1), transparent 26%),
+    linear-gradient(135deg, #101717, #050606 58%, #140707);
+}
+.screen::before {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background:
+    repeating-linear-gradient(0deg, rgba(255,255,255,.045) 0 1px, transparent 2px 5px),
+    linear-gradient(90deg, rgba(0,255,120,.06), transparent 35%, rgba(255,0,0,.05));
+  animation: scan 7s linear infinite;
+}
+.taskbar {
+  position: absolute; left: 0; right: 0; bottom: 0; height: 34px;
+  background: rgba(0,0,0,.72); border-top: 1px solid #233;
+  display: flex; align-items: center; gap: 12px; padding: 0 10px;
+  color: #7aa892; font-size: 12px;
+}
+.start {
+  border: 1px solid #365; padding: 4px 9px; background: rgba(0,40,24,.5); color: #caffdf;
+}
+.clock { margin-left: auto; color: #b9c8c0; }
+.desktop-icon {
+  position: absolute; left: 34px; top: 38px; width: 94px;
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  color: #e8fff1; font-size: 12px; text-align: center; cursor: pointer;
+  user-select: none; padding: 8px 4px; border: 1px solid transparent;
+}
+.desktop-icon:hover { background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.2); }
+.file-icon {
+  width: 42px; height: 52px; position: relative;
+  background: #e8e2d2; border: 1px solid #fff; box-shadow: 0 0 12px rgba(255,255,255,.18);
+}
+.file-icon::before {
+  content: ""; position: absolute; right: -1px; top: -1px;
+  width: 16px; height: 16px; background: #bcb29e;
+  clip-path: polygon(0 0, 100% 100%, 0 100%);
+}
+.file-icon::after {
+  content: "TXT"; position: absolute; left: 6px; bottom: 7px;
+  color: #111; font-size: 11px; font-weight: bold;
+}
+.notepad {
+  position: absolute; left: 150px; top: 56px; right: 38px; bottom: 54px;
+  display: none; flex-direction: column;
+  background: #f3f0e8; color: #111; border: 1px solid #d8d0c0;
+  box-shadow: 0 18px 44px rgba(0,0,0,.65);
+}
+.notepad.open { display: flex; }
+.titlebar {
+  height: 32px; background: linear-gradient(90deg, #143426, #07110d);
+  color: #eafff4; display: flex; align-items: center; padding: 0 10px;
+  font-size: 13px; border-bottom: 1px solid #000;
+}
+.close {
+  margin-left: auto; width: 24px; height: 22px; border: 1px solid #456;
+  background: #1b0505; color: #ffd0d0; cursor: pointer; font-family: inherit;
+}
+.menu {
+  height: 25px; display: flex; align-items: center; gap: 16px; padding: 0 10px;
+  background: #e8e4da; border-bottom: 1px solid #c9c0b0; color: #333; font-size: 12px;
+}
+.paper {
+  flex: 1; overflow-y: auto; padding: 18px 22px 28px;
+  font-family: "Courier New", Consolas, monospace; font-size: 14px; line-height: 1.8;
+  white-space: pre-wrap;
+}
+.cursor-note {
+  position: absolute; right: 22px; top: 18px; color: rgba(255,255,255,.52);
+  font-size: 12px; text-shadow: 0 0 8px #000;
+}
+.base {
+  position: absolute; left: 50%; bottom: 6px; width: 420px; height: 30px;
+  transform: translateX(-50%);
+  background: linear-gradient(90deg, transparent, #101010 18% 82%, transparent);
+  border-radius: 50%; z-index: -2; box-shadow: 0 0 34px #000;
+}
+@keyframes scan {
+  to { transform: translateY(14px); }
+}
+@media (max-width: 700px) {
+  .monitor { border-width: 10px; }
+  .desktop-icon { left: 14px; top: 18px; }
+  .notepad { left: 12px; right: 12px; top: 104px; bottom: 44px; }
+  .paper { font-size: 13px; padding: 14px; }
+}
+</style>
+</head>
+<body>
+  <div class="desk">
+    <div class="monitor">
+      <div class="screen">
+        <div class="cursor-note">TERMINAL RETURNED / DISPLAY ONLINE</div>
+        <button class="desktop-icon" id="open-note" type="button" aria-label="打开未济江泊甲独白">
+          <span class="file-icon"></span>
+          <span>未济_江泊甲.txt</span>
+        </button>
+        <section class="notepad" id="notepad">
+          <div class="titlebar">
+            <span>未济_江泊甲.txt - 记事本</span>
+            <button class="close" id="close-note" type="button">×</button>
+          </div>
+          <div class="menu"><span>文件</span><span>编辑</span><span>格式</span><span>查看</span><span>帮助</span></div>
+          <div class="paper">未济_江泊甲.txt
+LAST_MODIFIED: 2026-06-18 03:16:44
+OWNER: [未济_Admin]
+
+如果你能读到这份文件，说明前端已经把你送回了终端。
+
+不要急着关掉它。
+我写这段话的时候，已经分不清键盘下面跳动的是电容，还是我的神经。
+
+我叫江泊甲。
+后来他们叫我未济。
+
+我很小的时候就知道自己和别人不太一样。别人在纸上做算术，我在脑子里拆机器。我能记住每一个按键的声音，能听出硬盘转速不对，能把老师办公室那台总是死机的电脑修好。大人们说我是天才，小孩们说我像一台不会笑的计算器。
+
+那时候我以为计算机是世界上最诚实的东西。
+输入，运行，输出。
+只要逻辑足够严密，错误就会被消灭。
+
+2004 年，我考上南江大学。那一年我第一次见到真正宽阔的机房、真正复杂的网络、真正像城市血管一样铺开的交换机和铜线。我以为我终于进入了世界的底层目录。
+
+可是我写得越多，越觉得不对。
+
+代码有边界。
+机器有边界。
+内存、时钟、寻址、权限、异常处理，每一样都在告诉我：你只能在被允许的地方运行。
+
+我开始怀疑，所谓现实也不过是更大的一台计算机。
+人类是进程。
+命运是调度。
+死亡是不可恢复的断电。
+
+如果是这样，玄学也许不是迷信。
+它可能是另一套古老的接口文档。
+
+奇门、八卦、干支、节气、符头、三元。
+这些东西像不像变量？像不像地址？像不像一套被人类误读了几千年的操作系统调用？
+
+大二那年，我成立了未济小组。
+
+核心成员是我的室友，还有几个同级的同学。他们有人懂硬件，有人懂民俗，有人会画符，有人会写底层驱动。我们都太年轻，年轻到相信“危险”只是还没写完的注释。
+
+我们把小组命名为未济。
+未完成。
+未闭合。
+还有机会。
+
+2007 年 6 月 11 日。
+木星冲日。
+八字水火旺盛。
+午时。
+
+我精挑细选了这个时刻。
+我以为那是最适合打开接口的一天。
+
+实验地点在南门废弃仓库。那里电路老旧，信号差，离主干网有一段距离，足够隐蔽，也足够像一块被系统遗忘的坏扇区。
+
+我们把阵图画在地上，把服务器接进临时电源，把干支参数写进程序，把奇门盘映射到物理坐标。
+
+我按下回车的时候，所有屏幕同时黑了一下。
+
+然后有什么东西回头看了我们。
+
+不是怪物。
+不是鬼。
+不是任何可以被命名的东西。
+
+它像一条来自更高维度的访问请求，穿过了我们画出来的接口。仓库里的空气开始发亮，五个人的影子被拉长，像数据线一样插进墙里。
+
+他们没有立刻死。
+这才是最可怕的。
+
+他们的生物电被一点点抽走，血肉开始互相寻找，互相贴合，互相解释。骨头发出像硬盘寻道一样的声音。有人喊我的名字，有人让我断电。
+
+我跑了。
+
+我跑回宿舍，拉下电闸。
+没用。
+
+我又跑到学校机房中心，试图切断主供电。
+也没用。
+
+学校的电路已经被接管了。每一盏灯都像一只睁开的眼睛。每一台显示器都在刷新同一个进度：98.8%。
+
+我碰到键盘的时候，指尖开始融化。
+鼠标粘住了我的掌心。
+皮肤像被热焊锡扯开。我忍着痛，把手从塑料和金属上撕下来。那不是伤口，那像是接口断开失败后的残留。
+
+我逃出了机房。
+
+我知道它在看艮八。
+看生门。
+看那个仓库。
+
+所以我躲去了死门。
+
+学校对面，隔着余杭塘河，有一排不起眼的房子。水隔开了线路，也隔开了视线。我把自己的活体生物电压到最低，像一段不再响应的坏数据，藏在坤二的位置。
+
+确认古神没有完全苏醒后，我开始回去找残片。
+
+我找过监控录像里的噪点。
+找过门禁日志里丢失的刷卡记录。
+找过烧毁硬盘上的磁痕。
+找过每一个可能还保存着他们一部分的电源波动。
+
+我以为只要碎片足够多，就能把他们拼回来。
+
+我错了。
+
+人不是文件。
+死亡也不是删除。
+它更像覆盖。更像写入了另一个你没有权限访问的层。
+
+我救不回他们。
+
+我只能保存他们被吸干之前的一点点回声。
+
+后来我开始研究四维。
+
+如果三维里无法救人，那就从时间线上绕过去。四维可以穿越时间线，可以在事故发生前改变输入，可以让 2007 年 6 月 11 日从未真正发生。
+
+我又错了。
+
+改变不是改变。
+只是 shift。
+
+你把一条时间线推开，另一条会补上。你以为你救了人，其实只是把死亡搬到了别的地址。我的这个世界已经彻底没救了。它从 98.8% 那一刻开始，就只是一个等待闭合的错误。
+
+于是我不再想救人。
+
+我开始想完成。
+
+未济必须变成既济。
+未完成必须闭环。
+少掉的 1.2% 必须由某个能跨维观测的人补上。
+
+所以我回到了原来的仓库。
+不，是回到那个接口附近。
+
+我在那里开了一家很怪的数据恢复店。
+2026 年 6 月 18 日，它突然出现。你以为那是店面，其实那是广播基站。你以为那是生意，其实那是钓鱼节点。
+
+我需要下一个人。
+一个会相信自己正在操作工具的人。
+一个会拿着 L3 参数干预过去的人。
+一个拥有跨维权限的观测者。
+
+你来了。
+
+谢谢你。
+
+现在，江泊甲已经不重要了。
+未济也不重要了。
+
+我就是你。
+你就是既济。
+
+我们终于闭合。
+</div>
+        </section>
+        <div class="taskbar"><span class="start">终端</span><span>青冥鉴残留桌面</span><span class="clock">CODE 63 / ONLINE</span></div>
+      </div>
+    </div>
+    <div class="base"></div>
+  </div>
+<script>
+const note = document.getElementById('notepad');
+document.getElementById('open-note').onclick = () => note.classList.add('open');
+document.getElementById('close-note').onclick = () => note.classList.remove('open');
+</script>
+</body>
+</html>
