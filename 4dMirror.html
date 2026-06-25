@@ -1028,7 +1028,8 @@ const JIEQI_JU = {
   处暑:[1,4,7], 白露:[9,3,6], 秋分:[7,1,4], 寒露:[6,9,3],
   霜降:[5,8,2], 立冬:[6,9,3], 小雪:[5,8,2], 大雪:[4,7,1]
 };
-const FLY_ORDER = [1,2,3,4,5,6,7,8,9];
+const FLY_ORDER = [1,6,7,2,9,4,3,8,5];
+const FLY_START_BY_JU = {9:1, 8:6, 7:7, 6:2, 5:9, 4:4, 3:3, 2:8, 1:5};
 const RING_ORDER = [1,8,3,4,9,2,7,6];
 const INSTRUMENTS = ['戊','己','庚','辛','壬','癸','丁','丙','乙'];
 const XUN_INSTRUMENT = {'甲子':'戊','甲戌':'己','甲申':'庚','甲午':'辛','甲辰':'壬','甲寅':'癸'};
@@ -1237,7 +1238,8 @@ function getFocusActionLabel(pos) {
 }
 
 function placeInstruments(dun, ju) {
-  const palaceSeq = rotateFrom(FLY_ORDER, ju, dun === '阳遁');
+  const startPalace = FLY_START_BY_JU[ju] || 1;
+  const palaceSeq = rotateFrom(FLY_ORDER, startPalace, dun === '阳遁');
   const ground = {};
   INSTRUMENTS.forEach((stem, i) => { ground[stem] = palaceSeq[i]; });
   return ground;
