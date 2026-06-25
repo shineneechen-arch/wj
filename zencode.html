@@ -106,8 +106,13 @@ select.inp option{background:#0C0000;color:var(--text);}
 .bp-p{display:flex;flex-direction:column;align-items:center;background:rgba(0,0,0,0.6);border:1px solid rgba(255,0,0,0.2);padding:10px 14px 8px;min-width:62px;}
 .bp-l{font-family:'Noto Sans TC',sans-serif;font-size:0.53rem;color:var(--text-f);letter-spacing:0.2em;margin-bottom:7px;}
 .bp-t, .bp-d{font-family:'Ma Shan Zheng',cursive;font-size:1.75rem;line-height:1; color:#ff003c;}
-.bp-g{font-family:'Noto Sans TC',sans-serif;font-size:0.51rem;color:#888;margin-top:7px;letter-spacing:0.1em;}
-.bp-ex{text-align:center;margin-top:10px;font-family:'Noto Sans TC',sans-serif;font-size:0.63rem;color:rgba(255,0,0,0.4);letter-spacing:0.18em;}
+
+/* 自由拖動篡改樣式 */
+.drag-el { cursor: ns-resize; user-select: none; touch-action: none; position: relative; transition: color 0.2s, text-shadow 0.2s; }
+.drag-el:hover { color: #fff; text-shadow: 0 0 15px #ff003c; }
+.drag-el:active { color: #fff; text-shadow: 0 0 25px #ff003c; transform: scale(1.1); }
+
+.bp-ex{text-align:center;margin-top:10px;font-family:'Noto Sans TC',sans-serif;font-size:0.63rem;color:rgba(255,0,0,0.4);letter-spacing:0.18em;display:flex;flex-direction:column;gap:5px;}
 
 /* 側邊欄及天球儀戰損視覺 */
 .floating-right-group { position: fixed; right: 40px; top: 50%; transform: translateY(-50%); z-index: 90; display: flex; flex-direction: column; gap: 36px; align-items: center; }
@@ -368,13 +373,12 @@ function getJQPrecise(year, mIdx){
   return{day:r[0],hour:r[1],minute:r[2]};
 }
 
-/* 根據地名獲取精準坐標（集成模糊匹配與真太陽時鎖） */
 function getLng(birthplace){
   if(!birthplace)return null;
   if(/杭州|浙江/.test(birthplace)) return 120.21;
   if(/四川|成都/.test(birthplace)) return 102.50;
   if(birthplace.includes('北京')) return 116.4;
-  return 120.0; // 默認北京時間經度
+  return 120.0; 
 }
 
 function correctSolarTime(hour, minute, birthplace, tzOffset=8){
@@ -437,12 +441,116 @@ function calcBazi(year,month,day,hour,minute,birthplace){
 }
 
 /* ═══════════════════════════════════════════════════════
-   初始化與防怠惰追蹤
+   自由篡改機制 (Free Drag Bazi Modifier)
 ═══════════════════════════════════════════════════════ */
 let isAutoFilled = false;
+let currentDragElement = null;
+let dragStartY = 0;
 
+window.addEventListener('mousemove', (e) => {
+    if (!currentDragElement) return;
+    let dy = e.clientY - dragStartY;
+    if (Math.abs(dy) > 15) {
+        shiftValue(currentDragElement, dy > 0 ? -1 : 1);
+        dragStartY = e.clientY;
+    }
+});
+window.addEventListener('mouseup', () => { currentDragElement = null; });
+
+function bindDragEvents() {
+    const drags = document.querySelectorAll('.drag-el');
+    drags.forEach(el => {
+        el.onmousedown = (e) => { 
+            currentDragElement = el; 
+            dragStartY = e.clientY; 
+            e.preventDefault(); 
+        };
+        el.ontouchstart = (e) => { 
+            currentDragElement = el; 
+            dragStartY = e.touches[0].clientY; 
+        };
+        el.ontouchmove = (e) => {
+            if (currentDragElement !== el) return;
+            let dy = e.touches[0].clientY - dragStartY;
+            if (Math.abs(dy) > 15) {
+                shiftValue(el, dy > 0 ? -1 : 1);
+                dragStartY = e.touches[0].clientY;
+            }
+            e.preventDefault(); 
+        };
+        el.ontouchend = () => { currentDragElement = null; };
+        
+        el.onwheel = (e) => {
+            e.preventDefault();
+            shiftValue(el, e.deltaY > 0 ? -1 : 1);
+        };
+    });
+}
+
+function shiftValue(el, dir) {
+    isAutoFilled = false;
+    let type = el.getAttribute('data-type');
+    let idx = parseInt(el.getAttribute('data-idx'));
+    let arr = type === 'tg' ? TG : DZ;
+    idx = (idx + dir + arr.length) % arr.length;
+    el.setAttribute('data-idx', idx);
+    el.innerText = arr[idx];
+    validateBazi();
+}
+
+function validateBazi() {
+    const bp = document.getElementById('ubp').value.trim();
+    const btn = document.getElementById('sbtn');
+    const stHint = document.getElementById('solar-hint');
+    
+    const pillars = document.querySelectorAll('.bp-p');
+    if (pillars.length !== 4) return;
+    
+    let baziArr = [];
+    pillars.forEach(p => {
+        let t = p.querySelector('.bp-t').innerText;
+        let d = p.querySelector('.bp-d').innerText;
+        baziArr.push(t + d);
+    });
+    const baziStr = baziArr.join(' ');
+    
+    document.getElementById('bpex').innerHTML = `
+        <span style="font-size:0.75rem; letter-spacing:0.2em; color:#ff003c;">${baziStr}</span>
+        <span class="hint" style="display:block; font-size:0.55rem; color:#8b0000; letter-spacing:0.1em; margin-top:5px;">( 檢測到因果鬆動，可上下滑動篡改陣眼 )</span>
+    `;
+    
+    const condA = baziStr === '丁亥 丙午 丙子 甲午' && /杭州|浙江/.test(bp);
+    const condB = baziStr === '丁亥 丙午 丙子 癸巳' && /四川|成都/.test(bp);
+    const extremeAnomalies = [
+        '壬子 壬子 壬子 壬子',
+        '丙午 丙午 丙午 丙午',
+        '戊辰 戊辰 戊辰 戊辰',
+        '庚申 庚申 庚申 庚申',
+        '乙卯 乙卯 乙卯 乙卯'
+    ];
+    const condC = extremeAnomalies.includes(baziStr) && (/杭州|浙江/.test(bp) || /四川|成都/.test(bp)); // 極端局同樣要求輸入地點才能通過驗證
+
+    if (isAutoFilled) {
+        btn.disabled = false;
+        btn.classList.add('unlocked');
+        btn.style.boxShadow = '0 6px 32px rgba(255, 0, 0, 0.2)'; 
+        btn.textContent = '【 提取當前時空檔案 】';
+    } else if (condA || condB || condC) {
+        btn.disabled = false;
+        btn.classList.add('unlocked');
+        btn.style.boxShadow = ''; 
+        btn.textContent = '【 警告：提取獻祭者檔案 】';
+    } else {
+        btn.disabled = true;
+        btn.classList.remove('unlocked');
+        btn.textContent = '陣法錨點缺失...';
+    }
+}
+
+/* ═══════════════════════════════════════════════════════
+   初始化設定
+═══════════════════════════════════════════════════════ */
 window.addEventListener('DOMContentLoaded', () => {
-    // 獲取當前系統時間
     const now = new Date();
     document.getElementById('by').value = now.getFullYear();
     document.getElementById('bm').value = now.getMonth() + 1;
@@ -452,7 +560,6 @@ window.addEventListener('DOMContentLoaded', () => {
     const mins = now.getMinutes();
     document.getElementById('bmin').value = mins < 10 ? '0' + mins : mins;
 
-    // 利用瀏覽器時區 API 粗略提取城市
     const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || "";
     let cityMock = tz.split('/').pop().replace(/_/g, ' ');
     if(!cityMock || cityMock === "UTC") cityMock = "System_Local_Node";
@@ -460,7 +567,6 @@ window.addEventListener('DOMContentLoaded', () => {
 
     isAutoFilled = true;
     
-    // 綁定輸入監聽：只要手動修改，解除怠惰鎖定
     const inputs = document.querySelectorAll('#by, #bm, #bd, #bh, #bmin, #ubp');
     inputs.forEach(inp => {
         inp.addEventListener('input', () => { isAutoFilled = false; odc(); });
@@ -469,9 +575,6 @@ window.addEventListener('DOMContentLoaded', () => {
     odc();
 });
 
-/* ═══════════════════════════════════════════════════════
-   褻瀆名諱監聽 (Blasphemy Check)
-═══════════════════════════════════════════════════════ */
 document.getElementById('un').addEventListener('blur', function(e) {
     const val = e.target.value.trim().toLowerCase();
     const forbiddenNames = ['test', 'admin', 'root', '123', '鬼谷子', '太歲'];
@@ -483,7 +586,6 @@ document.getElementById('un').addEventListener('blur', function(e) {
         e.target.style.textShadow = '0 0 8px rgba(255,0,0,0.8)';
         document.getElementById('sbtn').disabled = true;
         
-        // 鎖死按鈕，直到重新輸入
         setTimeout(() => {
             e.target.value = '';
             e.target.style.color = '';
@@ -495,7 +597,7 @@ document.getElementById('un').addEventListener('blur', function(e) {
 });
 
 /* ═══════════════════════════════════════════════════════
-   動態核心監測邏輯 (odc)
+   計算核心 (生成拖拽 UI)
 ═══════════════════════════════════════════════════════ */
 function odc(){
     let y=parseInt(document.getElementById('by').value)||0;
@@ -504,32 +606,29 @@ function odc(){
     let h=parseInt(document.getElementById('bh').value)||0;
     let mn=parseInt(document.getElementById('bmin').value)||0;
     const bp=document.getElementById('ubp').value.trim();
-    const btn = document.getElementById('sbtn');
     const stHint = document.getElementById('solar-hint');
 
     if(!y||!m||!d){ document.getElementById('bprev').classList.remove('show'); stHint.style.display='none'; return; }
 
-    // 1. 農曆轉公曆處理
     if(calType==='lunar'){
         const s=lunarToSolar(y,m,d,document.getElementById('ilp').checked);
         if(!s){ document.getElementById('bprev').classList.remove('show'); return; }
         y=s.year; m=s.month; d=s.day;
     }
 
-    // 2. 時空悖論校驗 (Timeline Paradox)
     const currentYear = new Date().getFullYear();
     if (y > currentYear) {
         document.getElementById('bpps').innerHTML = `<div style="color:#ff003c; font-size:0.8rem; letter-spacing:0.2em; text-align:center; padding:20px; font-family:'Noto Sans TC',sans-serif;">【時空悖論】無法讀取未降生之實體</div>`;
         document.getElementById('bpex').textContent = 'ERR: TIMELINE_OVERFLOW';
         document.getElementById('bprev').classList.add('show');
         stHint.style.display='none';
+        const btn = document.getElementById('sbtn');
         btn.disabled = true;
         btn.classList.remove('unlocked');
         btn.textContent = '因果線未閉合...';
         return; 
     }
 
-    // 3. 動態展示要求的真太陽時校正文本
     if(bp){
         if(/杭州|浙江/.test(bp)){
             stHint.textContent = `✦ 經度 120.21° → 真太陽時偏差 +1 分`;
@@ -547,65 +646,35 @@ function odc(){
         stHint.style.display = 'none';
     }
 
-    // 4. 全量排盤引擎計算
     try {
         const pillars = calcBazi(y,m,d,h,mn,bp);
-        const baziStr = pillars.map(p=>p.tg+p.dz).join(' ');
-
-        // 渲染戰損盤面
-        document.getElementById('bpps').innerHTML=pillars.map(p=>`
+        
+        // 渲染可拖拽的盤面
+        document.getElementById('bpps').innerHTML = pillars.map(p => `
             <div class="bp-p">
                 <div class="bp-l">${p.label}</div>
-                <div class="bp-t">${p.tg}</div>
-                <div class="bp-d">${p.dz}</div>
+                <div class="bp-t drag-el" data-type="tg" data-idx="${TG.indexOf(p.tg)}">${p.tg}</div>
+                <div class="bp-d drag-el" data-type="dz" data-idx="${DZ.indexOf(p.dz)}">${p.dz}</div>
             </div>`).join('');
-        document.getElementById('bpex').textContent = baziStr;
+            
         document.getElementById('bprev').classList.add('show');
+        bindDragEvents();
+        validateBazi();
 
-        // 5. 精準比對解謎密碼鎖
-        const condA = baziStr === '丁亥 丙午 丙子 甲午' && /杭州|浙江/.test(bp);
-        const condB = baziStr === '丁亥 丙午 丙子 癸巳' && /四川|成都/.test(bp);
-        
-        const extremeAnomalies = [
-            '壬子 壬子 壬子 壬子', // 潤下成格 (極水)
-            '丙午 丙午 丙午 丙午', // 炎上成格 (極火)
-            '戊辰 戊辰 戊辰 戊辰', // 稼穡成格 (極土)
-            '庚申 庚申 庚申 庚申', // 從革成格 (極金)
-            '乙卯 乙卯 乙卯 乙卯'  // 曲直成格 (極木)
-        ];
-        const condC = extremeAnomalies.includes(baziStr); 
-
-        if (isAutoFilled) {
-            btn.disabled = false;
-            btn.classList.add('unlocked');
-            btn.style.boxShadow = '0 6px 32px rgba(255, 0, 0, 0.2)'; 
-            btn.textContent = '【 提取當前時空檔案 】';
-        } else if (condA || condB || condC) {
-            btn.disabled = false;
-            btn.classList.add('unlocked');
-            btn.style.boxShadow = ''; 
-            btn.textContent = '【 警告：提取獻祭者檔案 】';
-        } else {
-            btn.disabled = true;
-            btn.classList.remove('unlocked');
-            btn.textContent = '陣法錨點缺失...';
-        }
     } catch(e) {
         document.getElementById('bprev').classList.remove('show');
     }
 }
 
 /* ═══════════════════════════════════════════════════════
-   跳轉分流與懲罰邏輯 (submitCorrupted)
+   跳轉分流邏輯
 ═══════════════════════════════════════════════════════ */
 function submitCorrupted() {
-    // 【觸發因果律懲罰：檢測到怠惰】
     if (isAutoFilled) {
         const currentHour = new Date().getHours();
         const scareTextTitle = document.querySelector('#scare-overlay h2');
         const scareTextBody = document.querySelector('#scare-overlay p');
 
-        // 子時越界彩蛋 (23:00 - 00:59)
         if (currentHour === 23 || currentHour === 0) {
             scareTextTitle.innerText = '【 警告：子時越界 】';
             scareTextBody.innerHTML = '陰陽交替之界，太歲星凝視之時。<br>妄以惰性之軀觸碰底層法則，你的靈魂錨點已暴露。';
@@ -632,20 +701,17 @@ function submitCorrupted() {
         return; 
     }
 
-    const pillars = calcBazi(
-        parseInt(document.getElementById('by').value),
-        parseInt(document.getElementById('bm').value),
-        parseInt(document.getElementById('bd').value),
-        parseInt(document.getElementById('bh').value),
-        parseInt(document.getElementById('bmin').value),
-        document.getElementById('ubp').value.trim()
-    );
-    const baziStr = pillars.map(p=>p.tg+p.dz).join(' ');
+    // 重新從 UI 獲取（防篡改機制）
+    const pillars = document.querySelectorAll('.bp-p');
+    let baziArr = [];
+    pillars.forEach(p => {
+        baziArr.push(p.querySelector('.bp-t').innerText + p.querySelector('.bp-d').innerText);
+    });
+    const baziStr = baziArr.join(' ');
     const bp = document.getElementById('ubp').value.trim();
 
     let targetFile = '';
     
-    // 跳轉分流網絡 (精準五行極端局分發)
     if (baziStr === '丁亥 丙午 丙子 甲午' && /杭州|浙江/.test(bp)) {
         targetFile = 'archive_hz_v1_stable.html';
     } else if (baziStr === '丁亥 丙午 丙子 癸巳' && /四川|成都/.test(bp)) {
@@ -665,7 +731,6 @@ function submitCorrupted() {
         return;
     }
 
-    // 渲染戰損過場動畫
     document.body.innerHTML = `
         <div style="height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#000;color:#ff003c;font-family:'Ma Shan Zheng',cursive;">
             <h1 style="font-size:4rem;animation:glitch-anim 0.1s infinite;">陣法錨定成功</h1>
