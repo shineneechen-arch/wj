@@ -102,17 +102,20 @@
             
             <div class="header-2026">
                 <div class="logo">南江大学 - 溯源BBS (Since 2004)</div>
+        
                 <div class="nav">
                     <a href="#">首 页</a> <span>|</span>
                     <a href="#">版块列表</a> <span>|</span>
                     <a href="#">校内资讯</a> <span>|</span>
                     <a href="#">跳蚤市场</a> <span>|</span>
+  
                     <a href="#">灌水乐园</a> <span>|</span>
                     <a href="#" id="nav-control-panel" onclick="showLogin()" style="cursor:pointer; font-weight:bold;">控制面板</a>
                 </div>
             </div>
 
             <div class="user-status-bar" id="status-bar-2026">
+             
                 <span class="info-stats">今日新帖: <span class="bold blue">1,024</span> | 在线人数: 8,452</span>
                 欢迎您，<span class="bold blue">游客</span> ( <a href="#" onclick="showLogin()">登录</a> | <a href="#">免费注册</a> ) 
                 &nbsp;&nbsp;&nbsp;系统时间: <span class="bold time-display"></span>
@@ -124,10 +127,12 @@
                     <div class="top10-item"><span class="rank rank-hot">1</span> <a href="thread_zencode.html" class="bold red">【八卦】今年计科系的毕业设计居然有人交了个算命排盘系统？</a></div>
                     <div class="top10-item"><span class="rank">6</span> <a href="thread_qimen.html" class="bold">【科普】干货警告！奇门遁甲小白入门指南，从定局开始手把手教</a></div>
                     <div class="top10-item"><span class="rank rank-hot">2</span> <a href="bz.html" class="bold">【闲聊】深夜玄学探讨：你们到底信不信生辰八字？</a></div>
+    
                     <div class="top10-item"><span class="rank">7</span> <a href="thread_rules.html">【吐槽】本学期关于晚归断电的新规定太坑了</a></div>
                     <div class="top10-item"><span class="rank">3</span> <a href="thread_canteen.html">【吐槽】食堂三楼的阿姨手又抖了，排骨全掉锅里</a></div>
                     <div class="top10-item"><span class="rank">8</span> <a href="thread_love.html">【表白墙】昨天在图书馆二楼靠窗穿白裙子的女生</a></div>
                     <div class="top10-item"><span class="rank">4</span> <a href="fire.html" class="bold">【都市传说】知不知道我们学校附近以前发生过大火灾？</a></div>
+       
                     <div class="top10-item"><span class="rank">9</span> <a href="index.html" style="color:#777;">【深夜水】南门外支巷新开的那家数据恢复店，有点邪门。</a></div>
                     <div class="top10-item"><span class="rank">5</span> <a href="thread_sale.html">【二手】急出大四考研专业课资料，半卖半送</a></div>
                     <div class="top10-item"><span class="rank">10</span> <a href="thread_fu.html" style="color:#777;">【寻物】谁在机房落了一个移动硬盘？上面贴着画红线的黄纸...</a></div>
@@ -270,7 +275,8 @@
             <div class="footer">
                 <b>友情链接：</b> <a href="#">南江大学教务网</a> | <a href="#">水木清华BBS</a> | <a href="#">北大未名BBS</a><br /><br />
                 版权所有：南江大学信息化网络中心 &copy; 2026 南江大学星火BBS管理团队<br />
-                Powered by <span class="bold" style="color:#336699;">Discuz! 溯源镜像服</span> &copy; 2001-2026 <a href="#">Comsenz Inc.</a><br />
+                Powered by <span class="bold" style="color:#336699;">Discuz!
+<a href="4dMirror.html" style="color:#336699; text-decoration:none;">溯源镜像</a>服</span> &copy; 2001-2026 <a href="#">Comsenz Inc.</a><br />
                 Gzip enabled | 页面执行时间: 0.0121 秒 | 数据库查询: 8 次 | 在线总人数: 8,452 人
             </div>
         </div>
@@ -291,7 +297,7 @@
             </div>
 
             <div class="user-status-bar">
-                <span class="info-stats" style="color:#F00;">致命错误: 数据溢出 | 物理载体: 碳化中</span>
+                 <span class="info-stats" style="color:#F00;">致命错误: 数据溢出 | 物理载体: 碳化中</span>
                 <span style="color:#0F0;">欢迎您，</span><span class="bold red">05级_未济</span> 
                 &nbsp;&nbsp;&nbsp;<span style="color:#0F0;">系统定格时间:</span> <span class="bold" style="color:#0F0;">2007年6月11日 11:12:00</span>
             </div>
@@ -474,12 +480,13 @@
     // ================= 真实时间同步 =================
     function updateTime() {
         const now = new Date();
-        const timeStr = now.getFullYear() + "-" + 
-                        (now.getMonth() + 1).toString().padStart(2, '0') + "-" + 
-                        now.getDate().toString().padStart(2, '0') + " " + 
-                        now.getHours().toString().padStart(2, '0') + ":" + 
-                        now.getMinutes().toString().padStart(2, '0') + ":" + 
-                        now.getSeconds().toString().padStart(2, '0');
+        const timeStr = 
+            now.getFullYear() + "-" + 
+            (now.getMonth() + 1).toString().padStart(2, '0') + "-" + 
+            now.getDate().toString().padStart(2, '0') + " " + 
+            now.getHours().toString().padStart(2, '0') + ":" + 
+            now.getMinutes().toString().padStart(2, '0') + ":" + 
+            now.getSeconds().toString().padStart(2, '0');
         document.querySelectorAll('.time-display').forEach(d => d.innerText = timeStr);
     }
     setInterval(updateTime, 1000);
@@ -496,22 +503,19 @@
             const href = targetLink.getAttribute('href');
             // 如果是锚点或 JS 触发，放行
             if (!href || href === '#' || href.startsWith('javascript:')) return;
-
             const isGod = localStorage.getItem('god_perspective_unlocked') === 'true';
             const isLogged = localStorage.getItem('njdx_bbs_override') === 'true';
-
             // 只要没拿到任何权限，就拦截
             if (!isLogged && !isGod) {
                 // 阻止页面跳转
-                e.preventDefault(); 
+                e.preventDefault();
                 // 阻止事件继续向下传播或触发其他监听器，彻底物理隔离
                 e.stopPropagation();
                 e.stopImmediatePropagation();
-                
                 alert("【SYSTEM HALT：访问拒绝】\n\n访客权限不足。当前底层数据卷宗存在重度高维算力污染。\n为防止观测者发生精神熵增，请先通过 [控制面板] 完成物理实体覆盖与权限阵列验证。");
                 showLogin();
             }
-        }, { capture: true }); // 开启事件捕获
+        }, { capture: true });
     })();
 
     // ================= 全局状态控制与【真·恐怖随机频闪】逻辑 =================
@@ -520,14 +524,15 @@
     const glitchOverlay = document.getElementById('glitch-overlay');
     let isGlitching = true;
     let flashTimeout;
-
+    
     // 当页面加载完毕时，只处理视觉状态和特效
     window.onload = function() {
         const isGod = localStorage.getItem('god_perspective_unlocked') === 'true';
         const isLogged = localStorage.getItem('njdx_bbs_override') === 'true';
 
         if(isGod || isLogged) {
-            applyLoggedInState(false); // 不播放黑屏动画，直接保持登录/同化状态
+            applyLoggedInState(false);
+            // 不播放黑屏动画，直接保持登录/同化状态
         } else {
             // 完全没登录，开始真实的随机闪烁
             triggerRandomGlitch();
@@ -537,7 +542,6 @@
     // 随机频闪触发器 (极速闪烁一帧 2007 画面)
     function triggerRandomGlitch() {
         if (!isGlitching) return;
-
         const nextGlitchTime = 1000 + Math.random() * 4000;
         
         flashTimeout = setTimeout(() => {
@@ -593,13 +597,13 @@
         layer2026.style.opacity = '1';
         layer2026.style.pointerEvents = 'auto';
         glitchOverlay.style.opacity = '0';
-
+        
         const doUpdateUI = () => {
             const isGod = localStorage.getItem('god_perspective_unlocked') === 'true';
             const isAdminVerified = localStorage.getItem('njdx_bbs_2026_admin_verified') === 'true';
             const cpLink = document.getElementById('nav-control-panel');
             const mainWrap = document.getElementById('main-content-2026');
-
+            
             // 1. 根据是否被同化，修改顶部栏与页面色调
             if (isGod) {
                 document.getElementById('status-bar-2026').innerHTML = `
@@ -625,7 +629,7 @@
                 
                 if (isGod) {
                     successMsg.style.cssText = "background: #2a0505; border: 1px solid #f00; padding: 15px; margin-bottom: 20px; color: #f00; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 0 15px rgba(255, 0, 0, 0.5);";
-                    successMsg.innerHTML = "【多维干涉】你已成为星火的一部分。血肉网络正在蔓延。<br>物理隔离已失效，所有节点对你敞开。<br><br><span style='font-size:12px; color:#ff8888; cursor:pointer; text-decoration:underline;' onclick='resetGame()'>[ 斩断链接：重置所有时空与肉体剥离 ]</span>";
+                    successMsg.innerHTML = "【多维干涉】你已成为星火的一部分。血肉网络正在蔓延。<br>物理隔离已失效，所有节点对你敞开。请找到您的法器。<br><br><span style='font-size:12px; color:#ff8888; cursor:pointer; text-decoration:underline;' onclick='resetGame()'>[ 斩断链接：重置所有时空与肉体剥离 ]</span>";
                 } else {
                     successMsg.style.cssText = "background: #E8F5E9; border: 1px solid #4CAF50; padding: 15px; margin-bottom: 20px; color: #2E7D32; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 0 10px rgba(76, 175, 80, 0.3);";
                     successMsg.innerHTML = "【系统广播】权限覆盖完毕。19年前的散逸算力已被安全重定向。<br>时空死局已解，南江大学节点恢复正常运转。感谢您的介入。<br><br><span style='font-size:12px; color:#666; cursor:pointer;' onclick='resetGame()'>[点击此处可重置游戏状态并清除阵列缓存]</span>";
@@ -661,7 +665,7 @@
                 };
             }
         };
-
+        
         if (playAnimation) {
             const overlay = document.createElement('div');
             overlay.className = 'hack-transition';
