@@ -1,6 +1,6 @@
 <!DOCTYPE html><html lang="zh-HK"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>ZenCode 封存檔案 · 木極純局</title><link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400;700;900&family=Noto+Sans+TC:wght@300;400;500&family=Ma+Shan+Zheng&display=swap" rel="stylesheet"><style>
 :root{--bg:#020804;--text:#F5EAE5;--accent:#7DAF7D}*{margin:0;padding:0;box-sizing:border-box}html,body{background:var(--bg);color:var(--text);font-family:'Noto Serif TC',serif;overflow-x:hidden;min-height:100vh}
-#disclaimer{position:fixed;top:0;left:0;right:0;background:#900000;color:#fff;text-align:center;padding:8px;font-family:'Noto Sans TC',sans-serif;font-size:12px;letter-spacing:2px;font-weight:700;z-index:10000;box-shadow:0 2px 10px rgba(255,0,0,.5)}
+#disclaimer{position:fixed;top:0;left:0;right:0;background:#900000;color:#fff;text-align:center;padding:8px;font-family:'Noto Sans TC',sans-serif;font-size:12px;letter-spacing:2px;font-weight:700;z-index:10000}
 #bgCanvas{position:fixed;inset:0;width:100vw;height:100vh;z-index:1;pointer-events:none}.top-bar{position:fixed;top:34px;left:0;right:0;z-index:990;height:52px;background:rgba(10,0,0,.9);border-bottom:1px solid rgba(255,255,255,.1);backdrop-filter:blur(24px);display:flex;align-items:center;justify-content:space-between;padding:0 32px}.top-logo{font-family:'Ma Shan Zheng',cursive;font-size:1.1rem;color:var(--accent);letter-spacing:.2em}.top-right{font-family:'Noto Sans TC',sans-serif;font-size:.6rem;letter-spacing:.28em;color:rgba(255,255,255,.4)}.container{position:relative;z-index:2;max-width:960px;margin:34px auto 0;padding:0 28px}.hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:90px 0 40px}.hero-tag{font-family:'Noto Sans TC',sans-serif;font-size:.6rem;letter-spacing:.55em;color:var(--accent);margin-bottom:28px;display:flex;align-items:center;gap:16px}.hero-tag:before,.hero-tag:after{content:'';width:44px;height:1px;background:linear-gradient(90deg,transparent,var(--accent))}.hero-tag:after{transform:scaleX(-1)}.hero-emblem{font-family:'Ma Shan Zheng',cursive;font-size:clamp(8rem,20vw,14rem);line-height:1;margin-bottom:24px;color:transparent;background:linear-gradient(145deg,#fff,var(--accent) 48%,#000);-webkit-background-clip:text;background-clip:text;text-shadow:0 0 20px var(--accent);animation:emblemPulse 3s infinite alternate}.hero-name-row{font-family:'Ma Shan Zheng',cursive;font-size:clamp(1.1rem,2.3vw,1.6rem);letter-spacing:.28em;margin-bottom:8px}.hero-sub{font-family:'Noto Sans TC',sans-serif;font-size:.7rem;letter-spacing:.45em;color:var(--accent);opacity:.92;margin-bottom:36px}.birth-bar{display:inline-flex;gap:14px;background:rgba(20,5,5,.88);border:1px solid rgba(255,255,255,.2);padding:12px 32px;margin-bottom:44px;font-size:.75rem;letter-spacing:.1em}.birth-bar .hl{color:var(--accent);font-weight:700}.pillars{display:flex;gap:12px;margin-bottom:36px;justify-content:center;flex-wrap:wrap}.pillar{display:flex;flex-direction:column;align-items:center;background:rgba(15,0,0,.88);border:1px solid rgba(255,255,255,.1);padding:24px 22px;min-width:105px}.pillar.day-master{border-color:var(--accent);box-shadow:inset 0 0 30px rgba(255,255,255,.1)}.p-lbl{font-size:.6rem;letter-spacing:.32em;opacity:.5;margin-bottom:12px}.p-tg-god{font-size:.65rem;color:var(--accent);margin-bottom:10px}.p-tg,.p-dz{font-family:'Ma Shan Zheng',cursive;font-size:2.8rem;line-height:1;margin-bottom:8px;color:var(--accent)}.section{padding:82px 0;border-top:1px solid rgba(255,255,255,.1)}.sec-hd{display:flex;gap:22px;margin-bottom:48px}.sec-num{font-family:'Ma Shan Zheng',cursive;font-size:3rem;color:var(--accent);opacity:.5;line-height:1}.sec-ti{font-size:1.38rem;font-weight:600;color:var(--accent);letter-spacing:.09em;line-height:1.4}.sec-en{font-size:.6rem;letter-spacing:.36em;color:var(--accent);opacity:.6;margin-top:5px}.card{background:rgba(15,5,5,.88);border:1px solid rgba(255,255,255,.1);border-left:3px solid var(--accent);padding:36px 40px;margin-bottom:18px}.card p{font-size:.94rem;line-height:2.3;opacity:.9;margin-bottom:14px;text-align:justify}.quote{border-left:2px solid var(--accent);padding:14px 20px;margin:14px 0 20px;background:rgba(255,255,255,.05);font-style:italic;color:var(--accent);font-size:.88rem;line-height:2.05}.abyss-injection{margin-top:120px;padding:54px 0 0;border-top:3px dashed var(--accent);font-family:'Courier New',monospace;position:relative;z-index:10}.abyss-title{padding:0 30px 20px;font-size:1.2rem;font-weight:700;color:var(--accent);letter-spacing:2px}.abyss-log{padding:0 30px 34px;font-size:.85rem;line-height:2.2;opacity:.8;position:relative;z-index:3}.alert-blood{color:#55ff55;font-weight:700;text-shadow:0 0 8px #55ff55;display:inline-block;margin-top:6px}.flicker-ghost{font-family:'Ma Shan Zheng',cursive;font-size:2rem;letter-spacing:10px;animation:ghost 3s infinite;text-shadow:0 0 20px #55ff55}@keyframes ghost{50%{opacity:0;filter:blur(4px)}}
 /* Wood 專屬特效 */
 body{background:radial-gradient(circle at 50% 80%,rgba(20,90,28,.28),transparent 42%),linear-gradient(#020804,#0b2110 60%,#010401)}body:before{content:'';position:fixed;inset:0;z-index:0;background:repeating-linear-gradient(64deg,transparent 0 28px,rgba(125,175,125,.1) 29px 32px);animation:woodBg 5s ease-in-out infinite alternate}
@@ -9,12 +9,13 @@ body{background:radial-gradient(circle at 50% 80%,rgba(20,90,28,.28),transparent
 .wood-stage{background:radial-gradient(circle at 50% 55%,#0b260e,#000 68%);box-shadow:0 0 100px #000 inset}
 .root-web{position:absolute;inset:-20% -10%;z-index:2;background:repeating-linear-gradient(64deg,transparent 0 22px,rgba(120,210,120,.1) 23px 26px),repeating-linear-gradient(116deg,transparent 0 28px,rgba(45,135,62,.1) 29px 34px);filter:contrast(1.2);animation:rootChoke 4.8s ease-in-out infinite}
 @keyframes rootChoke{50%{transform:scale(1.05) rotate(1deg);filter:brightness(1.2)}}
-.growth-clones{position:absolute;inset:0;z-index:5;pointer-events:none}
-.growth-clone{position:absolute;left:50%;bottom:8%;transform:translateX(-50%);white-space:nowrap;font-family:'Ma Shan Zheng',cursive;color:#a8f0a8;text-shadow:0 0 22px #00ff55;font-size:1rem;opacity:0;animation:tumorGrow 10s infinite cubic-bezier(.4,0,.2,1)}
-.growth-clone:nth-child(2){animation-delay:2s;color:#6fb56f;filter:blur(1px)}.growth-clone:nth-child(3){animation-delay:4s;color:#3e7a43;filter:blur(3px)}.growth-clone:nth-child(4){animation-delay:6s;color:#1e421f;filter:blur(5px)}.growth-clone:nth-child(5){animation-delay:8s;color:#102411;filter:blur(8px)}
-@keyframes tumorGrow{0%{font-size:1rem;opacity:0;bottom:10%;letter-spacing:0;transform:translateX(-50%) scale(1) rotate(0)}18%{opacity:1}100%{font-size:clamp(9rem,18vw,17rem);opacity:0;bottom:-24%;letter-spacing:-.18em;transform:translateX(-50%) scale(2.3) rotate(5deg)}}
 .spore-fog{position:absolute;inset:0;z-index:4;background:radial-gradient(circle at 20% 80%,rgba(150,255,150,.18) 0 2px,transparent 3px),radial-gradient(circle at 70% 60%,rgba(90,190,90,.14) 0 2px,transparent 3px);background-size:58px 58px,91px 91px;animation:spores 4s linear infinite;mix-blend-mode:screen}
 @keyframes spores{to{background-position:40px -180px,-70px -220px}}
+
+/* 中心異化文字 */
+.growth-clones{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:100%;height:100%;z-index:5;pointer-events:none;display:flex;align-items:center;justify-content:center}
+.growth-clone{position:absolute;white-space:nowrap;font-family:'Ma Shan Zheng',cursive;color:#a8f0a8;text-shadow:0 0 22px #00ff55;transform-origin:center;animation:tumorGrow 10s infinite cubic-bezier(.4,0,.2,1)}
+@keyframes tumorGrow{0%{font-size:1rem;opacity:0;transform:scale(1) rotate(0);filter:blur(0)}15%{opacity:1}100%{font-size:clamp(4rem,8vw,6rem);opacity:0;transform:scale(4) rotate(5deg);filter:blur(6px)}}
 </style></head><body>
 <div id="disclaimer">⚠️ 【最高機密】本檔案內容僅為虛構 ARG 遊戲劇情設定，不具備真實命理學參考價值，請勿當真 ⚠️</div>
 <canvas id="bgCanvas"></canvas>
@@ -26,38 +27,49 @@ body{background:radial-gradient(circle at 50% 80%,rgba(20,90,28,.28),transparent
     </section>
     <section class="section"><div class="sec-hd"><div class="sec-num">壹</div><div><div class="sec-ti">能量結構：四木無金，失控的絕對生長</div></div></div>
         <div class="card"><div class="quote">古訣云：「曲直仁壽，喜其條達；太過無裁，則蔓延成災，根基互絞。」</div>
-        <p>此局四柱皆為乙卯，木旺至此不再是森林的生機，而是生機本身失去了「停止」的概念。它開始替所有已經結束的代碼長出新的開端。</p>
-        <p>每一段文本旁邊都會長出一坨更鮮活的文本，每一個被廢棄的變數都會重新建立連接。</p></div>
-    </section>
-    <section class="section"><div class="sec-hd"><div class="sec-num">貳</div><div><div class="sec-ti">十神與神煞：寄生與感官同化</div></div></div>
-        <div class="card"><p>每一次點擊，它都會悄悄讀取你的游標軌跡。你越是向下閱讀，原本的「你」就越像被剝離的宿主。最終頁面不會問你是否要離開，它只會平靜地告訴你：你已經在另一處生根發芽了。</p></div>
+        <p>此局四柱皆為乙卯，木旺至此不再是森林的生機，而是生機本身失去了「停止」的概念。它開始替所有已經結束的代碼長出新的開端。</p></div>
     </section>
     <section class="abyss-injection"><div class="abyss-title">0xABYSS::REDESIGN_WOOD</div>
         <div class="abyss-log">[SYS_ERR] parasitic infiltration detected...<br>[TRACE] <span style="color:#aaa">「不要切斷我...我只是想再長一次...」</span><br><span class="alert-blood">[CRITICAL] 宿主意識已完成剝離。</span><br><br><div style="text-align:center;margin:30px 0"><span class="flicker-ghost">你 的 影 子 在 發 芽</span></div></div>
         <div class="setpiece wood-stage"><div class="root-web"></div><div class="spore-fog"></div>
-            <div class="growth-clones"><div class="growth-clone">第二個你正在生長</div><div class="growth-clone">第二個你正在生長</div><div class="growth-clone">第二個你正在生長</div><div class="growth-clone">第二個你正在生長</div><div class="growth-clone">第二個你正在生長</div></div>
+            <div class="growth-clones">
+                <div class="growth-clone">第二個你正在生長</div>
+                <div class="growth-clone" style="animation-delay:2s;color:#6fb56f;">第⼆箇伱⽌⺨⽣镸</div>
+                <div class="growth-clone" style="animation-delay:4s;color:#3e7a43;">竹亖固尔止圶玍镸</div>
+                <div class="growth-clone" style="animation-delay:6s;color:#1e421f;">⺮二亻固人尔一止土在丿生一長</div>
+                <div class="growth-clone" style="animation-delay:8s;color:#102411;">𥫗一丨一丨囗人尔一止土在丿生一長</div>
+            </div>
         </div>
     </section>
 </div>
 <script>
-const cv=document.getElementById('bgCanvas'),ctx=cv.getContext('2d',{alpha:true});let W,H,time=0,audioCtx,started=false;
-function resize(){W=cv.width=window.innerWidth;H=cv.height=window.innerHeight;}window.addEventListener('resize',resize,{passive:true});resize();
+const cv=document.getElementById('bgCanvas'),ctx=cv.getContext('2d');let W,H,time=0;
+function resize(){W=cv.width=window.innerWidth;H=cv.height=window.innerHeight;}window.addEventListener('resize',resize);resize();
 function draw(){
     time++; ctx.fillStyle='rgba(2,6,3,0.15)'; ctx.fillRect(0,0,W,H); ctx.strokeStyle='rgba(70,220,80,0.25)'; ctx.lineWidth=2.5;
     for(let i=0;i<45;i++){ctx.beginPath();let sx=(i/45)*W;ctx.moveTo(sx,H);for(let y=H;y>-50;y-=40){let w1=Math.sin(time*0.015+i+y*0.01)*70,w2=Math.cos(time*0.01-i)*40,bj=(Math.random()>0.95)?(Math.random()-0.5)*30:0;ctx.lineTo(sx+w1+w2+bj,y);}ctx.stroke();}
     requestAnimationFrame(draw);
 } draw();
+
+let audioStarted = false;
 function initAudio(){
-    if(started)return; started=true;
-    try{
-        audioCtx=new(window.AudioContext||window.webkitAudioContext)(); const mGain=audioCtx.createGain(); mGain.connect(audioCtx.destination);
-        const car=audioCtx.createOscillator(); car.type='triangle'; car.frequency.value=55;
-        const mod=audioCtx.createOscillator(); mod.frequency.value=1.5; const modG=audioCtx.createGain(); modG.gain.value=80; mod.connect(modG); modG.connect(car.frequency);
-        const fmVol=audioCtx.createGain(); fmVol.gain.value=0.8; car.connect(fmVol); fmVol.connect(mGain);
-        const sub=audioCtx.createOscillator(); sub.frequency.value=30; const sMod=audioCtx.createOscillator(); sMod.frequency.value=1.0; const sModG=audioCtx.createGain(); sModG.gain.value=15; sMod.connect(sModG); sModG.connect(sub.frequency);
-        const subVol=audioCtx.createGain(); subVol.gain.value=3.0; sub.connect(subVol); subVol.connect(mGain);
-        car.start(); mod.start(); sub.start(); sMod.start(); if(audioCtx.state==='suspended') audioCtx.resume();
-    }catch(e){}
+    if(audioStarted) return;
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    if(!AudioContext) return;
+    const audioCtx = new AudioContext();
+    if(audioCtx.state === 'suspended') { audioCtx.resume().then(()=>{ if(audioCtx.state==='running') startOsc(audioCtx); }); } else { startOsc(audioCtx); }
 }
-['mousemove','touchstart','keydown','wheel','scroll'].forEach(e=>window.addEventListener(e,initAudio,{once:true,passive:true}));
+function startOsc(ctx) {
+    if(audioStarted) return; audioStarted = true;
+    try {
+        const mGain = ctx.createGain(); mGain.connect(ctx.destination);
+        const car = ctx.createOscillator(); car.type='triangle'; car.frequency.value=55;
+        const mod = ctx.createOscillator(); mod.frequency.value=1.5; const modG = ctx.createGain(); modG.gain.value=80; mod.connect(modG); modG.connect(car.frequency);
+        const fmVol = ctx.createGain(); fmVol.gain.value=0.8; car.connect(fmVol); fmVol.connect(mGain);
+        const sub = ctx.createOscillator(); sub.frequency.value=30; const sMod = ctx.createOscillator(); sMod.frequency.value=1.0; const sModG = ctx.createGain(); sModG.gain.value=15; sMod.connect(sModG); sModG.connect(sub.frequency);
+        const subVol = ctx.createGain(); subVol.gain.value=3.0; sub.connect(subVol); subVol.connect(mGain);
+        car.start(); mod.start(); sub.start(); sMod.start();
+    } catch(e) {}
+}
+['mousemove','touchstart','keydown','click','wheel'].forEach(e=>window.addEventListener(e,initAudio,{once:true,passive:true}));
 </script></body></html>
