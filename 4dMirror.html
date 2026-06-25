@@ -1242,6 +1242,22 @@ function syncLiveDateFromInput() {
   if(value) liveDateObj = new Date(value);
 }
 
+function isForbiddenLiveTime() {
+  const value = document.getElementById('live-time').value || '';
+  return value.startsWith('2007-06-11');
+}
+
+function triggerForbiddenLiveTime() {
+  document.body.classList.add('falling');
+  setAbuseLevel(FALL_THRESHOLD + 1);
+  showOmen('fall', '[FORBIDDEN] 时间线自噬', 'L3 是未来观测端，不允许回拨到 2007-06-11 死盘现场。你正在把观测者塞回火灾当天，闭环会先吞掉你的入口。', 7200);
+  window.setTimeout(() => {
+    document.body.classList.remove('falling');
+    setAbuseLevel(0);
+  }, 7600);
+  return false;
+}
+
 function fillJuSelect(select, placeholder) {
   select.innerHTML = '<option value="">选择局数...</option>';
   if(placeholder) select.options[0].textContent = placeholder;
@@ -1346,6 +1362,12 @@ function handleDeadJuChange() {
 
 function handleLiveJuChange() {
   syncLiveDateFromInput();
+  if(isForbiddenLiveTime()) {
+    triggerForbiddenLiveTime();
+    updateLiveCalendarInfo();
+    updateL2L3();
+    return;
+  }
   const ju = document.getElementById('live-ju').value;
   updateLiveCalendarInfo();
   updateL2L3();
@@ -1386,7 +1408,7 @@ function updateDeadCalendarInfo() {
   const juLine = !ju
     ? `<span class="warn">[?] 等待玩家按节气/符头选择局数。</span>`
     : (ju === CORRECT_DEAD_JU
-      ? `<span class="ok">[OK] ${CORRECT_DEAD_JU} 校验通过，艮八宫生门可追踪。</span>`
+      ? `<span class="ok">[OK] ${CORRECT_DEAD_JU} 校验通过，死盘基准已解锁。</span>`
       : `<span class="bad">[ERR] ${ju} 与拆补符头不合，死盘坐标会漂移。</span>`);
   const revealDeadCalendar = ju === CORRECT_DEAD_JU;
   const lunarLine = revealDeadCalendar
@@ -1414,11 +1436,14 @@ function updateLiveCalendarInfo() {
   const el = document.getElementById('live-calendar');
   const desc = document.getElementById('l3-layer-desc');
   const selectedJu = document.getElementById('live-ju').value;
+  const forbiddenLiveTime = isForbiddenLiveTime();
   const liveJuLine = !selectedJu
     ? `<span class="warn">[?] 等待玩家按系统时间、节气与符头选择 L3 局数。</span>`
-    : (isCorrectLiveJu()
+    : (forbiddenLiveTime
+      ? `<span class="bad">[FORBIDDEN] L3 不得回拨到 2007-06-11 死盘现场。</span>`
+      : (isCorrectLiveJu()
       ? `<span class="ok">[OK] ${selectedJu} 校验通过，L3 投影稳定。</span>`
-      : `<span class="bad">[ERR] ${selectedJu} 与当前拆补定局不合，L3 投影进入漂移态。</span>`);
+      : `<span class="bad">[ERR] ${selectedJu} 与当前拆补定局不合，L3 投影进入漂移态。</span>`));
   const fuyinLine = livePan.isFuyin
     ? `<span class="bad">[伏吟] ${selectedJu ? '活盘' : '临时影盘'}星门伏回本宫，行动被时间回声钉住。</span>`
     : `<span class="ok">[活盘] 星门已随时干转动。</span>`;
@@ -1623,23 +1648,45 @@ function runApiDescentSequence() {
 
 function runFinalFusionSequence() {
   if(finalFusionComplete) return;
-  finalFusionComplete = true;
   fugitiveRevealed = true;
   drawL1();
   const { log, bar, title } = prepareFusionOverlay();
   bar.style.width = '98.8%';
   const lines = [
     '[TRACE] 逃逸养料坐标回落：坤二宫 / 死门 / 西南方。',
+    '[MEMORY_LOG] 正在读取目标记忆日志：[未济_Admin]',
     '[未济_Admin]：你终于找过来了。19年了，老机房的紫铜走线里还留着他们五个人的焦味。',
     '[未济_Admin]：物理手段是救不回他们的。但我把我的神经元剥离出来，用主板焊在了中央处理器上。',
     '[未济_Admin]：看看这个形态……硅胶、电容、还有正在跳动的碳基突触。不觉得这比纯粹的血肉更具秩序和美感吗？',
     '[未济_Admin]：98.8% 的进度卡了19年。我不需要逃，我是在等一个拥有跨维权限的观测者。',
-    '[未济_Admin]：用你的 L3 参数，帮我闭合最后 1.2% 的电位差。',
+    '[未济_Admin]：用你的 L3 参数，帮我闭合最后 1.2% 的电位差。'
+  ];
+  const widths = [98.8, 98.8, 98.8, 98.8, 98.8, 98.8, 98.8];
+  lines.forEach((line, index) => {
+    window.setTimeout(() => {
+      appendFusionLine(log, bar, line, widths[index]);
+      if(index === lines.length - 1) {
+        window.setTimeout(() => {
+          if(window.confirm('记忆日志读取完成。\n\n是否允许未济使用你的 L3 参数闭合最后 1.2% 的电位差？')) {
+            completeFinalFusion(log, bar, title);
+          } else {
+            showOmen('door-jingmen', '[HOLD] 既济暂停', '未济_Admin 的记忆仍挂在 98.8%。他没有离开，只是在等待你再次注视。', 6200);
+          }
+        }, 900);
+      }
+    }, index * 900);
+  });
+}
+
+function completeFinalFusion(log, bar, title) {
+  if(finalFusionComplete) return;
+  finalFusionComplete = true;
+  const lines = [
     '融合进度：98.8% → 100.0%',
     '融合进度：100.0%',
     '[State: Code 63 既济 (完美闭环)] 系统覆写完成。'
   ];
-  const widths = [98.8, 98.8, 98.8, 98.8, 98.8, 98.8, 100, 100, 100];
+  const widths = [100, 100, 100];
   lines.forEach((line, index) => {
     window.setTimeout(() => {
       appendFusionLine(log, bar, line, widths[index]);
@@ -1915,6 +1962,9 @@ document.getElementById('use-now-btn').onclick = () => { setNow(); updateL2L3();
 document.getElementById('dead-time').oninput = () => { updateDeadCalendarInfo(); };
 function handleLiveTimeInput() {
   syncLiveDateFromInput();
+  if(isForbiddenLiveTime()) {
+    triggerForbiddenLiveTime();
+  }
   updateLiveCalendarInfo();
   updateL2L3();
 }
@@ -1935,6 +1985,10 @@ document.getElementById('apply-dead').onclick = () => {
 document.getElementById('apply-live').onclick = () => {
   if(document.getElementById('live-time').value){
     syncLiveDateFromInput();
+    if(isForbiddenLiveTime()) {
+      triggerForbiddenLiveTime();
+      return;
+    }
     updateLiveCalendarInfo();
     updateL2L3();
     const ju = document.getElementById('live-ju').value;
