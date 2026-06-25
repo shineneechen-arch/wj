@@ -1237,12 +1237,24 @@ function isFuyinDeadDoorCoincidence() {
     && getLiveDoorAt(FUGITIVE_GONG) === DEAD_PAN[FUGITIVE_GONG].door;
 }
 
+function isLiveTimeFuture() {
+  const value = document.getElementById('live-time').value;
+  if(!value) return false;
+  const selectedTime = new Date(value).getTime();
+  if(Number.isNaN(selectedTime)) return false;
+  return selectedTime > Date.now() + 10 * 60 * 1000;
+}
+
+function isCurrentFuyinEcho() {
+  return isFuyinDeadDoorCoincidence() && !isLiveTimeFuture();
+}
+
 function isFinalFusionReady() {
   return warehouseRevealed
     && isCorrectDeadJu()
     && isCorrectLiveJu()
     && getLiveDoorAt(FUGITIVE_GONG) === DEAD_PAN[FUGITIVE_GONG].door
-    && !isFuyinDeadDoorCoincidence();
+    && (!isFuyinDeadDoorCoincidence() || isLiveTimeFuture());
 }
 
 function getFocusActionLabel(pos) {
@@ -1695,12 +1707,12 @@ function showGongDetail(pos){
     <button class="focus-search-btn" type="button" onclick="attemptFocusSearch(${pos})">${getFocusActionLabel(pos)}</button>
     ${pos === FUGITIVE_GONG ? `
       <div style="margin-top:8px;color:${finalReady ? '#ffcccc' : 'var(--text-mute)'};font-size:11px;">
-        ${apiFusionStalled ? (fuyinCoincidence ? '坤二显出死门，但活盘伏吟只是一条回声。需要另找一条非伏吟的 L3 时间线。' : '这里的低电位与逃逸养料相连。让 L3 当前活盘在此处排出死门，即可读取未济_Admin 记忆日志。') : (warehouseRevealed ? '这里仍被 98.8% 死锁遮蔽。先批准艮八 API 降临。' : '此处记录被代理节点遮蔽。先处理艮八宫。')}
+        ${apiFusionStalled ? (isCurrentFuyinEcho() ? '坤二显出死门，但当前系统时间只是回声。把 L3 拨到未来，寻找下一次伏吟死门，才能读取未济_Admin 记忆日志。' : '这里的低电位与逃逸养料相连。让 L3 当前活盘在此处排出死门，即可读取未济_Admin 记忆日志。') : (warehouseRevealed ? '这里仍被 98.8% 死锁遮蔽。先批准艮八 API 降临。' : '此处记录被代理节点遮蔽。先处理艮八宫。')}
       </div>
     ` : ''}
     ${isLivePanUsable() && livePan.isFuyin ? `<div style="margin-top:8px;color:#fff;font-size:11px;">活盘自伏吟：星门伏回本宫，行动趋于停滞。</div>` : ''}
     ${finalLock ? `<div style="margin-top:10px;color:#fff;font-weight:bold;animation:flicker .5s infinite alternate;">⚠ 坤二死门锁相：未济活体生物电已暴露</div>` : ''}
-    ${fuyinCoincidence && pos === FUGITIVE_GONG ? `<div style="margin-top:10px;color:#ffcccc;font-weight:bold;animation:flicker .5s infinite alternate;">⚠ 伏吟回声：需要另一条 L3 时间线</div>` : ''}
+    ${isCurrentFuyinEcho() && pos === FUGITIVE_GONG ? `<div style="margin-top:10px;color:#ffcccc;font-weight:bold;animation:flicker .5s infinite alternate;">⚠ 当前回声：请寻找未来伏吟死门</div>` : ''}
     ${conflict ? `<div style="margin-top:10px;color:#fff;font-weight:bold;animation:flicker .5s infinite alternate;">⚠ 双盘伏吟：L2 与 L3 同宫同门，形成死锁回声</div>` : ''}
   ` : `
     <div style="color:var(--color-l2);font-size:12px;margin-bottom:4px;">L2死盘: 局数未校验</div>
@@ -1937,12 +1949,12 @@ function attemptFocusSearch(pos) {
       return;
     }
     const fugitiveDoor = getLiveDoorAt(FUGITIVE_GONG) || '未定';
-    if(isFuyinDeadDoorCoincidence()) {
+    if(isCurrentFuyinEcho()) {
       playTone('bad');
       showOmen(
         'door-jingmen',
         '[REJECT] 伏吟回声',
-        '坤二确实显出死门，但这不是新的时间线，只是当前系统时辰撞回本宫的回声。未济需要一条能从未来切入 2007 的偏移轨道；请更换 L3 时间，寻找另一条非伏吟的死门闭合线。',
+        '坤二确实显出死门，但当前系统时间只是原地回声，等于未济把门递到了你手边。把 L3 拨到未来，寻找下一次伏吟死门；那条未来回声才足够从 2026 反切进 2007。',
         8200
       );
       return;
@@ -2085,9 +2097,9 @@ function updateL2L3() {
     const live = isLivePanUsable() ? (livePan.byPalace[pos] || {}) : {};
     const dm = panReady ? (pan.door || '中') : '未定', lm = liveMen[pos] || '—';
     const finalLock = isFinalFusionReady() && pos === FUGITIVE_GONG;
-    const fuyinCoincidence = isFuyinDeadDoorCoincidence() && pos === FUGITIVE_GONG;
-    const conflict = finalLock || fuyinCoincidence || (panReady && liveJuReady && liveJuCorrect && dm !== '中' && (dm === lm));
-    const l3Summary = finalLock ? 'L3 死门锁' : (fuyinCoincidence ? 'L3 回声' : (!liveJuReady ? 'L3待定' : (liveJuCorrect ? `L3 ${lm}门` : 'L3漂移')));
+    const currentEcho = isCurrentFuyinEcho() && pos === FUGITIVE_GONG;
+    const conflict = finalLock || currentEcho || (panReady && liveJuReady && liveJuCorrect && dm !== '中' && (dm === lm));
+    const l3Summary = finalLock ? 'L3 死门锁' : (currentEcho ? 'L3 当前回声' : (!liveJuReady ? 'L3待定' : (liveJuCorrect ? `L3 ${lm}门` : 'L3漂移')));
 
     const bounds = [[lat-SPAN/2, lng-SPAN/2], [lat+SPAN/2, lng+SPAN/2]];
     
@@ -2106,7 +2118,7 @@ function updateL2L3() {
     const boundsL3 = [[lat-SPAN/2+0.0001, lng-SPAN/2+0.0001], [lat+SPAN/2-0.0001, lng+SPAN/2-0.0001]];
     const liveColor = !liveJuReady ? '#5d7480' : (liveJuCorrect ? 'var(--color-l3)' : '#ff4d6d');
     const liveFill = !liveJuReady ? '#5d7480' : (liveJuCorrect ? '#00e5ff' : '#ff0033');
-    const liveText = finalLock ? '死门锁' : (fuyinCoincidence ? '伏吟回声' : (!liveJuReady ? '待定' : (liveJuCorrect ? `${lm}门` : `漂移 ${lm}门`)));
+    const liveText = finalLock ? '死门锁' : (currentEcho ? '当前回声' : (!liveJuReady ? '待定' : (liveJuCorrect ? `${lm}门` : `漂移 ${lm}门`)));
     const r3 = L.rectangle(boundsL3, {
       color: liveColor,
       fillColor: liveFill,
@@ -2119,7 +2131,7 @@ function updateL2L3() {
 
     const liveLabelOffset = conflict ? [lat + 0.00022, lng - 0.00022] : [lat + 0.00020, lng + 0.00020];
     const liveMarker = L.marker(liveLabelOffset, {icon: L.divIcon({
-      html: `<div class="fixed-label live-gong-label" style="color:${finalLock || fuyinCoincidence ? '#fff' : (liveJuReady ? (liveJuCorrect ? 'var(--color-l3)' : '#ff8aa1') : '#8ba4ad')}; border-color:${finalLock || fuyinCoincidence ? 'rgba(255,255,255,0.86)' : (liveJuReady ? (liveJuCorrect ? 'rgba(0,229,255,0.55)' : 'rgba(255,77,109,0.65)') : 'rgba(93,116,128,0.55)')};">L3 ${liveText}<br><span style="font-size:0.82em">${finalLock ? '未济暴露' : (fuyinCoincidence ? '另寻时间线' : (liveJuReady ? (live.star || '—') : '局数未校验'))}</span></div>`,
+      html: `<div class="fixed-label live-gong-label" style="color:${finalLock || currentEcho ? '#fff' : (liveJuReady ? (liveJuCorrect ? 'var(--color-l3)' : '#ff8aa1') : '#8ba4ad')}; border-color:${finalLock || currentEcho ? 'rgba(255,255,255,0.86)' : (liveJuReady ? (liveJuCorrect ? 'rgba(0,229,255,0.55)' : 'rgba(255,77,109,0.65)') : 'rgba(93,116,128,0.55)')};">L3 ${liveText}<br><span style="font-size:0.82em">${finalLock ? '未济暴露' : (currentEcho ? '寻找未来伏吟' : (liveJuReady ? (live.star || '—') : '局数未校验'))}</span></div>`,
       className: 'fixed-label-icon', iconSize: [0, 0], iconAnchor: [0, 0]
     })}).addTo(l3Group);
     bindGongEvents(liveMarker, pos);
