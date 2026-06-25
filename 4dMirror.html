@@ -1238,6 +1238,13 @@ function ringIndexForPalace(palace) {
   return RING_ORDER.indexOf(palace === 5 ? 2 : palace);
 }
 
+function moveOnDoorRing(startPalace, offset, dun) {
+  const startIdx = ringIndexForPalace(startPalace);
+  if(startIdx < 0) return startPalace === 5 ? 2 : startPalace;
+  const step = dun === '阳遁' ? offset : -offset;
+  return RING_ORDER[(startIdx + step + RING_ORDER.length * 8) % RING_ORDER.length];
+}
+
 function buildRotatingLayer(homeMap, valuePalace, targetPalace, dun) {
   const forward = dun === '阳遁';
   const homeRing = RING_ORDER.map(p => homeMap[p]);
@@ -1272,7 +1279,8 @@ function buildQimenPan(profile) {
   const valuePalace = ground[xun.instrument] || 1;
   const hourStemKey = hourStem === '甲' ? xun.instrument : hourStem;
   const targetPalace = ground[hourStemKey] || valuePalace;
-  const doors = buildRotatingLayer(DOOR_HOME, valuePalace, targetPalace, profile.dun);
+  const doorTargetPalace = moveOnDoorRing(valuePalace, xun.offset, profile.dun);
+  const doors = buildRotatingLayer(DOOR_HOME, valuePalace, doorTargetPalace, profile.dun);
   const stars = buildRotatingLayer(STAR_HOME, valuePalace, targetPalace, profile.dun);
   const deities = buildDeityLayer(targetPalace, profile.dun);
   const byPalace = {};
@@ -1282,7 +1290,7 @@ function buildQimenPan(profile) {
   Object.keys(ground).forEach(stem => { byPalace[ground[stem]].ground = stem; });
   const isDoorFuyin = RING_ORDER.every(pos => doors[pos] === DOOR_HOME[pos]);
   const isStarFuyin = RING_ORDER.every(pos => stars[pos] === STAR_HOME[pos]);
-  return { doors, stars, deities, ground, byPalace, xun, valuePalace, targetPalace, isFuyin: isDoorFuyin && isStarFuyin };
+  return { doors, stars, deities, ground, byPalace, xun, valuePalace, targetPalace, doorTargetPalace, isFuyin: isDoorFuyin && isStarFuyin };
 }
 
 let deadDateObj = new Date(2007,5,11,11,2);
@@ -1502,6 +1510,9 @@ function updateLiveCalendarInfo() {
   const fuyinLine = livePan.isFuyin
     ? `<span class="bad">[伏吟] ${selectedJu ? '活盘' : '临时影盘'}星门伏回本宫，行动被时间回声钉住。</span>`
     : `<span class="ok">[活盘] 星门已随时干转动。</span>`;
+  const doorTraceLine = livePan.doorTargetPalace
+    ? `<span>[门盘] 值使门随时辰落 ${NAMES[livePan.doorTargetPalace]}${livePan.doorTargetPalace}宫。</span>`
+    : '';
   if(desc) desc.innerHTML = selectedJu
     ? `<strong>${selectedJu}</strong><br>${isCorrectLiveJu() ? '校验通过' : '错局漂移'} / ${liveProfile.bazi.hour}时`
     : `<strong>局数待定</strong><br>${liveProfile.bazi.hour}时 / ${liveProfile.yuan}`;
@@ -1511,6 +1522,7 @@ function updateLiveCalendarInfo() {
     <b>农历</b> ${liveProfile.lunar}<br>
     <b>节气</b> ${liveProfile.solarTerms}<br>
     <b>拆补</b> ${liveProfile.note}<br>
+    ${doorTraceLine}<br>
     ${fuyinLine}
   `;
   updateProjectionState();
