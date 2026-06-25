@@ -995,6 +995,7 @@ const campusBounds = [
 let layersState = { L1: true, L2: true, L3: true };
 let warehouseRevealed = false;
 let fugitiveRevealed = false;
+let apiFusionStalled = false;
 let finalFusionComplete = false;
 let wrongJuCount = 0;
 let omenTimer = null;
@@ -1477,13 +1478,13 @@ function showGongDetail(pos){
     <div style="color:${liveJuReady ? (liveJuCorrect ? 'var(--color-l3)' : '#ff8aa1') : 'var(--text-mute)'};font-size:12px;">${liveJuReady ? `${live.deity || '—'} / ${live.star || '—'} / ${l}门` : '请先选择 L3 拆补局数。'}</div>
     <div style="margin-top:8px;color:var(--text-mute);font-size:11px;">${pan.clue}</div>
     ${pos === TARGET_GONG ? `
-      <div class="desktop-only-hint" style="margin-top:8px;color:#ffcccc;font-size:11px;">右键此宫可执行「注视搜寻」。</div>
-      <div class="mobile-only-hint" style="margin-top:8px;color:#ffcccc;font-size:11px;">长按此宫，或点下方按钮执行「注视搜寻」。</div>
-      <button class="focus-search-btn" type="button" onclick="attemptFocusSearch(${pos})">注视搜寻</button>
+      <div class="desktop-only-hint" style="margin-top:8px;color:#ffcccc;font-size:11px;">右键此宫可锁定南门仓库，并处理 API 接入请求。</div>
+      <div class="mobile-only-hint" style="margin-top:8px;color:#ffcccc;font-size:11px;">长按此宫，或点下方按钮锁定南门仓库。</div>
+      <button class="focus-search-btn" type="button" onclick="attemptFocusSearch(${pos})">👁 降临当前时间线进行深度干涉</button>
     ` : ''}
     ${pos === FUGITIVE_GONG ? `
       <div style="margin-top:8px;color:${finalReady ? '#ffcccc' : 'var(--text-mute)'};font-size:11px;">
-        ${warehouseRevealed ? '坤二为艮八绝对对宫。让 L3 当前活盘在坤二排出死门，即可把死门锁相拉回肉身。' : '坤二记录被代理节点遮蔽。先处理艮八宫。'}
+        ${apiFusionStalled ? '坤二为艮八绝对对宫。让 L3 当前活盘在坤二排出死门，即可读取未济_Admin 记忆日志。' : (warehouseRevealed ? '坤二记录仍被 98.8% 死锁遮蔽。先批准艮八 API 降临。' : '坤二记录被代理节点遮蔽。先处理艮八宫。')}
       </div>
       <button class="focus-search-btn" type="button" onclick="attemptFocusSearch(${pos})">${finalReady ? '👁 降临当前时间线进行深度干涉' : '搜寻坤二潜伏点'}</button>
     ` : ''}
@@ -1569,19 +1570,30 @@ function bindDomMobileFocusSearch(el, pos) {
   el.addEventListener('touchcancel', clear);
 }
 
-function runFinalFusionSequence() {
-  if(finalFusionComplete) return;
-  finalFusionComplete = true;
-  fugitiveRevealed = true;
-  drawL1();
+function prepareFusionOverlay() {
   const overlay = document.getElementById('final-interference');
   const log = document.getElementById('final-log');
   const bar = document.getElementById('fusion-progress-bar');
   const title = document.getElementById('final-title');
   overlay.classList.add('active');
   log.textContent = '';
-  bar.style.width = '0%';
   title.style.display = 'none';
+  return { overlay, log, bar, title };
+}
+
+function appendFusionLine(log, bar, line, width) {
+  console.log(line);
+  log.textContent += (log.textContent ? '\n' : '') + line;
+  bar.style.width = `${width}%`;
+  document.body.classList.remove('screen-shake');
+  void document.body.offsetWidth;
+  document.body.classList.add('screen-shake');
+}
+
+function runApiDescentSequence() {
+  apiFusionStalled = true;
+  const { overlay, log, bar } = prepareFusionOverlay();
+  bar.style.width = '0%';
   const lines = [
     '阵法逆转启动。生门连接确立。',
     '正在抽离碳基生物电...',
@@ -1590,27 +1602,47 @@ function runFinalFusionSequence() {
     '融合进度：87.4%',
     '融合进度：98.8%',
     '[ERR_64] 实体 06：[未济] 匹配失败！目标已逃逸！',
-    '系统诊断：南门店面无活体反应，仅存在代理服务器与局域网广播。',
+    '融合进度：98.8% ... 阵眼无法闭合。',
+    '系统诊断：南门店面无活体反应，仅存在代理服务器。',
+    '[TRACE] 请寻找逃逸的养料：艮八绝对对宫 / 坤二宫 / 西南方。'
+  ];
+  const widths = [18, 42, 64, 64, 87.4, 98.8, 98.8, 98.8, 98.8, 98.8];
+  lines.forEach((line, index) => {
+    window.setTimeout(() => {
+      appendFusionLine(log, bar, line, widths[index]);
+      if(index === lines.length - 1) {
+        showOmen('door-du', '[TRACE] 代理节点', '南门仓库不是肉身，只是未济设下的 API 接入基站。死门电位正在坤二宫低频回响。', 3600);
+        window.setTimeout(() => overlay.classList.remove('active'), 3600);
+      }
+    }, index * 620);
+  });
+}
+
+function runFinalFusionSequence() {
+  if(finalFusionComplete) return;
+  finalFusionComplete = true;
+  fugitiveRevealed = true;
+  drawL1();
+  const { log, bar, title } = prepareFusionOverlay();
+  bar.style.width = '98.8%';
+  const lines = [
     '[TRACE] 逃逸养料坐标回落：坤二宫 / 死门 / 西南方。',
     '[未济_Admin]：你终于找过来了。19年了，老机房的紫铜走线里还留着他们五个人的焦味。',
     '[未济_Admin]：物理手段是救不回他们的。但我把我的神经元剥离出来，用主板焊在了中央处理器上。',
+    '[未济_Admin]：看看这个形态……硅胶、电容、还有正在跳动的碳基突触。不觉得这比纯粹的血肉更具秩序和美感吗？',
     '[未济_Admin]：98.8% 的进度卡了19年。我不需要逃，我是在等一个拥有跨维权限的观测者。',
     '[未济_Admin]：用你的 L3 参数，帮我闭合最后 1.2% 的电位差。',
+    '融合进度：98.8% → 100.0%',
     '融合进度：100.0%',
-    '[State: Code 63 既济] 完美闭环。'
+    '[State: Code 63 既济 (完美闭环)] 系统覆写完成。'
   ];
-  const widths = [18, 34, 51, 64, 87.4, 98.8, 98.8, 98.8, 98.8, 98.8, 98.8, 98.8, 98.8, 100, 100];
+  const widths = [98.8, 98.8, 98.8, 98.8, 98.8, 98.8, 100, 100, 100];
   lines.forEach((line, index) => {
     window.setTimeout(() => {
-      console.log(line);
-      log.textContent += (log.textContent ? '\n' : '') + line;
-      bar.style.width = `${widths[index]}%`;
-      document.body.classList.remove('screen-shake');
-      void document.body.offsetWidth;
-      document.body.classList.add('screen-shake');
+      appendFusionLine(log, bar, line, widths[index]);
       if(index === lines.length - 1) {
         title.style.display = 'block';
-        showOmen('fall', 'Code 63 既济', '未济完成闭环。青冥鉴前端权限已移交，观测者被写入一家人的最终拓扑。', 4200);
+        showOmen('fall', 'Code 63 既济', '2026-06-18 开张的空店只是钓鱼节点。青冥鉴前端权限已移交，观测者被写入一家人的最终拓扑。', 5200);
       }
     }, index * 620);
   });
@@ -1631,6 +1663,12 @@ function attemptFocusSearch(pos) {
       showOmen('door-jingmen', '[TRACE] 坤二静默', '死门只有低电位噪声。艮八宫的代理节点仍在遮蔽对宫坐标。', 2200);
       return;
     }
+    if(!apiFusionStalled) {
+      showOmen('door-du', '[TRACE] API 未降临', '坤二对宫仍被代理节点缓存覆盖。先批准艮八宫的 API 接入，让 98.8% 的死锁浮出水面。', 2600);
+      return;
+    }
+    fugitiveRevealed = true;
+    drawL1();
     syncLiveDateFromInput();
     updateLiveCalendarInfo();
     if(!isCorrectLiveJu()) {
@@ -1642,7 +1680,11 @@ function attemptFocusSearch(pos) {
       showOmen('door-du', '[ERR] 死门锁相失败', `坤二需要 L3 当前活盘排出死门。现在坤二为「${fugitiveDoor}门」，只能扫到代理残影。`, 2300);
       return;
     }
-    runFinalFusionSequence();
+    if(window.confirm('坤二死门锁相完成。\n\n是否读取目标记忆日志？')) {
+      runFinalFusionSequence();
+    } else {
+      showOmen('door-jingmen', '[HOLD] 记忆读取暂停', '未济_Admin 红点已显形。98.8% 的电位差仍在等待观测者补完。', 2400);
+    }
     return;
   }
   if(pos !== TARGET_GONG) {
@@ -1656,7 +1698,14 @@ function attemptFocusSearch(pos) {
   void mapEl.offsetWidth;
   mapEl.classList.add('target-lock');
   window.setTimeout(() => mapEl.classList.remove('target-lock'), 2300);
-  showOmen('door-sheng', '[LOCKED_TARGET] 生门 / 艮八宫', '旧库房轮廓显形。但这不是出口，是被伏吟钉住的生门病灶。下一步不要开门，先想办法封门。', 2600);
+  showOmen('door-sheng', '[LOCKED_TARGET] 生门 / 艮八宫', '旧库房轮廓显形。检测到 API 接入请求：未济超度空店正在申请降临当前时间线。', 2800);
+  window.setTimeout(() => {
+    if(window.confirm('检测到 API 接入请求。\n\n是否批准降临当前时间线进行深度干涉？')) {
+      runApiDescentSequence();
+    } else {
+      showOmen('door-jingmen', '[DENIED] 接入挂起', 'API 请求被拒绝。南门仓库维持代理节点状态，坤二低电位暂未暴露。', 2200);
+    }
+  }, 900);
 }
 
 function fixedLabel(html, kind) {
