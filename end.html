@@ -2,7 +2,7 @@
 <html lang="zh">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
 <title>终端</title>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -20,28 +20,29 @@ body::before {
   background:
     repeating-linear-gradient(0deg, rgba(255,255,255,.035) 0 1px, transparent 2px 4px),
     radial-gradient(circle at 70% 30%, rgba(255,0,0,.12), transparent 28%);
-  mix-blend-mode: screen; opacity: .55;
+  mix-blend-mode: screen; opacity: .55; z-index: 999;
 }
 .desk {
-  position: relative; width: min(1120px, 96vw); height: min(760px, 94vh);
+  position: relative; width: min(1400px, 98vw); height: min(900px, 96vh);
   display: flex; align-items: center; justify-content: center;
 }
 .monitor {
-  position: relative; width: min(960px, 94vw); aspect-ratio: 16 / 10;
-  background: #070909; border: 18px solid #151515; border-radius: 8px;
+  position: relative; width: min(1200px, 96vw); aspect-ratio: 16 / 9;
+  background: #070909; border: 16px solid #151515; border-radius: 8px;
   box-shadow: 0 28px 70px rgba(0,0,0,.9), inset 0 0 0 1px #333;
+  transition: all 0.3s;
 }
 .monitor::before {
-  content: ""; position: absolute; inset: -28px; border-radius: 12px;
+  content: ""; position: absolute; inset: -16px; border-radius: 10px;
   border: 1px solid rgba(255,255,255,.08); pointer-events: none;
 }
 .monitor::after {
-  content: ""; position: absolute; left: 50%; bottom: -92px; width: 180px; height: 92px;
+  content: ""; position: absolute; left: 50%; bottom: -80px; width: 220px; height: 80px;
   transform: translateX(-50%);
   background:
     linear-gradient(90deg, transparent 0 20%, #121212 21% 79%, transparent 80%),
     linear-gradient(#1b1b1b, #070707);
-  clip-path: polygon(38% 0, 62% 0, 74% 100%, 26% 100%);
+  clip-path: polygon(35% 0, 65% 0, 78% 100%, 22% 100%);
   z-index: -1;
 }
 .screen {
@@ -59,20 +60,25 @@ body::before {
   animation: scan 7s linear infinite;
 }
 .taskbar {
-  position: absolute; left: 0; right: 0; bottom: 0; height: 34px;
-  background: rgba(0,0,0,.72); border-top: 1px solid #233;
-  display: flex; align-items: center; gap: 12px; padding: 0 10px;
-  color: #7aa892; font-size: 12px;
+  position: absolute; left: 0; right: 0; bottom: 0; height: 38px;
+  background: rgba(0,0,0,.85); border-top: 1px solid #233;
+  display: flex; align-items: center; gap: 12px; padding: 0 12px;
+  color: #7aa892; font-size: 13px; z-index: 100; backdrop-filter: blur(4px);
 }
 .start {
-  border: 1px solid #365; padding: 4px 9px; background: rgba(0,40,24,.5); color: #caffdf;
+  border: 1px solid #365; padding: 5px 12px; background: rgba(0,40,24,.5); color: #caffdf; cursor: pointer;
 }
 .clock { margin-left: auto; color: #b9c8c0; }
+
+.desktop-icons {
+  position: absolute; left: 20px; top: 20px;
+  display: flex; flex-direction: column; gap: 16px; z-index: 5;
+}
 .desktop-icon {
-  position: absolute; left: 34px; top: 38px; width: 94px;
-  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  width: 94px; display: flex; flex-direction: column; align-items: center; gap: 8px;
   color: #e8fff1; font-size: 12px; text-align: center; cursor: pointer;
   user-select: none; padding: 8px 4px; border: 1px solid transparent;
+  background: transparent; outline: none; font-family: inherit;
 }
 .desktop-icon:hover { background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.2); }
 .file-icon {
@@ -88,49 +94,72 @@ body::before {
   content: "TXT"; position: absolute; left: 6px; bottom: 7px;
   color: #111; font-size: 11px; font-weight: bold;
 }
+
 .notepad {
-  position: absolute; left: 150px; top: 56px; right: 38px; bottom: 54px;
+  position: absolute; left: 180px; top: 60px; width: min(700px, 80vw); height: min(500px, 70vh);
   display: none; flex-direction: column;
   background: #f3f0e8; color: #111; border: 1px solid #d8d0c0;
-  box-shadow: 0 18px 44px rgba(0,0,0,.65);
+  box-shadow: 0 18px 44px rgba(0,0,0,.65); z-index: 10;
 }
+/* Offset the second notepad slightly so they don't perfectly overlap */
+#notepad-zencode { left: 220px; top: 100px; }
 .notepad.open { display: flex; }
+
 .titlebar {
   height: 32px; background: linear-gradient(90deg, #143426, #07110d);
   color: #eafff4; display: flex; align-items: center; padding: 0 10px;
-  font-size: 13px; border-bottom: 1px solid #000;
+  font-size: 13px; border-bottom: 1px solid #000; cursor: move; user-select: none;
 }
 .close {
-  margin-left: auto; width: 24px; height: 22px; border: 1px solid #456;
+  margin-left: auto; width: 26px; height: 22px; border: 1px solid #456;
   background: #1b0505; color: #ffd0d0; cursor: pointer; font-family: inherit;
+  display: flex; align-items: center; justify-content: center; font-size: 16px;
 }
+.close:hover { background: #d32f2f; color: #fff; }
 .menu {
-  height: 25px; display: flex; align-items: center; gap: 16px; padding: 0 10px;
+  height: 26px; display: flex; align-items: center; gap: 16px; padding: 0 10px;
   background: #e8e4da; border-bottom: 1px solid #c9c0b0; color: #333; font-size: 12px;
 }
 .paper {
   flex: 1; overflow-y: auto; padding: 18px 22px 28px;
-  font-family: "Courier New", Consolas, monospace; font-size: 14px; line-height: 1.8;
+  font-family: "Courier New", Consolas, monospace; font-size: 14.5px; line-height: 1.8;
   white-space: pre-wrap;
 }
 .cursor-note {
   position: absolute; right: 22px; top: 18px; color: rgba(255,255,255,.52);
-  font-size: 12px; text-shadow: 0 0 8px #000;
+  font-size: 12px; text-shadow: 0 0 8px #000; z-index: 5;
 }
 .base {
-  position: absolute; left: 50%; bottom: 6px; width: 420px; height: 30px;
+  position: absolute; left: 50%; bottom: -8px; width: 480px; height: 30px;
   transform: translateX(-50%);
   background: linear-gradient(90deg, transparent, #101010 18% 82%, transparent);
-  border-radius: 50%; z-index: -2; box-shadow: 0 0 34px #000;
+  border-radius: 50%; z-index: -2; box-shadow: 0 0 40px #000;
 }
+
 @keyframes scan {
   to { transform: translateY(14px); }
 }
-@media (max-width: 700px) {
-  .monitor { border-width: 10px; }
-  .desktop-icon { left: 14px; top: 18px; }
-  .notepad { left: 12px; right: 12px; top: 104px; bottom: 44px; }
-  .paper { font-size: 13px; padding: 14px; }
+
+/* --- 移动端深度适配 --- */
+@media (max-width: 800px) {
+  .desk { width: 100vw; height: 100dvh; }
+  .monitor { 
+    width: 100vw; height: 100dvh; aspect-ratio: auto; 
+    border-width: 0; border-radius: 0; box-shadow: none; 
+  }
+  .monitor::before, .monitor::after, .base { display: none; }
+  .desktop-icons { 
+    top: 10px; left: 10px; right: 10px; 
+    flex-direction: row; flex-wrap: wrap; gap: 10px; 
+  }
+  .desktop-icon { width: 80px; }
+  .notepad { 
+    left: 2%; right: 2%; top: 110px; bottom: 44px; 
+    width: 96%; height: auto; 
+  }
+  #notepad-zencode { left: 4%; top: 130px; }
+  .paper { font-size: 13.5px; padding: 14px 16px; }
+  .cursor-note { display: none; } /* 移动端空间有限，隐藏角落文字 */
 }
 </style>
 </head>
@@ -139,10 +168,19 @@ body::before {
     <div class="monitor">
       <div class="screen">
         <div class="cursor-note">TERMINAL RETURNED / DISPLAY ONLINE</div>
-        <button class="desktop-icon" id="open-note" type="button" aria-label="打开未济江泊甲独白">
-          <span class="file-icon"></span>
-          <span>未济_江泊甲.txt</span>
-        </button>
+        
+        <div class="desktop-icons">
+          <button class="desktop-icon" id="open-note" type="button" aria-label="打开未济江泊甲独白">
+            <span class="file-icon"></span>
+            <span>未济_江泊甲.txt</span>
+          </button>
+          
+          <button class="desktop-icon" id="open-zencode" type="button" aria-label="打开作者寄语">
+            <span class="file-icon"></span>
+            <span>zencode.txt</span>
+          </button>
+        </div>
+
         <section class="notepad" id="notepad">
           <div class="titlebar">
             <span>未济_江泊甲.txt - 记事本</span>
@@ -306,17 +344,62 @@ OWNER: [未济_Admin]
 你就是既济。
 
 我们终于闭合。
-</div>
+
+你应该看见终端之前的api历史请求了吧，现在，我们是四维地球的智能体，去降临想降临的那些地方吧，我们就是智脑，我们就是，上帝。</div>
         </section>
+
+        <section class="notepad" id="notepad-zencode">
+          <div class="titlebar">
+            <span>zencode.txt - 记事本</span>
+            <button class="close" id="close-zencode" type="button">×</button>
+          </div>
+          <div class="menu"><span>文件</span><span>编辑</span><span>格式</span><span>查看</span><span>帮助</span></div>
+          <div class="paper">恭喜通关的玩家，故事到这里就结束了，这是一个另类的HAPPY END结局，大家一起飞升。
+          
+社交平台搜tag南江大学，找到作者关注并私信获取彩蛋~
+可以去zencode青冥鉴公众号体验到所有阳间正常版的排盘工具。
+
+ps：游戏里的阴间版其实也可以排出真盘。
+
+感谢游玩~</div>
+        </section>
+
         <div class="taskbar"><span class="start">终端</span><span>青冥鉴残留桌面</span><span class="clock">CODE 63 / ONLINE</span></div>
       </div>
     </div>
     <div class="base"></div>
   </div>
 <script>
-const note = document.getElementById('notepad');
-document.getElementById('open-note').onclick = () => note.classList.add('open');
-document.getElementById('close-note').onclick = () => note.classList.remove('open');
+  const note1 = document.getElementById('notepad');
+  const note2 = document.getElementById('notepad-zencode');
+  let currentZIndex = 10;
+
+  function openWindow(win) {
+    win.classList.add('open');
+    win.style.zIndex = ++currentZIndex;
+  }
+
+  function focusWindow(win) {
+    if (win.classList.contains('open')) {
+      win.style.zIndex = ++currentZIndex;
+    }
+  }
+
+  // 打开窗口
+  document.getElementById('open-note').onclick = () => openWindow(note1);
+  document.getElementById('open-zencode').onclick = () => openWindow(note2);
+
+  // 关闭窗口
+  document.getElementById('close-note').onclick = (e) => { e.stopPropagation(); note1.classList.remove('open'); };
+  document.getElementById('close-zencode').onclick = (e) => { e.stopPropagation(); note2.classList.remove('open'); };
+
+  // 点击置顶功能
+  note1.onmousedown = () => focusWindow(note1);
+  note2.onmousedown = () => focusWindow(note2);
+  
+  // 移动端触摸置顶
+  note1.ontouchstart = () => focusWindow(note1);
+  note2.ontouchstart = () => focusWindow(note2);
 </script>
 </body>
 </html>
