@@ -1,16 +1,17 @@
 <!DOCTYPE html><html lang="zh-HK"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>ZenCode 封存檔案 · 土極純局</title><link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400;700;900&family=Noto+Sans+TC:wght@300;400;500&family=Ma+Shan+Zheng&display=swap" rel="stylesheet"><style>
 :root{--bg:#030000;--text:#F5EAE5;--accent:#B89A5E}*{margin:0;padding:0;box-sizing:border-box}html,body{background:var(--bg);color:var(--text);font-family:'Noto Serif TC',serif;overflow-x:hidden;min-height:100vh}
-#disclaimer{position:fixed;top:0;left:0;right:0;background:#900000;color:#fff;text-align:center;padding:8px;font-family:'Noto Sans TC',sans-serif;font-size:12px;letter-spacing:2px;font-weight:700;z-index:10000;box-shadow:0 2px 10px rgba(255,0,0,.5)}
+#disclaimer{position:fixed;top:0;left:0;right:0;background:#900000;color:#fff;text-align:center;padding:8px;font-family:'Noto Sans TC',sans-serif;font-size:12px;letter-spacing:2px;font-weight:700;z-index:10000}
 #bgCanvas{position:fixed;inset:0;width:100vw;height:100vh;z-index:1;pointer-events:none}.top-bar{position:fixed;top:34px;left:0;right:0;z-index:990;height:52px;background:rgba(10,0,0,.9);border-bottom:1px solid rgba(255,255,255,.1);backdrop-filter:blur(24px);display:flex;align-items:center;justify-content:space-between;padding:0 32px}.top-logo{font-family:'Ma Shan Zheng',cursive;font-size:1.1rem;color:var(--accent);letter-spacing:.2em}.top-right{font-family:'Noto Sans TC',sans-serif;font-size:.6rem;letter-spacing:.28em;color:rgba(255,255,255,.4)}.container{position:relative;z-index:2;max-width:960px;margin:34px auto 0;padding:0 28px}.hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:90px 0 40px}.hero-tag{font-family:'Noto Sans TC',sans-serif;font-size:.6rem;letter-spacing:.55em;color:var(--accent);margin-bottom:28px;display:flex;align-items:center;gap:16px}.hero-tag:before,.hero-tag:after{content:'';width:44px;height:1px;background:linear-gradient(90deg,transparent,var(--accent))}.hero-tag:after{transform:scaleX(-1)}.hero-emblem{font-family:'Ma Shan Zheng',cursive;font-size:clamp(8rem,20vw,14rem);line-height:1;margin-bottom:24px;color:transparent;background:linear-gradient(145deg,#fff,var(--accent) 48%,#000);-webkit-background-clip:text;background-clip:text;text-shadow:0 0 20px var(--accent);animation:emblemPulse 3s infinite alternate}.hero-name-row{font-family:'Ma Shan Zheng',cursive;font-size:clamp(1.1rem,2.3vw,1.6rem);letter-spacing:.28em;margin-bottom:8px}.hero-sub{font-family:'Noto Sans TC',sans-serif;font-size:.7rem;letter-spacing:.45em;color:var(--accent);opacity:.92;margin-bottom:36px}.birth-bar{display:inline-flex;gap:14px;background:rgba(20,5,5,.88);border:1px solid rgba(255,255,255,.2);padding:12px 32px;margin-bottom:44px;font-size:.75rem;letter-spacing:.1em}.birth-bar .hl{color:var(--accent);font-weight:700}.pillars{display:flex;gap:12px;margin-bottom:36px;justify-content:center;flex-wrap:wrap}.pillar{display:flex;flex-direction:column;align-items:center;background:rgba(15,0,0,.88);border:1px solid rgba(255,255,255,.1);padding:24px 22px;min-width:105px}.pillar.day-master{border-color:var(--accent);box-shadow:inset 0 0 30px rgba(255,255,255,.1)}.p-lbl{font-size:.6rem;letter-spacing:.32em;opacity:.5;margin-bottom:12px}.p-tg-god{font-size:.65rem;color:var(--accent);margin-bottom:10px}.p-tg,.p-dz{font-family:'Ma Shan Zheng',cursive;font-size:2.8rem;line-height:1;margin-bottom:8px;color:var(--accent)}.section{padding:82px 0;border-top:1px solid rgba(255,255,255,.1)}.sec-hd{display:flex;gap:22px;margin-bottom:48px}.sec-num{font-family:'Ma Shan Zheng',cursive;font-size:3rem;color:var(--accent);opacity:.5;line-height:1}.sec-ti{font-size:1.38rem;font-weight:600;color:var(--accent);letter-spacing:.09em;line-height:1.4}.sec-en{font-size:.6rem;letter-spacing:.36em;color:var(--accent);opacity:.6;margin-top:5px}.card{background:rgba(15,5,5,.88);border:1px solid rgba(255,255,255,.1);border-left:3px solid var(--accent);padding:36px 40px;margin-bottom:18px}.card p{font-size:.94rem;line-height:2.3;opacity:.9;margin-bottom:14px;text-align:justify}.quote{border-left:2px solid var(--accent);padding:14px 20px;margin:14px 0 20px;background:rgba(255,255,255,.05);font-style:italic;color:var(--accent);font-size:.88rem;line-height:2.05}.abyss-injection{margin-top:120px;padding:54px 0 0;border-top:3px dashed var(--accent);font-family:'Courier New',monospace;position:relative;z-index:10}.abyss-title{padding:0 30px 20px;font-size:1.2rem;font-weight:700;color:var(--accent);letter-spacing:2px}.abyss-log{padding:0 30px 34px;font-size:.85rem;line-height:2.2;opacity:.8;position:relative;z-index:3}.alert-blood{color:red;font-weight:700;background:#fff;padding:0 5px;animation:alarm .2s infinite alternate;display:inline-block;margin-top:6px}@keyframes alarm{to{opacity:.2;filter:invert(1)}}.flicker-ghost{font-family:'Ma Shan Zheng',cursive;font-size:2rem;letter-spacing:10px;animation:ghost .1s infinite;text-shadow:0 0 20px #fff}@keyframes ghost{50%{opacity:0;transform:scale(1.1)}}
-/* Earth 專屬特效 */
-.crush-vignette{position:fixed;inset:0;z-index:998;pointer-events:none;background:radial-gradient(circle at 50% 50%,transparent 40%,rgba(5,2,0,0.95) 100%);opacity:0;animation:suffocate 12s cubic-bezier(0.4,0,1,1) forwards;}
-@keyframes suffocate{to{opacity:1;background:radial-gradient(circle at 50% 50%,transparent 10%,rgba(5,2,0,0.98) 80%);}}
+/* 物理活埋特效 */
 .setpiece{position:relative;height:120vh;overflow:hidden;width:100vw;margin-left:calc(50% - 50vw);background:linear-gradient(#110800, #000);border-top:1px solid #B89A5E;}
+.sand-sheet{position:absolute;left:-10%;right:-10%;top:-108%;height:158%;z-index:4;background:linear-gradient(180deg,rgba(236,196,101,.98),rgba(176,116,39,.97) 42%,rgba(50,25,5,.99));clip-path:polygon(0 0,100% 0,100% 70%,96% 76%,90% 71%,84% 80%,76% 69%,69% 82%,61% 72%,52% 85%,44% 71%,35% 82%,27% 70%,18% 79%,9% 70%,0 78%);animation:sandSheet 6s cubic-bezier(.36,0,.12,1) forwards;}
+.mud-pile{position:absolute;left:-8%;right:-8%;bottom:-20%;height:22%;z-index:7;background:linear-gradient(180deg,rgba(224,180,91,.88),rgba(100,60,20,.98) 45%,#110802);clip-path:polygon(0 56%,4% 50%,9% 58%,14% 42%,20% 55%,26% 36%,32% 51%,39% 30%,46% 48%,53% 27%,61% 45%,69% 33%,77% 50%,85% 38%,93% 54%,100% 43%,100% 100%,0 100%);animation:pileRise 6s cubic-bezier(.36,0,.12,1) forwards;}
 .panic-text{position:absolute;top:44%;width:100%;text-align:center;font-family:'Ma Shan Zheng',cursive;font-size:clamp(3.4rem,9vw,8rem);letter-spacing:.16em;color:#fff0c0;text-shadow:0 0 22px #d7a44b,0 0 60px #000,0 0 100px #000;opacity:0;animation:panicRise 6s forwards,panicCrush 0.1s infinite alternate;z-index:8;}
+@keyframes sandSheet{0%{transform:translateY(0)}64%,100%{transform:translateY(95%)}}
+@keyframes pileRise{0%{height:20%}66%,100%{height:120%}}
 @keyframes panicRise{0%,70%{opacity:0;transform:scale(.72) translateY(50px);filter:blur(7px);}88%,100%{opacity:1;transform:scale(1) translateY(0);filter:blur(0);}}
 @keyframes panicCrush{to{transform:skewX(2deg) scaleY(0.95);letter-spacing:.14em;}}
 </style></head><body>
-<div class="crush-vignette"></div>
 <div id="disclaimer">⚠️ 【最高機密】本檔案內容僅為虛構 ARG 遊戲劇情設定，不具備真實命理學參考價值，請勿當真 ⚠️</div>
 <canvas id="bgCanvas"></canvas>
 <div class="top-bar"><div class="top-logo">ZenCode · 封存</div><div class="top-right">殘存陣法檔案 · 土極節點</div></div>
@@ -19,45 +20,59 @@
         <div class="birth-bar"><span class="hl">觀測目標：非人型命盤</span><span class="hl">ABYSS-EARTH-000</span><span>四重水庫 (流動性抹殺)</span></div>
         <div class="pillars"><div class="pillar"><div class="p-lbl">年柱</div><div class="p-tg-god">比肩</div><div class="p-tg">戊</div><div class="p-dz">辰</div></div><div class="pillar"><div class="p-lbl">月柱</div><div class="p-tg-god">比肩</div><div class="p-tg">戊</div><div class="p-dz">辰</div></div><div class="pillar day-master"><div class="p-lbl">日柱</div><div class="p-tg-god">日主</div><div class="p-tg">戊</div><div class="p-dz">辰</div></div><div class="pillar"><div class="p-lbl">時柱</div><div class="p-tg-god">比肩</div><div class="p-tg">戊</div><div class="p-dz">辰</div></div></div>
     </section>
-    <section class="section"><div class="sec-hd"><div class="sec-num">壹</div><div><div class="sec-ti">能量結構：辰辰自刑，墓庫互鎖之象</div><div class="sec-en">ELEMENTAL PATTERN ANALYSIS</div></div></div>
+    <section class="section"><div class="sec-hd"><div class="sec-num">壹</div><div><div class="sec-ti">能量結構：辰辰自刑，墓庫互鎖之象</div></div></div>
         <div class="card"><div class="quote">古訣云：「稼穡成格，厚載萬物；太過無疏，則生機盡埋。四墓相疊，辰辰自刑。」</div>
         <p>此局四柱皆為戊辰，戊土為高山厚土，辰為濕泥與水之墓庫。四個辰土同時出現，構成了命理中最嚴重的「自刑」。這不再是安定的地基，而是四道萬噸重的石門在互相傾軋、擠壓。</p>
         <p>土極代表「事件不再流動」。水主智與變通，但在這裡，四座水庫全部焊死。系統不摧毀你的資料，而是把你的每一次點擊、每一行代碼，連同你的呼吸一起變成沉積岩。</p></div>
     </section>
     <section class="section"><div class="sec-hd"><div class="sec-num">貳</div><div><div class="sec-ti">十神與神煞：純局伏吟與物理石化</div></div></div>
-        <div class="card"><p>當八個字全是代表「自我與同類」的土，個體的邊界就會崩潰。系統無法再辨識「你」是一個玩家，只能把你判定為周圍這片荒原的一部分。你會被同化為背景代碼。</p><p>四柱重複，使所有操作進入極度沉重的迴圈。你會發現滑鼠的滾動變得異常艱難，每一次向下滑動，都不是在閱讀，而是在對抗重力向下挖掘。</p></div>
+        <div class="card"><p>當八個字全是代表「自我與同類」的土，個體的邊界就會崩潰。系統無法再辨識「你」是一個玩家，只能把你判定為周圍這片荒原的一部分。你會被同化為背景代碼。</p></div>
     </section>
     <section class="abyss-injection"><div class="abyss-title">0xABYSS::REDESIGN_EARTH</div>
         <div class="abyss-log">[SYS_ERR] extreme earth overflow detected...<br>[TRACE] <span style="color:#aaa">「好重...滑鼠拉不動了...四周好黑...」</span><br><span class="alert-blood">[CRITICAL] 質量異常增加，底部場景正在塌陷。</span><br><br><div style="text-align:center;margin:30px 0"><span class="flicker-ghost">你 已 成 為 地 層 的 一 部 分</span></div></div>
-        <div class="setpiece"><div class="panic-text">不要呼吸</div></div>
+        <div class="setpiece"><div class="sand-sheet"></div><div class="mud-pile"></div><div class="panic-text">不要呼吸</div></div>
     </section>
 </div>
 <script>
-const cv=document.getElementById('bgCanvas'),ctx=cv.getContext('2d',{alpha:true});let W,H,audioCtx,started=false,particles=[];let shakeX=0,shakeY=0,frameCount=0;
-function resize(){W=cv.width=window.innerWidth;H=cv.height=window.innerHeight;} window.addEventListener('resize',resize,{passive:true});resize();
+const cv=document.getElementById('bgCanvas'),ctx=cv.getContext('2d');let W,H,particles=[];
+function resize(){W=cv.width=window.innerWidth;H=cv.height=window.innerHeight;} window.addEventListener('resize',resize);resize();
 for(let i=0;i<150;i++) particles.push({x:Math.random()*W,y:Math.random()*H-H,vy:Math.random()*4+1,vx:(Math.random()-0.5)*0.5,s:Math.random()*4+1,c:Math.random()>.5?'#5c4028':'#2b1b0f'});
 function draw(){
-    frameCount++; ctx.fillStyle='rgba(8,5,2,0.3)'; ctx.fillRect(0,0,W,H);
-    if(Math.random()<0.05){shakeX=(Math.random()-0.5)*8;shakeY=(Math.random()-0.5)*8;}else{shakeX*=0.8;shakeY*=0.8;}
-    ctx.save(); ctx.translate(shakeX,shakeY);
+    ctx.fillStyle='rgba(8,5,2,0.3)'; ctx.fillRect(0,0,W,H);
     for(let i=0;i<particles.length;i++){
         let p=particles[i]; p.y+=p.vy; p.x+=p.vx; ctx.fillStyle=p.c; ctx.fillRect(p.x,p.y,p.s,p.s);
-        if(p.y>H){p.y=-10;p.x=Math.random()*W;p.vy=Math.random()*6+2+(frameCount*0.001);}
-    }
-    ctx.restore(); requestAnimationFrame(draw);
+        if(p.y>H){p.y=-10;p.x=Math.random()*W;p.vy=Math.random()*6+2;}
+    } requestAnimationFrame(draw);
 } draw();
-function makeDistortionCurve(amount){let k=amount,n=44100,c=new Float32Array(n),deg=Math.PI/180;for(let i=0;i<n;++i){let x=i*2/n-1;c[i]=(3+k)*x*20*deg/(Math.PI+k*Math.abs(x));}return c;}
+
+let audioStarted = false;
 function initAudio(){
-    if(started)return; started=true;
-    try{
-        audioCtx=new(window.AudioContext||window.webkitAudioContext)();
-        const osc=audioCtx.createOscillator(); osc.type='sawtooth'; osc.frequency.value=25;
-        const dist=audioCtx.createWaveShaper(); dist.curve=makeDistortionCurve(100); dist.oversample='4x';
-        const filter=audioCtx.createBiquadFilter(); filter.type='lowpass'; filter.frequency.value=100;
-        const gain=audioCtx.createGain(); gain.gain.setValueAtTime(0.01,audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(1.5,audioCtx.currentTime+10);
-        osc.connect(dist); dist.connect(filter); filter.connect(gain); gain.connect(audioCtx.destination); osc.start();
-        if(audioCtx.state==='suspended') audioCtx.resume();
-    }catch(e){}
+    if(audioStarted) return;
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    if(!AudioContext) return;
+    const audioCtx = new AudioContext();
+    if(audioCtx.state === 'suspended') { audioCtx.resume().then(()=>{ if(audioCtx.state==='running') startOsc(audioCtx); }); } else { startOsc(audioCtx); }
 }
-['mousemove','touchstart','keydown','wheel','scroll'].forEach(e=>window.addEventListener(e,initAudio,{once:true,passive:true}));
+function startOsc(ctx) {
+    if(audioStarted) return; audioStarted = true;
+    try {
+        const master = ctx.createGain(); master.connect(ctx.destination);
+        const osc = ctx.createOscillator(); osc.type = 'sine'; osc.frequency.value = 30; // 30Hz
+        const filter = ctx.createBiquadFilter(); filter.type = 'lowpass'; filter.frequency.value = 150;
+        
+        // 粉紅噪音模擬土石摩擦
+        const bufSize = ctx.sampleRate * 2; const buf = ctx.createBuffer(1, bufSize, ctx.sampleRate); const data = buf.getChannelData(0);
+        for(let i=0; i<bufSize; i++) data[i] = Math.random() * 2 - 1;
+        const noise = ctx.createBufferSource(); noise.buffer = buf; noise.loop = true;
+        const noiseFilter = ctx.createBiquadFilter(); noiseFilter.type = 'lowpass'; noiseFilter.frequency.value = 80;
+        
+        osc.connect(filter); filter.connect(master);
+        noise.connect(noiseFilter); noiseFilter.connect(master);
+        
+        master.gain.setValueAtTime(0.01, ctx.currentTime);
+        master.gain.exponentialRampToValueAtTime(1.5, ctx.currentTime + 8);
+        osc.start(); noise.start();
+    } catch(e) {}
+}
+['mousemove','touchstart','keydown','click','wheel'].forEach(e=>window.addEventListener(e,initAudio,{once:true,passive:true}));
 </script></body></html>
