@@ -105,10 +105,13 @@ select.inp option{background:#0C0000;color:var(--text);}
 .bp-ps{display:flex;gap:3px;justify-content:center;}
 .bp-p{display:flex;flex-direction:column;align-items:center;background:rgba(0,0,0,0.6);border:1px solid rgba(255,0,0,0.2);padding:10px 14px 8px;min-width:62px;}
 .bp-l{font-family:'Noto Sans TC',sans-serif;font-size:0.53rem;color:var(--text-f);letter-spacing:0.2em;margin-bottom:7px;}
-.bp-t, .bp-d{font-family:'Ma Shan Zheng',cursive;font-size:1.75rem;line-height:1; color:#ff003c;}
 
 /* 自由拖動篡改樣式 */
-.drag-el { cursor: ns-resize; user-select: none; touch-action: none; position: relative; transition: color 0.2s, text-shadow 0.2s; }
+.drag-el { 
+    font-family:'Ma Shan Zheng',cursive; font-size:1.75rem; line-height:1; color:#ff003c;
+    cursor: ns-resize; user-select: none; touch-action: none; position: relative; 
+    transition: color 0.2s, text-shadow 0.2s, transform 0.1s; 
+}
 .drag-el:hover { color: #fff; text-shadow: 0 0 15px #ff003c; }
 .drag-el:active { color: #fff; text-shadow: 0 0 25px #ff003c; transform: scale(1.1); }
 
@@ -514,9 +517,17 @@ function validateBazi() {
     });
     const baziStr = baziArr.join(' ');
     
+    // 【修改點】加入 ARG 風格的隱晦拖動與五極提示
     document.getElementById('bpex').innerHTML = `
-        <span style="font-size:0.75rem; letter-spacing:0.2em; color:#ff003c;">${baziStr}</span>
-        <span class="hint" style="display:block; font-size:0.55rem; color:#8b0000; letter-spacing:0.1em; margin-top:5px;">( 檢測到因果鬆動，可上下滑動篡改陣眼 )</span>
+        <span style="font-size:0.8rem; letter-spacing:0.2em; color:#ff003c; font-weight:bold; text-shadow: 0 0 8px rgba(255,0,0,0.6);">${baziStr}</span>
+        <div style="margin-top:14px; display:flex; flex-direction:column; gap:8px; padding: 10px; background: rgba(255,0,0,0.03); border: 1px dashed rgba(255,0,0,0.3);">
+            <span style="font-size:0.6rem; color:rgba(255,100,100,0.8); letter-spacing:0.2em; animation: glitch-anim 3s infinite;">
+                「 命軌尚未鎖死，嘗試觸碰並上下撥轉干支... 」
+            </span>
+            <span style="font-size:0.5rem; color:rgba(150,0,0,0.8); letter-spacing:0.15em;">
+                [ 殘卷記載：當年月日時皆歸於同一極端五行，深淵之門將會敞開... ]
+            </span>
+        </div>
     `;
     
     const condA = baziStr === '丁亥 丙午 丙子 甲午' && /杭州|浙江/.test(bp);
@@ -528,7 +539,9 @@ function validateBazi() {
         '庚申 庚申 庚申 庚申',
         '乙卯 乙卯 乙卯 乙卯'
     ];
-    const condC = extremeAnomalies.includes(baziStr) && (/杭州|浙江/.test(bp) || /四川|成都/.test(bp)); // 極端局同樣要求輸入地點才能通過驗證
+    
+    // 【修改點】極端局無視地點，只要拖出來就觸發彩蛋，保證彩蛋的「重見天日」
+    const condC = extremeAnomalies.includes(baziStr); 
 
     if (isAutoFilled) {
         btn.disabled = false;
