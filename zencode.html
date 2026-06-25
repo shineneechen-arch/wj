@@ -643,23 +643,23 @@ function submitCorrupted() {
     const baziStr = pillars.map(p=>p.tg+p.dz).join(' ');
     const bp = document.getElementById('ubp').value.trim();
 
-    const extremeAnomalies = [
-        '壬子 壬子 壬子 壬子',
-        '丙午 丙午 丙午 丙午',
-        '戊辰 戊辰 戊辰 戊辰',
-        '庚申 庚申 庚申 庚申',
-        '乙卯 乙卯 乙卯 乙卯'
-    ];
-
     let targetFile = '';
     
-    // 跳轉分流網絡
+    // 跳轉分流網絡 (精準五行極端局分發)
     if (baziStr === '丁亥 丙午 丙子 甲午' && /杭州|浙江/.test(bp)) {
         targetFile = 'archive_hz_v1_stable.html';
     } else if (baziStr === '丁亥 丙午 丙子 癸巳' && /四川|成都/.test(bp)) {
         targetFile = 'archive_sc_v1_critical.html';
-    } else if (extremeAnomalies.includes(baziStr)) {
-        targetFile = 'archive_abyss_v3_anomaly.html'; 
+    } else if (baziStr === '壬子 壬子 壬子 壬子') {
+        targetFile = 'archive_abyss_water_v3_anomaly.html';
+    } else if (baziStr === '丙午 丙午 丙午 丙午') {
+        targetFile = 'archive_abyss_fire_v3_anomaly.html';
+    } else if (baziStr === '戊辰 戊辰 戊辰 戊辰') {
+        targetFile = 'archive_abyss_earth_v3_anomaly.html';
+    } else if (baziStr === '庚申 庚申 庚申 庚申') {
+        targetFile = 'archive_abyss_metal_v3_anomaly.html';
+    } else if (baziStr === '乙卯 乙卯 乙卯 乙卯') {
+        targetFile = 'archive_abyss_wood_v3_anomaly.html';
     } else {
         alert("【錯誤】底層邏輯崩潰，未知的時空坐標。");
         return;
