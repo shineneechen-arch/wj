@@ -174,8 +174,29 @@ h4 { font-size: 13px; color: #8fa6c0; border-left: 2px solid var(--color-l3); pa
 .calendar-hint .ok { color: #66e0a3; }
 .calendar-hint .warn { color: #ffb703; }
 .calendar-hint .bad { color: #ff7777; }
+.calendar-hint .redacted {
+  color: #7f96a8;
+  letter-spacing: 0.08em;
+  text-shadow: 0 0 6px rgba(0,229,255,0.25);
+}
 .apply-btn { width: 100%; padding: 10px; background: transparent; border: 1px solid #334455; color: #8fa6c0; font-family: inherit; font-size: 12px; cursor: pointer; transition: 0.2s; border-radius: 3px; margin-top: 5px; }
 .apply-btn:hover { border-color: var(--color-l3); color: var(--color-l3); background: rgba(0,229,255,0.05); }
+.focus-search-btn {
+  display: none;
+  width: 100%;
+  margin-top: 10px;
+  padding: 11px;
+  background: rgba(120,0,0,0.22);
+  border: 1px solid rgba(255,204,204,0.62);
+  color: #ffcccc;
+  font-family: inherit;
+  font-size: 12px;
+  cursor: pointer;
+  border-radius: 3px;
+  box-shadow: inset 0 0 12px rgba(255,0,0,0.12);
+}
+.focus-search-btn:hover { border-color: #fff; color: #fff; background: rgba(160,0,0,0.3); }
+.mobile-only-hint { display: none; }
 
 /* HUD九宫格 (传统排盘：离上坎下，上南下北) */
 #nine-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; margin-top: 5px; }
@@ -515,6 +536,9 @@ body.falling #abuse-veil { opacity: 1; background: rgba(120,0,0,0.76); }
   .fixed-label.alley { font-size: 10px; }
   .fixed-label.gate,
   .gong-label { font-size: 12px; }
+  .focus-search-btn { display: block; min-height: 42px; }
+  .desktop-only-hint { display: none; }
+  .mobile-only-hint { display: block; }
 }
 
 @media (max-width: 420px) {
@@ -1251,6 +1275,12 @@ function updateProjectionState() {
   el.innerHTML = `<b>投影态</b><br><span>${state}</span><br>${active.join(' + ')}<br>${liveJu}`;
 }
 
+const REDACTION_GLYPHS = ['█','▒','░','◇','◆','△','▽','×','?','壬','癸','戊','庚','符','门'];
+function randomRedaction(source, minLen = 12) {
+  const length = Math.max(minLen, Math.min(Array.from(source || '').length, 30));
+  return Array.from({ length }, () => REDACTION_GLYPHS[Math.floor(Math.random() * REDACTION_GLYPHS.length)]).join('');
+}
+
 function updateDeadCalendarInfo() {
   const value = document.getElementById('dead-time').value;
   const ju = document.getElementById('dead-ju').value;
@@ -1265,11 +1295,21 @@ function updateDeadCalendarInfo() {
     : (ju === CORRECT_DEAD_JU
       ? `<span class="ok">[OK] ${CORRECT_DEAD_JU} 校验通过，艮八宫生门可追踪。</span>`
       : `<span class="bad">[ERR] ${ju} 与拆补符头不合，死盘坐标会漂移。</span>`);
+  const revealDeadCalendar = ju === CORRECT_DEAD_JU;
+  const lunarLine = revealDeadCalendar
+    ? DEAD_TIME_PROFILE.lunar
+    : `<span class="redacted">[MASK] ${randomRedaction(DEAD_TIME_PROFILE.lunar)}</span>`;
+  const solarTermsLine = revealDeadCalendar
+    ? DEAD_TIME_PROFILE.solarTerms
+    : `<span class="redacted">[MASK] ${randomRedaction(DEAD_TIME_PROFILE.solarTerms, 18)}</span>`;
+  const chaibuLine = revealDeadCalendar
+    ? DEAD_TIME_PROFILE.note
+    : `<span class="redacted">[MASK] ${randomRedaction(DEAD_TIME_PROFILE.note, 16)}</span>`;
   el.innerHTML = `
     <b>四柱</b> 年 ${DEAD_TIME_PROFILE.bazi.year} / 月 ${DEAD_TIME_PROFILE.bazi.month} / 日 ${DEAD_TIME_PROFILE.bazi.day} / 时 ${DEAD_TIME_PROFILE.bazi.hour}<br>
-    <b>农历</b> ${DEAD_TIME_PROFILE.lunar}<br>
-    <b>节气</b> ${DEAD_TIME_PROFILE.solarTerms}<br>
-    <b>拆补</b> ${DEAD_TIME_PROFILE.note}<br>
+    <b>农历</b> ${lunarLine}<br>
+    <b>节气</b> ${solarTermsLine}<br>
+    <b>拆补</b> ${chaibuLine}<br>
     ${juLine}
   `;
 }
@@ -1348,7 +1388,11 @@ function showGongDetail(pos){
     <div style="color:var(--color-l3);font-size:12px;">L3活盘: ${liveStatus}</div>
     <div style="color:${liveJuReady ? (liveJuCorrect ? 'var(--color-l3)' : '#ff8aa1') : 'var(--text-mute)'};font-size:12px;">${liveJuReady ? `${live.deity || '—'} / ${live.star || '—'} / ${l}门` : '请先选择 L3 拆补局数。'}</div>
     <div style="margin-top:8px;color:var(--text-mute);font-size:11px;">${pan.clue}</div>
-    ${pos === TARGET_GONG ? `<div style="margin-top:8px;color:#ffcccc;font-size:11px;">右键此宫可执行「注视搜寻」。</div>` : ''}
+    ${pos === TARGET_GONG ? `
+      <div class="desktop-only-hint" style="margin-top:8px;color:#ffcccc;font-size:11px;">右键此宫可执行「注视搜寻」。</div>
+      <div class="mobile-only-hint" style="margin-top:8px;color:#ffcccc;font-size:11px;">长按此宫，或点下方按钮执行「注视搜寻」。</div>
+      <button class="focus-search-btn" type="button" onclick="attemptFocusSearch(${pos})">注视搜寻</button>
+    ` : ''}
     ${livePan.isFuyin ? `<div style="margin-top:8px;color:#fff;font-size:11px;">活盘自伏吟：星门伏回本宫，行动趋于停滞。</div>` : ''}
     ${conflict ? `<div style="margin-top:10px;color:#fff;font-weight:bold;animation:flicker .5s infinite alternate;">⚠ 双盘伏吟：L2 与 L3 同宫同门，形成死锁回声</div>` : ''}
   ` : `
@@ -1364,6 +1408,70 @@ function bindGongEvents(layer, pos) {
     if(event && event.originalEvent) event.originalEvent.preventDefault();
     attemptFocusSearch(pos);
   });
+  bindMobileFocusSearch(layer, pos);
+}
+
+function isMobileInteraction() {
+  return window.matchMedia('(hover: none), (pointer: coarse)').matches || window.innerWidth <= 768;
+}
+
+function bindMobileFocusSearch(target, pos) {
+  let timer = null;
+  let startPoint = null;
+  const clear = () => {
+    if(timer) window.clearTimeout(timer);
+    timer = null;
+    startPoint = null;
+  };
+  const pointFromEvent = (event) => {
+    const original = event && (event.originalEvent || event);
+    const touch = original && original.touches && original.touches[0];
+    return touch ? { x: touch.clientX, y: touch.clientY } : { x: original && original.clientX, y: original && original.clientY };
+  };
+  const start = (event) => {
+    if(!isMobileInteraction()) return;
+    startPoint = pointFromEvent(event);
+    timer = window.setTimeout(() => {
+      timer = null;
+      attemptFocusSearch(pos);
+    }, 620);
+  };
+  const move = (event) => {
+    if(!timer || !startPoint) return;
+    const point = pointFromEvent(event);
+    if(Math.abs((point.x || 0) - (startPoint.x || 0)) > 14 || Math.abs((point.y || 0) - (startPoint.y || 0)) > 14) clear();
+  };
+  if(target && target.on) {
+    target.on('touchstart', start);
+    target.on('touchmove', move);
+    target.on('touchend touchcancel mouseout', clear);
+  }
+}
+
+function bindDomMobileFocusSearch(el, pos) {
+  let timer = null;
+  let startPoint = null;
+  const clear = () => {
+    if(timer) window.clearTimeout(timer);
+    timer = null;
+    startPoint = null;
+  };
+  el.addEventListener('touchstart', (event) => {
+    if(!isMobileInteraction()) return;
+    const touch = event.touches[0];
+    startPoint = { x: touch.clientX, y: touch.clientY };
+    timer = window.setTimeout(() => {
+      timer = null;
+      attemptFocusSearch(pos);
+    }, 620);
+  }, { passive: true });
+  el.addEventListener('touchmove', (event) => {
+    if(!timer || !startPoint) return;
+    const touch = event.touches[0];
+    if(Math.abs(touch.clientX - startPoint.x) > 14 || Math.abs(touch.clientY - startPoint.y) > 14) clear();
+  }, { passive: true });
+  el.addEventListener('touchend', clear);
+  el.addEventListener('touchcancel', clear);
 }
 
 function attemptFocusSearch(pos) {
@@ -1552,6 +1660,10 @@ function updateL2L3() {
       : `<span style="color:var(--text-mute)">待校验</span>`;
     el.onclick = () => showGongDetail(pos);
     el.oncontextmenu = (event) => { event.preventDefault(); attemptFocusSearch(pos); };
+    if(el.dataset.mobileSearchBound !== '1') {
+      bindDomMobileFocusSearch(el, pos);
+      el.dataset.mobileSearchBound = '1';
+    }
   });
   updateProjectionState();
 }
