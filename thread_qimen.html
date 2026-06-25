@@ -1,1746 +1,224 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="zh-CN">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-<title>青冥鉴 · 四维观测系统</title>
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-<style>
-/* ================= 基础与色彩重置 ================= */
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { background: #020304; font-family: 'Courier New', Consolas, monospace; overflow: hidden; -webkit-font-smoothing: antialiased; color: #e0e0e0; }
+    <meta charset="UTF-8">
+    <title>【科普】干货警告！奇门遁甲小白入门指南，正统起局手把手教 - 南江大学溯源BBS</title>
+    <style>
+        /* 古早 BBS 经典样式重置 (Discuz! 经典蓝风格) */
+        body { font-family: 'SimSun', '宋体', Arial, sans-serif; background-color: #799AE1; color: #000; font-size: 13px; margin: 0; padding: 0 0 30px 0; }
+        a { color: #000000; text-decoration: none; }
+        a:hover { text-decoration: underline; color: #FF6600; }
+        
+        /* 顶部导航与大色块框架 */
+        .header { background: #0F5E8A; border-bottom: 2px solid #003366; padding: 20px 20px; color: #FFF; }
+        .logo { font-size: 24px; font-weight: bold; font-family: 'Microsoft YaHei', sans-serif; text-shadow: 1px 1px 2px #000; }
+        .nav-links { margin-top: 15px; font-weight: bold; font-size: 12px; }
+        .nav-links a { color: #FFF; margin-right: 15px; }
+        
+        /* 核心布局框架 */
+        .wrap { width: 980px; margin: 15px auto; overflow: hidden; background: #FFF; border: 1px solid #003366; padding: 10px; } 
+        .main { width: 740px; float: left; }
+        .sidebar { width: 215px; float: right; }
 
-:root {
-  --bg-dark: #090e12;
-  --bg-panel: #0d151c;
-  --border-line: #1f2d3d;
-  --text-main: #c5d4e8;
-  --text-mute: #6c8299;
-  --color-l1: #ffb703; /* 南江大学边界高亮色 */
-  --color-l2: #a33131;
-  --color-l3: #00e5ff;
-  --color-gold: #cda45a;
-}
+        /* 面包屑色块 */
+        .breadcrumbs { background: #E5EDF2; border: 1px solid #9CB8CC; padding: 8px 10px; margin-bottom: 10px; font-weight: bold; color: #0055AA; }
+        .breadcrumbs a { color: #0055AA; }
 
-/* ================= 1. 高精密宇宙背景与青冥鉴 ================= */
-#mirror-overlay { 
-  position: fixed; inset: 0; z-index: 9999; background: #000;
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-}
-#bg-stars { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
+        /* 帖子主容器色块 */
+        .post-list { background: #FFF; border: 1px solid #9CB8CC; margin-bottom: 15px; }
+        .post-header-bar { background: #E5EDF2; border-bottom: 1px solid #9CB8CC; padding: 5px 10px; font-weight: bold; }
+        
+        /* 楼层样式（经典左右分栏色块） */
+        .post-row { border-bottom: 1px solid #9CB8CC; display: table; width: 100%; table-layout: fixed; } 
+        .post-left { width: 130px; background: #EAF0F6; border-right: 1px solid #9CB8CC; padding: 15px 10px; text-align: center; display: table-cell; vertical-align: top; }
+        .post-right { padding: 15px; display: table-cell; vertical-align: top; word-wrap: break-word; overflow: hidden; background: #F5F9FA; }
+        
+        .username { font-weight: bold; font-size: 14px; margin-bottom: 5px; display: block; color: #000080; }
+        
+        /* 头像框设计 */
+        .avatar { width: 100px; height: 100px; border: 1px solid #9CB8CC; background: #E2E8F1; padding: 2px; margin: 5px auto; display: flex; align-items: center; justify-content: center; color: #999; font-size:12px; }
+        .avatar img { width: 100%; height: 100%; display: block; object-fit: cover; }
+        
+        .user-title { color: #0055aa; margin-top: 5px; font-weight: bold; }
+        .user-stats { color: #666; margin-top: 5px; font-size: 12px; line-height: 1.5; text-align: left; padding-left: 20px; }
+        
+        .post-info { border-bottom: 1px dashed #9CB8CC; padding-bottom: 5px; margin-bottom: 15px; color: #666; font-size: 12px; }
+        .floor-num { float: right; font-weight: bold; color: #000; font-family: Arial; }
+        
+        .content { font-size: 14px; line-height: 1.8; color: #000; min-height: 150px; }
+        .content img { max-width: 100%; height: auto; border: 1px solid #9CB8CC; padding: 2px; margin: 10px 0; background: #FFF; box-sizing: border-box; }
+        
+        .quote-box { background: #EAF0F6; border: 1px solid #9CB8CC; border-left: 4px solid #0055AA; padding: 10px 15px; margin: 15px 0; color: #333; font-size: 13px; }
 
-#mirror-wrap { 
-  position: relative; width: 80vmin; height: 80vmin; max-width: 550px; max-height: 550px; 
-  border-radius: 50%; box-shadow: 0 0 80px #000, inset 0 0 20px #000; z-index: 10;
-}
+        .signature { border-top: 1px dashed #9CB8CC; margin-top: 30px; padding-top: 10px; color: #666; font-size: 12px; }
 
-#mirror-glass {
-  position: absolute; inset: 4%; border-radius: 50%;
-  background: #050a0f; box-shadow: inset 0 0 60px #000;
-  overflow: hidden; z-index: 2;
-  background-image: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 40%, rgba(255,255,255,0) 100%);
-}
-
-#mirror-svg-frame { position: absolute; inset: -10%; width: 120%; height: 120%; pointer-events: none; z-index: 5; }
-
-#mirror-video { 
-  position: absolute; width: 110%; height: 110%; top: -5%; left: -5%;
-  object-fit: cover; opacity: 0; transition: opacity 2s ease;
-  filter: blur(6px) contrast(1.3) brightness(0.6) sepia(0.4) hue-rotate(180deg); 
-  mix-blend-mode: hard-light;
-}
-
-#mirror-noise { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; transition: opacity 1s; mix-blend-mode: screen; }
-
-.mirror-text-container { margin-top: 5vmin; z-index: 10; text-align: center; }
-.mirror-text { color: #5a738a; font-size: clamp(12px, 3vmin, 14px); line-height: 2; letter-spacing: 0.15em; text-shadow: 0 0 5px #000; }
-
-#mirror-btn { 
-  margin-top: 15px; padding: 12px 35px; background: rgba(5,10,15,0.8); 
-  border: 1px solid #6b5119; color: var(--color-gold); 
-  font-family: inherit; font-size: 14px; cursor: pointer; letter-spacing: 0.2em; 
-  transition: 0.5s; box-shadow: inset 0 0 10px rgba(0,0,0,0.8);
-  display: none; 
-}
-#mirror-btn:hover { background: rgba(205,164,90,0.1); border-color: var(--color-gold); color: #fff; box-shadow: 0 0 20px rgba(212, 160, 23, 0.3) inset, 0 0 10px rgba(212,160,23,0.5); }
-
-#mirror-expand { position: fixed; inset: 0; z-index: 9998; display: none; pointer-events: none; }
-#mirror-expand canvas { width: 100%; height: 100%; }
-
-/* ================= 2. 主观测系统与地图 ================= */
-#app { display: none; width: 100vw; height: 100vh; height: 100dvh; position: relative; overflow: hidden; }
-#map { position: absolute; inset: 0; background: #000; z-index: 1; }
-#map {
-  transform-origin: center center;
-  transition: transform 0.55s cubic-bezier(.2,.8,.2,1);
-}
-#map.qimen-flipped { transform: rotate(180deg); }
-
-/* 奇门方位指示器：排盘上南下北 */
-#north-indicator {
-  position: absolute; top: 20px; right: 300px; z-index: 1000;
-  display: flex; flex-direction: column; align-items: center; gap: 4px;
-  pointer-events: auto; opacity: 0.9; cursor: pointer; user-select: none;
-  padding: 8px 9px; background: rgba(5,13,15,0.72);
-  border: 1px solid rgba(255,183,3,0.35); border-radius: 4px;
-  box-shadow: 0 0 14px rgba(0,0,0,0.45);
-}
-#north-indicator:hover { border-color: var(--color-l1); opacity: 1; }
-#north-indicator.qimen { border-color: var(--color-l3); box-shadow: 0 0 14px rgba(0,229,255,0.18); }
-.n-arrow {
-  width: 2px; height: 30px; background: linear-gradient(var(--color-l1), #496170);
-  filter: drop-shadow(0 0 5px var(--color-l1));
-  margin: 1px 0; position: relative;
-}
-.n-arrow::before, .n-arrow::after {
-  content: ""; position: absolute; left: 50%; transform: translateX(-50%);
-  width: 0; height: 0; border-left: 5px solid transparent; border-right: 5px solid transparent;
-}
-.n-arrow::before { top: -6px; border-bottom: 7px solid var(--color-l1); }
-.n-arrow::after { bottom: -6px; border-top: 7px solid #496170; }
-.n-sub {
-  color: var(--text-mute); font-size: 10px; line-height: 1; writing-mode: vertical-rl;
-  letter-spacing: 0.08em;
-}
-.n-text { color: var(--color-l1); font-weight: bold; font-size: 16px; line-height: 1; text-shadow: 0 0 8px var(--color-l1); }
-.n-mode { color: var(--text-mute); font-size: 10px; line-height: 1; border-bottom: 1px solid rgba(255,255,255,0.14); padding-bottom: 4px; margin-bottom: 2px; }
-
-/* 剧情弹窗 */
-#narrative-dialog {
-  position: absolute; top: 20%; left: 50%; transform: translate(-50%, -50%);
-  background: rgba(5,13,15,0.95); border: 1px solid var(--color-gold);
-  box-shadow: 0 0 30px rgba(0,0,0,0.9), 0 0 15px rgba(205,164,90,0.2) inset;
-  padding: 30px; text-align: center; color: var(--color-gold); z-index: 2000;
-  border-radius: 4px; display: none; width: 85%; max-width: 450px; backdrop-filter: blur(10px);
-}
-#narrative-dialog p { font-size: 14px; line-height: 2; margin-bottom: 25px; letter-spacing: 0.1em; }
-#narrative-dialog button { 
-    background: rgba(0,0,0,0.5); border: 1px solid var(--border-line); color: var(--text-mute); 
-    padding: 10px 25px; cursor: pointer; font-family: inherit; transition: 0.3s; 
-    border-radius: 3px; font-size: 14px;
-}
-#narrative-dialog button:hover { border-color: #ff4d4d; box-shadow: 0 0 15px rgba(255, 77, 77, 0.2); color: #fff; }
-
-/* PS图层控制器 */
-#layer-panel {
-  position: absolute; top: 20px; left: 20px; z-index: 1000;
-  background: rgba(13,21,28,0.9); border: 1px solid var(--border-line);
-  border-radius: 6px; padding: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.8);
-  backdrop-filter: blur(8px); width: 260px;
-}
-.layer-title { font-size: 12px; color: var(--text-mute); border-bottom: 1px dashed var(--border-line); padding-bottom: 6px; margin-bottom: 8px; font-weight: bold; }
-.layer-item { 
-  display: flex; align-items: center; justify-content: space-between; 
-  padding: 8px 10px; margin-bottom: 4px; background: rgba(0,0,0,0.4); 
-  border: 1px solid transparent; border-radius: 4px; cursor: pointer; transition: 0.2s;
-  font-size: 12px; color: var(--text-main);
-}
-.layer-item:hover { background: rgba(255,255,255,0.05); border-color: #334455; }
-.layer-item .eye { font-size: 16px; color: #555; transition: 0.2s; }
-.layer-item.active { border-left: 3px solid; background: rgba(255,255,255,0.02); }
-.layer-item.active .eye { color: #fff; text-shadow: 0 0 5px #fff; }
-.layer-l1.active { border-left-color: var(--color-l1); }
-.layer-l2.active { border-left-color: var(--color-l2); }
-.layer-l3.active { border-left-color: var(--color-l3); }
-.layer-name { flex: 1; margin-left: 10px; display: flex; flex-direction: column; }
-.layer-desc { font-size: 10px; color: var(--text-mute); margin-top: 2px; }
-.layer-desc strong { color: var(--color-l3); font-weight: normal; }
-.projection-state {
-  font-size: 10px; color: #8fa6c0; border-top: 1px dashed #1f2d3d;
-  margin-top: 8px; padding-top: 8px; line-height: 1.6;
-}
-.projection-state b { color: var(--color-gold); font-weight: normal; }
-.projection-state span { color: var(--color-l3); }
-
-/* 右侧控制栏 */
-#sidebar { 
-  position: absolute; top: 0; right: 0; z-index: 1000; 
-  background: rgba(9,14,18,0.95); border-left: 1px solid var(--border-line); 
-  height: 100%; width: 280px; display: flex; flex-direction: column; 
-  backdrop-filter: blur(10px); box-shadow: -10px 0 30px rgba(0,0,0,0.8);
-}
-.tab-content { display: flex; flex: 1; overflow-y: auto; padding: 15px; gap: 15px; flex-direction: column; }
-h4 { font-size: 13px; color: #8fa6c0; border-left: 2px solid var(--color-l3); padding-left: 8px; margin-bottom: 4px; }
-.sec { background: rgba(0,0,0,0.3); border: 1px solid var(--border-line); padding: 12px; border-radius: 4px; }
-.sec label { font-size: 11px; color: var(--text-mute); display: block; margin-bottom: 6px; }
-.sec input { width: 100%; background: #000; border: 1px solid #334455; color: #fff; font-size: 12px; padding: 8px; border-radius: 3px; font-family: inherit; margin-bottom: 5px; outline: none; }
-.sec select { width: 100%; background: #000; border: 1px solid #334455; color: #fff; font-size: 12px; padding: 8px; border-radius: 3px; font-family: inherit; margin-bottom: 5px; outline: none; }
-.calendar-hint {
-  border: 1px solid #1f2d3d; background: rgba(0,0,0,0.36);
-  color: var(--text-main); font-size: 11px; line-height: 1.65;
-  padding: 8px; margin: 6px 0 8px; border-radius: 3px;
-}
-.calendar-hint b { color: var(--color-gold); font-weight: normal; }
-.calendar-hint .ok { color: #66e0a3; }
-.calendar-hint .warn { color: #ffb703; }
-.calendar-hint .bad { color: #ff7777; }
-.calendar-hint .redacted {
-  color: #7f96a8;
-  letter-spacing: 0.08em;
-  text-shadow: 0 0 6px rgba(0,229,255,0.25);
-}
-.apply-btn { width: 100%; padding: 10px; background: transparent; border: 1px solid #334455; color: #8fa6c0; font-family: inherit; font-size: 12px; cursor: pointer; transition: 0.2s; border-radius: 3px; margin-top: 5px; }
-.apply-btn:hover { border-color: var(--color-l3); color: var(--color-l3); background: rgba(0,229,255,0.05); }
-.focus-search-btn {
-  display: none;
-  width: 100%;
-  margin-top: 10px;
-  padding: 11px;
-  background: rgba(120,0,0,0.22);
-  border: 1px solid rgba(255,204,204,0.62);
-  color: #ffcccc;
-  font-family: inherit;
-  font-size: 12px;
-  cursor: pointer;
-  border-radius: 3px;
-  box-shadow: inset 0 0 12px rgba(255,0,0,0.12);
-}
-.focus-search-btn:hover { border-color: #fff; color: #fff; background: rgba(160,0,0,0.3); }
-.mobile-only-hint { display: none; }
-
-/* HUD九宫格 (传统排盘：离上坎下，上南下北) */
-#nine-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; margin-top: 5px; }
-.gong { padding: 8px 2px; border-radius: 3px; text-align: center; border: 1px solid #1a3a3a; background: #050d0f; color: #546e7a; cursor: pointer; transition: 0.2s; }
-.gong .gn { font-size: 12px; font-weight: bold; margin-bottom: 4px; }
-.gong .gm { font-size: 11px; }
-.gong.conflict {
-  position: relative; overflow: hidden; border-color: #fff; color: #fff;
-  background:
-    repeating-linear-gradient(135deg, rgba(255,255,255,0.04) 0 5px, transparent 6px 10px),
-    rgba(255,255,255,0.1);
-  animation: flicker 0.5s infinite alternate;
-}
-.gong.conflict::after {
-  content: ""; position: absolute; inset: -40%;
-  background: conic-gradient(from 0deg, transparent, rgba(255,255,255,0.45), transparent 30%);
-  animation: fuyinSpin 1.4s linear infinite;
-}
-.fuyin-cell {
-  animation: fuyinStroke .72s ease-in-out infinite;
-  filter: drop-shadow(0 0 6px rgba(255,255,255,0.75));
-}
-.fuyin-label {
-  animation: fuyinText .54s steps(2,end) infinite;
-}
-.l2-dead-cell { filter: drop-shadow(0 0 3px rgba(255,184,77,0.35)); }
-.l3-live-cell {
-  animation: liveProjection 1.1s linear infinite;
-  filter: drop-shadow(0 0 7px rgba(0,229,255,0.72));
-}
-.projection-overlap-cell {
-  animation: projectionBeat .82s ease-in-out infinite;
-  filter: drop-shadow(0 0 10px rgba(255,255,255,0.82));
-}
-.live-gong-label {
-  color: var(--color-l3); font-size: 12px; line-height: 1.2;
-  text-shadow: 0 0 6px rgba(0,229,255,0.9), 0 0 2px #000;
-  border-color: rgba(0,229,255,0.55); background: rgba(0,18,28,0.86);
-}
-.projection-badge {
-  color: #fff; font-size: 11px; line-height: 1.2; text-align: center;
-  border-color: rgba(255,255,255,0.8); background: rgba(20,0,0,0.86);
-  box-shadow: 0 0 14px rgba(255,255,255,0.35);
-  animation: fuyinText .54s steps(2,end) infinite;
-}
-
-@keyframes flicker { from { box-shadow: 0 0 2px #fff inset; } to { box-shadow: 0 0 8px #fff inset; } }
-@keyframes fuyinSpin { to { transform: rotate(360deg); } }
-@keyframes fuyinStroke {
-  0%, 100% { stroke-opacity: .55; stroke-width: 1.4; }
-  50% { stroke-opacity: 1; stroke-width: 3.2; }
-}
-@keyframes fuyinText {
-  from { text-shadow: 0 0 3px #fff, 2px 0 0 rgba(255,0,0,.45); }
-  to { text-shadow: 0 0 12px #fff, -2px 0 0 rgba(0,229,255,.45); }
-}
-@keyframes liveProjection {
-  0%, 100% { stroke-opacity: .45; fill-opacity: .035; }
-  50% { stroke-opacity: 1; fill-opacity: .12; }
-}
-@keyframes projectionBeat {
-  0%, 100% { stroke-opacity: .6; fill-opacity: .08; }
-  50% { stroke-opacity: 1; fill-opacity: .24; }
-}
-
-/* 宫位详情独立弹窗 */
-#gong-detail { display: none; position: absolute; z-index: 1001; background: rgba(5,13,15,0.95); border: 1px solid #1a3a3a; box-shadow: 0 0 20px rgba(0,0,0,0.8); border-radius: 6px; padding: 15px; min-width: 200px; color: #7fbfbf; line-height: 1.8; backdrop-filter: blur(5px); }
-#gong-detail h5 { font-size: 13px; color: #00ffcc; margin-bottom: 8px; border-bottom: 1px dashed #1a3a3a; padding-bottom: 5px; }
-#gong-detail .close-btn { position: absolute; top: 12px; right: 12px; background: none; border: none; color: #546e7a; cursor: pointer; font-size: 14px; }
-
-#abuse-veil {
-  position: fixed; inset: 0; z-index: 2500; pointer-events: none;
-  background:
-    radial-gradient(circle at 50% 45%, rgba(255,0,0,0) 0%, rgba(120,0,0,0.12) 48%, rgba(70,0,0,var(--abuse-alpha,0)) 100%),
-    rgba(120,0,0,calc(var(--abuse-alpha,0) * 0.42));
-  opacity: var(--abuse-alpha,0);
-  mix-blend-mode: screen; transition: opacity .35s, background .35s;
-}
-
-#omen-overlay {
-  position: fixed; inset: 0; z-index: 2600; display: none; pointer-events: none;
-  align-items: center; justify-content: center; padding: 24px;
-  background: rgba(0,0,0,0.18);
-}
-#omen-overlay.active { display: flex; animation: omenFlash .18s steps(2,end) 3; }
-#omen-overlay.door-du { background: repeating-linear-gradient(96deg, rgba(230,126,34,0.02) 0 8px, rgba(230,126,34,0.16) 9px 10px), rgba(0,0,0,0.25); }
-#omen-overlay.door-jing { background: radial-gradient(circle at 50% 28%, rgba(160,0,0,0.36), rgba(0,0,0,0.2) 54%), repeating-linear-gradient(180deg, rgba(255,0,0,0.08) 0 2px, transparent 3px 11px); }
-#omen-overlay.door-sheng { background: radial-gradient(circle at 50% 50%, rgba(255,0,0,0.44), rgba(90,0,0,0.16) 38%, rgba(0,0,0,0.28) 70%); animation: omenFlash .18s steps(2,end) 3, fleshPulse .78s ease-in-out infinite; }
-#omen-overlay.door-jingmen { background: repeating-linear-gradient(0deg, rgba(220,240,255,0.07) 0 1px, transparent 2px 8px), rgba(0,0,0,0.2); }
-#omen-overlay.fall { background: rgba(120,0,0,0.58); animation: fleshPulse .38s ease-in-out infinite; }
-#omen-overlay::before,
-#omen-overlay::after {
-  content: ""; position: absolute; inset: 0; pointer-events: none; opacity: 0;
-  mix-blend-mode: screen;
-}
-#omen-overlay.active::before,
-#omen-overlay.active::after { opacity: 1; }
-#omen-overlay.door-du::before {
-  background:
-    linear-gradient(103deg, transparent 0 26%, rgba(230,126,34,0.62) 27% 28%, transparent 29% 100%),
-    linear-gradient(75deg, transparent 0 45%, rgba(255,190,90,0.42) 46% 47%, transparent 48% 100%),
-    repeating-linear-gradient(90deg, transparent 0 36px, rgba(230,126,34,0.18) 37px 40px);
-  animation: duTear .72s steps(3,end) infinite;
-}
-#omen-overlay.door-du::after {
-  background: repeating-linear-gradient(180deg, transparent 0 12px, rgba(255,168,60,0.22) 13px 15px);
-  animation: staticSweep .42s linear infinite;
-}
-#omen-overlay.door-jing::before {
-  background:
-    radial-gradient(circle at 24% -5%, rgba(255,0,0,0.0) 0 10px, rgba(255,0,0,0.42) 11px 18px, transparent 19px),
-    radial-gradient(circle at 54% -8%, rgba(255,0,0,0.0) 0 8px, rgba(180,0,0,0.5) 9px 16px, transparent 17px),
-    radial-gradient(circle at 78% -3%, rgba(255,0,0,0.0) 0 12px, rgba(255,55,55,0.36) 13px 21px, transparent 22px),
-    linear-gradient(180deg, rgba(190,0,0,0.32), transparent 54%);
-  animation: redDrip 1.08s ease-in infinite;
-}
-#omen-overlay.door-jing::after {
-  background: repeating-linear-gradient(180deg, rgba(255,60,60,0.16) 0 2px, transparent 3px 13px);
-  animation: scanFall .32s linear infinite;
-}
-#omen-overlay.door-sheng::before {
-  background:
-    radial-gradient(circle at 50% 50%, rgba(255,210,210,0.62) 0 3%, rgba(255,0,0,0.44) 4% 12%, transparent 13%),
-    radial-gradient(circle at 38% 56%, rgba(255,0,0,0.36) 0 4%, transparent 5%),
-    radial-gradient(circle at 62% 42%, rgba(255,90,90,0.3) 0 5%, transparent 6%);
-  animation: shengBloom .68s ease-in-out infinite;
-}
-#omen-overlay.door-sheng::after {
-  background:
-    radial-gradient(circle at 22% 34%, rgba(255,120,120,0.3) 0 2px, transparent 3px),
-    radial-gradient(circle at 70% 66%, rgba(255,80,80,0.34) 0 3px, transparent 4px),
-    radial-gradient(circle at 82% 28%, rgba(255,160,160,0.24) 0 2px, transparent 3px);
-  background-size: 64px 64px, 82px 82px, 46px 46px;
-  animation: cellSplit .74s steps(2,end) infinite;
-}
-#omen-overlay.door-jingmen::before {
-  background:
-    linear-gradient(90deg, transparent 0 48%, rgba(255,255,255,0.65) 49% 50%, transparent 51% 100%),
-    linear-gradient(180deg, transparent 0 52%, rgba(180,220,255,0.36) 53% 54%, transparent 55% 100%);
-  animation: gateSeal .58s ease-in-out infinite;
-}
-#omen-overlay.door-jingmen::after {
-  background: repeating-linear-gradient(90deg, rgba(210,235,255,0.12) 0 1px, transparent 2px 7px);
-  animation: staticSweep .18s steps(2,end) infinite;
-}
-#omen-overlay.fall::before {
-  background: radial-gradient(circle at 50% 50%, rgba(255,0,0,0.82), rgba(40,0,0,0.2) 42%, rgba(0,0,0,0.72) 74%);
-  animation: shengBloom .36s ease-in-out infinite;
-}
-.omen-panel {
-  width: min(520px, 88vw); border: 1px solid #4b0a0a; border-radius: 4px;
-  background: rgba(8,0,0,0.92); box-shadow: 0 0 34px rgba(255,0,0,0.28), inset 0 0 24px rgba(120,0,0,0.35);
-  padding: 18px 20px; color: #ffdddd; font-family: inherit; text-align: left;
-  position: relative; z-index: 1;
-}
-.omen-title { color: #ff3333; font-size: 18px; font-weight: bold; margin-bottom: 10px; letter-spacing: 0.08em; }
-.omen-body { color: #ffb8b8; font-size: 13px; line-height: 1.8; }
-#omen-overlay.door-du .omen-panel { border-color: #ad6b24; box-shadow: 0 0 32px rgba(230,126,34,0.35), inset 0 0 22px rgba(90,45,0,0.35); }
-#omen-overlay.door-jing .omen-panel { border-color: #8b1111; background: linear-gradient(180deg, rgba(36,0,0,0.96), rgba(8,0,0,0.92)); }
-#omen-overlay.door-sheng .omen-panel { border-color: #7d0000; box-shadow: 0 0 38px rgba(255,0,0,0.5), inset 0 0 30px rgba(110,0,0,0.55); }
-#omen-overlay.door-jingmen .omen-panel { border-color: #bfc7d5; box-shadow: 0 0 28px rgba(255,255,255,0.26), inset 0 0 18px rgba(255,255,255,0.08); }
-#omen-overlay.fall .omen-panel { text-align: center; border-color: #ff0000; box-shadow: 0 0 60px rgba(255,0,0,0.75), inset 0 0 30px rgba(255,0,0,0.35); }
-body.screen-shake #app { animation: screenShake .36s steps(2,end); }
-body.falling #abuse-veil { opacity: 1; background: rgba(120,0,0,0.76); }
-#map.target-lock::after {
-  content: ""; position: absolute; inset: 0; z-index: 820; pointer-events: none;
-  background:
-    linear-gradient(90deg, transparent 0 48%, rgba(255,210,210,0.58) 49% 50%, transparent 51% 100%),
-    linear-gradient(180deg, transparent 0 48%, rgba(255,210,210,0.58) 49% 50%, transparent 51% 100%),
-    radial-gradient(circle at 50% 50%, rgba(255,0,0,0.28), transparent 34%);
-  animation: lockFlash .72s ease-out 3;
-}
-.warehouse-lock-path {
-  animation: warehousePulse .9s ease-in-out infinite;
-  filter: drop-shadow(0 0 8px rgba(255,0,0,0.65));
-}
-
-@keyframes omenFlash {
-  0% { filter: invert(0); transform: translate(0,0); }
-  50% { filter: invert(1) contrast(1.8); transform: translate(5px,-3px); }
-  100% { filter: invert(0); transform: translate(-4px,4px); }
-}
-@keyframes screenShake {
-  0% { transform: translate(0,0); }
-  20% { transform: translate(-7px,3px); }
-  40% { transform: translate(6px,-4px); }
-  60% { transform: translate(-4px,-2px); }
-  80% { transform: translate(5px,4px); }
-  100% { transform: translate(0,0); }
-}
-@keyframes fleshPulse {
-  0%, 100% { filter: saturate(1); }
-  50% { filter: saturate(1.8) brightness(1.16); }
-}
-@keyframes duTear {
-  0% { transform: translateX(-18px) skewX(-8deg); opacity: .4; }
-  50% { transform: translateX(14px) skewX(11deg); opacity: .95; }
-  100% { transform: translateX(-6px) skewX(-3deg); opacity: .55; }
-}
-@keyframes staticSweep {
-  0% { transform: translateY(-16px); }
-  100% { transform: translateY(16px); }
-}
-@keyframes redDrip {
-  0% { transform: translateY(-24px); filter: blur(0); }
-  70% { transform: translateY(62px); filter: blur(1px); }
-  100% { transform: translateY(90px); opacity: .2; }
-}
-@keyframes scanFall {
-  0% { transform: translateY(-13px); opacity: .35; }
-  100% { transform: translateY(13px); opacity: .9; }
-}
-@keyframes shengBloom {
-  0%, 100% { transform: scale(.86); opacity: .42; }
-  50% { transform: scale(1.18); opacity: 1; }
-}
-@keyframes cellSplit {
-  0% { transform: scale(1); opacity: .36; }
-  50% { transform: scale(1.45); opacity: .86; }
-  100% { transform: scale(1.08); opacity: .42; }
-}
-@keyframes gateSeal {
-  0%, 100% { transform: scaleX(.94) scaleY(1.08); opacity: .32; }
-  50% { transform: scaleX(1.08) scaleY(.92); opacity: .9; }
-}
-@keyframes lockFlash {
-  0% { opacity: 0; transform: scale(1.08); }
-  24% { opacity: 1; transform: scale(1); }
-  100% { opacity: 0; transform: scale(.96); }
-}
-@keyframes warehousePulse {
-  0%, 100% { stroke-opacity: .65; fill-opacity: .8; }
-  50% { stroke-opacity: 1; fill-opacity: .98; }
-}
-
-/* 地图文字标牌固定样式，防止缩放时被地图瓦片比例带着变小 */
-.leaflet-marker-icon.fixed-label-icon {
-  width: 0 !important; height: 0 !important; margin: 0 !important;
-  background: transparent; border: 0; overflow: visible !important;
-}
-.fixed-label {
-  --label-x: -50%;
-  --label-y: -50%;
-  --label-rotate: 0deg;
-  position: absolute; left: 0; top: 0;
-  transform: translate(var(--label-x), var(--label-y)) rotate(var(--label-rotate));
-  font-family: inherit; white-space: nowrap; line-height: 1.25;
-  text-align: center; will-change: transform; transform-origin: center;
-}
-#map.qimen-flipped .fixed-label { --label-rotate: 180deg; }
-.fixed-label.road { font-size: 11px; color: #4a6b8c; text-shadow: 0 1px 2px #000; }
-.fixed-label.site {
-  font-size: 11px; color: #7897b5; background: rgba(0,0,0,0.68);
-  border: 1px solid #24394c; padding: 3px 6px; border-radius: 3px;
-}
-.fixed-label.anchor {
-  --label-y: -118%;
-  font-size: 12px; color: #ffcccc; background: rgba(40,10,10,0.82);
-  border: 1px solid #a33131; padding: 5px 9px; border-radius: 4px;
-}
-.fixed-label.gate {
-  --label-y: 10px; font-size: 14px; font-weight: bold;
-  color: var(--color-l1); background: rgba(0,0,0,0.82);
-  border: 1px solid var(--color-l1); padding: 5px 9px; border-radius: 4px;
-}
-.fixed-label.alley {
-  font-size: 11px; color: #b9d5e5; background: rgba(6,17,24,0.78);
-  border: 1px solid #29485a; padding: 3px 7px; border-radius: 3px;
-}
-.gong-label {
-  font-family: inherit; font-size: 14px; line-height: 1.25;
-  font-weight: bold; text-align: center; white-space: nowrap;
-}
-
-/* 移动端适配 */
-@media (max-width: 768px) {
-  body { overscroll-behavior: none; }
-  #app { height: 100vh; height: 100dvh; }
-  #map {
-    top: 0; left: 0; right: 0; bottom: auto;
-    width: 100%; height: calc(100dvh - 44dvh);
-    min-height: 52dvh;
-  }
-  #sidebar {
-    top: auto; left: 0; right: 0; bottom: 0;
-    width: 100%; height: 44dvh; min-height: 260px; max-height: 46dvh;
-    border-left: none; border-top: 1px solid var(--border-line);
-    box-shadow: 0 -10px 30px rgba(0,0,0,0.76);
-  }
-  .tab-content {
-    padding: 10px; gap: 10px;
-    -webkit-overflow-scrolling: touch;
-  }
-  .sec { padding: 10px; }
-  .sec input,
-  .sec select,
-  .apply-btn {
-    min-height: 40px;
-    font-size: 13px;
-  }
-  #nine-grid { gap: 5px; }
-  .gong { min-height: 42px; padding: 7px 2px; }
-  #layer-panel {
-    top: calc(env(safe-area-inset-top, 0px) + 10px);
-    left: 10px; right: 72px; width: auto;
-    max-height: min(32dvh, 178px);
-    overflow-y: auto;
-    padding: 8px;
-    -webkit-overflow-scrolling: touch;
-  }
-  .layer-title { font-size: 11px; margin-bottom: 6px; padding-bottom: 5px; }
-  .layer-item { padding: 7px 8px; font-size: 11px; }
-  .layer-name { min-width: 0; }
-  .layer-desc { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .projection-state { line-height: 1.45; }
-  #north-indicator {
-    top: calc(env(safe-area-inset-top, 0px) + 10px);
-    right: 10px;
-    padding: 7px 8px;
-  }
-  .n-arrow { height: 24px; }
-  .n-text { font-size: 14px; }
-  .n-sub, .n-mode { font-size: 9px; }
-  #narrative-dialog {
-    top: 28%;
-    width: calc(100vw - 28px);
-    padding: 20px 16px;
-  }
-  #gong-detail {
-    position: fixed;
-    left: 10px; right: 10px; top: auto; bottom: calc(44dvh + 12px);
-    min-width: 0; max-height: 34dvh; overflow-y: auto;
-  }
-  .omen-panel { width: calc(100vw - 28px); padding: 16px; }
-  .fixed-label.road,
-  .fixed-label.site,
-  .fixed-label.alley { font-size: 10px; }
-  .fixed-label.gate,
-  .gong-label { font-size: 12px; }
-  .focus-search-btn { display: block; min-height: 42px; }
-  .desktop-only-hint { display: none; }
-  .mobile-only-hint { display: block; }
-}
-
-@media (max-width: 420px) {
-  #map { height: calc(100dvh - 48dvh); min-height: 50dvh; }
-  #sidebar { height: 48dvh; min-height: 280px; max-height: 50dvh; }
-  #layer-panel {
-    right: 62px;
-    max-height: 132px;
-  }
-  .layer-title,
-  .projection-state { display: none; }
-  .layer-item { padding: 6px; margin-bottom: 3px; }
-  .layer-item .eye { font-size: 14px; }
-  .layer-name { margin-left: 7px; }
-  .layer-desc { display: none; }
-  #north-indicator { padding: 6px 7px; }
-  #gong-detail { bottom: calc(48dvh + 10px); }
-}
-</style>
+        /* 侧边栏色块伪装 */
+        .side-box { background: #FFF; border: 1px solid #9CB8CC; margin-bottom: 15px; }
+        .side-title { background: #D9E4EA; border-bottom: 1px solid #9CB8CC; padding: 6px 10px; font-weight: bold; color: #0055AA; }
+        .side-content { padding: 8px; list-style: none; margin: 0; }
+        .side-content li { border-bottom: 1px dotted #9CB8CC; padding: 4px 0; padding-left: 12px; background: url('data:image/gif;base64,R0lGODlhBQAKAIABAAAAAP///yH5BAEAAAEALAAAAAAFAAoAAAIIjI+pG8HwnCgAOw==') no-repeat left center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 12px; }
+    </style>
 </head>
 <body>
 
-<div id="mirror-overlay">
-  <canvas id="bg-stars"></canvas>
-  <div id="mirror-wrap">
-    <svg id="mirror-svg-frame" viewBox="0 0 1000 1000" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <linearGradient id="bronze" x1="10%" y1="0%" x2="90%" y2="100%">
-          <stop offset="0%" stop-color="#3d2d18"/>
-          <stop offset="25%" stop-color="#8a6e42"/>
-          <stop offset="50%" stop-color="#b09060"/>
-          <stop offset="75%" stop-color="#5a4224"/>
-          <stop offset="100%" stop-color="#140f07"/>
-        </linearGradient>
-        <filter id="shadow-ext">
-          <feDropShadow dx="0" dy="25" stdDeviation="25" flood-color="#000" flood-opacity="0.9"/>
-        </filter>
-        <filter id="shadow-int">
-          <feDropShadow dx="0" dy="5" stdDeviation="15" flood-color="#000" flood-opacity="1"/>
-        </filter>
-      </defs>
-      <circle cx="500" cy="500" r="460" fill="none" stroke="#000" stroke-width="30" filter="url(#shadow-ext)"/>
-      <circle cx="500" cy="500" r="450" fill="none" stroke="url(#bronze)" stroke-width="20"/>
-      <circle cx="500" cy="500" r="438" fill="none" stroke="#1a120a" stroke-width="4"/>
-      <circle cx="500" cy="500" r="428" fill="none" stroke="url(#bronze)" stroke-width="8" stroke-dasharray="15 8"/>
-      <circle cx="500" cy="500" r="418" fill="none" stroke="url(#bronze)" stroke-width="4" filter="url(#shadow-int)"/>
-      <g fill="#0a0704" stroke="url(#bronze)" stroke-width="2">
-        <circle cx="500" cy="50" r="10"/><circle cx="500" cy="950" r="10"/>
-        <circle cx="50" cy="500" r="10"/><circle cx="950" cy="500" r="10"/>
-        <circle cx="182" cy="182" r="7"/><circle cx="818" cy="818" r="7"/>
-        <circle cx="182" cy="818" r="7"/><circle cx="818" cy="182" r="7"/>
-      </g>
-    </svg>
-    <div id="mirror-glass">
-      <video id="mirror-video" autoplay playsinline muted></video>
-      <canvas id="mirror-noise"></canvas>
+<div class="header">
+    <div class="logo">南江大学 - 溯源BBS (Since 2004)</div>
+    <div class="nav-links">
+        <a href="#">首 页</a> | <a href="#">版块列表</a> | <a href="#">校内资讯</a> | <a href="#">跳蚤市场</a> | <a href="#">灌水乐园</a> | <a href="#">控制面板</a>
     </div>
-  </div>
-  <div class="mirror-text-container">
-      <div class="mirror-text" id="init-text">
-        [ 正在请求光学阵列权限... ]<br>
-        请允许终端捕获您的现世物理特征。
-      </div>
-      <button id="mirror-btn">▶ 确立锚点，接入深渊</button>
-  </div>
 </div>
 
-<div id="mirror-expand"><canvas id="expand-canvas"></canvas></div>
-
-<div id="app">
-  <div id="map"></div>
-  
-  <div id="north-indicator" role="button" tabindex="0" title="切换地图方向">
-    <div class="n-mode" id="orientation-mode">地图</div>
-    <div class="n-text" id="orientation-top">N</div>
-    <div class="n-arrow"></div>
-    <div class="n-text" id="orientation-bottom">S</div>
-    <div class="n-sub" id="orientation-hint">点按倒转</div>
-  </div>
-
-  <div id="narrative-dialog">
-    <p>“你可以同时看见过去和未来。<br><br>现在，找到地图上的阵法锚点，<br>那个被死锁的<span style="color:#ff4d4d; font-weight:bold;">南门废弃仓库</span>。”</p>
-    <button onclick="document.getElementById('narrative-dialog').style.display='none'">
-      [ 👁 <span style="color:#ff4d4d; font-weight:bold; padding-left: 4px;">观测</span> ]
-    </button>
-  </div>
-
-  <div id="layer-panel">
-    <div class="layer-title">多维干涉图层控制器 (Z-Index)</div>
-    <div class="layer-item layer-l3 active" id="btn-l3" onclick="toggleLayer('L3')">
-      <div class="eye">👁</div>
-      <div class="layer-name">L3 实时投影<div class="layer-desc" id="l3-layer-desc">当前时间终端变量</div></div>
-    </div>
-    <div class="layer-item layer-l2 active" id="btn-l2" onclick="toggleLayer('L2')">
-      <div class="eye">👁</div>
-      <div class="layer-name">L2 历史死盘<div class="layer-desc">定格: 2007-06-11</div></div>
-    </div>
-    <div class="layer-item layer-l1 active" id="btn-l1" onclick="toggleLayer('L1')">
-      <div class="eye">👁</div>
-      <div class="layer-name">L1 拓扑基底<div class="layer-desc">南江大学物理坐标</div></div>
-    </div>
-    <div class="projection-state" id="projection-state">
-      <b>投影态</b><br><span>L1/L2/L3 待同步</span>
-    </div>
-  </div>
-
-  <div id="gong-detail">
-    <button class="close-btn" id="close-detail">✕</button>
-    <h5 id="detail-title">宫位详情</h5>
-    <div id="detail-body"></div>
-  </div>
-
-  <div id="abuse-veil"></div>
-  <div id="omen-overlay" aria-hidden="true">
-    <div class="omen-panel">
-      <div class="omen-title" id="omen-title"></div>
-      <div class="omen-body" id="omen-body"></div>
-    </div>
-  </div>
-
-  <div id="sidebar">
-    <div class="tab-content active">
-      <h4>阵列控制轴</h4>
-      <div class="sec">
-        <label>L2 死盘时间轴</label>
-        <input type="datetime-local" id="dead-time" value="2007-06-11T11:02"/>
-        <div id="dead-calendar" class="calendar-hint"></div>
-        <label>拆补局数校验</label>
-        <select id="dead-ju"></select>
-        <button class="apply-btn" id="apply-dead">应用 L2 参数</button>
-      </div>
-      <div class="sec" style="margin-top:10px;">
-        <label>L3 活盘时间轴</label>
-        <input type="datetime-local" id="live-time"/>
-        <div id="live-calendar" class="calendar-hint"></div>
-        <label>L3 拆补局数校验</label>
-        <select id="live-ju"></select>
-        <div style="display:flex; gap:8px;">
-            <button class="apply-btn" id="use-now-btn" style="margin-top:0;">同步时间</button>
-            <button class="apply-btn" id="apply-live" style="margin-top:0;">应用 L3</button>
+<div class="wrap">
+    <div class="main">
+        <div class="breadcrumbs">
+            <a href="bbs_2026_home.html">溯源BBS首页</a> &raquo; <a href="#">技术与前沿探索区</a> &raquo; <a href="#">玄学与代码交叉学科研讨</a>
         </div>
-      </div>
-      
-      <h4 style="margin-top:5px;">HUD 高维监控矩阵</h4>
-      <div id="nine-grid">
-        <div class="gong" id="g4"><div class="gn">巽四</div><div class="gm">—</div></div>
-        <div class="gong" id="g9"><div class="gn">离九</div><div class="gm">—</div></div>
-        <div class="gong" id="g2"><div class="gn">坤二</div><div class="gm">—</div></div>
-        <div class="gong" id="g3"><div class="gn">震三</div><div class="gm">—</div></div>
-        <div class="gong" id="g5"><div class="gn">中五</div><div class="gm">—</div></div>
-        <div class="gong" id="g7"><div class="gn">兑七</div><div class="gm">—</div></div>
-        <div class="gong" id="g8"><div class="gn">艮八</div><div class="gm">—</div></div>
-        <div class="gong" id="g1"><div class="gn">坎一</div><div class="gm">—</div></div>
-        <div class="gong" id="g6"><div class="gn">乾六</div><div class="gm">—</div></div>
-      </div>
-      <div style="font-size:10px; color:var(--text-mute); text-align:center; margin-top:5px;">[ 解盘时点击方向轴倒转地图：离九在上，坎一在下 ]</div>
+
+        <div class="post-list">
+            <div class="post-header-bar">
+                【科普】干货警告！奇门遁甲小白入门指南，正统起局手把手教
+            </div>
+            
+            <div class="post-row">
+                <div class="post-left">
+                    <span class="username">易学小白救星</span>
+                    <div class="avatar">无头像</div>
+                    <div class="user-title">版主 / 易经研习社</div>
+                    <div class="user-stats">发帖: 892<br>积分: 3450<br>注册: 2024-09</div>
+                </div>
+                <div class="post-right">
+                    <div class="post-info">
+                        发表于 2026-06-24 10:00:00 <span class="floor-num">楼主</span>
+                    </div>
+                    <div class="content">
+                        很多小白一看最近那个爆火的“ZenCode 3D排盘系统”，就觉得奇门遁甲特别玄乎。打住！在咱们理工科思维里，奇门遁甲就是一个<b>多维度的时空概率模型</b>！<br><br>
+                        网上流传很多什么“年月日时相加除以9”的取模公式，全都是瞎扯的伪算法！奇门起局绝不是做加减法，它有非常严密的天文学历法坐标。今天开个贴，不讲废话，直接教大家最正统的<b>“拆补法”</b>起局逻辑！学完这个，你至少能看懂正统软件的底层代码是怎么跑的。<br><br>
+                        <b>第一步：天文黄经定阴阳 (看节气)</b><br>
+                        奇门排盘的核心是九宫格。一年24个节气，冬至到夏至，阳气上升，用<b>阳遁</b>；夏至到冬至，阴气上升，用<b>阴遁</b>。<br>
+                        比如今天（2026年6月24日），我们刚过完“夏至”（6月21日）。夏至一阴生，所以当下排盘模型必须挂载：<b>阴遁</b>。<br><br>
+                        
+                        <b>第二步：干支历法定三元 (看符头)</b><br>
+                        每天的日子都有干支（比如甲子日、乙丑日）。奇门把“甲”和“己”这两天定为领队，叫“符头”。符头后面的地支决定了今天是上元、中元还是下元：<br>
+                        <ul style="color: #444; font-size: 13px; line-height: 1.8; margin-top: -5px;">
+                            <li>地支是 <b>子、午、卯、酉</b>，就是<b>上元</b>。</li>
+                            <li>地支是 <b>寅、申、巳、亥</b>，就是<b>中元</b>。</li>
+                            <li>地支是 <b>辰、戌、丑、未</b>，就是<b>下元</b>。</li>
+                        </ul>
+                        查一下今天的日历，2026年6月24日是<b>甲午日</b>。“甲”本身就是符头，地支是“午”。对应规则，今天属于<b>上元</b>。<br><br>
+
+                        <b>第三步：口诀定局数 (找极性)</b><br>
+                        我们已经知道今天是“夏至”节气，且是“上元”。查古法口诀：“夏至九三六”。<br>
+                        意思是：夏至这半个月里，上元用9局，中元用3局，下元用6局。<br>
+                        因为今天是上元，对应的就是9。<br><br>
+
+                        <b>结论：</b> 当下排盘的底层坐标就是 <span style="color: #FF0000; font-weight: bold; font-size: 15px;">阴遁九局</span>！<br><br>
+
+                        拿到局数之后，你就可以把代表能量的天干按逆向（阴遁）的规则填进九宫格了。这是整个算法的基石，比那些速算公式精准得多！大家有不懂的在下面跟帖，我看情况解答！
+                    </div>
+                    <div class="signature">
+                        <br>
+                        <i>“不信命，但算算也无妨。——物理系神棍”</i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="post-row">
+                <div class="post-left">
+                    <span class="username">看剧必穿帮</span>
+                    <div class="avatar">无头像</div>
+                    <div class="user-title">影评达人</div>
+                    <div class="user-stats">发帖: 1405<br>积分: 5200</div>
+                </div>
+                <div class="post-right">
+                    <div class="post-info">发表于 2026-06-24 10:15:22 <span class="floor-num">沙发</span></div>
+                    <div class="content">
+                        楼主说得好！既然说到奇门，我必须要吐个大槽！现在的国产盗墓剧和仙侠剧，懂不懂奇门啊？！<br><br>
+                        每次主角一被困在什么阵法里，就开始大喊：<b>“快！生门在东北！大家往生门跑！”</b> 搞得“生门”好像是一个自带绿色安全通道标识的安全门一样。<br><br>
+                        纯属胡说八道！八门（开、休、生、伤、杜、景、死、惊）各有各的用处。<br>
+                        <b>生门</b>五行属土，它的核心概念是“生机、生长、利润、产业”。如果你今天是去<b>谈大生意、买房子、或者求财</b>，你往生门走绝对赚翻。<br><br>
+                        但是！如果是被仇家追杀、或者像剧里那样躲避怪物，你要找的不是生门！因为生门是暴露的、生长的，你跑过去直接被敌人看得清清楚楚！逃命、藏匿、躲灾，应该找<b>杜门</b>！杜门代表阻塞、隐藏，躲在杜门方向，敌人大概率眼瞎找不到你。现在的编剧真的该补补课了！
+                    </div>
+                </div>
+            </div>
+
+            <div class="post-row">
+                <div class="post-left">
+                    <span class="username">八字老油条</span>
+                    <div class="avatar">无头像</div>
+                    <div class="user-title">算命一条街常客</div>
+                    <div class="user-stats">发帖: 66<br>积分: 310</div>
+                </div>
+                <div class="post-right">
+                    <div class="post-info">发表于 2026-06-24 10:42:10 <span class="floor-num">板凳</span></div>
+                    <div class="content">
+                        楼上的兄弟太懂了哈哈哈，不仅杜门能藏人，你要出其不意打闷棍还能用开门呢。<br><br>
+                        既然楼主开科普贴了，我给小白补充一个排盘出来后，最容易遇到也最让人抓狂的格局概念——<b>伏吟（Fu Yin）</b>。<br><br>
+                        很多小白用软件一排盘，发现怎么盘面上的字跟老家地盘的字一模一样？这就叫“伏吟”。<br>
+                        通俗点讲，九星、八门或者天干，在排盘后<b>回到了它们原本所属的宫位</b>。比如“休门”本来老家就在坎一宫（正北方），你排完盘一看，我的天，它今天还是在坎一宫。<br><br>
+                        <b>伏吟代表什么？</b><br>
+                        代表“原地踏步、停滞不前、痛苦呻吟”。<br>
+                        很多人一看到伏吟就觉得完蛋了，其实不是的。如果是测考试能不能过、测出行，遇到伏吟确实是卡死、没戏。但如果你是测<b>要债、买房、守田产</b>，伏吟反而是大吉！代表根基稳固，跑不了。断局不能一刀切啊！
+                    </div>
+                </div>
+            </div>
+
+            <div class="post-row">
+                <div class="post-left">
+                    <span class="username">易学小白救星</span>
+                    <div class="avatar">无头像</div>
+                    <div class="user-title">版主 / 易经研习社</div>
+                    <div class="user-stats">发帖: 892<br>积分: 3450</div>
+                </div>
+                <div class="post-right">
+                    <div class="post-info">发表于 2026-06-24 11:05:45 <span class="floor-num">地板</span></div>
+                    <div class="content">
+                        <div class="quote-box">
+                            <b>引用 看剧必穿帮 在 2026-06-24 10:15:22 发表的帖子:</b><br>
+                            逃命、藏匿、躲灾，应该找杜门！现在的编剧真的该补补课了！
+                        </div>
+                        <div class="quote-box">
+                            <b>引用 八字老油条 在 2026-06-24 10:42:10 发表的帖子:</b><br>
+                            测要债、买房、守田产，伏吟反而是大吉！代表根基稳固，跑不了。断局不能一刀切啊！
+                        </div>
+                        楼上两位都是真内行啊！补充得非常精辟！<br><br>
+                        @看剧必穿帮 确实，我每次看盗墓剧听到“生门”俩字就急得拍大腿。杜门属木，有隐蔽、闭塞之意。如果有人来讨债，你坐在杜门方位，对方可能到了楼下都会迷路找不到你家单元门，这才是实战用法啊！当然实战还得结合吉凶星神来看，不能瞎躲。<br><br>
+                        @八字老油条 把伏吟的辩证关系说得太透彻了！“反吟逢救有迟速，伏吟之局最难调”。之前有个学妹的猫丢了，让我给起了一局，刚好是个门星双伏吟。我当时就跟她说：“别去外面发传单了，猫绝对没出宿舍楼，大概率就卡在某个柜子缝里（伏吟主内部、主不动）。” 结果你们猜怎么着？猫真就在她床底下的储物箱后面睡大觉！<br><br>
+                        大家还有什么想问的格局或者概念？我看情况再更一期关于“九星”属性的干货！
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div style="text-align: right; padding-bottom: 20px;">
+            <span style="border:1px solid #9CB8CC; padding:3px 8px; background:#FFF; color:#0055AA; font-weight:bold;">1</span>
+            <a href="#" style="border:1px solid #9CB8CC; padding:3px 8px; background:#E5EDF2;">2</a>
+            <a href="#" style="border:1px solid #9CB8CC; padding:3px 8px; background:#E5EDF2;">下一页</a>
+        </div>
     </div>
-  </div>
+
+    <div class="sidebar">
+        <div class="side-box">
+            <div class="side-title">最新校园热门</div>
+            <ul class="side-content">
+                <li><a href="#">今年计科系的毕业设计居然有人交了个算命排盘...</a></li>
+                <li><a href="#">深夜玄学探讨：你们到底信不信生辰八字？</a></li>
+                <li><a href="#">知不知道我们学校附近以前发生过大火灾？</a></li>
+                <li><a href="#">期末论文被查出 AI 生成率高达 85%，怎么降重？</a></li>
+                <li><a href="#">谁在机房落了一个移动硬盘？上面贴着画红线的...</a></li>
+            </ul>
+        </div>
+        
+        <div class="side-box">
+            <div class="side-title">版块公告</div>
+            <div style="padding: 10px; line-height: 1.6; color: #666; font-size: 12px;">
+                1. 崇尚科学，本版块仅供传统文化与算法模型交流。<br>
+                2. 严禁利用相关知识在校园内进行非法算命敛财。<br>
+                3. 讨论代码排盘请附带 GitHub 链接，拒绝当伸手党。
+            </div>
+        </div>
+    </div>
 </div>
 
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/lunar-javascript@1.7.7/lunar.js"></script>
-<script>
-// ================= 1. 真实视差高精星空背景 =================
-(function initStars() {
-    const canvas = document.getElementById('bg-stars');
-    const ctx = canvas.getContext('2d');
-    let stars = [];
-    function resize() {
-        canvas.width = window.innerWidth; canvas.height = window.innerHeight;
-        stars = [];
-        for(let i=0; i<400; i++) {
-            stars.push({ x: Math.random()*canvas.width, y: Math.random()*canvas.height, z: Math.random()*3+0.5, o: Math.random(), d: (Math.random()*0.02)-0.01 });
-        }
-    }
-    window.addEventListener('resize', resize); resize();
-
-    function renderStars() {
-        if(document.getElementById('mirror-overlay').style.display === 'none') return;
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        stars.forEach(s => {
-            s.x -= 0.2 / s.z; s.y -= 0.1 / s.z;
-            if(s.x < 0) s.x = canvas.width; if(s.y < 0) s.y = canvas.height;
-            s.o += s.d; if(s.o > 1 || s.o < 0.1) s.d = -s.d;
-            ctx.beginPath(); ctx.arc(s.x, s.y, 1.5/s.z, 0, Math.PI*2);
-            ctx.fillStyle = `rgba(180, 210, 255, ${s.o})`; ctx.fill();
-        });
-        requestAnimationFrame(renderStars);
-    }
-    renderStars();
-})();
-
-// ================= 2. 摄像头与雪花屏逻辑 =================
-(function initMirror() {
-    const video = document.getElementById('mirror-video');
-    const noiseCanvas = document.getElementById('mirror-noise');
-    const noiseCtx = noiseCanvas.getContext('2d');
-    const btn = document.getElementById('mirror-btn');
-    const text = document.getElementById('init-text');
-    let isNoise = false;
-
-    function resizeNoise() { noiseCanvas.width = noiseCanvas.parentElement.clientWidth; noiseCanvas.height = noiseCanvas.parentElement.clientHeight; }
-    window.addEventListener('resize', resizeNoise); resizeNoise();
-
-    function drawNoise() {
-        if(!isNoise || noiseCanvas.style.display === 'none') return;
-        const idata = noiseCtx.createImageData(noiseCanvas.width, noiseCanvas.height);
-        const d = idata.data;
-        for(let i=0; i<d.length; i+=4) { const v = Math.random()*255|0; d[i]=v; d[i+1]=v; d[i+2]=v; d[i+3]=80; }
-        noiseCtx.putImageData(idata, 0, 0);
-        requestAnimationFrame(drawNoise);
-    }
-
-    if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-        navigator.mediaDevices.getUserMedia({video: {facingMode: 'user'}})
-        .then(stream => {
-            video.srcObject = stream; video.style.opacity = '1';
-            text.innerHTML = "[ 光学阵列已贯通 ]<br>物理特征捕获完毕，请注视深渊。";
-            btn.style.display = 'inline-block';
-        })
-        .catch(() => {
-            isNoise = true; noiseCanvas.style.opacity = '1'; drawNoise();
-            text.innerHTML = "<span style='color:#a33131;'>[ 光学阵列被拒绝 ]</span><br>物理特征丢失，系统采用盲视降维协议。";
-            btn.style.display = 'inline-block';
-        });
-    } else {
-        isNoise = true; noiseCanvas.style.opacity = '1'; drawNoise();
-        text.innerHTML = "[ 设备异常 ]<br>启动备用盲视协议。"; btn.style.display = 'inline-block';
-    }
-})();
-
-// ================= 3. 展开动画 =================
-function playCinematicExpand(cb){
-  const overlay = document.getElementById('mirror-expand');
-  const canvas = document.getElementById('expand-canvas');
-  overlay.style.display = 'block';
-  
-  function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
-  window.addEventListener('resize', resize); resize();
-
-  const ctx = canvas.getContext('2d');
-  let cx = canvas.width/2, cy = canvas.height/2;
-  const maxR = Math.sqrt(cx*cx + cy*cy) * 1.2;
-  let r = Math.min(canvas.width, canvas.height) * 0.4; 
-  let alpha = 1, phase = 0;
-
-  function frame(){
-    ctx.clearRect(0,0,canvas.width,canvas.height);
-    cx = canvas.width/2; cy = canvas.height/2;
-
-    if(phase === 0){
-      ctx.save();
-      ctx.beginPath(); ctx.rect(0, 0, canvas.width, canvas.height); ctx.arc(cx, cy, r, 0, Math.PI*2, true); 
-      ctx.fillStyle = `rgba(2, 3, 5, ${alpha})`; ctx.fill();
-      ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI*2);
-      ctx.strokeStyle = `rgba(205,164,90,${alpha * 0.8})`; ctx.lineWidth = 4; ctx.stroke();
-      ctx.restore();
-      r += Math.max((maxR - r) * 0.04, 2);
-      if(r > maxR) phase = 1;
-    } else {
-      alpha -= 0.02;
-      ctx.fillStyle = `rgba(2, 3, 5, ${Math.max(0, alpha)})`; ctx.fillRect(0,0,canvas.width,canvas.height);
-      if(alpha <= 0){ overlay.style.display = 'none'; window.removeEventListener('resize', resize); cb(); return; }
-    }
-    requestAnimationFrame(frame);
-  }
-  frame();
-}
-
-document.getElementById('mirror-btn').onclick = () => {
-  const video = document.getElementById('mirror-video');
-  if(video.srcObject) video.srcObject.getTracks().forEach(t => t.stop());
-  document.getElementById('mirror-overlay').style.display = 'none';
-  playCinematicExpand(() => {
-    document.getElementById('app').style.display = 'block';
-    if(!map) { initMap(); } else { map.invalidateSize(); }
-    setTimeout(() => { document.getElementById('narrative-dialog').style.display = 'block'; }, 1000);
-  });
-};
-
-document.getElementById('close-detail').onclick = () => { document.getElementById('gong-detail').style.display = 'none'; };
-
-let qimenOrientation = false;
-function setMapOrientation(useQimen) {
-  qimenOrientation = useQimen;
-  document.getElementById('map').classList.toggle('qimen-flipped', useQimen);
-  document.getElementById('north-indicator').classList.toggle('qimen', useQimen);
-  document.getElementById('orientation-mode').textContent = useQimen ? '奇门' : '地图';
-  document.getElementById('orientation-top').textContent = useQimen ? 'S' : 'N';
-  document.getElementById('orientation-bottom').textContent = useQimen ? 'N' : 'S';
-  document.getElementById('orientation-hint').textContent = useQimen ? '上南下北' : '点按倒转';
-  setTimeout(() => { if(map) map.invalidateSize(); }, 560);
-}
-
-const orientationToggle = document.getElementById('north-indicator');
-orientationToggle.onclick = () => setMapOrientation(!qimenOrientation);
-orientationToggle.onkeydown = (event) => {
-  if(event.key === 'Enter' || event.key === ' ') {
-    event.preventDefault();
-    setMapOrientation(!qimenOrientation);
-  }
-};
-
-// ================= 4. 严谨拓扑地理引擎重构 =================
-let map;
-let l1Group, l2Group, l3Group;
-
-// 南门支巷剧情锚点：落在余杭塘路北侧、河道上方的低矮小房子一排。
-const SOUTH_GATE = [30.29708, 120.08779];
-const WAREHOUSE = [30.29628, 120.08812];
-const SPAN = 0.00095;
-// 让旧库房落入艮八宫：本盘生门在艮八，搜寻应从艮宫落点反推到地图。
-const CENTER = [WAREHOUSE[0] - SPAN, WAREHOUSE[1] - SPAN];
-const MAP_CENTER = [30.29624, 120.08805];
-const NAMES = {1:'坎',8:'艮',3:'震',4:'巽',9:'离',2:'坤',7:'兑',6:'乾',5:'中'};
-const QIMEN_ORDER = [4,9,2,3,5,7,8,1,6];
-
-const TARGET_GONG = 8;
-const CORRECT_DEAD_JU = '阳遁九局';
-const DEAD_TIME_PROFILE = {
-  title: '2007-06-11 11:02 星期一',
-  lunar: '二〇〇七年 四月廿六 午时',
-  solarTerms: '芒种（6日9时27分） → 夏至（22日2时06分）',
-  bazi: { year: '丁亥', month: '丙午', day: '丙子', hour: '甲午' },
-  method: '阳遁九局 [拆补]',
-  note: '芒种后甲午符头已过，属芒种中元。'
-};
-
-const DEAD_PAN = {
-  4: { door:'杜', star:'天辅', deity:'腾蛇', clue:'隐藏协议撕裂' },
-  9: { door:'景', star:'天英', deity:'太阴', clue:'离火探针返照' },
-  2: { door:'死', star:'天芮', deity:'六合', clue:'废弃外壳' },
-  3: { door:'伤', star:'天冲', deity:'值符', clue:'破损与冲撞' },
-  5: { door:'', star:'', deity:'常', clue:'中宫空白' },
-  7: { door:'惊', star:'天柱', deity:'勾陈', clue:'逻辑门闭合' },
-  8: { door:'生', star:'天任', deity:'九天', clue:'异常增殖源' },
-  1: { door:'休', star:'天蓬', deity:'九地', clue:'水下噪声' },
-  6: { door:'开', star:'天心', deity:'朱雀', clue:'外泄通道' }
-};
-
-const FALL_THRESHOLD = 4;
-const WRONG_JU_OMENS = [
-  { kind:'door-du', title:'[WARN] 拆补符头失准', body:'三元没有对齐。死盘坐标被拖出原位，隐藏协议短暂撕开。' },
-  { kind:'door-jing', title:'[WARN] 节气边界回流', body:'芒种与夏至之间的时间噪声开始渗血。系统要求重新判断上中下元。' },
-  { kind:'door-sheng', title:'[CRITICAL] 生门误触', body:'错误局数正在喂大生门异常。屏幕温度升高，肉色索引覆盖了地图边缘。' }
-];
-const GONG_OMENS = {
-  4: { kind:'door-du', title:'[WARN] 杜门 / 巽四宫', body:'隐藏协议与隔离沙盒出现物理性撕裂。被遮蔽的轮廓在黑暗里反复闪回，但坐标没有落锁。' },
-  9: { kind:'door-jing', title:'[WARN] 景门 / 离九宫', body:'离火算力受潮，光学探针传回浓稠的红色液滴图像。画面很亮，却没有仓库的门。' },
-  2: { kind:'door-jingmen', title:'[TRACE] 死门 / 坤二宫', body:'死门里只有空壳、灰尘和旧编号。危险并非来自这里，搜寻被送回原点。' },
-  3: { kind:'door-jingmen', title:'[ERR] 伤门 / 震三宫', body:'坐标线被反震，检索窗口出现裂纹。这里有冲击痕迹，却不是旧库房入口。' },
-  5: { kind:'door-jingmen', title:'[NULL] 中五宫', body:'中宫没有可投影坐标。你盯住的是阵图自身的空白，空白也在盯回。' },
-  7: { kind:'door-jingmen', title:'[OK] 惊门 / 兑七宫', body:'逻辑门暂时闭合。恐惧反馈被反弹，系统拒绝把这个宫位写入物理地图。' },
-  1: { kind:'door-du', title:'[TRACE] 休门 / 坎一宫', body:'水下噪声吞没索引，线路像泡在冷水里一样失真。仓库信号不在此处。' },
-  6: { kind:'door-jing', title:'[WARN] 开门 / 乾六宫', body:'通道短暂打开，外部噪声倒灌进来。它像入口，但不是南门支巷的那扇门。' },
-  8: { kind:'door-sheng', title:'[CRITICAL] 生门 / 艮八宫', body:'生门反应确认。若局数与方位没有闭合，它只会把搜寻结果繁殖成错误坐标。' }
-};
-
-// 默认地图仍按地理上北下南；切换奇门方向后，整张地图倒转为上南下北。
-const GONG_OFF = {
-    4: [-SPAN, SPAN],   // 东南，倒转后位于上左
-    9: [-SPAN, 0],      // 南，倒转后位于上中
-    2: [-SPAN, -SPAN],  // 西南，倒转后位于上右
-    3: [0, SPAN],       // 东，倒转后位于中左
-    5: [0, 0],          // 中五
-    7: [0, -SPAN],      // 西，倒转后位于中右
-    8: [SPAN, SPAN],    // 东北，倒转后位于下左
-    1: [SPAN, 0],       // 北，倒转后位于下中
-    6: [SPAN, -SPAN]    // 西北，倒转后位于下右
-};
-
-const BMYANG=['休','死','伤','杜','景','开','惊','生','景'];
-const BMYIN=['休','生','伤','杜','景','死','惊','开','景'];
-const GAN = ['甲','乙','丙','丁','戊','己','庚','辛','壬','癸'];
-const ZHI = ['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
-const JIA_ZI = Array.from({length:60}, (_, i) => GAN[i % 10] + ZHI[i % 12]);
-const YUAN_NAMES = ['上元','中元','下元'];
-const JIEQI_ORDER = ['冬至','小寒','大寒','立春','雨水','惊蛰','春分','清明','谷雨','立夏','小满','芒种','夏至','小暑','大暑','立秋','处暑','白露','秋分','寒露','霜降','立冬','小雪','大雪'];
-const JIEQI_JU = {
-  冬至:[1,7,4], 小寒:[2,8,5], 大寒:[3,9,6], 立春:[8,5,2],
-  雨水:[9,6,3], 惊蛰:[1,7,4], 春分:[3,9,6], 清明:[4,1,7],
-  谷雨:[5,2,8], 立夏:[4,1,7], 小满:[5,2,8], 芒种:[3,9,6],
-  夏至:[9,3,6], 小暑:[8,2,5], 大暑:[7,1,4], 立秋:[2,5,8],
-  处暑:[1,4,7], 白露:[9,3,6], 秋分:[7,1,4], 寒露:[6,9,3],
-  霜降:[5,8,2], 立冬:[6,9,3], 小雪:[5,8,2], 大雪:[4,7,1]
-};
-const FLY_ORDER = [1,2,3,4,5,6,7,8,9];
-const RING_ORDER = [1,8,3,4,9,2,7,6];
-const INSTRUMENTS = ['戊','己','庚','辛','壬','癸','丁','丙','乙'];
-const XUN_INSTRUMENT = {'甲子':'戊','甲戌':'己','甲申':'庚','甲午':'辛','甲辰':'壬','甲寅':'癸'};
-const DOOR_HOME = {1:'休',8:'生',3:'伤',4:'杜',9:'景',2:'死',7:'惊',6:'开'};
-const STAR_HOME = {1:'天蓬',8:'天任',3:'天冲',4:'天辅',9:'天英',2:'天芮',7:'天柱',6:'天心',5:'天禽'};
-const DEITY_YANG = ['值符','腾蛇','太阴','六合','勾陈','朱雀','九地','九天'];
-const DEITY_YIN = ['值符','九天','九地','朱雀','勾陈','六合','太阴','腾蛇'];
-
-// 南门支巷调查范围：覆盖余杭塘路、紫荆花北路、西环河与小房子排。
-const campusBounds = [
-    [CENTER[0] + SPAN*1.55, CENTER[1] - SPAN*1.85],
-    [CENTER[0] + SPAN*1.55, CENTER[1] + SPAN*1.85],
-    [CENTER[0] - SPAN*1.95, CENTER[1] + SPAN*1.85],
-    [CENTER[0] - SPAN*1.95, CENTER[1] - SPAN*1.85]
-];
-
-let layersState = { L1: true, L2: true, L3: true };
-let warehouseRevealed = false;
-let wrongJuCount = 0;
-let omenTimer = null;
-let falling = false;
-let projectionConflictCount = 0;
-const SHOW_L1_LOCATION_LABELS = false;
-
-function rotateFrom(list, startValue, forward = true) {
-  const idx = list.indexOf(startValue);
-  if(idx < 0) return list.slice();
-  const rotated = [];
-  for(let i=0; i<list.length; i++) {
-    const step = forward ? i : -i;
-    rotated.push(list[(idx + step + list.length) % list.length]);
-  }
-  return rotated;
-}
-
-function jiaziIndex(gz) {
-  return JIA_ZI.indexOf(gz);
-}
-
-function getXunInfo(gz) {
-  const idx = jiaziIndex(gz);
-  if(idx < 0) return { start:'甲子', offset:0, instrument:'戊' };
-  const start = JIA_ZI[Math.floor(idx / 10) * 10];
-  return { start, offset: idx % 10, instrument: XUN_INSTRUMENT[start] || '戊' };
-}
-
-function solarToDate(solar) {
-  return new Date(solar.getYear(), solar.getMonth() - 1, solar.getDay(), solar.getHour(), solar.getMinute(), solar.getSecond());
-}
-
-function formatSolarTime(solar) {
-  if(!solar) return '未知';
-  const pad = n => String(n).padStart(2, '0');
-  return `${solar.getMonth()}日${solar.getHour()}时${pad(solar.getMinute())}分`;
-}
-
-function getJieQiAround(dateObj) {
-  if(typeof Solar === 'undefined') return null;
-  const year = dateObj.getFullYear();
-  const terms = [];
-  [year - 1, year, year + 1].forEach(y => {
-    const lunar = Solar.fromYmd(y, 1, 1).getLunar();
-    const table = lunar.getJieQiTable ? lunar.getJieQiTable() : {};
-    Object.keys(table).forEach(name => {
-      const solar = table[name];
-      const date = solarToDate(solar);
-      if(!Number.isNaN(date.getTime())) terms.push({ name, solar, date });
-    });
-  });
-  terms.sort((a,b) => a.date - b.date);
-  let prev = null, next = null;
-  for(const term of terms) {
-    if(term.date <= dateObj) prev = term;
-    if(term.date > dateObj) { next = term; break; }
-  }
-  return prev ? { prev, next } : null;
-}
-
-function getYuanByFutou(dayGanZhi) {
-  const idx = jiaziIndex(dayGanZhi);
-  if(idx < 0) return null;
-  let futouIdx = idx;
-  while(futouIdx >= 0 && !['甲','己'].includes(JIA_ZI[futouIdx].slice(0, 1))) {
-    futouIdx -= 1;
-  }
-  if(futouIdx < 0) futouIdx += 60;
-  const futou = JIA_ZI[futouIdx];
-  const branch = futou.slice(1);
-  const yuanIndex = ['子','午','卯','酉'].includes(branch)
-    ? 0
-    : (['寅','申','巳','亥'].includes(branch) ? 1 : 2);
-  return { yuanIndex, futou };
-}
-
-function getDunJu(dateObj, around, dayGanZhi) {
-  if(!around || !around.prev) return { dun:'阳遁', ju:1, yuan:'上元', note:'节气数据未加载，使用临时阳遁一局。' };
-  const term = around.prev.name;
-  const idx = JIEQI_ORDER.indexOf(term);
-  const dun = idx >= 0 && idx < 12 ? '阳遁' : '阴遁';
-  const futouInfo = getYuanByFutou(dayGanZhi);
-  const days = Math.max(0, Math.floor((dateObj - around.prev.date) / 86400000));
-  const yuanIndex = futouInfo ? futouInfo.yuanIndex : Math.min(2, Math.floor(days / 5));
-  const ju = (JIEQI_JU[term] || [1,7,4])[yuanIndex];
-  return {
-    dun, ju, yuan: YUAN_NAMES[yuanIndex],
-    note: futouInfo
-      ? `${term}后第${days + 1}日，${futouInfo.futou}符头取${YUAN_NAMES[yuanIndex]}。`
-      : `${term}后第${days + 1}日，拆补取${YUAN_NAMES[yuanIndex]}。`
-  };
-}
-
-function buildTimeProfile(dateObj) {
-  if(typeof Solar === 'undefined') {
-    return {
-      ok:false,
-      title: `${dateObj.toLocaleString()}（本机时间）`,
-      lunar: '历法库未加载',
-      solarTerms: '等待 lunar-javascript',
-      bazi: { year:'--', month:'--', day:'--', hour:'--' },
-      dun:'阳遁', ju:1, yuan:'上元', juValue:'阳遁一局', method:'阳遁一局 [临时]',
-      note:'无法读取四柱、农历与节气；请确认网络可加载 lunar-javascript。'
-    };
-  }
-  const solar = Solar.fromYmdHms(dateObj.getFullYear(), dateObj.getMonth()+1, dateObj.getDate(), dateObj.getHours(), dateObj.getMinutes(), dateObj.getSeconds());
-  const lunar = solar.getLunar();
-  const around = getJieQiAround(dateObj);
-  const bazi = {
-    year: lunar.getYearInGanZhiExact ? lunar.getYearInGanZhiExact() : lunar.getYearInGanZhi(),
-    month: lunar.getMonthInGanZhiExact ? lunar.getMonthInGanZhiExact() : lunar.getMonthInGanZhi(),
-    day: lunar.getDayInGanZhiExact2 ? lunar.getDayInGanZhiExact2() : (lunar.getDayInGanZhiExact ? lunar.getDayInGanZhiExact() : lunar.getDayInGanZhi()),
-    hour: lunar.getTimeInGanZhi()
-  };
-  const dunJu = getDunJu(dateObj, around, bazi.day);
-  const lunarYear = lunar.getYearInChinese ? lunar.getYearInChinese() : '';
-  const lunarMonth = lunar.getMonthInChinese ? lunar.getMonthInChinese() : lunar.getMonth();
-  const lunarDay = lunar.getDayInChinese ? lunar.getDayInChinese() : lunar.getDay();
-  const hourZhi = bazi.hour ? bazi.hour.slice(1) : '';
-  const profile = {
-    ok:true,
-    title: `${solar.toYmdHms()} 星期${solar.getWeekInChinese()}`,
-    lunar: `${lunarYear}年 ${lunarMonth}月${lunarDay} ${hourZhi}时`,
-    solarTerms: around && around.prev ? `${around.prev.name}（${formatSolarTime(around.prev.solar)}） → ${around.next ? `${around.next.name}（${formatSolarTime(around.next.solar)}）` : '未知'}` : '节气未知',
-    bazi,
-    dun: dunJu.dun,
-    ju: dunJu.ju,
-    yuan: dunJu.yuan,
-    note: dunJu.note
-  };
-  profile.juValue = formatJuValue(profile);
-  profile.method = `${profile.juValue} [拆补]`;
-  return profile;
-}
-
-function formatJuValue(profile) {
-  return `${profile.dun}${['零','一','二','三','四','五','六','七','八','九'][profile.ju]}局`;
-}
-
-function parseJuValue(value) {
-  const m = /^(阳遁|阴遁)([一二三四五六七八九])局$/.exec(value || '');
-  if(!m) return null;
-  return { dun: m[1], ju: ['零','一','二','三','四','五','六','七','八','九'].indexOf(m[2]) };
-}
-
-function getSelectedLiveProfile() {
-  if(!liveProfile) return null;
-  const selected = parseJuValue(document.getElementById('live-ju').value);
-  if(!selected) return null;
-  return {
-    ...liveProfile,
-    dun: selected.dun,
-    ju: selected.ju,
-    juValue: document.getElementById('live-ju').value,
-    method: `${document.getElementById('live-ju').value} [玩家定局]`
-  };
-}
-
-function isCorrectLiveJu() {
-  return !!liveProfile && document.getElementById('live-ju').value === liveProfile.juValue;
-}
-
-function placeInstruments(dun, ju) {
-  const palaceSeq = rotateFrom(FLY_ORDER, ju, dun === '阳遁');
-  const ground = {};
-  INSTRUMENTS.forEach((stem, i) => { ground[stem] = palaceSeq[i]; });
-  return ground;
-}
-
-function ringIndexForPalace(palace) {
-  return RING_ORDER.indexOf(palace === 5 ? 2 : palace);
-}
-
-function buildRotatingLayer(homeMap, valuePalace, targetPalace, dun) {
-  const forward = dun === '阳遁';
-  const homeRing = RING_ORDER.map(p => homeMap[p]);
-  const baseValuePalace = valuePalace === 5 ? 2 : valuePalace;
-  const value = homeMap[baseValuePalace] || homeMap[2];
-  const valueIdx = homeRing.indexOf(value);
-  const targetIdx = ringIndexForPalace(targetPalace);
-  const layer = {5: homeMap[5] || ''};
-  RING_ORDER.forEach((palace, i) => {
-    const step = forward ? (i - targetIdx) : (targetIdx - i);
-    layer[palace] = homeRing[(valueIdx + step + homeRing.length) % homeRing.length];
-  });
-  return layer;
-}
-
-function buildDeityLayer(targetPalace, dun) {
-  const list = dun === '阳遁' ? DEITY_YANG : DEITY_YIN;
-  const targetIdx = ringIndexForPalace(targetPalace);
-  const layer = {5:'常'};
-  RING_ORDER.forEach((palace, i) => {
-    const step = dun === '阳遁' ? (i - targetIdx) : (targetIdx - i);
-    layer[palace] = list[(step + list.length) % list.length];
-  });
-  return layer;
-}
-
-function buildQimenPan(profile) {
-  const ground = placeInstruments(profile.dun, profile.ju);
-  const hourGz = profile.bazi.hour || '甲子';
-  const hourStem = hourGz.slice(0,1);
-  const xun = getXunInfo(hourGz);
-  const valuePalace = ground[xun.instrument] || 1;
-  const hourStemKey = hourStem === '甲' ? xun.instrument : hourStem;
-  const targetPalace = ground[hourStemKey] || valuePalace;
-  const doors = buildRotatingLayer(DOOR_HOME, valuePalace, targetPalace, profile.dun);
-  const stars = buildRotatingLayer(STAR_HOME, valuePalace, targetPalace, profile.dun);
-  const deities = buildDeityLayer(targetPalace, profile.dun);
-  const byPalace = {};
-  QIMEN_ORDER.forEach(pos => {
-    byPalace[pos] = { door: doors[pos] || '', star: stars[pos] || '', deity: deities[pos] || '', ground: '' };
-  });
-  Object.keys(ground).forEach(stem => { byPalace[ground[stem]].ground = stem; });
-  const isDoorFuyin = RING_ORDER.every(pos => doors[pos] === DOOR_HOME[pos]);
-  const isStarFuyin = RING_ORDER.every(pos => stars[pos] === STAR_HOME[pos]);
-  return { doors, stars, deities, ground, byPalace, xun, valuePalace, targetPalace, isFuyin: isDoorFuyin && isStarFuyin };
-}
-
-let deadDateObj = new Date(2007,5,11,11,2);
-let liveDateObj = new Date();
-let liveProfile = null;
-let livePan = null;
-
-function syncLiveDateFromInput() {
-  const value = document.getElementById('live-time').value;
-  if(value) liveDateObj = new Date(value);
-}
-
-function fillJuSelect(select, placeholder) {
-  select.innerHTML = '<option value="">选择局数...</option>';
-  if(placeholder) select.options[0].textContent = placeholder;
-  const numerals = ['一','二','三','四','五','六','七','八','九'];
-  ['阳遁','阴遁'].forEach(prefix => {
-    numerals.forEach(num => {
-      const opt = document.createElement('option');
-      opt.value = `${prefix}${num}局`;
-      opt.textContent = `${prefix}${num}局`;
-      select.appendChild(opt);
-    });
-  });
-}
-
-function populateJuOptions() {
-  fillJuSelect(document.getElementById('dead-ju'), '选择死盘局数...');
-  fillJuSelect(document.getElementById('live-ju'), '选择活盘局数...');
-}
-
-function isCorrectDeadJu() {
-  return document.getElementById('dead-ju').value === CORRECT_DEAD_JU;
-}
-
-function setAbuseLevel(level) {
-  const alpha = Math.min(0.72, Math.max(0, level) * 0.16);
-  document.documentElement.style.setProperty('--abuse-alpha', alpha.toFixed(2));
-}
-
-function pulseScreen() {
-  document.body.classList.remove('screen-shake');
-  void document.body.offsetWidth;
-  document.body.classList.add('screen-shake');
-  window.setTimeout(() => document.body.classList.remove('screen-shake'), 420);
-}
-
-function showOmen(kind, title, body, duration = 1900) {
-  const overlay = document.getElementById('omen-overlay');
-  document.getElementById('omen-title').textContent = title;
-  document.getElementById('omen-body').textContent = body;
-  window.clearTimeout(omenTimer);
-  overlay.className = '';
-  void overlay.offsetWidth;
-  overlay.className = `active ${kind || ''}`.trim();
-  overlay.setAttribute('aria-hidden', 'false');
-  pulseScreen();
-  omenTimer = window.setTimeout(() => {
-    if(falling) return;
-    overlay.className = '';
-    overlay.setAttribute('aria-hidden', 'true');
-  }, duration);
-}
-
-function fallFromGrace() {
-  if(falling) return;
-  falling = true;
-  setAbuseLevel(FALL_THRESHOLD + 1);
-  document.body.classList.add('falling');
-  showOmen('fall', '滥用神力，陨落', '死盘拒绝继续响应。错误局数被连续调用，观测者权限已回收。', 2600);
-  window.setTimeout(() => {
-    if(window.history.length > 1) window.history.back();
-    else window.location.reload();
-  }, 2400);
-}
-
-function triggerWrongJuScare(reason = '局数校验') {
-  if(falling) return false;
-  wrongJuCount += 1;
-  setAbuseLevel(wrongJuCount);
-  const omen = WRONG_JU_OMENS[(wrongJuCount - 1) % WRONG_JU_OMENS.length];
-  showOmen(omen.kind, `${omen.title} #${wrongJuCount}`, `${reason}失败：${omen.body}`, 2000);
-  if(wrongJuCount >= FALL_THRESHOLD) window.setTimeout(fallFromGrace, 620);
-  return false;
-}
-
-function validateDeadJuOrScare(reason) {
-  const ju = document.getElementById('dead-ju').value;
-  if(!ju) {
-    showOmen('door-jingmen', '[ERR] 死盘未定', '尚未选择拆补局数。四柱、农历与节气信息仍在等待你完成定局。', 1700);
-    return false;
-  }
-  if(ju !== CORRECT_DEAD_JU) return triggerWrongJuScare(reason);
-  wrongJuCount = 0;
-  setAbuseLevel(0);
-  return true;
-}
-
-function triggerWrongGongOmen(pos) {
-  const omen = GONG_OMENS[pos] || { kind:'door-jingmen', title:'[TRACE] 未知宫位', body:'搜寻没有返回稳定坐标。' };
-  showOmen(omen.kind, omen.title, omen.body, 2200);
-}
-
-function handleDeadJuChange() {
-  const ju = document.getElementById('dead-ju').value;
-  if(ju && ju !== CORRECT_DEAD_JU) triggerWrongJuScare('局数选择');
-  if(ju === CORRECT_DEAD_JU) {
-    wrongJuCount = 0;
-    setAbuseLevel(0);
-  }
-  updateDeadCalendarInfo();
-  updateL2L3();
-}
-
-function handleLiveJuChange() {
-  syncLiveDateFromInput();
-  const ju = document.getElementById('live-ju').value;
-  updateLiveCalendarInfo();
-  updateL2L3();
-  if(ju && !isCorrectLiveJu()) {
-    showOmen('door-jingmen', '[ERR] L3 活盘错局', '当前局数无法贴合本机时间的节气与符头。实时投影会漂移，叠加态不可作为可靠线索。', 1800);
-  }
-}
-
-function updateProjectionState() {
-  const active = Object.keys(layersState).filter(k => layersState[k]);
-  const el = document.getElementById('projection-state');
-  if(!el) return;
-  const selectedLiveJu = document.getElementById('live-ju').value;
-  const liveJu = selectedLiveJu
-    ? `L3 玩家定局：${selectedLiveJu}${isCorrectLiveJu() ? ' / OK' : ' / 漂移'}`
-    : 'L3 局数待玩家校验';
-  let state = '单层观测';
-  if(active.length === 2) state = '双层对照';
-  if(active.length === 3) state = projectionConflictCount > 0 ? `三层叠加 / 伏吟干涉 x${projectionConflictCount}` : '三层叠加 / 稳定投影';
-  el.innerHTML = `<b>投影态</b><br><span>${state}</span><br>${active.join(' + ')}<br>${liveJu}`;
-}
-
-const REDACTION_GLYPHS = ['█','▒','░','◇','◆','△','▽','×','?','壬','癸','戊','庚','符','门'];
-function randomRedaction(source, minLen = 12) {
-  const length = Math.max(minLen, Math.min(Array.from(source || '').length, 30));
-  return Array.from({ length }, () => REDACTION_GLYPHS[Math.floor(Math.random() * REDACTION_GLYPHS.length)]).join('');
-}
-
-function updateDeadCalendarInfo() {
-  const value = document.getElementById('dead-time').value;
-  const ju = document.getElementById('dead-ju').value;
-  const el = document.getElementById('dead-calendar');
-  const knownTime = value && value.startsWith('2007-06-11T11');
-  if(!knownTime) {
-    el.innerHTML = `<span class="warn">[CAL] 暂无该时刻历法缓存。</span><br>请回到死盘记录时间：2007-06-11 午时。`;
-    return;
-  }
-  const juLine = !ju
-    ? `<span class="warn">[?] 等待玩家按节气/符头选择局数。</span>`
-    : (ju === CORRECT_DEAD_JU
-      ? `<span class="ok">[OK] ${CORRECT_DEAD_JU} 校验通过，艮八宫生门可追踪。</span>`
-      : `<span class="bad">[ERR] ${ju} 与拆补符头不合，死盘坐标会漂移。</span>`);
-  const revealDeadCalendar = ju === CORRECT_DEAD_JU;
-  const lunarLine = revealDeadCalendar
-    ? DEAD_TIME_PROFILE.lunar
-    : `<span class="redacted">[MASK] ${randomRedaction(DEAD_TIME_PROFILE.lunar)}</span>`;
-  const solarTermsLine = revealDeadCalendar
-    ? DEAD_TIME_PROFILE.solarTerms
-    : `<span class="redacted">[MASK] ${randomRedaction(DEAD_TIME_PROFILE.solarTerms, 18)}</span>`;
-  const chaibuLine = revealDeadCalendar
-    ? DEAD_TIME_PROFILE.note
-    : `<span class="redacted">[MASK] ${randomRedaction(DEAD_TIME_PROFILE.note, 16)}</span>`;
-  el.innerHTML = `
-    <b>四柱</b> 年 ${DEAD_TIME_PROFILE.bazi.year} / 月 ${DEAD_TIME_PROFILE.bazi.month} / 日 ${DEAD_TIME_PROFILE.bazi.day} / 时 ${DEAD_TIME_PROFILE.bazi.hour}<br>
-    <b>农历</b> ${lunarLine}<br>
-    <b>节气</b> ${solarTermsLine}<br>
-    <b>拆补</b> ${chaibuLine}<br>
-    ${juLine}
-  `;
-}
-
-function updateLiveCalendarInfo() {
-  liveProfile = buildTimeProfile(liveDateObj);
-  const selectedProfile = getSelectedLiveProfile();
-  livePan = buildQimenPan(selectedProfile || liveProfile);
-  const el = document.getElementById('live-calendar');
-  const desc = document.getElementById('l3-layer-desc');
-  const selectedJu = document.getElementById('live-ju').value;
-  const liveJuLine = !selectedJu
-    ? `<span class="warn">[?] 等待玩家按系统时间、节气与符头选择 L3 局数。</span>`
-    : (isCorrectLiveJu()
-      ? `<span class="ok">[OK] ${selectedJu} 校验通过，L3 投影稳定。</span>`
-      : `<span class="bad">[ERR] ${selectedJu} 与当前拆补定局不合，L3 投影进入漂移态。</span>`);
-  const fuyinLine = livePan.isFuyin
-    ? `<span class="bad">[伏吟] ${selectedJu ? '活盘' : '临时影盘'}星门伏回本宫，行动被时间回声钉住。</span>`
-    : `<span class="ok">[活盘] 星门已随时干转动。</span>`;
-  if(desc) desc.innerHTML = selectedJu
-    ? `<strong>${selectedJu}</strong><br>${isCorrectLiveJu() ? '校验通过' : '错局漂移'} / ${liveProfile.bazi.hour}时`
-    : `<strong>局数待定</strong><br>${liveProfile.bazi.hour}时 / ${liveProfile.yuan}`;
-  el.innerHTML = `
-    <b>局数</b> ${liveJuLine}<br>
-    <b>四柱</b> 年 ${liveProfile.bazi.year} / 月 ${liveProfile.bazi.month} / 日 ${liveProfile.bazi.day} / 时 ${liveProfile.bazi.hour}<br>
-    <b>农历</b> ${liveProfile.lunar}<br>
-    <b>节气</b> ${liveProfile.solarTerms}<br>
-    <b>拆补</b> ${liveProfile.note}<br>
-    ${fuyinLine}
-  `;
-  updateProjectionState();
-}
-
-function setNow() {
-  const now = new Date();
-  const local = new Date(now.getTime() - now.getTimezoneOffset()*60000);
-  document.getElementById('live-time').value = local.toISOString().slice(0,16);
-  liveDateObj = now;
-  updateLiveCalendarInfo();
-}
-
-function initMap() {
-  populateJuOptions();
-  updateDeadCalendarInfo();
-  setNow();
-  map = L.map('map',{zoomControl:false, attributionControl:false}).setView(MAP_CENTER, 18);
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{maxZoom:20}).addTo(map);
-  
-  l1Group = L.layerGroup().addTo(map);
-  l2Group = L.layerGroup().addTo(map);
-  l3Group = L.layerGroup().addTo(map);
-
-  drawL1();
-  updateL2L3();
-}
-
-function showGongDetail(pos){
-  const pan = DEAD_PAN[pos];
-  const panReady = isCorrectDeadJu();
-  const d = panReady ? (pan.door || '中') : '未定';
-  if(!liveProfile || !livePan) updateLiveCalendarInfo();
-  const selectedLiveJu = document.getElementById('live-ju').value;
-  const liveJuReady = !!selectedLiveJu;
-  const liveJuCorrect = isCorrectLiveJu();
-  const live = livePan.byPalace[pos] || {};
-  const l = live.door || '—';
-  const conflict = panReady && liveJuReady && liveJuCorrect && d !== '中' && (d === l);
-  const liveStatus = !liveJuReady ? 'L3局数未校验' : (liveJuCorrect ? `${selectedLiveJu} 校验通过` : `${selectedLiveJu} 错局漂移`);
-  const detail = document.getElementById('gong-detail');
-  
-  if(window.innerWidth > 768) { detail.style.top = '20px'; detail.style.right = '320px'; detail.style.left = 'auto'; detail.style.bottom = 'auto'; }
-  document.getElementById('detail-title').textContent = `${NAMES[pos]}${pos}宫 参量比对`;
-  document.getElementById('detail-body').innerHTML = panReady ? `
-    <div style="color:var(--color-l2);font-size:12px;margin-bottom:4px;">L2死盘: ${DEAD_TIME_PROFILE.method}</div>
-    <div style="color:var(--color-l2);font-size:12px;margin-bottom:4px;">${pan.deity || '—'} / ${pan.star || '—'} / ${d}门</div>
-    <div style="color:var(--color-l3);font-size:12px;">L3活盘: ${liveStatus}</div>
-    <div style="color:${liveJuReady ? (liveJuCorrect ? 'var(--color-l3)' : '#ff8aa1') : 'var(--text-mute)'};font-size:12px;">${liveJuReady ? `${live.deity || '—'} / ${live.star || '—'} / ${l}门` : '请先选择 L3 拆补局数。'}</div>
-    <div style="margin-top:8px;color:var(--text-mute);font-size:11px;">${pan.clue}</div>
-    ${pos === TARGET_GONG ? `
-      <div class="desktop-only-hint" style="margin-top:8px;color:#ffcccc;font-size:11px;">右键此宫可执行「注视搜寻」。</div>
-      <div class="mobile-only-hint" style="margin-top:8px;color:#ffcccc;font-size:11px;">长按此宫，或点下方按钮执行「注视搜寻」。</div>
-      <button class="focus-search-btn" type="button" onclick="attemptFocusSearch(${pos})">注视搜寻</button>
-    ` : ''}
-    ${livePan.isFuyin ? `<div style="margin-top:8px;color:#fff;font-size:11px;">活盘自伏吟：星门伏回本宫，行动趋于停滞。</div>` : ''}
-    ${conflict ? `<div style="margin-top:10px;color:#fff;font-weight:bold;animation:flicker .5s infinite alternate;">⚠ 双盘伏吟：L2 与 L3 同宫同门，形成死锁回声</div>` : ''}
-  ` : `
-    <div style="color:var(--color-l2);font-size:12px;margin-bottom:4px;">L2死盘: 局数未校验</div>
-    <div style="color:var(--text-mute);font-size:11px;">请先根据四柱、农历与节气信息选择拆补局数。</div>
-  `;
-  detail.style.display = 'block';
-}
-
-function bindGongEvents(layer, pos) {
-  layer.on('click', () => showGongDetail(pos));
-  layer.on('contextmenu', (event) => {
-    if(event && event.originalEvent) event.originalEvent.preventDefault();
-    attemptFocusSearch(pos);
-  });
-  bindMobileFocusSearch(layer, pos);
-}
-
-function isMobileInteraction() {
-  return window.matchMedia('(hover: none), (pointer: coarse)').matches || window.innerWidth <= 768;
-}
-
-function bindMobileFocusSearch(target, pos) {
-  let timer = null;
-  let startPoint = null;
-  const clear = () => {
-    if(timer) window.clearTimeout(timer);
-    timer = null;
-    startPoint = null;
-  };
-  const pointFromEvent = (event) => {
-    const original = event && (event.originalEvent || event);
-    const touch = original && original.touches && original.touches[0];
-    return touch ? { x: touch.clientX, y: touch.clientY } : { x: original && original.clientX, y: original && original.clientY };
-  };
-  const start = (event) => {
-    if(!isMobileInteraction()) return;
-    startPoint = pointFromEvent(event);
-    timer = window.setTimeout(() => {
-      timer = null;
-      attemptFocusSearch(pos);
-    }, 620);
-  };
-  const move = (event) => {
-    if(!timer || !startPoint) return;
-    const point = pointFromEvent(event);
-    if(Math.abs((point.x || 0) - (startPoint.x || 0)) > 14 || Math.abs((point.y || 0) - (startPoint.y || 0)) > 14) clear();
-  };
-  if(target && target.on) {
-    target.on('touchstart', start);
-    target.on('touchmove', move);
-    target.on('touchend touchcancel mouseout', clear);
-  }
-}
-
-function bindDomMobileFocusSearch(el, pos) {
-  let timer = null;
-  let startPoint = null;
-  const clear = () => {
-    if(timer) window.clearTimeout(timer);
-    timer = null;
-    startPoint = null;
-  };
-  el.addEventListener('touchstart', (event) => {
-    if(!isMobileInteraction()) return;
-    const touch = event.touches[0];
-    startPoint = { x: touch.clientX, y: touch.clientY };
-    timer = window.setTimeout(() => {
-      timer = null;
-      attemptFocusSearch(pos);
-    }, 620);
-  }, { passive: true });
-  el.addEventListener('touchmove', (event) => {
-    if(!timer || !startPoint) return;
-    const touch = event.touches[0];
-    if(Math.abs(touch.clientX - startPoint.x) > 14 || Math.abs(touch.clientY - startPoint.y) > 14) clear();
-  }, { passive: true });
-  el.addEventListener('touchend', clear);
-  el.addEventListener('touchcancel', clear);
-}
-
-function attemptFocusSearch(pos) {
-  const pan = DEAD_PAN[pos];
-  const ok = window.confirm(`选中 ${NAMES[pos]}${pos}宫（${pan.door || '中'}门）？\n\n注视搜寻？`);
-  if(!ok) return;
-  if(!validateDeadJuOrScare('注视搜寻')) return;
-  if(!qimenOrientation) {
-    showOmen('door-jingmen', '[ERR] 方位未反转', '现实地图仍是上北下南。奇门盘需要上南下北，否则生门坐标会被镜像投错。', 2100);
-    return;
-  }
-  if(pos !== TARGET_GONG) {
-    triggerWrongGongOmen(pos);
-    return;
-  }
-  warehouseRevealed = true;
-  drawL1();
-  const mapEl = document.getElementById('map');
-  mapEl.classList.remove('target-lock');
-  void mapEl.offsetWidth;
-  mapEl.classList.add('target-lock');
-  window.setTimeout(() => mapEl.classList.remove('target-lock'), 2300);
-  showOmen('door-sheng', '[LOCKED_TARGET] 生门 / 艮八宫', '旧库房轮廓显形。但这不是出口，是被伏吟钉住的生门病灶。下一步不要开门，先想办法封门。', 2600);
-}
-
-function fixedLabel(html, kind) {
-  return L.divIcon({
-    html: `<div class="fixed-label ${kind}">${html}</div>`,
-    className: 'fixed-label-icon',
-    iconSize: [0, 0],
-    iconAnchor: [0, 0]
-  });
-}
-
-function drawBuilding(points, name, tone = 'dark') {
-  const palette = {
-    dark: { color:'#263b4a', fillColor:'#071018', fillOpacity:0.88 },
-    brick: { color:'#5d3a3a', fillColor:'#1b0d0d', fillOpacity:0.86 },
-    glass: { color:'#28566a', fillColor:'#0a1a22', fillOpacity:0.82 },
-    shed: { color:'#7a5b2a', fillColor:'#1c1408', fillOpacity:0.9 }
-  }[tone];
-  L.polygon(points, { ...palette, weight: 1.1 }).addTo(l1Group);
-  if (SHOW_L1_LOCATION_LABELS && name) {
-    const lat = points.reduce((sum, p) => sum + p[0], 0) / points.length;
-    const lng = points.reduce((sum, p) => sum + p[1], 0) / points.length;
-    L.marker([lat, lng], {icon: fixedLabel(name, 'site'), interactive: false}).addTo(l1Group);
-  }
-}
-
-function drawL1() {
-  l1Group.clearLayers();
-  
-  // 1. 南门支巷调查边界
-  L.polygon(campusBounds, { 
-      color: 'var(--color-l1)', weight: 2, fillOpacity: 0, dashArray: '10 5'
-  }).addTo(l1Group);
-  
-  // 2. 真实街区骨架：余杭塘路、紫荆花北路、西环河与支巷。
-  L.polyline([[30.29710,120.08555],[30.29706,120.08935]],{color:'#1a3a5a',weight:7,opacity:0.92}).addTo(l1Group);
-  if(SHOW_L1_LOCATION_LABELS) L.marker([30.29723,120.08655],{icon:fixedLabel('余杭塘路','road'), interactive:false}).addTo(l1Group);
-
-  L.polyline([[30.29438,120.08778],[30.29935,120.08781]],{color:'#18334d',weight:6,opacity:0.9}).addTo(l1Group);
-  if(SHOW_L1_LOCATION_LABELS) L.marker([30.29655,120.08728],{icon:fixedLabel('紫荆花北路','road'), interactive:false}).addTo(l1Group);
-
-  L.polyline([[30.29505,120.08685],[30.29520,120.08745],[30.29518,120.08815],[30.29502,120.08885]],{color:'#0f4d63',weight:18,opacity:0.34}).addTo(l1Group);
-  L.polyline([[30.29505,120.08685],[30.29520,120.08745],[30.29518,120.08815],[30.29502,120.08885]],{color:'#1f7895',weight:3,opacity:0.72}).addTo(l1Group);
-  if(SHOW_L1_LOCATION_LABELS) L.marker([30.29534,120.08828],{icon:fixedLabel('西环河','road'), interactive:false}).addTo(l1Group);
-
-  const alleyLine = [SOUTH_GATE,[30.29670,120.08782],[30.29648,120.08796],WAREHOUSE,[30.29618,120.08858]];
-  L.polyline(alleyLine,{color:'#6d7f86',weight:5,opacity:0.68}).addTo(l1Group);
-  L.polyline(alleyLine,{color:'#0b1014',weight:2,opacity:0.95,dashArray:'5 5'}).addTo(l1Group);
-  if(SHOW_L1_LOCATION_LABELS) L.marker([30.29642,120.08833],{icon:fixedLabel('南门支巷','alley'), interactive:false}).addTo(l1Group);
-
-  // 3. 周边建筑与小巷肌理。
-  drawBuilding([[30.29630,120.08892],[30.29630,120.08955],[30.29686,120.08955],[30.29686,120.08892]], '省规院附楼', 'glass');
-  drawBuilding([[30.29462,120.08628],[30.29462,120.08715],[30.29520,120.08715],[30.29520,120.08628]], '紫荆雅苑', 'dark');
-  drawBuilding([[30.29448,120.08955],[30.29448,120.09028],[30.29516,120.09028],[30.29516,120.08955]], '紫荆欣苑', 'dark');
-  drawBuilding([[30.29558,120.08724],[30.29558,120.08758],[30.29592,120.08758],[30.29592,120.08724]], '', 'brick');
-  drawBuilding([[30.29552,120.08862],[30.29552,120.08890],[30.29588,120.08890],[30.29588,120.08862]], '', 'brick');
-  drawBuilding([[30.29603,120.08768],[30.29603,120.08784],[30.29623,120.08784],[30.29623,120.08768]], '', 'shed');
-  drawBuilding([[30.29604,120.08787],[30.29604,120.08804],[30.29624,120.08804],[30.29624,120.08787]], '', 'shed');
-  drawBuilding([[30.29605,120.08808],[30.29605,120.08825],[30.29625,120.08825],[30.29625,120.08808]], '', 'shed');
-  drawBuilding([[30.29606,120.08829],[30.29606,120.08846],[30.29626,120.08846],[30.29626,120.08829]], '', 'shed');
-  drawBuilding([[30.29607,120.08850],[30.29607,120.08866],[30.29625,120.08866],[30.29625,120.08850]], '', 'shed');
-
-  L.polyline([[30.29600,120.08762],[30.29633,120.08762],[30.29633,120.08872]],{color:'#7f8b91',weight:1.5,opacity:0.8,dashArray:'4 3'}).addTo(l1Group);
-  L.polyline([[30.29592,120.08763],[30.29592,120.08878]],{color:'#7f8b91',weight:1.2,opacity:0.7,dashArray:'3 4'}).addTo(l1Group);
-  if(SHOW_L1_LOCATION_LABELS) L.marker([30.29541,120.08859],{icon:fixedLabel('水上巴士·紫荆花路站','site'), interactive:false}).addTo(l1Group);
-  if(SHOW_L1_LOCATION_LABELS) L.marker([30.29471,120.08765],{icon:fixedLabel('公共自行车点','site'), interactive:false}).addTo(l1Group);
-
-  // 4. 剧情锚点默认隐藏；通过艮八宫注视搜寻后才显形。
-  if(warehouseRevealed) {
-    L.polygon([[WAREHOUSE[0]-0.00012,WAREHOUSE[1]-0.00016],[WAREHOUSE[0]-0.00012,WAREHOUSE[1]+0.00016],[WAREHOUSE[0]+0.00012,WAREHOUSE[1]+0.00016],[WAREHOUSE[0]+0.00012,WAREHOUSE[1]-0.00016]],
-      {color:'#2a4a6a',fillColor:'#0a1828',fillOpacity:.96,weight:1.2,dashArray:'4 3',className:'warehouse-lock-path'}).addTo(l1Group);
-    L.circleMarker(WAREHOUSE,{radius:5,color:'#ffcccc',weight:1.5,fillColor:'#a33131',fillOpacity:0.9}).addTo(l1Group);
-    L.marker(WAREHOUSE,{icon:fixedLabel('南门废弃仓库<br><span style="font-size:0.82em">旧库房·封锁点</span>','anchor')}).addTo(l1Group);
-  }
-  
-  if(SHOW_L1_LOCATION_LABELS) L.marker(SOUTH_GATE,{icon:fixedLabel('南江大学 · 南门支巷入口','gate')}).addTo(l1Group);
-}
-function updateL2L3() {
-  l2Group.clearLayers();
-  l3Group.clearLayers();
-
-  if(!liveProfile || !livePan) updateLiveCalendarInfo();
-  const selectedLiveJu = document.getElementById('live-ju').value;
-  const liveJuReady = !!selectedLiveJu;
-  const liveJuCorrect = isCorrectLiveJu();
-  const liveMen = livePan.doors;
-  const panReady = isCorrectDeadJu();
-  projectionConflictCount = 0;
-
-  Object.entries(GONG_OFF).forEach(([posStr, [dlat, dlng]]) => {
-    const pos = parseInt(posStr);
-    const lat = CENTER[0] + dlat, lng = CENTER[1] + dlng;
-    const pan = DEAD_PAN[pos];
-    const live = livePan.byPalace[pos] || {};
-    const dm = panReady ? (pan.door || '中') : '未定', lm = liveMen[pos] || '—';
-    const conflict = panReady && liveJuReady && liveJuCorrect && dm !== '中' && (dm === lm);
-    const l3Summary = !liveJuReady ? 'L3待定' : (liveJuCorrect ? `L3 ${lm}门` : 'L3漂移');
-
-    const bounds = [[lat-SPAN/2, lng-SPAN/2], [lat+SPAN/2, lng+SPAN/2]];
-    
-    if(conflict) projectionConflictCount += 1;
-
-    const r2 = L.rectangle(bounds, {
-      color: conflict ? '#ffffff' : 'var(--color-l2)',
-      fillColor: conflict ? '#ffffff' : '#ffb84d',
-      fillOpacity: conflict ? 0.16 : 0.035,
-      weight: conflict ? 2.4 : 1.2,
-      dashArray: conflict ? null : '9 5',
-      className: conflict ? 'fuyin-cell l2-dead-cell' : 'l2-dead-cell'
-    }).addTo(l2Group);
-    bindGongEvents(r2, pos);
-
-    const boundsL3 = [[lat-SPAN/2+0.0001, lng-SPAN/2+0.0001], [lat+SPAN/2-0.0001, lng+SPAN/2-0.0001]];
-    const liveColor = !liveJuReady ? '#5d7480' : (liveJuCorrect ? 'var(--color-l3)' : '#ff4d6d');
-    const liveFill = !liveJuReady ? '#5d7480' : (liveJuCorrect ? '#00e5ff' : '#ff0033');
-    const liveText = !liveJuReady ? '待定' : (liveJuCorrect ? `${lm}门` : `漂移 ${lm}门`);
-    const r3 = L.rectangle(boundsL3, {
-      color: liveColor,
-      fillColor: liveFill,
-      fillOpacity: conflict ? 0.11 : 0.07,
-      weight: conflict ? 2.1 : 1.7,
-      dashArray: !liveJuReady ? '2 8' : (conflict ? '2 6' : '4 4'),
-      className: 'l3-live-cell'
-    }).addTo(l3Group);
-    bindGongEvents(r3, pos);
-
-    const liveLabelOffset = conflict ? [lat + 0.00022, lng - 0.00022] : [lat + 0.00020, lng + 0.00020];
-    const liveMarker = L.marker(liveLabelOffset, {icon: L.divIcon({
-      html: `<div class="fixed-label live-gong-label" style="color:${liveJuReady ? (liveJuCorrect ? 'var(--color-l3)' : '#ff8aa1') : '#8ba4ad'}; border-color:${liveJuReady ? (liveJuCorrect ? 'rgba(0,229,255,0.55)' : 'rgba(255,77,109,0.65)') : 'rgba(93,116,128,0.55)'};">L3 ${liveText}<br><span style="font-size:0.82em">${liveJuReady ? (live.star || '—') : '局数未校验'}</span></div>`,
-      className: 'fixed-label-icon', iconSize: [0, 0], iconAnchor: [0, 0]
-    })}).addTo(l3Group);
-    bindGongEvents(liveMarker, pos);
-
-    if(conflict && layersState.L1 && layersState.L2 && layersState.L3) {
-      const boundsProjection = [[lat-SPAN/2-0.00008, lng-SPAN/2-0.00008], [lat+SPAN/2+0.00008, lng+SPAN/2+0.00008]];
-      const rp = L.rectangle(boundsProjection, {
-        color: '#ffffff',
-        fillColor: '#ff0033',
-        fillOpacity: 0.08,
-        weight: 2.8,
-        dashArray: '1 7',
-        className: 'projection-overlap-cell'
-      }).addTo(l3Group);
-      bindGongEvents(rp, pos);
-      L.marker([lat - 0.00024, lng], {icon: L.divIcon({
-        html: `<div class="fixed-label projection-badge">叠加态<br>伏吟</div>`,
-        className: 'fixed-label-icon', iconSize: [0, 0], iconAnchor: [0, 0]
-      })}).addTo(l3Group);
-    }
-
-    // 宫格标记 (使用固定字号，解决缩放问题)
-    const m = L.marker([lat, lng], {icon: L.divIcon({
-      html: `<div class="fixed-label gong-label ${conflict ? 'fuyin-label' : ''}" style="color:${conflict?'#fff':'#6c8299'}; text-shadow:${conflict?'0 0 5px #fff':'0 0 2px #000'};">${NAMES[pos]}${pos}宫<br><span style="font-size:0.8em;font-weight:normal;">${panReady ? (conflict ? '双盘伏吟' : `${dm}门 / ${l3Summary}`) : '待校验'}</span></div>`,
-      className: 'fixed-label-icon', iconSize: [0, 0], iconAnchor: [0, 0]
-    })}).addTo(l2Group);
-    bindGongEvents(m, pos);
-    
-    // 更新 HUD
-    const el = document.getElementById('g'+pos);
-    el.className = 'gong' + (conflict ? ' conflict' : '');
-    el.querySelector('.gm').innerHTML = panReady
-      ? (conflict ? '双盘<br>伏吟' : `<span style="color:var(--color-l2)">${dm}门</span><br><span style="color:${liveJuReady ? (liveJuCorrect ? 'var(--color-l3)' : '#ff8aa1') : 'var(--text-mute)'}">${liveJuReady ? (liveJuCorrect ? `${lm}门` : '漂移') : 'L3待定'}</span>`)
-      : `<span style="color:var(--text-mute)">待校验</span>`;
-    el.onclick = () => showGongDetail(pos);
-    el.oncontextmenu = (event) => { event.preventDefault(); attemptFocusSearch(pos); };
-    if(el.dataset.mobileSearchBound !== '1') {
-      bindDomMobileFocusSearch(el, pos);
-      el.dataset.mobileSearchBound = '1';
-    }
-  });
-  updateProjectionState();
-}
-
-function toggleLayer(layerName) {
-    layersState[layerName] = !layersState[layerName];
-    const btn = document.getElementById(`btn-${layerName.toLowerCase()}`);
-    
-    if (layersState[layerName]) {
-        btn.classList.add('active');
-        if(layerName==='L1') map.addLayer(l1Group);
-        if(layerName==='L2') map.addLayer(l2Group);
-        if(layerName==='L3') map.addLayer(l3Group);
-    } else {
-        btn.classList.remove('active');
-        if(layerName==='L1') map.removeLayer(l1Group);
-        if(layerName==='L2') map.removeLayer(l2Group);
-        if(layerName==='L3') map.removeLayer(l3Group);
-    }
-    updateL2L3();
-}
-
-document.getElementById('use-now-btn').onclick = () => { setNow(); updateL2L3(); };
-document.getElementById('dead-time').oninput = () => { updateDeadCalendarInfo(); };
-function handleLiveTimeInput() {
-  syncLiveDateFromInput();
-  updateLiveCalendarInfo();
-  updateL2L3();
-}
-document.getElementById('live-time').oninput = handleLiveTimeInput;
-document.getElementById('live-time').onchange = handleLiveTimeInput;
-document.getElementById('dead-ju').onchange = handleDeadJuChange;
-document.getElementById('live-ju').onchange = handleLiveJuChange;
-document.getElementById('apply-dead').onclick = () => {
-  if(document.getElementById('dead-time').value) {
-    deadDateObj = new Date(document.getElementById('dead-time').value);
-    updateDeadCalendarInfo();
-    updateL2L3();
-    const ju = document.getElementById('dead-ju').value;
-    if(ju && ju !== CORRECT_DEAD_JU) triggerWrongJuScare('重复应用错误局数');
-    if(ju === CORRECT_DEAD_JU) validateDeadJuOrScare('应用 L2 参数');
-  }
-};
-document.getElementById('apply-live').onclick = () => {
-  if(document.getElementById('live-time').value){
-    syncLiveDateFromInput();
-    updateLiveCalendarInfo();
-    updateL2L3();
-    const ju = document.getElementById('live-ju').value;
-    if(ju && !isCorrectLiveJu()) showOmen('door-jingmen', '[ERR] L3 活盘错局', '应用后的时间与当前 L3 局数不匹配，活盘投影已被标记为漂移态。', 1800);
-  }
-};
-</script>
 </body>
 </html>
