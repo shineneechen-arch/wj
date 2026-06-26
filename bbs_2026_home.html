@@ -177,7 +177,7 @@
             <table class="forum-table">
                 <tr class="forum-row-alt">
                     <td>
-                        <a href="thread_zencode_release.html" class="thread-title bold">【开源发布】ZenCode 3D星辰坐标系 v1.0 上线，全流派术数排盘引擎</a>
+                        <a href="zencode_astrolabe.html" class="thread-title bold">【开源发布】ZenCode 3D星辰坐标系 v1.0 上线，全流派术数排盘引擎</a>
                         <div class="forum-desc">结合七政四余与二十八宿，黑金奢华配色，支持发光行星自转流光与地心日心双模型。</div>
                     </td>
                     <td style="text-align: center;" class="gray">主题: 45<br />贴数: 890</td>
@@ -582,7 +582,10 @@
     }
 
     function showLogin() {
-        if(localStorage.getItem('njdx_bbs_override') === 'true' || localStorage.getItem('god_perspective_unlocked') === 'true') return;
+        if(localStorage.getItem('njdx_bbs_override') === 'true' || localStorage.getItem('god_perspective_unlocked') === 'true') {
+            // 如果玩家是古神，允许去后台；如果是人类既济，因为下面绑了点击拦截，这里不需要干啥
+            return;
+        }
         document.getElementById('error').style.display = 'none';
         document.getElementById('login-modal').style.display = 'block';
         document.getElementById('login-user').focus();
@@ -619,6 +622,7 @@
             const mainWrap = document.getElementById('main-content-2026');
             
             if (isGod) {
+                // 【状态3：古神登录】
                 document.getElementById('status-bar-2026').innerHTML = `
                     <span class="info-stats" style="color:#D32F2F; font-weight:bold; text-shadow: 0 0 5px #F00;">SYS_OVERRIDE: 血肉网络已同化</span>
                     欢迎，<span class="bold red" style="font-size:16px;">不可名状的观测者</span> 
@@ -627,6 +631,7 @@
                 document.body.style.backgroundColor = "#1a0505";
                 document.querySelector('.main-wrap').style.boxShadow = "0 0 20px rgba(255,0,0,0.3)";
             } else {
+                // 【状态2：人类Admin登录】
                 document.getElementById('status-bar-2026').innerHTML = `
                     <span class="info-stats" style="color:#D32F2F; font-weight:bold;">SYS_OVERRIDE: 维度已锚定</span>
                     欢迎回来，<span class="bold red" style="font-size:16px;">26级_既济 (高维观测者)</span> 
@@ -644,12 +649,14 @@
                     successMsg.innerHTML = "【多维干涉】你已成为星火的一部分。血肉网络正在蔓延。<br>物理隔离已失效，所有节点对你敞开。请找到您的法器。<br><br><span style='font-size:12px; color:#ff8888; cursor:pointer; text-decoration:underline;' onclick='resetGame()'>[ 斩断链接：重置所有时空与肉体剥离 ]</span>";
                 } else {
                     successMsg.style.cssText = "background: #E8F5E9; border: 1px solid #4CAF50; padding: 15px; margin-bottom: 20px; color: #2E7D32; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 0 10px rgba(76, 175, 80, 0.3);";
-                    successMsg.innerHTML = "【系统广播】权限覆盖完毕。19年前的散逸算力已被安全重定向。<br>时空死局已解，南江大学节点恢复正常运转。感谢您的介入。<br><br><span style='font-size:12px; color:#666; cursor:pointer;' onclick='resetGame()'>[点击此处可重置游戏状态并清除阵列缓存]</span>";
+                    successMsg.innerHTML = "【系统广播】权限覆盖完毕。19年前的散逸算力已被安全重定向。<br><span style='color:#FF9800;'>警告：控制面板高维链路断开。请前往【技术区：ZenCode 3D星辰坐标系】补全星盘算力，以构建降临通道。</span><br><br><span style='font-size:12px; color:#666; cursor:pointer;' onclick='resetGame()'>[点击此处可重置游戏状态并清除阵列缓存]</span>";
                 }
                 mainWrap.insertBefore(successMsg, mainWrap.children[1]);
             }
             
+            // ================= 核心链路修正区域 =================
             if (isGod) {
+                // 如果是古神，允许直接进古神控制面板
                 cpLink.innerHTML = "[ 👁 多维干涉 ] 降临核心";
                 cpLink.style.color = "#FF0000";
                 cpLink.style.textShadow = "0 0 8px #F00";
@@ -658,11 +665,12 @@
                     window.location.href = "bbs_2026_admin.html"; 
                 };
             } else {
-                cpLink.innerHTML = "控制面板 (高维阵眼已贯通)";
-                cpLink.style.color = "#00AA00";
+                // 如果只是人类既济登录，【拦截】进控制面板的行为
+                cpLink.innerHTML = "控制面板 (链路未贯通)";
+                cpLink.style.color = "#FF9800"; // 警示橙色
                 cpLink.onclick = function(e) { 
                     e.preventDefault();
-                    window.location.href = "bbs_2026_admin.html"; 
+                    alert("【ACCESS DENIED：底层物理链路未贯通】\n\n您的管理员身份已确认，但控制面板的高维算力不足以承载实体跃迁。\n请前往【技术与前沿探索区】点击进入【ZenCode 3D星辰坐标系】帖子，运行星盘以补全算力通道。"); 
                 };
             }
         };
