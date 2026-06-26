@@ -65,17 +65,28 @@ body { background: #020304; font-family: 'Courier New', Consolas, monospace; ove
 .mirror-text { color: #5a738a; font-size: clamp(12px, 3vmin, 14px); line-height: 2; letter-spacing: 0.15em; text-shadow: 0 0 5px #000; }
 
 #mirror-oracle {
-  position: absolute; inset: 8% 0 auto; z-index: 4; display: flex; justify-content: center;
+  position: absolute; inset: 9% 12% 10%; z-index: 4; display: flex; justify-content: center; align-items: center;
   pointer-events: none; opacity: 0; transform: translateY(10px) scale(0.98);
   transition: opacity 1.2s ease, transform 1.2s ease; mix-blend-mode: screen;
 }
 #mirror-oracle.visible { opacity: 1; transform: translateY(0) scale(1); }
+.oracle-stack {
+  display: flex; flex-direction: row-reverse; justify-content: center; align-items: center;
+  gap: clamp(16px, 4.8vmin, 34px); width: 100%; height: 100%;
+}
 .oracle-text {
   writing-mode: vertical-rl; text-orientation: upright;
   color: #d00000; font-family: "SimSun", "Noto Serif TC", serif; font-weight: 800;
-  font-size: clamp(18px, 3.6vmin, 34px); line-height: 1.7; letter-spacing: 0.08em;
+  font-size: clamp(17px, 3.05vmin, 31px); line-height: 1.15; letter-spacing: 0.06em;
   text-shadow: 0 0 5px #ff1010, 0 0 16px rgba(160,0,0,0.9), 0 0 28px #000;
   filter: drop-shadow(0 0 2px rgba(255,255,255,0.35));
+}
+.oracle-text.small { font-size: clamp(15px, 2.6vmin, 26px); opacity: 0.94; }
+@media (max-height: 760px), (max-width: 520px) {
+  #mirror-oracle { inset: 11% 13% 12%; }
+  .oracle-stack { gap: clamp(10px, 3.8vmin, 20px); }
+  .oracle-text { font-size: clamp(15px, 4.25vw, 24px); line-height: 1.05; letter-spacing: 0.03em; }
+  .oracle-text.small { font-size: clamp(13px, 3.7vw, 21px); }
 }
 .timeline-choices {
   display: none; margin-top: 24px; gap: 12px; flex-wrap: wrap; justify-content: center;
@@ -718,7 +729,13 @@ body.falling #abuse-veil { opacity: 1; background: rgba(120,0,0,0.76); }
     <div id="mirror-glass">
       <video id="mirror-video" autoplay playsinline muted></video>
       <canvas id="mirror-noise"></canvas>
-      <div id="mirror-oracle"><div class="oracle-text">法器青冥鑑，上可觀青天，下可照黃泉。請選擇您要探測的時間線。</div></div>
+      <div id="mirror-oracle">
+        <div class="oracle-stack">
+          <div class="oracle-text">法器青冥鑑</div>
+          <div class="oracle-text small">上可觀青天<br>下可照黃泉</div>
+          <div class="oracle-text small">請選擇<br>探測時間線</div>
+        </div>
+      </div>
     </div>
   </div>
   <div class="mirror-text-container">
