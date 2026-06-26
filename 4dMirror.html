@@ -1,10 +1,20 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh">
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
 <title>青冥鉴 · 四维观测系统</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script type="text/javascript">
+        // [防逃课锁] 强制路由与法器校验
+        const isGod = localStorage.getItem('god_perspective_unlocked') === 'true';
+        const hasArtifact = localStorage.getItem('artifact_mirror_found') === 'true';
+
+        // 如果玩家没有同时具备“古神”权限和“法器（镜）”的认知印章，瞬间踢回表层
+        if (!isGod || !hasArtifact) {
+            window.location.replace('bbs_2026_home.html');
+        }
+    </script>
 <style>
 /* ================= 基础与色彩重置 ================= */
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -51,28 +61,6 @@ body { background: #020304; font-family: 'Courier New', Consolas, monospace; ove
 }
 
 #mirror-noise { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; transition: opacity 1s; mix-blend-mode: screen; }
-#mirror-found-text {
-  position: absolute; left: 50%; top: 68%; width: 72%; transform: translate(-50%, -50%);
-  z-index: 4; color: rgba(235,218,168,0.92); font-size: clamp(13px, 2.2vmin, 19px);
-  line-height: 2.05; letter-spacing: 0.12em; text-align: center;
-  text-shadow: 0 0 10px rgba(212,160,23,.55), 0 0 24px rgba(0,229,255,.2);
-  mix-blend-mode: screen; opacity: 0; filter: blur(4px); pointer-events: none;
-  animation: mirrorTextEmerge 5.8s ease-in-out 1.2s forwards, mirrorTextBreath 3.6s ease-in-out 7s infinite;
-}
-#mirror-found-text::before {
-  content: ""; position: absolute; inset: -18px;
-  background: radial-gradient(circle, rgba(212,160,23,.12), rgba(0,0,0,0) 68%);
-  filter: blur(10px); z-index: -1;
-}
-@keyframes mirrorTextEmerge {
-  0% { opacity: 0; filter: blur(10px); transform: translate(-50%, -47%) scale(.98); }
-  45% { opacity: .86; filter: blur(1.8px); }
-  100% { opacity: .72; filter: blur(.45px); transform: translate(-50%, -50%) scale(1); }
-}
-@keyframes mirrorTextBreath {
-  0%, 100% { opacity: .62; filter: blur(.55px); }
-  50% { opacity: .88; filter: blur(.18px); }
-}
 
 .mirror-text-container { margin-top: 5vmin; z-index: 10; text-align: center; }
 .mirror-text { color: #5a738a; font-size: clamp(12px, 3vmin, 14px); line-height: 2; letter-spacing: 0.15em; text-shadow: 0 0 5px #000; }
@@ -85,30 +73,6 @@ body { background: #020304; font-family: 'Courier New', Consolas, monospace; ove
   display: none; 
 }
 #mirror-btn:hover { background: rgba(205,164,90,0.1); border-color: var(--color-gold); color: #fff; box-shadow: 0 0 20px rgba(212, 160, 23, 0.3) inset, 0 0 10px rgba(212,160,23,0.5); }
-#mirror-choice {
-  display: none;
-  margin-top: 14px;
-  gap: 10px;
-  justify-content: center;
-  flex-wrap: wrap;
-  z-index: 12;
-}
-.mirror-choice-btn {
-  padding: 10px 16px;
-  border: 1px solid rgba(212,160,23,.55);
-  background: rgba(5,10,15,.86);
-  color: var(--color-gold);
-  font-family: inherit;
-  font-size: 12px;
-  letter-spacing: .08em;
-  cursor: pointer;
-  box-shadow: inset 0 0 10px rgba(0,0,0,.8), 0 0 14px rgba(212,160,23,.12);
-}
-.mirror-choice-btn:hover {
-  color: #fff;
-  border-color: rgba(255,220,150,.9);
-  box-shadow: inset 0 0 18px rgba(212,160,23,.16), 0 0 18px rgba(212,160,23,.28);
-}
 
 #mirror-expand { position: fixed; inset: 0; z-index: 9998; display: none; pointer-events: none; }
 #mirror-expand canvas { width: 100%; height: 100%; }
@@ -119,38 +83,7 @@ body { background: #020304; font-family: 'Courier New', Consolas, monospace; ove
 #map {
   transform-origin: center center;
   transition: transform 0.55s cubic-bezier(.2,.8,.2,1);
-  background-image:
-    linear-gradient(rgba(0,229,255,.07) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0,229,255,.07) 1px, transparent 1px),
-    radial-gradient(circle at center, rgba(212,160,23,.08), transparent 58%);
-  background-size: 44px 44px, 44px 44px, 100% 100%;
 }
-.leaflet-container { background: #020507; }
-.leaflet-tile-pane { opacity: .72; transition: opacity .8s ease; }
-.leaflet-pane,
-.leaflet-tile,
-.leaflet-marker-icon,
-.leaflet-marker-shadow,
-.leaflet-tile-container,
-.leaflet-pane > svg,
-.leaflet-pane > canvas,
-.leaflet-zoom-box,
-.leaflet-image-layer,
-.leaflet-layer { position: absolute; left: 0; top: 0; }
-.leaflet-container { overflow: hidden; }
-.leaflet-tile,
-.leaflet-marker-icon,
-.leaflet-marker-shadow { user-select: none; -webkit-user-drag: none; }
-.leaflet-tile { width: 256px; height: 256px; }
-.leaflet-pane { z-index: 400; }
-.leaflet-tile-pane { z-index: 200; }
-.leaflet-overlay-pane { z-index: 400; }
-.leaflet-marker-pane { z-index: 600; }
-.leaflet-tooltip-pane { z-index: 650; }
-.leaflet-popup-pane { z-index: 700; }
-.leaflet-map-pane canvas { z-index: 100; }
-.leaflet-map-pane svg { z-index: 200; }
-.leaflet-control-container { display: none; }
 #map.qimen-flipped { transform: rotate(180deg); }
 
 /* 奇门方位指示器：排盘上南下北 */
@@ -729,16 +662,6 @@ body.falling #abuse-veil { opacity: 1; background: rgba(120,0,0,0.76); }
   #gong-detail { bottom: calc(48dvh + 10px); }
 }
 </style>
-<script>
-  (function() {
-    const isGod = localStorage.getItem('god_perspective_unlocked') === 'true';
-    if (!isGod) {
-      window.location.replace('bbs_2026_home.html');
-      return;
-    }
-    localStorage.setItem('artifact_mirror_found', 'true');
-  })();
-</script>
 </head>
 <body>
 
@@ -776,7 +699,6 @@ body.falling #abuse-veil { opacity: 1; background: rgba(120,0,0,0.76); }
     <div id="mirror-glass">
       <video id="mirror-video" autoplay playsinline muted></video>
       <canvas id="mirror-noise"></canvas>
-      <div id="mirror-found-text">恭喜找到您的法器<br>此鉴可上观青天，下照黄土<br>是否要回到 2007，追捕逃逸的养料？</div>
     </div>
   </div>
   <div class="mirror-text-container">
@@ -785,10 +707,6 @@ body.falling #abuse-veil { opacity: 1; background: rgba(120,0,0,0.76); }
         请允许终端捕获您的现世物理特征。
       </div>
       <button id="mirror-btn">▶ 确立锚点，接入深渊</button>
-      <div id="mirror-choice">
-        <button class="mirror-choice-btn" id="mirror-choice-2007" type="button">回到 2007 · 追捕逃逸养料</button>
-        <button class="mirror-choice-btn" id="mirror-choice-ip" type="button">留在现实 · 观测系统 IP</button>
-      </div>
   </div>
 </div>
 
@@ -952,53 +870,20 @@ body.falling #abuse-veil { opacity: 1; background: rgba(120,0,0,0.76); }
     if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         navigator.mediaDevices.getUserMedia({video: {facingMode: 'user'}})
         .then(stream => {
-            video.srcObject = stream;
-            video.muted = true;
-            video.playsInline = true;
-            const revealCamera = () => {
-                video.style.opacity = '1';
-                text.innerHTML = "[ 光学阵列已贯通 ]<br>物理特征捕获完毕，请注视深渊。";
-                showMirrorEntryControls();
-            };
-            video.onloadedmetadata = () => {
-                const playResult = video.play();
-                if(playResult && playResult.then) playResult.then(revealCamera).catch(revealCamera);
-                else revealCamera();
-            };
-            video.onplaying = revealCamera;
-            window.setTimeout(revealCamera, 1200);
+            video.srcObject = stream; video.style.opacity = '1';
+            text.innerHTML = "[ 光学阵列已贯通 ]<br>物理特征捕获完毕，请注视深渊。";
+            btn.style.display = 'inline-block';
         })
         .catch(() => {
             isNoise = true; noiseCanvas.style.opacity = '1'; drawNoise();
             text.innerHTML = "<span style='color:#a33131;'>[ 光学阵列被拒绝 ]</span><br>物理特征丢失，系统采用盲视降维协议。";
-            showMirrorEntryControls();
+            btn.style.display = 'inline-block';
         });
     } else {
         isNoise = true; noiseCanvas.style.opacity = '1'; drawNoise();
-        text.innerHTML = "[ 设备异常 ]<br>启动备用盲视协议。";
-        showMirrorEntryControls();
+        text.innerHTML = "[ 设备异常 ]<br>启动备用盲视协议。"; btn.style.display = 'inline-block';
     }
 })();
-
-function hasForcedObservationParams() {
-  const params = new URLSearchParams(window.location.search);
-  return (
-    Number.isFinite(Number(params.get('lat'))) &&
-    Number.isFinite(Number(params.get('lng')))
-  ) || ['story', 'observe'].includes(params.get('mode'));
-}
-
-function showMirrorEntryControls() {
-  const btn = document.getElementById('mirror-btn');
-  const choice = document.getElementById('mirror-choice');
-  if(hasForcedObservationParams()) {
-    btn.style.display = 'inline-block';
-    choice.style.display = 'none';
-  } else {
-    btn.style.display = 'none';
-    choice.style.display = 'flex';
-  }
-}
 
 // ================= 3. 展开动画 =================
 function playCinematicExpand(cb){
@@ -1039,70 +924,15 @@ function playCinematicExpand(cb){
 }
 
 document.getElementById('mirror-btn').onclick = () => {
-  localStorage.setItem('artifact_mirror_found', 'true');
-  localStorage.setItem('njdx_bbs_2026_admin_verified', 'true');
-  if(!FORCED_OBSERVATION_TARGET) {
-    showMirrorChoice();
-    return;
-  }
-  openMirrorObservation();
-};
-
-function showMirrorChoice() {
-  const choice = document.getElementById('mirror-choice');
-  const btn = document.getElementById('mirror-btn');
-  const text = document.getElementById('init-text');
-  btn.style.display = 'none';
-  choice.style.display = 'flex';
-  text.innerHTML = '[ 法器已响应 ]<br>请选择观测锚点。';
-}
-
-document.getElementById('mirror-choice-2007').onclick = () => {
-  localStorage.removeItem('qmg_forced_observation');
-  const url = new URL(window.location.href);
-  url.search = '';
-  window.history.replaceState({}, '', url.href);
-  FORCED_OBSERVATION_TARGET = null;
-  openMirrorObservation();
-};
-
-document.getElementById('mirror-choice-ip').onclick = () => {
-  const text = document.getElementById('init-text');
-  text.innerHTML = '[ 正在定位现实网络出口... ]<br>请保持注视。';
-  document.getElementById('mirror-choice').style.pointerEvents = 'none';
-  resolveCurrentIpObservation().then(target => {
-    FORCED_OBSERVATION_TARGET = target;
-    localStorage.setItem('qmg_forced_observation', JSON.stringify(target));
-    const url = new URL(window.location.href);
-    url.searchParams.set('observe', target.id);
-    url.searchParams.set('lat', target.lat);
-    url.searchParams.set('lng', target.lng);
-    url.searchParams.set('zoom', target.zoom || 15);
-    url.searchParams.set('label', target.label);
-    url.searchParams.set('kind', target.kind || 'node');
-    url.searchParams.set('time', target.time || new Date().toISOString());
-    window.history.replaceState({}, '', url.href);
-    openMirrorObservation();
-  });
-};
-
-function openMirrorObservation() {
   const video = document.getElementById('mirror-video');
   if(video.srcObject) video.srcObject.getTracks().forEach(t => t.stop());
   document.getElementById('mirror-overlay').style.display = 'none';
   playCinematicExpand(() => {
     document.getElementById('app').style.display = 'block';
     if(!map) { initMap(); } else { map.invalidateSize(); }
-    setTimeout(applyForcedObservationTarget, 650);
-    setTimeout(() => {
-      if(STORY_MODE) {
-        document.getElementById('narrative-dialog').style.display = 'block';
-      } else {
-        showOmen('door-jingmen', '[NODE] 死盘投影已铺开', '该锚点仅开放节点排盘观测。南江大学剧情协议未接入。', 5200);
-      }
-    }, 1000);
+    setTimeout(() => { document.getElementById('narrative-dialog').style.display = 'block'; }, 1000);
   });
-}
+};
 
 document.getElementById('close-detail').onclick = () => { document.getElementById('gong-detail').style.display = 'none'; };
 
@@ -1136,8 +966,8 @@ const SOUTH_GATE = [30.29708, 120.08779];
 const WAREHOUSE = [30.29628, 120.08812];
 const SPAN = 0.00095;
 // 让旧库房落入艮八宫：本盘生门在艮八，搜寻应从艮宫落点反推到地图。
-let CENTER = [WAREHOUSE[0] - SPAN, WAREHOUSE[1] - SPAN];
-let MAP_CENTER = [30.29624, 120.08805];
+const CENTER = [WAREHOUSE[0] - SPAN, WAREHOUSE[1] - SPAN];
+const MAP_CENTER = [30.29624, 120.08805];
 const NAMES = {1:'坎',8:'艮',3:'震',4:'巽',9:'离',2:'坤',7:'兑',6:'乾',5:'中'};
 const QIMEN_ORDER = [4,9,2,3,5,7,8,1,6];
 
@@ -1153,75 +983,6 @@ const DEAD_TIME_PROFILE = {
   note: '芒种后甲午符头已过，属芒种中元。'
 };
 
-function escapeHtml(value) {
-  return String(value || '').replace(/[&<>"']/g, ch => ({
-    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
-  }[ch]));
-}
-
-function getForcedObservationTarget() {
-  const params = new URLSearchParams(window.location.search);
-  const mode = params.get('mode');
-  const lat = Number(params.get('lat'));
-  const lng = Number(params.get('lng'));
-  if (Number.isFinite(lat) && Number.isFinite(lng)) {
-    const isStoryAnchor = mode === 'story' || params.get('kind') === 'qimen' || params.get('observe') === 'nanjiang-2007';
-    return {
-      id: params.get('observe') || (isStoryAnchor ? 'nanjiang-2007' : 'external-anchor'),
-      label: params.get('label') || params.get('title') || (isStoryAnchor ? 'CHN_ZHEJIANG_HANGZHOU_NJDX_SOUTH_WAREHOUSE' : 'Forced Observation Anchor'),
-      lat,
-      lng,
-      zoom: Number(params.get('zoom')) || 15,
-      kind: isStoryAnchor ? 'qimen' : (params.get('kind') || 'node'),
-      time: params.get('time') || new Date().toISOString()
-    };
-  }
-  if(mode === 'story') {
-    return {
-      id: 'nanjiang-2007',
-      label: params.get('label') || params.get('title') || 'CHN_ZHEJIANG_HANGZHOU_NJDX_SOUTH_WAREHOUSE',
-      lat: WAREHOUSE[0],
-      lng: WAREHOUSE[1],
-      zoom: 18,
-      kind: 'qimen',
-      time: params.get('time') || '2007-06-11T11:02:00'
-    };
-  }
-  return null;
-}
-
-let FORCED_OBSERVATION_TARGET = getForcedObservationTarget();
-
-async function resolveCurrentIpObservation() {
-  const fallback = {
-    id: 'current-user',
-    kind: 'node',
-    label: 'Topocentric Focus [ 本机网络出口 ]',
-    lat: 30.2741,
-    lng: 120.1551,
-    zoom: 15,
-    time: new Date().toISOString()
-  };
-  try {
-    const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), 1800);
-    const response = await fetch('https://ipapi.co/json/', { signal: controller.signal });
-    clearTimeout(timer);
-    const data = await response.json();
-    const lat = Number(data.latitude);
-    const lng = Number(data.longitude);
-    if(Number.isFinite(lat) && Number.isFinite(lng)) {
-      return {
-        ...fallback,
-        label: `Topocentric Focus [ ${data.city || 'Unknown'}, ${data.country_name || 'Unknown'} ]`,
-        lat,
-        lng
-      };
-    }
-  } catch (err) {}
-  return fallback;
-}
-
 const DEAD_PAN = {
   4: { door:'杜', star:'天柱', deity:'腾蛇', clue:'隐藏协议撕裂' },
   9: { door:'景', star:'天心', deity:'太阴', clue:'离火探针返照' },
@@ -1233,10 +994,6 @@ const DEAD_PAN = {
   1: { door:'休', star:'天冲', deity:'九地', clue:'水下噪声' },
   6: { door:'开', star:'天任', deity:'朱雀', clue:'外泄通道' }
 };
-
-let ACTIVE_DEAD_PROFILE = DEAD_TIME_PROFILE;
-let ACTIVE_DEAD_PAN = DEAD_PAN;
-let STORY_MODE = true;
 
 const FALL_THRESHOLD = 4;
 const WRONG_JU_OMENS = [
@@ -1490,7 +1247,7 @@ function isFuyinDeadDoorCoincidence() {
     && isCorrectLiveJu()
     && isLivePanUsable()
     && livePan.isDoorFuyin
-    && getLiveDoorAt(FUGITIVE_GONG) === ACTIVE_DEAD_PAN[FUGITIVE_GONG].door;
+    && getLiveDoorAt(FUGITIVE_GONG) === DEAD_PAN[FUGITIVE_GONG].door;
 }
 
 function isLiveTimeFuture() {
@@ -1509,12 +1266,11 @@ function isFinalFusionReady() {
   return warehouseRevealed
     && isCorrectDeadJu()
     && isCorrectLiveJu()
-    && getLiveDoorAt(FUGITIVE_GONG) === ACTIVE_DEAD_PAN[FUGITIVE_GONG].door
+    && getLiveDoorAt(FUGITIVE_GONG) === DEAD_PAN[FUGITIVE_GONG].door
     && (!isFuyinDeadDoorCoincidence() || isLiveTimeFuture());
 }
 
 function getFocusActionLabel(pos) {
-  if(!STORY_MODE) return '节点死盘';
   if(pos === TARGET_GONG && warehouseRevealed && !apiFusionStalled) return '👁 降临当前时间线进行深度干涉';
   if(pos === FUGITIVE_GONG && isFinalFusionReady()) return '👁 降临当前时间线进行深度干涉';
   return '注视搜寻';
@@ -1589,7 +1345,8 @@ function buildQimenPan(profile) {
   const valueFuPalace = ground[xun.instrument] || 1;
   const hourStemKey = hourStem === '甲' ? xun.instrument : hourStem;
   const hourStemPalace = ground[hourStemKey] || valueFuPalace;
-  const doorTargetPalace = hourStemPalace === 5 ? 2 : hourStemPalace;
+  const shiftedDoorPalace = moveOnFlyOrder(valueFuPalace, xun.offset);
+  const doorTargetPalace = shiftedDoorPalace === 5 ? 2 : shiftedDoorPalace;
   const doors = buildRotatingLayer(DOOR_HOME, valueFuPalace, doorTargetPalace, profile.dun);
   const stars = buildFlyingLayer(STAR_HOME, 1, valueFuPalace, profile.dun);
   const deities = buildDeityLayer(valueFuPalace, profile.dun);
@@ -1611,33 +1368,6 @@ function buildQimenPan(profile) {
     isStarFuyin,
     isFuyin: isDoorFuyin && isStarFuyin
   };
-}
-
-function parseObservationDate(value) {
-  if(!value || /^B\.C\./.test(value)) return new Date();
-  const date = new Date(value);
-  return Number.isNaN(date.getTime()) ? new Date() : date;
-}
-
-function configureObservationContext() {
-  const target = FORCED_OBSERVATION_TARGET;
-  STORY_MODE = !target || target.kind === 'qimen' || target.id === 'nanjiang-2007';
-  if(STORY_MODE) {
-    CENTER = [WAREHOUSE[0] - SPAN, WAREHOUSE[1] - SPAN];
-    MAP_CENTER = [30.29624, 120.08805];
-    ACTIVE_DEAD_PROFILE = DEAD_TIME_PROFILE;
-    ACTIVE_DEAD_PAN = DEAD_PAN;
-    return;
-  }
-  CENTER = [target.lat, target.lng];
-  MAP_CENTER = [target.lat, target.lng];
-  const dateObj = parseObservationDate(target.time);
-  const profile = buildTimeProfile(dateObj);
-  profile.title = target.time || profile.title;
-  profile.note = `强制观测锚点：${target.label}。按该节点时间生成死盘，仅开放排盘观测。`;
-  profile.method = `${profile.juValue || formatJuValue(profile)} [节点死盘]`;
-  ACTIVE_DEAD_PROFILE = profile;
-  ACTIVE_DEAD_PAN = buildQimenPan(profile).byPalace;
 }
 
 function formatPalaceMap(mapObj, suffix = '') {
@@ -1702,7 +1432,6 @@ function populateJuOptions() {
 }
 
 function isCorrectDeadJu() {
-  if(!STORY_MODE) return true;
   return document.getElementById('dead-ju').value === CORRECT_DEAD_JU;
 }
 
@@ -1867,18 +1596,6 @@ function randomRedaction(source, minLen = 12) {
 }
 
 function updateDeadCalendarInfo() {
-  if(!STORY_MODE) {
-    const el = document.getElementById('dead-calendar');
-    el.innerHTML = `
-      <b>锚点时间</b> ${escapeHtml(ACTIVE_DEAD_PROFILE.title)}<br>
-      <b>四柱</b> 年 ${ACTIVE_DEAD_PROFILE.bazi.year} / 月 ${ACTIVE_DEAD_PROFILE.bazi.month} / 日 ${ACTIVE_DEAD_PROFILE.bazi.day} / 时 ${ACTIVE_DEAD_PROFILE.bazi.hour}<br>
-      <b>农历</b> ${escapeHtml(ACTIVE_DEAD_PROFILE.lunar)}<br>
-      <b>节气</b> ${escapeHtml(ACTIVE_DEAD_PROFILE.solarTerms)}<br>
-      <b>死盘</b> ${escapeHtml(ACTIVE_DEAD_PROFILE.method)}<br>
-      <b>注记</b> ${escapeHtml(ACTIVE_DEAD_PROFILE.note)}
-    `;
-    return;
-  }
   const value = document.getElementById('dead-time').value;
   const ju = document.getElementById('dead-ju').value;
   const el = document.getElementById('dead-calendar');
@@ -1894,16 +1611,16 @@ function updateDeadCalendarInfo() {
       : `<span class="bad">[ERR] ${ju} 与拆补符头不合，死盘坐标会漂移。</span>`);
   const revealDeadCalendar = ju === CORRECT_DEAD_JU;
   const lunarLine = revealDeadCalendar
-    ? ACTIVE_DEAD_PROFILE.lunar
-    : `<span class="redacted">[MASK] ${randomRedaction(ACTIVE_DEAD_PROFILE.lunar)}</span>`;
+    ? DEAD_TIME_PROFILE.lunar
+    : `<span class="redacted">[MASK] ${randomRedaction(DEAD_TIME_PROFILE.lunar)}</span>`;
   const solarTermsLine = revealDeadCalendar
-    ? ACTIVE_DEAD_PROFILE.solarTerms
-    : `<span class="redacted">[MASK] ${randomRedaction(ACTIVE_DEAD_PROFILE.solarTerms, 18)}</span>`;
+    ? DEAD_TIME_PROFILE.solarTerms
+    : `<span class="redacted">[MASK] ${randomRedaction(DEAD_TIME_PROFILE.solarTerms, 18)}</span>`;
   const chaibuLine = revealDeadCalendar
-    ? ACTIVE_DEAD_PROFILE.note
-    : `<span class="redacted">[MASK] ${randomRedaction(ACTIVE_DEAD_PROFILE.note, 16)}</span>`;
+    ? DEAD_TIME_PROFILE.note
+    : `<span class="redacted">[MASK] ${randomRedaction(DEAD_TIME_PROFILE.note, 16)}</span>`;
   el.innerHTML = `
-    <b>四柱</b> 年 ${ACTIVE_DEAD_PROFILE.bazi.year} / 月 ${ACTIVE_DEAD_PROFILE.bazi.month} / 日 ${ACTIVE_DEAD_PROFILE.bazi.day} / 时 ${ACTIVE_DEAD_PROFILE.bazi.hour}<br>
+    <b>四柱</b> 年 ${DEAD_TIME_PROFILE.bazi.year} / 月 ${DEAD_TIME_PROFILE.bazi.month} / 日 ${DEAD_TIME_PROFILE.bazi.day} / 时 ${DEAD_TIME_PROFILE.bazi.hour}<br>
     <b>农历</b> ${lunarLine}<br>
     <b>节气</b> ${solarTermsLine}<br>
     <b>拆补</b> ${chaibuLine}<br>
@@ -1966,25 +1683,11 @@ function setNow() {
 }
 
 function initMap() {
-  if(typeof L === 'undefined') {
-    configureObservationContext();
-    populateJuOptions();
-    updateDeadCalendarInfo();
-    setNow();
-    renderDomMapFallback();
-    return;
-  }
-  configureObservationContext();
   populateJuOptions();
   updateDeadCalendarInfo();
   setNow();
   map = L.map('map',{zoomControl:false, attributionControl:false}).setView(MAP_CENTER, 18);
-  const tiles = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{maxZoom:20});
-  tiles.on('tileerror', () => {
-    const pane = document.querySelector('.leaflet-tile-pane');
-    if(pane) pane.style.opacity = '0.18';
-  });
-  tiles.addTo(map);
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{maxZoom:20}).addTo(map);
   
   l1Group = L.layerGroup().addTo(map);
   l2Group = L.layerGroup().addTo(map);
@@ -1992,75 +1695,10 @@ function initMap() {
 
   drawL1();
   updateL2L3();
-  [80, 260, 700, 1400].forEach(delay => setTimeout(() => map.invalidateSize(), delay));
-}
-
-function renderDomMapFallback() {
-  const mapEl = document.getElementById('map');
-  const targetLabel = FORCED_OBSERVATION_TARGET ? FORCED_OBSERVATION_TARGET.label : 'CHN_ZHEJIANG_HANGZHOU_NJDX_SOUTH_WAREHOUSE';
-  const cells = QIMEN_ORDER.map(pos => {
-    const pan = ACTIVE_DEAD_PAN[pos] || {};
-    return `<button type="button" onclick="showGongDetail(${pos})" style="min-height:88px;border:1px solid rgba(255,184,77,.36);background:rgba(5,13,15,.78);color:#d8c28b;font-family:inherit;text-align:center;line-height:1.55;">
-      <b>${NAMES[pos]}${pos}宫</b><br>
-      <span style="color:#ffb84d">${pan.door || '中'}门</span><br>
-      <span style="font-size:11px;color:#8fa6c0">${pan.star || '—'} / ${pan.deity || '—'}</span>
-    </button>`;
-  }).join('');
-  mapEl.innerHTML = `
-    <div style="position:absolute;inset:0;padding:18px;background:
-      radial-gradient(circle at center, rgba(212,160,23,.12), transparent 54%),
-      linear-gradient(rgba(0,229,255,.07) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(0,229,255,.07) 1px, transparent 1px),
-      #020507;background-size:100% 100%,44px 44px,44px 44px;">
-      <div style="position:absolute;left:18px;right:18px;top:14px;color:#ffd9df;font-size:12px;line-height:1.6;text-align:center;">
-        [ MAP ENGINE OFFLINE ] 本地九宫投影已接管<br>${escapeHtml(targetLabel)}
-      </div>
-      <div style="position:absolute;left:50%;top:54%;transform:translate(-50%,-50%);width:min(76vmin,620px);display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">
-        ${cells}
-      </div>
-    </div>
-  `;
-}
-
-function applyForcedObservationTarget() {
-  if(!map || !FORCED_OBSERVATION_TARGET) return;
-  const target = FORCED_OBSERVATION_TARGET;
-  const latlng = [target.lat, target.lng];
-  const safeLabel = escapeHtml(target.label);
-  L.circleMarker(latlng, {
-    radius: 8,
-    color: '#fff3c4',
-    weight: 2,
-    fillColor: '#ff003c',
-    fillOpacity: 0.86,
-    className: 'warehouse-lock-path'
-  }).addTo(l1Group);
-  L.marker(latlng, {icon: L.divIcon({
-    html: `<div class="fixed-label anchor" style="color:#fff;border-color:rgba(255,0,60,.86);box-shadow:0 0 18px rgba(255,0,60,.48);">镜面观测<br><span style="font-size:.82em">${safeLabel}</span></div>`,
-    className: 'fixed-label-icon',
-    iconSize: [0, 0],
-    iconAnchor: [0, 0]
-  })}).addTo(l1Group);
-  map.flyTo(latlng, target.zoom || 15, { duration: 1.7, easeLinearity: 0.35 });
-  showForcedObservationBadge(target);
-  setTimeout(() => {
-    showOmen('door-jingmen', '[FORCED OBSERVATION] 镜面锚点已接入', `${target.label}\n${target.lat.toFixed(6)}, ${target.lng.toFixed(6)}`, 6200);
-  }, 900);
-}
-
-function showForcedObservationBadge(target) {
-  let badge = document.getElementById('forced-observation-badge');
-  if(!badge) {
-    badge = document.createElement('div');
-    badge.id = 'forced-observation-badge';
-    badge.style.cssText = 'position:fixed;left:50%;top:12px;transform:translateX(-50%);z-index:2600;max-width:min(92vw,620px);padding:10px 14px;border:1px solid rgba(255,0,60,.64);background:rgba(16,0,5,.86);color:#ffd9df;font-size:12px;line-height:1.55;box-shadow:0 0 28px rgba(255,0,60,.28);backdrop-filter:blur(8px);pointer-events:none;text-align:center;';
-    document.body.appendChild(badge);
-  }
-  badge.innerHTML = `强制观测锚点：<b style="color:#fff">${escapeHtml(target.label)}</b><br><span style="color:#ff9fb0">${target.lat.toFixed(6)}, ${target.lng.toFixed(6)}</span>`;
 }
 
 function showGongDetail(pos){
-  const pan = ACTIVE_DEAD_PAN[pos];
+  const pan = DEAD_PAN[pos];
   const panReady = isCorrectDeadJu();
   const d = panReady ? (pan.door || '中') : '未定';
   if(!liveProfile) updateLiveCalendarInfo();
@@ -2078,18 +1716,8 @@ function showGongDetail(pos){
   
   if(window.innerWidth > 768) { detail.style.top = '20px'; detail.style.right = '320px'; detail.style.left = 'auto'; detail.style.bottom = 'auto'; }
   document.getElementById('detail-title').textContent = `${NAMES[pos]}${pos}宫 参量比对`;
-  if(!STORY_MODE) {
-    document.getElementById('detail-body').innerHTML = `
-      <div style="color:var(--color-l2);font-size:12px;margin-bottom:4px;">节点死盘: ${ACTIVE_DEAD_PROFILE.method}</div>
-      <div style="color:var(--color-l2);font-size:12px;margin-bottom:4px;">${pan.deity || '—'} / ${pan.star || '—'} / ${d}门</div>
-      <div style="margin-top:8px;color:var(--text-mute);font-size:11px;">${escapeHtml(ACTIVE_DEAD_PROFILE.note)}</div>
-      <button class="focus-search-btn" type="button" onclick="attemptFocusSearch(${pos})">节点死盘</button>
-    `;
-    detail.style.display = 'block';
-    return;
-  }
   document.getElementById('detail-body').innerHTML = panReady ? `
-    <div style="color:var(--color-l2);font-size:12px;margin-bottom:4px;">L2死盘: ${ACTIVE_DEAD_PROFILE.method}</div>
+    <div style="color:var(--color-l2);font-size:12px;margin-bottom:4px;">L2死盘: ${DEAD_TIME_PROFILE.method}</div>
     <div style="color:var(--color-l2);font-size:12px;margin-bottom:4px;">${pan.deity || '—'} / ${pan.star || '—'} / ${d}门</div>
     <div style="color:var(--color-l3);font-size:12px;">L3活盘: ${liveStatus}</div>
     <div style="color:${liveJuReady ? (liveJuCorrect ? 'var(--color-l3)' : '#ff8aa1') : 'var(--text-mute)'};font-size:12px;">${liveJuReady ? `${live.deity || '—'} / ${live.star || '—'} / ${l}门` : '请先选择 L3 拆补局数。'}</div>
@@ -2117,10 +1745,6 @@ function bindGongEvents(layer, pos) {
   layer.on('click', () => showGongDetail(pos));
   layer.on('contextmenu', (event) => {
     if(event && event.originalEvent) event.originalEvent.preventDefault();
-    if(!STORY_MODE) {
-      showOmen('door-jingmen', '[NODE] 搜寻协议未开放', '该锚点只允许透过青冥鉴读取死盘。没有人形目标，没有逃逸养料。', 4200);
-      return;
-    }
     attemptFocusSearch(pos);
   });
   bindMobileFocusSearch(layer, pos);
@@ -2319,11 +1943,7 @@ function showFamilyPopupAndExit() {
 }
 
 function attemptFocusSearch(pos) {
-  if(!STORY_MODE) {
-    showOmen('door-jingmen', '[NODE] 死盘只读', '当前锚点只显示节点死盘与九宫比例投影。请返回控制面板选择其他锚点。', 4200);
-    return;
-  }
-  const pan = ACTIVE_DEAD_PAN[pos];
+  const pan = DEAD_PAN[pos];
   const actionText = getFocusActionLabel(pos).replace('👁 ', '') + '？';
   const ok = window.confirm(`选中 ${NAMES[pos]}${pos}宫（${pan.door || '中'}门）？\n\n${actionText}`);
   if(!ok) return;
@@ -2425,10 +2045,6 @@ function drawBuilding(points, name, tone = 'dark') {
 
 function drawL1() {
   l1Group.clearLayers();
-  if(!STORY_MODE) {
-    drawGenericNodeBase();
-    return;
-  }
   
   // 1. 南门支巷调查边界
   L.polygon(campusBounds, { 
@@ -2483,17 +2099,6 @@ function drawL1() {
   
   if(SHOW_L1_LOCATION_LABELS) L.marker(SOUTH_GATE,{icon:fixedLabel('南江大学 · 南门支巷入口','gate')}).addTo(l1Group);
 }
-
-function drawGenericNodeBase() {
-  const target = FORCED_OBSERVATION_TARGET || { label: 'Topocentric Focus', lat: CENTER[0], lng: CENTER[1] };
-  const lat = CENTER[0], lng = CENTER[1];
-  L.circle([lat, lng], {radius: 140, color:'#193b4d', weight:1, fillColor:'#061016', fillOpacity:.34}).addTo(l1Group);
-  L.circle([lat, lng], {radius: 70, color:'#355466', weight:1, fillColor:'#0b1820', fillOpacity:.42, dashArray:'5 5'}).addTo(l1Group);
-  L.polyline([[lat - SPAN*1.85, lng], [lat + SPAN*1.85, lng]], {color:'#6d7f86', weight:2, opacity:.56, dashArray:'8 6'}).addTo(l1Group);
-  L.polyline([[lat, lng - SPAN*1.85], [lat, lng + SPAN*1.85]], {color:'#6d7f86', weight:2, opacity:.56, dashArray:'8 6'}).addTo(l1Group);
-  L.circleMarker([lat, lng], {radius:7, color:'#fff3c4', weight:2, fillColor:'#ff003c', fillOpacity:.9, className:'warehouse-lock-path'}).addTo(l1Group);
-  L.marker([lat, lng], {icon:fixedLabel(`观测锚点<br><span style="font-size:0.82em">${escapeHtml(target.label)}</span>`, 'anchor')}).addTo(l1Group);
-}
 function updateL2L3() {
   l2Group.clearLayers();
   l3Group.clearLayers();
@@ -2509,7 +2114,7 @@ function updateL2L3() {
   Object.entries(GONG_OFF).forEach(([posStr, [dlat, dlng]]) => {
     const pos = parseInt(posStr);
     const lat = CENTER[0] + dlat, lng = CENTER[1] + dlng;
-    const pan = ACTIVE_DEAD_PAN[pos];
+    const pan = DEAD_PAN[pos];
     const live = isLivePanUsable() ? (livePan.byPalace[pos] || {}) : {};
     const dm = panReady ? (pan.door || '中') : '未定', lm = liveMen[pos] || '—';
     const finalLock = isFinalFusionReady() && pos === FUGITIVE_GONG;
@@ -2598,21 +2203,16 @@ function toggleLayer(layerName) {
     
     if (layersState[layerName]) {
         btn.classList.add('active');
-        if(map) {
-          if(layerName==='L1' && l1Group) map.addLayer(l1Group);
-          if(layerName==='L2' && l2Group) map.addLayer(l2Group);
-          if(layerName==='L3' && l3Group) map.addLayer(l3Group);
-        }
+        if(layerName==='L1') map.addLayer(l1Group);
+        if(layerName==='L2') map.addLayer(l2Group);
+        if(layerName==='L3') map.addLayer(l3Group);
     } else {
         btn.classList.remove('active');
-        if(map) {
-          if(layerName==='L1' && l1Group) map.removeLayer(l1Group);
-          if(layerName==='L2' && l2Group) map.removeLayer(l2Group);
-          if(layerName==='L3' && l3Group) map.removeLayer(l3Group);
-        }
+        if(layerName==='L1') map.removeLayer(l1Group);
+        if(layerName==='L2') map.removeLayer(l2Group);
+        if(layerName==='L3') map.removeLayer(l3Group);
     }
-    if(map) updateL2L3();
-    else updateProjectionState();
+    updateL2L3();
 }
 
 document.getElementById('use-now-btn').onclick = () => { setNow(); updateL2L3(); };
@@ -2656,4 +2256,3 @@ document.getElementById('apply-live').onclick = () => {
 </script>
 </body>
 </html>
-
