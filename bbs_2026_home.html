@@ -16,14 +16,13 @@
 
         /* ================= 容器与图层堆叠 ================= */
         #app-container { position: relative; width: 100%; min-height: 100vh; }
-        .layer { width: 100%; transition: opacity 0.05s ease; } /* 极速响应 */
+        .layer { width: 100%; transition: opacity 0.05s ease; }
         #layer-2026 { position: relative; z-index: 10; opacity: 1; }
         #layer-2007 { position: absolute; top: 0; left: 0; z-index: 20; opacity: 0; pointer-events: none; filter: contrast(1.2) sepia(0.3) hue-rotate(-10deg); }
 
         /* ================= 主体内容区 ================= */
         .main-wrap { width: 96%; min-width: 980px; margin: 15px auto; background-color: #FFFFFF; border: 1px solid #A6CBE7; padding: 18px; box-sizing: border-box; transition: box-shadow 1s; }
         
-        /* === 2026年 溯源服图层特有头部 === */
         .header-2026 { background-color: #245b84; padding: 25px 30px; margin: -18px -18px 15px -18px; color: #fff; }
         .header-2026 .logo { font-size: 28px; font-weight: bold; font-family: "Microsoft YaHei", "黑体", sans-serif; text-shadow: 1px 1px 3px rgba(0,0,0,0.6); margin-bottom: 18px; letter-spacing: 1px; }
         .header-2026 .nav { font-size: 14px; font-family: "Microsoft YaHei", sans-serif; }
@@ -31,7 +30,6 @@
         .header-2026 .nav a:hover { text-decoration: underline; }
         .header-2026 .nav span { margin: 0 12px; font-weight: bold; color: #fff; }
 
-        /* === 2007年 幽灵图层特有头部 === */
         .header-bg-2007 { background-color: #1A2233; padding: 25px 30px 20px 30px; border-bottom: 2px solid #F00; margin: -18px -18px 15px -18px; }
         .logo-2007 { font-family: "Microsoft YaHei", "黑体", sans-serif; font-size: 28px; font-weight: bold; color: #FF0000; text-shadow: 1px 1px 3px rgba(255,0,0,0.6); margin-bottom: 18px; letter-spacing: 2px; }
         .logo-sub-2007 { font-size: 16px; font-weight: bold; font-family: SimSun, sans-serif; letter-spacing: 0; color: #FF0000; margin-left: 10px; }
@@ -39,11 +37,9 @@
         .nav-2007 a { color: #F00; text-decoration: none; }
         .nav-2007 span { margin: 0 12px; font-weight: bold; color: #F00; }
 
-        /* ================= 通用组件样式 ================= */
         .user-status-bar { background-color: #F5F9FD; border: 1px solid #A6CBE7; padding: 10px 14px; margin-bottom: 15px; }
         .info-stats { float: right; color: #444; }
 
-        /* Top 10 列表 */
         .top10-box { border: 1px solid #A6CBE7; margin-bottom: 18px; background: #FFF; }
         .top10-title { background: #EBF2F8; padding: 8px 14px; font-weight: bold; border-bottom: 1px solid #A6CBE7; color: #336699; font-size: 15px; }
         .top10-list { padding: 12px 18px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px 30px; }
@@ -51,7 +47,6 @@
         .top10-item span.rank { display: inline-block; width: 18px; height: 18px; background: #336699; color: #FFF; text-align: center; line-height: 18px; font-size: 12px; margin-right: 6px; font-family: Arial; }
         .top10-item span.rank-hot { background: #FF6600; }
 
-        /* 版块列表 */
         .category-bar { background: #4A81B0; color: #FFFFFF; font-weight: bold; padding: 8px 14px; font-size: 15px; border: 1px solid #2B5E8A; border-bottom: none; margin-top: 15px; }
         .forum-table { width: 100%; border-collapse: collapse; margin-bottom: 0; border: 1px solid #A6CBE7; background-color: #FFF; table-layout: fixed; }
         .forum-table th { background-color: #F0F5FA; border-bottom: 1px solid #A6CBE7; padding: 8px 15px; color: #333; font-weight: normal; text-align: left; }
@@ -61,7 +56,6 @@
         .thread-title { font-size: 16px; font-family: SimSun, sans-serif; cursor: pointer; }
         .forum-desc { color: #666; font-size: 13px; margin-top: 6px; line-height: 1.6; }
 
-        /* 页脚 */
         .footer { text-align: center; margin-top: 30px; padding: 20px 0; border-top: 1px solid #A6CBE7; color: #666; line-height: 2; font-size: 12px; font-family: Arial, sans-serif; }
 
         /* ================= 2007 恐怖样式覆写 ================= */
@@ -111,14 +105,12 @@
                     <a href="#">版块列表</a> <span>|</span>
                     <a href="#">校内资讯</a> <span>|</span>
                     <a href="#">跳蚤市场</a> <span>|</span>
-  
                     <a href="#">灌水乐园</a> <span>|</span>
                     <a href="#" id="nav-control-panel" onclick="showLogin()" style="cursor:pointer; font-weight:bold;">控制面板</a>
                 </div>
             </div>
 
             <div class="user-status-bar" id="status-bar-2026">
-             
                 <span class="info-stats">今日新帖: <span class="bold blue">1,024</span> | 在线人数: 8,452</span>
                 欢迎您，<span class="bold blue">游客</span> ( <a href="#" onclick="showLogin()">登录</a> | <a href="#">免费注册</a> ) 
                 &nbsp;&nbsp;&nbsp;系统时间: <span class="bold time-display"></span>
@@ -130,12 +122,10 @@
                     <div class="top10-item"><span class="rank rank-hot">1</span> <a href="thread_zencode.html" class="bold red">【八卦】今年计科系的毕业设计居然有人交了个算命排盘系统？</a></div>
                     <div class="top10-item"><span class="rank">6</span> <a href="thread_qimen.html" class="bold">【科普】干货警告！奇门遁甲小白入门指南，从定局开始手把手教</a></div>
                     <div class="top10-item"><span class="rank rank-hot">2</span> <a href="bz.html" class="bold">【闲聊】深夜玄学探讨：你们到底信不信生辰八字？</a></div>
-    
                     <div class="top10-item"><span class="rank">7</span> <a href="thread_rules.html">【吐槽】本学期关于晚归断电的新规定太坑了</a></div>
                     <div class="top10-item"><span class="rank">3</span> <a href="thread_canteen.html">【吐槽】食堂三楼的阿姨手又抖了，排骨全掉锅里</a></div>
                     <div class="top10-item"><span class="rank">8</span> <a href="thread_1234.html">【科幻】谈谈多维度的世界：0到4维到底怎么理解？</a></div>
                     <div class="top10-item"><span class="rank">4</span> <a href="fire.html" class="bold">【都市传说】知不知道我们学校附近以前发生过大火灾？</a></div>
-       
                     <div class="top10-item"><span class="rank">9</span> <a href="index.html" style="color:#777;">【深夜水】南门外支巷新开的那家数据恢复店，有点邪门。</a></div>
                     <div class="top10-item"><span class="rank">5</span> <a href="thread_sale.html">【二手】急出大四考研专业课资料，半卖半送</a></div>
                     <div class="top10-item"><span class="rank">10</span> <a href="thread_fu.html" style="color:#777;">【寻物】谁在机房落了一个移动硬盘？上面贴着画红线的黄纸...</a></div>
@@ -508,19 +498,14 @@
             return;
         }
 
-        // 完整正确输入 (兼容即济和既济)
         if (userInput === '26级_既济' || userInput === '26级_即济' || userInput === 'Admin') {
-            hintEl.style.color = '#4CAF50'; // 绿色
+            hintEl.style.color = '#4CAF50'; 
             hintEl.innerText = '用户数据已校准';
-        } 
-        // 包含部分关键字，但不完整
-        else if (userInput.includes('26') || userInput.includes('级') || userInput.includes('既') || userInput.includes('济') || userInput.includes('即') || userInput.includes('_')) {
-            hintEl.style.color = '#FF9800'; // 黄橙色
+        } else if (userInput.includes('26') || userInput.includes('级') || userInput.includes('既') || userInput.includes('济') || userInput.includes('即') || userInput.includes('_')) {
+            hintEl.style.color = '#FF9800'; 
             hintEl.innerText = '检索到关联碎片 (请核实完整格式)';
-        } 
-        // 毫不沾边的其他输入
-        else {
-            hintEl.style.color = '#F44336'; // 红色
+        } else {
+            hintEl.style.color = '#F44336'; 
             hintEl.innerText = '数据库未收录';
         }
     }
@@ -532,7 +517,6 @@
             if (!targetLink) return;
 
             const href = targetLink.getAttribute('href');
-            // 如果是锚点或 JS 触发，放行
             if (!href || href === '#' || href.startsWith('javascript:')) return;
             
             const isGod = localStorage.getItem('god_perspective_unlocked') === 'true';
@@ -544,13 +528,8 @@
                     e.preventDefault();
                     e.stopPropagation();
                     e.stopImmediatePropagation();
-                    
                     alert("【SECURITY ALERT：权限层级不足】\n\n溯源镜像服仅对 [不可名状的观测者] 开放。\n当前实体权限不足以承载四维算力，请先完成高维同化。");
-                    
-                    // 如果连普通登录都不是，提示完后顺便弹出登录框
-                    if (!isLogged) {
-                        showLogin();
-                    }
+                    if (!isLogged) showLogin();
                     return;
                 }
             }
@@ -573,50 +552,37 @@
     let isGlitching = true;
     let flashTimeout;
     
-    // 当页面加载完毕时，只处理视觉状态和特效
     window.onload = function() {
         const isGod = localStorage.getItem('god_perspective_unlocked') === 'true';
         const isLogged = localStorage.getItem('njdx_bbs_override') === 'true';
 
         if(isGod || isLogged) {
             applyLoggedInState(false);
-            // 不播放黑屏动画，直接保持登录/同化状态
         } else {
-            // 完全没登录，开始真实的随机闪烁
             triggerRandomGlitch();
         }
     };
 
-    // 随机频闪触发器 (极速闪烁一帧 2007 画面)
     function triggerRandomGlitch() {
         if (!isGlitching) return;
         const nextGlitchTime = 1000 + Math.random() * 4000;
-        
         flashTimeout = setTimeout(() => {
             if (!isGlitching) return;
-
             layer2026.style.opacity = '0';
             layer2007.style.opacity = '1';
             glitchOverlay.style.opacity = '1';
-
             setTimeout(() => {
                 if (!isGlitching) return;
                 layer2026.style.opacity = '1';
                 layer2007.style.opacity = '0';
                 glitchOverlay.style.opacity = '0';
-                
                 triggerRandomGlitch();
             }, 100 + Math.random() * 150);
-
         }, nextGlitchTime);
     }
 
-    // ================= 登录与持久化接管逻辑 =================
     function showLogin() {
-        // 如果已经取得神性视角或普通登录，不弹框
-        if(localStorage.getItem('njdx_bbs_override') === 'true' || localStorage.getItem('god_perspective_unlocked') === 'true') {
-            return;
-        }
+        if(localStorage.getItem('njdx_bbs_override') === 'true' || localStorage.getItem('god_perspective_unlocked') === 'true') return;
         document.getElementById('error').style.display = 'none';
         document.getElementById('login-modal').style.display = 'block';
         document.getElementById('login-user').focus();
@@ -626,13 +592,11 @@
         const user = document.getElementById('login-user').value.trim();
         const pwd = document.getElementById('login-pwd').value.trim();
         
-        // 核心密码：26级_既济 / 101010 （兼容 即济）
         if((user === '26级_既济' || user === '26级_即济') && pwd === '101010') {
             localStorage.setItem('njdx_bbs_override', 'true');
             document.getElementById('login-modal').style.display = 'none';
             applyLoggedInState(true); 
         } else if(user === 'Admin' && pwd === 'GodMode') {
-            // 核心登录：开启观测者视角
             localStorage.setItem('god_perspective_unlocked', 'true');
             window.location.reload();
         } else {
@@ -640,7 +604,6 @@
         }
     }
 
-    // 核心函数：应用登录定格状态 或 古神同化状态
     function applyLoggedInState(playAnimation) {
         isGlitching = false;
         if(flashTimeout) clearTimeout(flashTimeout);
@@ -652,18 +615,16 @@
         
         const doUpdateUI = () => {
             const isGod = localStorage.getItem('god_perspective_unlocked') === 'true';
-            const isAdminVerified = localStorage.getItem('njdx_bbs_2026_admin_verified') === 'true';
             const cpLink = document.getElementById('nav-control-panel');
             const mainWrap = document.getElementById('main-content-2026');
             
-            // 1. 根据是否被同化，修改顶部栏与页面色调
             if (isGod) {
                 document.getElementById('status-bar-2026').innerHTML = `
                     <span class="info-stats" style="color:#D32F2F; font-weight:bold; text-shadow: 0 0 5px #F00;">SYS_OVERRIDE: 血肉网络已同化</span>
                     欢迎，<span class="bold red" style="font-size:16px;">不可名状的观测者</span> 
                     &nbsp;&nbsp;&nbsp;现实时间: <span class="bold time-display"></span>
                 `;
-                document.body.style.backgroundColor = "#1a0505"; // 背景泛出血肉红
+                document.body.style.backgroundColor = "#1a0505";
                 document.querySelector('.main-wrap').style.boxShadow = "0 0 20px rgba(255,0,0,0.3)";
             } else {
                 document.getElementById('status-bar-2026').innerHTML = `
@@ -674,7 +635,6 @@
             }
             updateTime();
             
-            // 2. 注入系统广播 (区分凡人与古神视角)
             if(!document.getElementById('success-broadcast')) {
                 const successMsg = document.createElement('div');
                 successMsg.id = 'success-broadcast';
@@ -689,9 +649,7 @@
                 mainWrap.insertBefore(successMsg, mainWrap.children[1]);
             }
             
-            // 3. 【最核心修改】控制面板的终极跳转逻辑
             if (isGod) {
-                // 已经成为古神，畅通无阻，直接回城！
                 cpLink.innerHTML = "[ 👁 多维干涉 ] 降临核心";
                 cpLink.style.color = "#FF0000";
                 cpLink.style.textShadow = "0 0 8px #F00";
@@ -699,21 +657,12 @@
                     e.preventDefault();
                     window.location.href = "bbs_2026_admin.html"; 
                 };
-            } else if (isAdminVerified) {
-                // 只是找到了控制面板，但还没被同化
+            } else {
                 cpLink.innerHTML = "控制面板 (高维阵眼已贯通)";
                 cpLink.style.color = "#00AA00";
                 cpLink.onclick = function(e) { 
                     e.preventDefault();
                     window.location.href = "bbs_2026_admin.html"; 
-                };
-            } else {
-                // 刚登录表层，还没找到隐藏入口
-                cpLink.innerHTML = "控制面板 (阵眼缺失)";
-                cpLink.style.color = "#FF0000";
-                cpLink.onclick = function(e) { 
-                    e.preventDefault();
-                    alert("【SYSTEM WARNING：控制台物理链路断裂】\n\n您虽已取得当前表层节点(2026)的观测权，但核心控制台的物理链路已被隐藏。\n必须先在数据残骸中真正的【2026溯源管理终端】入口，建立底层通信协议后才能彻底贯通高维通道！");
                 };
             }
         };
@@ -733,15 +682,12 @@
         }
     }
 
-    // 后门：重置所有游戏状态 (包含剥离古神思想钢印)
     function resetGame() {
         localStorage.removeItem('njdx_bbs_override');
-        localStorage.removeItem('njdx_bbs_2026_admin_verified');
         localStorage.removeItem('god_perspective_unlocked');
         window.location.reload();
     }
 
-    // 支持回车键快速登录
     document.getElementById('login-pwd').addEventListener('keydown', function(e) {
         if(e.key === 'Enter') checkHackPwd();
     });
