@@ -1,20 +1,10 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh">
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
 <title>青冥鉴 · 四维观测系统</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-<script type="text/javascript">
-        // [防逃课锁] 强制路由与法器校验
-        const isGod = localStorage.getItem('god_perspective_unlocked') === 'true';
-        const hasArtifact = localStorage.getItem('artifact_mirror_found') === 'true';
-
-        // 如果玩家没有同时具备“古神”权限和“法器（镜）”的认知印章，瞬间踢回表层
-        if (!isGod || !hasArtifact) {
-            window.location.replace('bbs_2026_home.html');
-        }
-    </script>
 <style>
 /* ================= 基础与色彩重置 ================= */
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -662,6 +652,14 @@ body.falling #abuse-veil { opacity: 1; background: rgba(120,0,0,0.76); }
   #gong-detail { bottom: calc(48dvh + 10px); }
 }
 </style>
+<script>
+  (function() {
+    const isGod = localStorage.getItem('god_perspective_unlocked') === 'true';
+    if (!isGod) {
+      window.location.replace('bbs_2026_home.html');
+    }
+  })();
+</script>
 </head>
 <body>
 
@@ -924,12 +922,15 @@ function playCinematicExpand(cb){
 }
 
 document.getElementById('mirror-btn').onclick = () => {
+  localStorage.setItem('artifact_mirror_found', 'true');
+  localStorage.setItem('njdx_bbs_2026_admin_verified', 'true');
   const video = document.getElementById('mirror-video');
   if(video.srcObject) video.srcObject.getTracks().forEach(t => t.stop());
   document.getElementById('mirror-overlay').style.display = 'none';
   playCinematicExpand(() => {
     document.getElementById('app').style.display = 'block';
     if(!map) { initMap(); } else { map.invalidateSize(); }
+    setTimeout(applyForcedObservationTarget, 650);
     setTimeout(() => { document.getElementById('narrative-dialog').style.display = 'block'; }, 1000);
   });
 };
@@ -982,6 +983,42 @@ const DEAD_TIME_PROFILE = {
   method: '阳遁九局 [拆补]',
   note: '芒种后甲午符头已过，属芒种中元。'
 };
+
+function escapeHtml(value) {
+  return String(value || '').replace(/[&<>"']/g, ch => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  }[ch]));
+}
+
+function getForcedObservationTarget() {
+  const params = new URLSearchParams(window.location.search);
+  const lat = Number(params.get('lat'));
+  const lng = Number(params.get('lng'));
+  if (Number.isFinite(lat) && Number.isFinite(lng)) {
+    return {
+      id: params.get('observe') || 'external-anchor',
+      label: params.get('label') || 'Forced Observation Anchor',
+      lat,
+      lng,
+      zoom: Number(params.get('zoom')) || 15
+    };
+  }
+  try {
+    const saved = JSON.parse(localStorage.getItem('qmg_forced_observation') || 'null');
+    if (saved && Number.isFinite(Number(saved.lat)) && Number.isFinite(Number(saved.lng))) {
+      return {
+        id: saved.id || 'stored-anchor',
+        label: saved.label || 'Forced Observation Anchor',
+        lat: Number(saved.lat),
+        lng: Number(saved.lng),
+        zoom: Number(saved.zoom) || 15
+      };
+    }
+  } catch (err) {}
+  return null;
+}
+
+const FORCED_OBSERVATION_TARGET = getForcedObservationTarget();
 
 const DEAD_PAN = {
   4: { door:'杜', star:'天柱', deity:'腾蛇', clue:'隐藏协议撕裂' },
@@ -1697,6 +1734,43 @@ function initMap() {
   updateL2L3();
 }
 
+function applyForcedObservationTarget() {
+  if(!map || !FORCED_OBSERVATION_TARGET) return;
+  const target = FORCED_OBSERVATION_TARGET;
+  const latlng = [target.lat, target.lng];
+  const safeLabel = escapeHtml(target.label);
+  L.circleMarker(latlng, {
+    radius: 8,
+    color: '#fff3c4',
+    weight: 2,
+    fillColor: '#ff003c',
+    fillOpacity: 0.86,
+    className: 'warehouse-lock-path'
+  }).addTo(l1Group);
+  L.marker(latlng, {icon: L.divIcon({
+    html: `<div class="fixed-label anchor" style="color:#fff;border-color:rgba(255,0,60,.86);box-shadow:0 0 18px rgba(255,0,60,.48);">镜面观测<br><span style="font-size:.82em">${safeLabel}</span></div>`,
+    className: 'fixed-label-icon',
+    iconSize: [0, 0],
+    iconAnchor: [0, 0]
+  })}).addTo(l1Group);
+  map.flyTo(latlng, target.zoom || 15, { duration: 1.7, easeLinearity: 0.35 });
+  showForcedObservationBadge(target);
+  setTimeout(() => {
+    showOmen('door-jingmen', '[FORCED OBSERVATION] 镜面锚点已接入', `${target.label}\n${target.lat.toFixed(6)}, ${target.lng.toFixed(6)}`, 6200);
+  }, 900);
+}
+
+function showForcedObservationBadge(target) {
+  let badge = document.getElementById('forced-observation-badge');
+  if(!badge) {
+    badge = document.createElement('div');
+    badge.id = 'forced-observation-badge';
+    badge.style.cssText = 'position:fixed;left:50%;top:12px;transform:translateX(-50%);z-index:2600;max-width:min(92vw,620px);padding:10px 14px;border:1px solid rgba(255,0,60,.64);background:rgba(16,0,5,.86);color:#ffd9df;font-size:12px;line-height:1.55;box-shadow:0 0 28px rgba(255,0,60,.28);backdrop-filter:blur(8px);pointer-events:none;text-align:center;';
+    document.body.appendChild(badge);
+  }
+  badge.innerHTML = `强制观测锚点：<b style="color:#fff">${escapeHtml(target.label)}</b><br><span style="color:#ff9fb0">${target.lat.toFixed(6)}, ${target.lng.toFixed(6)}</span>`;
+}
+
 function showGongDetail(pos){
   const pan = DEAD_PAN[pos];
   const panReady = isCorrectDeadJu();
@@ -2256,3 +2330,4 @@ document.getElementById('apply-live').onclick = () => {
 </script>
 </body>
 </html>
+
