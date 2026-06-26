@@ -6,12 +6,11 @@
 <title>青冥鉴 · 四维观测系统</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script type="text/javascript">
-        // [防逃课锁] 强制路由与法器校验
+        // [防逃课锁] 镜像溯源仅允许古神状态进入
         const isGod = localStorage.getItem('god_perspective_unlocked') === 'true';
-        const hasArtifact = localStorage.getItem('artifact_mirror_found') === 'true';
 
-        // 如果玩家没有同时具备“古神”权限和“法器（镜）”的认知印章，瞬间踢回表层
-        if (!isGod || !hasArtifact) {
+        // 法器印记会在玩家看见镜子后写入；这里不能提前拦截
+        if (!isGod) {
             window.location.replace('bbs_2026_home.html');
         }
     </script>
@@ -926,6 +925,7 @@ function playCinematicExpand(cb){
 document.getElementById('mirror-btn').onclick = () => {
   const video = document.getElementById('mirror-video');
   if(video.srcObject) video.srcObject.getTracks().forEach(t => t.stop());
+  localStorage.setItem('artifact_mirror_found', 'true');
   document.getElementById('mirror-overlay').style.display = 'none';
   playCinematicExpand(() => {
     document.getElementById('app').style.display = 'block';
