@@ -4,13 +4,13 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>控制面板 - 南江大学星火BBS</title>
     <script type="text/javascript">
-        // 【开发者测试专用】时光倒流：在 URL 后面加上 ?reset=1 即可清除古神状态缓存，重置为人类既济。
+        // 【开发者测试专用】时光倒流：在 URL 后面加上 ?reset=1 即可清除古神状态缓存。
         if (window.location.search.includes('reset=1')) {
             localStorage.removeItem('god_perspective_unlocked');
             window.history.replaceState(null, '', window.location.pathname);
         }
 
-        // 强制路由保护：防止逃课
+        // 强制路由保护：防止逃课。注意：如果你的主页不叫 bbs_2026_home.html，请修改这里的跳转地址！
         const isGod = localStorage.getItem('god_perspective_unlocked') === 'true';
         const isLogged = localStorage.getItem('njdx_bbs_override') === 'true';
         if (!isGod && !isLogged) {
@@ -95,7 +95,7 @@
         /* ================= 完美复刻的终极全屏屏幕 ================= */
         #final-terminal { display: none; position: fixed; inset: 0; z-index: 999999; background: linear-gradient(to bottom, #121212 15%, #b30006 15%); overflow: hidden; }
         
-        /* 【关键修复】使用纯 CSS 渲染血肉质感，彻底抛弃本地图片，解决不显示问题 */
+        /* 纯 CSS 渲染血肉质感，彻底抛弃本地图片，解决不显示问题 */
         #final-bg-image {
             position: absolute; inset: 0;
             background:
@@ -172,6 +172,7 @@
         <div class="logo-text" id="admin-logo-text">星火BBS 核心控制面板 (CORE_UPLINK)</div>
         <div>
             登录人：<span id="admin-user-name" class="bold red">26级_既济 (admin)</span> &nbsp;|&nbsp; 
+            <!-- 如果主页名字不是 bbs_2026_home.html，请在这里修改！ -->
             <button id="btn-return" onclick="window.location.href='bbs_2026_home.html'" class="btn-close-return"><span>X</span> 返回主站</button>
         </div>
     </div>
@@ -209,18 +210,22 @@
                     <tr><td>2077-10-23 09:42:00</td><td>NEURAL_BROADCAST / [IPv8_CORE]</td><td>USA_MASSACHUSETTS_BOSTON_SHELTER_77 (避难所阵列)</td><td class="td-status" style="color:#888;">延期 (DELAYED)</td></tr>
                     <tr><td>3102-12-31 23:59:59</td><td>QUANTUM_ENTANGLE / [ERR_STB]</td><td>CTR_ALPHA_RENAISSANCE_MATRIX_CORE (半人马座遗迹)</td><td class="td-status" style="color:#888;">延期 (DELAYED)</td></tr>
                     
-                    <!-- 这两行是历史记录里强制显示的“已同化”异化数据 -->
+                    <!-- 【修复】这两行是历史记录里强制显示的“已同化”异化数据 -->
                     <tr class="flesh-history-row" style="background:#1a0505; border: 2px solid #F00; border-bottom: 1px dashed #600; display:none;">
                         <td class="red bold" style="color:#f88;">2026-06-23 <span style="background:#f00; color:#f00; padding: 0 4px; font-weight:bold; letter-spacing:-2px;">██:██:██</span></td>
                         <td class="red bold" style="color:#f88;">RESONANCE_DATA_STREAM</td>
                         <td class="red bold" style="color:#f88;">CHN_SICHUAN_CHENGDU_DEEP_CORE_02 (西南深地主控机组)</td>
-                        <td class="red bold pulse-text" style="font-size:15px; color:#ff3333; text-shadow: 0 0 5px #f00;">苏醒 (AWAKENED)</td>
+                        <td style="text-align:center;">
+                            <button style="background:#000; border:1px solid #F00; color:#F00; font-weight:bold; padding:4px 10px; cursor:crosshair; width:100%; box-shadow: 0 0 5px #F00;" class="pulse-text">降临 (DESCENDED)</button>
+                        </td>
                     </tr>
                     <tr class="flesh-history-row" style="background:#3a0000; border: 2px solid #F00; border-top: none; display:none;">
                         <td class="red bold" style="color:#FFF;">2007-06-11 11:00:00</td>
                         <td class="red bold" style="color:#FFF;">192.168.0.12</td>
                         <td class="red bold" style="color:#FFF;">CHN_ZHEJIANG_HANGZHOU_NANJIANG_CAMPUS_B4 (南江机房终端)</td>
-                        <td class="red bold pulse-text" style="font-size:15px; color:#FFF; text-shadow: 0 0 10px #f00;">降临 (DESCENDED)</td>
+                        <td style="text-align:center;">
+                            <button style="background:#000; border:1px solid #F00; color:#F00; font-weight:bold; padding:4px 10px; cursor:crosshair; width:100%; box-shadow: 0 0 5px #F00;" class="pulse-text">苏醒 (AWAKENED)</button>
+                        </td>
                     </tr>
                 </table>
             </div>
@@ -639,7 +644,7 @@
         const anchor = OBSERVATION_ANCHORS.find(item => item.id === anchorId) || OBSERVATION_ANCHORS[5];
         setTimeout(() => {
             if (!hasArtifact) {
-                alert("【SYSTEM FATAL：高维观测失败】\n\n检测到您缺失法器，无法观测该时空锚点。\n请回到表层，进入页脚的【溯源镜像】完成 4D 镜面锚点识别。");
+                alert("【SYSTEM FATAL：高维观测失败】\n\n检测到您缺失法器，无法观测该时空锚点。");
                 return;
             }
             localStorage.setItem('njdx_bbs_2026_admin_verified', 'true');
@@ -690,7 +695,8 @@
                     startDeathHeartbeat(); 
                     try { document.documentElement.requestFullscreen(); } catch(err){}
 
-                    // 8 秒后自动强制剥离至主站 (之前这里写成了login导致404)
+                    // 8 秒后自动强制剥离至主站！
+                    // 【注意】如果你的首页文件名不是 bbs_2026_home.html，请一定修改下面的跳转链接！
                     setTimeout(() => {
                         window.location.href = 'bbs_2026_home.html'; 
                     }, 8000);
@@ -704,6 +710,8 @@
     window.closeFinalTerminal = function() {
         if(heartbeatInterval) clearInterval(heartbeatInterval);
         try { if(document.fullscreenElement) document.exitFullscreen(); } catch(err){}
+        
+        // 【注意】如果你的首页文件名不是 bbs_2026_home.html，请一定修改下面的跳转链接！
         window.location.href = 'bbs_2026_home.html';
     }
 
