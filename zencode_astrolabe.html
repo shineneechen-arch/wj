@@ -686,8 +686,27 @@ scene.background = new THREE.Color(0x020204);
 scene.fog = new THREE.FogExp2(0x020204, 0.003);
 const camera = new THREE.PerspectiveCamera(45, window.innerWidth/window.innerHeight, 0.1, 2000);
 camera.position.set(0, 55, 115);
-const renderer = new THREE.WebGLRenderer({antialias:true, powerPreference:'high-performance'});
-renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+function createSafeRenderer() {
+  const attempts = [
+    { antialias: true, powerPreference: 'high-performance' },
+    { antialias: false, powerPreference: 'default' },
+    { antialias: false, powerPreference: 'low-power' }
+  ];
+  let lastError = null;
+  for (const opts of attempts) {
+    try {
+      const r = new THREE.WebGLRenderer(opts);
+      r.getContext();
+      if (lastError) console.warn('[Astrolabe] WebGL renderer fallback used:', opts);
+      return r;
+    } catch (err) {
+      lastError = err;
+    }
+  }
+  throw lastError || new Error('WebGL context unavailable');
+}
+const renderer = createSafeRenderer();
+renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, isMobile ? 1.75 : 1.5));
 renderer.setSize(window.innerWidth,window.innerHeight);
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure = 1.0;
