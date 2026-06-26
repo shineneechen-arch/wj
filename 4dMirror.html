@@ -5,6 +5,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
 <title>青冥鉴 · 四维观测系统</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script type="text/javascript">
+        // [防逃课锁] 强制路由与法器校验
+        const isGod = localStorage.getItem('god_perspective_unlocked') === 'true';
+        const hasArtifact = localStorage.getItem('artifact_mirror_found') === 'true';
+
+        // 如果玩家没有同时具备“古神”权限和“法器（镜）”的认知印章，瞬间踢回表层
+        if (!isGod || !hasArtifact) {
+            window.location.replace('bbs_2026_home.html');
+        }
+    </script>
 <style>
 /* ================= 基础与色彩重置 ================= */
 * { box-sizing: border-box; margin: 0; padding: 0; }
