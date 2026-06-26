@@ -884,6 +884,96 @@ function initGodMatrix() {
 }
 
 // 古神历史日志：强制观测按钮（仅暗示法器，不点名）
+const GOD_HISTORY_ANCHORS = [
+    {
+        label: 'B.C.0221-10-01 00:00:00',
+        time: '0221-10-01T00:00',
+        ip: 'NON_DIGITAL',
+        loc: 'CHN_SHAANXI_XIANYANG_PALACE_CORE_01',
+        lat: 34.3296,
+        lng: 108.7086
+    },
+    {
+        label: '1888-08-31 03:40:00',
+        time: '1888-08-31T03:40',
+        ip: '12.44.91.03',
+        loc: 'GBR_LONDON_WHITECHAPEL_NODE_ALPHA',
+        lat: 51.5194,
+        lng: -0.0617
+    },
+    {
+        label: '1999-08-11 11:11:00',
+        time: '1999-08-11T11:11',
+        ip: '192.168.1.1',
+        loc: 'SYS_TIMELINE_BOUNDARY_1999_OBSERVER_BASE_04',
+        lat: 45.0,
+        lng: 0.0
+    },
+    {
+        label: '2024-02-14 18:30:00',
+        time: '2024-02-14T18:30',
+        ip: '104.28.19.45',
+        loc: 'USA_KANSAS_CHENEY_ANTENNA_ARRAY_09',
+        lat: 37.6300,
+        lng: -97.7826
+    },
+    {
+        label: '2026-06-23 系统当前秒',
+        time: null,
+        ip: 'USER_IP',
+        loc: 'USER_TOPOCENTRIC_FOCUS',
+        lat: null,
+        lng: null
+    },
+    {
+        label: '2077-10-23 09:42:00',
+        time: '2077-10-23T09:42',
+        ip: 'IPv8_CORE',
+        loc: 'USA_MASSACHUSETTS_BOSTON_SHELTER_77',
+        lat: 42.3601,
+        lng: -71.0589
+    },
+    {
+        label: '3102-12-31 23:59:59',
+        time: '3102-12-31T23:59',
+        ip: 'ERR_STB',
+        loc: 'CTR_ALPHA_RENAISSANCE_MATRIX_CORE',
+        lat: -60.8339,
+        lng: -30.8367
+    }
+];
+
+function getUserAnchorTime() {
+    const now = new Date();
+    return `2026-06-23T${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+}
+
+function getAnchorForHistoryIndex(index) {
+    const base = GOD_HISTORY_ANCHORS[index] || GOD_HISTORY_ANCHORS[4];
+    const anchor = Object.assign({}, base);
+    if (anchor.ip === 'USER_IP') anchor.ip = userIP || '127.0.0.1';
+    if (anchor.loc === 'USER_TOPOCENTRIC_FOCUS') anchor.loc = userLoc || 'Topocentric Focus';
+    if (!anchor.time) anchor.time = getUserAnchorTime();
+    if (anchor.lat === null || anchor.lng === null) {
+        const parts = String(userLatLon || '').split(',').map(v => parseFloat(v.trim()));
+        anchor.lat = Number.isFinite(parts[0]) ? parts[0] : 30.2741;
+        anchor.lng = Number.isFinite(parts[1]) ? parts[1] : 120.1551;
+    }
+    return anchor;
+}
+
+function buildMirrorAnchorUrl(anchor) {
+    const params = new URLSearchParams();
+    params.set('timeline', 'archive');
+    params.set('label', anchor.label);
+    params.set('time', anchor.time);
+    params.set('ip', anchor.ip);
+    params.set('loc', anchor.loc);
+    params.set('lat', String(anchor.lat));
+    params.set('lng', String(anchor.lng));
+    return '4dMirror.html?' + params.toString();
+}
+
 window.godObserveNode = function(e, index) {
     e.stopPropagation();
     triggerFlash(); playSquishSound();
@@ -897,9 +987,10 @@ window.godObserveNode = function(e, index) {
     } else {
         // 法器已找到，执行观测
         localStorage.setItem('njdx_bbs_2026_admin_verified', 'true');
+        const anchor = getAnchorForHistoryIndex(index);
         setTimeout(() => {
-            alert(`【FORCED OBSERVATION：锚点响应】\n\n共振完整。强制观测许可通过。`);
-            window.location.href = '4dMirror.html';
+            alert(`【FORCED OBSERVATION：锚点响应】\n\n共振完整。强制观测许可通过。\n\n目标：${anchor.label}\n坐标：${anchor.loc}`);
+            window.location.href = buildMirrorAnchorUrl(anchor);
         }, 100);
     }
 };
