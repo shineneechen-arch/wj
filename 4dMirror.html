@@ -900,6 +900,22 @@ function updateNowChoiceLabel() {
   if(nowBtn) nowBtn.textContent = formatLocalTimelineLabel(new Date());
 }
 
+function parseMirrorAnchor() {
+  const params = new URLSearchParams(window.location.search);
+  if(params.get('timeline') !== 'archive') return null;
+  const lat = Number(params.get('lat'));
+  const lng = Number(params.get('lng'));
+  return {
+    label: params.get('label') || '历史锚点',
+    time: params.get('time') || toLocalInputValue(new Date()),
+    ip: params.get('ip') || 'UNKNOWN',
+    loc: params.get('loc') || 'UNKNOWN_LOCATION',
+    lat: Number.isFinite(lat) ? lat : 30.29624,
+    lng: Number.isFinite(lng) ? lng : 120.08805
+  };
+}
+const pendingMirrorAnchor = parseMirrorAnchor();
+
 (function initMirror() {
     const video = document.getElementById('mirror-video');
     const noiseCanvas = document.getElementById('mirror-noise');
@@ -925,6 +941,14 @@ function updateNowChoiceLabel() {
         updateNowChoiceLabel();
         if(oracle) oracle.classList.add('visible');
         if(choices) choices.style.display = 'flex';
+    }
+
+    if(pendingMirrorAnchor) {
+        isNoise = true; noiseCanvas.style.opacity = '1'; drawNoise();
+        text.innerHTML = `<span style='color:#cda45a;'>[ 历史锚点响应 ]</span><br>${pendingMirrorAnchor.label}<br>镜面正在锁定协议源。`;
+        if(oracle) oracle.classList.add('visible');
+        if(choices) choices.style.display = 'none';
+        return;
     }
 
     if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
@@ -998,13 +1022,14 @@ async function enterMirrorTimeline(mode) {
   updateNowChoiceLabel();
   document.getElementById('mirror-overlay').style.display = 'none';
   if(mode === 'current') await prepareCurrentTimeline();
+  if(mode === 'archive') await prepareArchiveTimeline(pendingMirrorAnchor || parseMirrorAnchor());
   playCinematicExpand(() => {
     document.getElementById('app').style.display = 'block';
     if(!map) {
       initMap(mode);
     } else {
       mirrorTimelineMode = mode;
-      map.setView(MAP_CENTER, mode === 'current' ? 16 : 18);
+      map.setView(MAP_CENTER, mode === 'story' ? 18 : 16);
       map.invalidateSize();
       drawL1();
       updateL2L3();
@@ -1015,7 +1040,7 @@ async function enterMirrorTimeline(mode) {
     } else {
       dialog.style.display = 'none';
       setTimeout(() => {
-        showOmen('door-jingmen', '[CURRENT] 青冥鉴只读观测', `已以 ${currentGeoLabel} 为中宫排盘。此时间线不写入剧情锚点。`, 5200);
+        showOmen('door-jingmen', '[ANCHOR] 青冥鉴只读观测', `${currentTimelineLabel}<br>已以 ${currentGeoLabel} 为中宫排盘。此时间线不写入剧情锚点。`, 5600);
       }, 900);
     }
   });
@@ -1023,6 +1048,7 @@ async function enterMirrorTimeline(mode) {
 
 document.getElementById('timeline-2007').onclick = () => enterMirrorTimeline('story');
 document.getElementById('timeline-now').onclick = () => enterMirrorTimeline('current');
+if(pendingMirrorAnchor) setTimeout(() => enterMirrorTimeline('archive'), 900);
 
 document.getElementById('close-detail').onclick = () => { document.getElementById('gong-detail').style.display = 'none'; };
 
@@ -1156,9 +1182,14 @@ let projectionConflictCount = 0;
 let audioContext = null;
 let mirrorTimelineMode = 'story';
 let currentGeoLabel = 'IP 定位坐标';
+let currentTimelineLabel = '当前时间线';
 let currentDeadProfile = null;
 let currentDeadPan = null;
 const SHOW_L1_LOCATION_LABELS = false;
+
+function isDynamicTimeline() {
+  return mirrorTimelineMode === 'current' || mirrorTimelineMode === 'archive';
+}
 
 function buildCampusBounds() {
   return [
@@ -1177,6 +1208,7 @@ function resetStoryCenter() {
 
 async function prepareCurrentTimeline() {
   mirrorTimelineMode = 'current';
+  currentTimelineLabel = '当前时间线';
   resetStoryCenter();
   const now = new Date();
   try {
@@ -1205,12 +1237,28 @@ async function prepareCurrentTimeline() {
   liveDateObj = new Date(localValue);
 }
 
+async function prepareArchiveTimeline(anchor) {
+  mirrorTimelineMode = 'archive';
+  currentTimelineLabel = anchor.label || '历史锚点';
+  CENTER = [anchor.lat, anchor.lng];
+  MAP_CENTER = [anchor.lat, anchor.lng];
+  currentGeoLabel = `${anchor.lat.toFixed(5)}, ${anchor.lng.toFixed(5)} · ${anchor.loc || 'UNKNOWN'} · ${anchor.ip || 'UNKNOWN_IP'}`;
+  campusBounds = buildCampusBounds();
+  const localValue = String(anchor.time || '').replace(' ', 'T').slice(0, 16) || toLocalInputValue(new Date());
+  const deadInput = document.getElementById('dead-time');
+  const liveInput = document.getElementById('live-time');
+  if(deadInput) deadInput.value = localValue;
+  if(liveInput) liveInput.value = localValue;
+  deadDateObj = new Date(localValue);
+  liveDateObj = new Date(localValue);
+}
+
 function getActiveDeadProfile() {
-  return mirrorTimelineMode === 'current' && currentDeadProfile ? currentDeadProfile : DEAD_TIME_PROFILE;
+  return isDynamicTimeline() && currentDeadProfile ? currentDeadProfile : DEAD_TIME_PROFILE;
 }
 
 function getActiveDeadPanMap() {
-  return mirrorTimelineMode === 'current' && currentDeadPan && currentDeadPan.byPalace ? currentDeadPan.byPalace : DEAD_PAN;
+  return isDynamicTimeline() && currentDeadPan && currentDeadPan.byPalace ? currentDeadPan.byPalace : DEAD_PAN;
 }
 
 function getDeadPalace(pos) {
@@ -1388,7 +1436,7 @@ function getLiveDoorAt(pos) {
 }
 
 function isFuyinDeadDoorCoincidence() {
-  if(mirrorTimelineMode === 'current') return false;
+  if(isDynamicTimeline()) return false;
   return warehouseRevealed
     && isCorrectDeadJu()
     && isCorrectLiveJu()
@@ -1410,7 +1458,7 @@ function isCurrentFuyinEcho() {
 }
 
 function isFinalFusionReady() {
-  if(mirrorTimelineMode === 'current') return false;
+  if(isDynamicTimeline()) return false;
   return warehouseRevealed
     && isCorrectDeadJu()
     && isCorrectLiveJu()
@@ -1580,7 +1628,7 @@ function populateJuOptions() {
 }
 
 function isCorrectDeadJu() {
-  if(mirrorTimelineMode === 'current') {
+  if(isDynamicTimeline()) {
     return !!currentDeadProfile && currentDeadProfile.ok && document.getElementById('dead-ju').value === currentDeadProfile.juValue;
   }
   return document.getElementById('dead-ju').value === CORRECT_DEAD_JU;
@@ -1750,7 +1798,7 @@ function updateDeadCalendarInfo() {
   const value = document.getElementById('dead-time').value;
   const ju = document.getElementById('dead-ju').value;
   const el = document.getElementById('dead-calendar');
-  if(mirrorTimelineMode === 'current') {
+  if(isDynamicTimeline()) {
     deadDateObj = value ? new Date(value) : new Date();
     currentDeadProfile = buildTimeProfile(deadDateObj);
     currentDeadPan = currentDeadProfile && currentDeadProfile.ok ? buildQimenPan(currentDeadProfile) : null;
@@ -1762,6 +1810,7 @@ function updateDeadCalendarInfo() {
         ? `<span class="ok">[OK] ${currentDeadProfile.juValue} 校验通过，当前死盘已生成。</span>`
         : `<span class="bad">[ERR] ${selectedJu || '未选局'} 与当前拆补定局不合。</span>`);
     el.innerHTML = `
+      <b>锚点</b> ${currentTimelineLabel}<br>
       <b>坐标</b> ${currentGeoLabel}<br>
       <b>四柱</b> 年 ${currentDeadProfile.bazi.year} / 月 ${currentDeadProfile.bazi.month} / 日 ${currentDeadProfile.bazi.day} / 时 ${currentDeadProfile.bazi.hour}<br>
       <b>农历</b> ${currentDeadProfile.lunar}<br>
@@ -1858,7 +1907,7 @@ function initMap(mode = 'story') {
   mirrorTimelineMode = mode;
   if(mode === 'story') resetStoryCenter();
   populateJuOptions();
-  if(mode === 'current') {
+  if(isDynamicTimeline()) {
     updateDeadCalendarInfo();
     if(currentDeadProfile && currentDeadProfile.ok) document.getElementById('dead-ju').value = currentDeadProfile.juValue;
     updateDeadCalendarInfo();
@@ -1873,7 +1922,7 @@ function initMap(mode = 'story') {
     updateDeadCalendarInfo();
     setNow();
   }
-  map = L.map('map',{zoomControl:false, attributionControl:false}).setView(MAP_CENTER, mode === 'current' ? 16 : 18);
+  map = L.map('map',{zoomControl:false, attributionControl:false}).setView(MAP_CENTER, mode === 'story' ? 18 : 16);
   L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{maxZoom:20}).addTo(map);
   
   l1Group = L.layerGroup().addTo(map);
@@ -1910,7 +1959,7 @@ function showGongDetail(pos){
     <div style="color:var(--color-l3);font-size:12px;">L3活盘: ${liveStatus}</div>
     <div style="color:${liveJuReady ? (liveJuCorrect ? 'var(--color-l3)' : '#ff8aa1') : 'var(--text-mute)'};font-size:12px;">${liveJuReady ? `${live.deity || '—'} / ${live.star || '—'} / ${l}门` : '请先选择 L3 拆补局数。'}</div>
     <div style="margin-top:8px;color:var(--text-mute);font-size:11px;">${pan.clue}</div>
-    ${mirrorTimelineMode === 'current' ? '<div style="margin-top:8px;color:var(--text-mute);font-size:11px;">当前时间线为只读观测，不开放剧情搜寻。</div>' : `
+    ${isDynamicTimeline() ? '<div style="margin-top:8px;color:var(--text-mute);font-size:11px;">该时间线为只读观测，不开放剧情搜寻。</div>' : `
     <div class="desktop-only-hint" style="margin-top:8px;color:#ffcccc;font-size:11px;">右键此宫可执行「注视搜寻」。</div>
     <div class="mobile-only-hint" style="margin-top:8px;color:#ffcccc;font-size:11px;">长按此宫，或点下方按钮执行「注视搜寻」。</div>
     <button class="focus-search-btn" type="button" onclick="attemptFocusSearch(${pos})">${getFocusActionLabel(pos)}</button>`}
@@ -2133,7 +2182,7 @@ function showFamilyPopupAndExit() {
 
 function attemptFocusSearch(pos) {
   const pan = getDeadPalace(pos);
-  if(mirrorTimelineMode === 'current') {
+  if(isDynamicTimeline()) {
     showOmen('door-jingmen', '[CURRENT] 只读观测', '当前时间线只用于排盘，不执行搜寻、降临或历史日志读取。', 4200);
     return;
   }
@@ -2239,7 +2288,7 @@ function drawBuilding(points, name, tone = 'dark') {
 function drawCurrentTimelineBase() {
   L.polygon(campusBounds, { color: 'var(--color-l1)', weight: 2, fillOpacity: 0.025, dashArray: '8 6' }).addTo(l1Group);
   L.circleMarker(CENTER,{radius:7,color:'#cda45a',weight:2,fillColor:'#0a1828',fillOpacity:0.95}).addTo(l1Group);
-  L.marker(CENTER,{icon:fixedLabel(`当前观测坐标<br><span style="font-size:0.82em">${currentGeoLabel}</span>`,'anchor')}).addTo(l1Group);
+  L.marker(CENTER,{icon:fixedLabel(`${currentTimelineLabel}<br><span style="font-size:0.82em">${currentGeoLabel}</span>`,'anchor')}).addTo(l1Group);
   const latLine = [[CENTER[0], CENTER[1]-SPAN*1.85], [CENTER[0], CENTER[1]+SPAN*1.85]];
   const lngLine = [[CENTER[0]-SPAN*1.95, CENTER[1]], [CENTER[0]+SPAN*1.55, CENTER[1]]];
   L.polyline(latLine,{color:'#31465a',weight:2,opacity:0.72,dashArray:'3 5'}).addTo(l1Group);
@@ -2248,7 +2297,7 @@ function drawCurrentTimelineBase() {
 
 function drawL1() {
   l1Group.clearLayers();
-  if(mirrorTimelineMode === 'current') {
+  if(isDynamicTimeline()) {
     drawCurrentTimelineBase();
     return;
   }
