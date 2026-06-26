@@ -4,7 +4,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>控制面板 - 南江大学星火BBS</title>
     <script type="text/javascript">
-        // 强制路由保护：防止逃课
+        // 强制路由保护：如果既不是管理员也不是古神，直接踢回主页，防止逃课
         const isGod = localStorage.getItem('god_perspective_unlocked') === 'true';
         const isLogged = localStorage.getItem('njdx_bbs_override') === 'true';
         if (!isGod && !isLogged) {
@@ -66,6 +66,7 @@
         .btn-approve { background: #336699; color: #FFF; border: 1px solid #2B5E8A; padding: 4px 10px; cursor: pointer; font-size: 12px; font-family: SimSun; }
         .btn-approve:hover { background: #FF0000; border-color: #900; }
 
+        /* 批准后的异化状态 */
         .api-node.absorbed { background: #2a0505 !important; border: 1px solid #ff0000 !important; box-shadow: 0 0 15px rgba(255,0,0,0.5); justify-content: center; align-items: center; pointer-events: none; }
         .api-node.absorbed * { display: none; }
         .api-node.absorbed::after { content: "[ 已 融 合 ]"; color: #ff3333; font-size: 24px; font-weight: bold; letter-spacing: 4px; text-shadow: 0 0 8px #f00; display: block; }
@@ -86,72 +87,17 @@
         .btn-corrupted { background: #4a0000 !important; color: #ff5555 !important; border-color: #ff0000 !important; box-shadow: 0 0 10px #f00; font-weight: 900; text-shadow: 0 0 5px #f00; letter-spacing: 2px; }
         .btn-corrupted:hover { background: #ff0000 !important; color: #fff !important; }
         
-        /* ================= 完美复刻的终极全屏屏幕 ================= */
+        /* 终极全屏屏幕 */
         #final-terminal { display: none; position: fixed; inset: 0; z-index: 999999; background: linear-gradient(to bottom, #121212 15%, #b30006 15%); overflow: hidden; }
-        
-        /* 高级特效：带数码故障损坏、失焦模糊与色彩溶解的血肉星盘 */
-        #final-bg-image {
-            position: absolute; inset: 0;
-            background-image: url('flesh_eye.jpg'); 
-            background-size: cover; background-position: center;
-            opacity: 0.85; 
-            mix-blend-mode: normal; 
-            filter: blur(3px) contrast(150%) saturate(140%);
-            animation: digital-corruption-loop 0.25s infinite linear;
-            z-index: 1;
-            -webkit-backface-visibility: hidden;
-            backface-visibility: hidden;
-            -webkit-transform: translate3d(0, 0, 0);
-            transform: translate3d(0, 0, 0);
-        }
-        
-        /* CRT 模拟垂直扫描线 */
-        #final-bg-image::before {
-            content: ""; position: absolute; inset: 0;
-            background: repeating-linear-gradient(0deg, rgba(0,0,0,0.35), rgba(0,0,0,0.35) 2px, transparent 2px, transparent 4px);
-            pointer-events: none; z-index: 2;
-        }
-
-        /* 极致疯狂的数码损坏、位移抖动與高頻失焦濾鏡 */
-        @keyframes digital-corruption-loop {
-            0% { filter: blur(4px) contrast(200%) saturate(130%); transform: scale(1) translate(0, 0); }
-            15% { filter: blur(2px) contrast(280%) hue-rotate(-15deg); transform: scale(1.03) translate(-4px, 3px); }
-            30% { filter: blur(7px) contrast(150%) brightness(1.2); transform: scale(0.98) translate(5px, -2px); opacity: 0.75; }
-            45% { clip-path: polygon(0 35%, 100% 35%, 100% 42%, 0 42%); transform: translateX(-25px); }
-            60% { clip-path: none; filter: blur(3px) contrast(250%) invert(5%); transform: scale(1.05) translate(-2px, -3px); }
-            85% { clip-path: polygon(0 75%, 100% 75%, 100% 88%, 0 88%); transform: translateX(30px) hue-rotate(45deg); }
-            100% { clip-path: none; filter: blur(5px) contrast(210%); transform: scale(1.01) translate(2px, 2px); }
-        }
-
+        #final-bg-image { position: absolute; inset: 0; background-image: url('flesh_eye.jpg'); background-size: cover; background-position: center; opacity: 0.85; mix-blend-mode: normal; filter: blur(3px) contrast(150%) saturate(140%); animation: digital-corruption-loop 0.25s infinite linear; z-index: 1; -webkit-backface-visibility: hidden; backface-visibility: hidden; -webkit-transform: translate3d(0, 0, 0); transform: translate3d(0, 0, 0); }
+        #final-bg-image::before { content: ""; position: absolute; inset: 0; background: repeating-linear-gradient(0deg, rgba(0,0,0,0.35), rgba(0,0,0,0.35) 2px, transparent 2px, transparent 4px); pointer-events: none; z-index: 2; }
+        @keyframes digital-corruption-loop { 0% { filter: blur(4px) contrast(200%) saturate(130%); transform: scale(1) translate(0, 0); } 15% { filter: blur(2px) contrast(280%) hue-rotate(-15deg); transform: scale(1.03) translate(-4px, 3px); } 30% { filter: blur(7px) contrast(150%) brightness(1.2); transform: scale(0.98) translate(5px, -2px); opacity: 0.75; } 45% { clip-path: polygon(0 35%, 100% 35%, 100% 42%, 0 42%); transform: translateX(-25px); } 60% { clip-path: none; filter: blur(3px) contrast(250%) invert(5%); transform: scale(1.05) translate(-2px, -3px); } 85% { clip-path: polygon(0 75%, 100% 75%, 100% 88%, 0 88%); transform: translateX(30px) hue-rotate(45deg); } 100% { clip-path: none; filter: blur(5px) contrast(210%); transform: scale(1.01) translate(2px, 2px); } }
         .final-content-wrapper { position: relative; z-index: 10; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; pointer-events: none; }
-        
-        .final-close-btn {
-            position: absolute; top: 20px; right: 30px; font-size: 50px; 
-            color: rgba(255,255,255,0.3); background: none; border: none; cursor: pointer;
-            transition: color 0.3s, transform 0.2s; z-index: 9999999; pointer-events: auto;
-        }
+        .final-close-btn { position: absolute; top: 20px; right: 30px; font-size: 50px; color: rgba(255,255,255,0.3); background: none; border: none; cursor: pointer; transition: color 0.3s, transform 0.2s; z-index: 9999999; pointer-events: auto; }
         .final-close-btn:hover { color: #ffffff; transform: scale(1.1); text-shadow: 0 0 10px #f00; }
-        
-        .final-title {
-            position: absolute; top: 15%; transform: translateY(-50%);
-            left: 0; width: 100%; text-align: center; white-space: nowrap; 
-            font-size: 3.8rem; letter-spacing: 0.1em; 
-            color: #e60000; 
-            font-family: 'SimSun', serif; font-weight: bold;
-            text-shadow: 3px 3px 15px rgba(0,0,0,0.9), 0 0 30px rgba(255,0,0,0.6);
-            animation: textFocus-extreme 4s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
-            filter: blur(8px);
-        }
-        .final-subtitle {
-            position: absolute; bottom: 20%;
-            left: 0; width: 100%; text-align: center; white-space: nowrap;
-            font-size: 1.5rem; color: #3a0000; 
-            font-family: 'Courier New', Courier, monospace; letter-spacing: 0.2em;
-            font-weight: bold; text-shadow: 0 0 5px rgba(0,0,0,0.5);
-        }
-        @keyframes textFocus-extreme {
-            100% { filter: blur(0px); transform: translateY(-50%) scale(1.02); }
-        }
+        .final-title { position: absolute; top: 15%; transform: translateY(-50%); left: 0; width: 100%; text-align: center; white-space: nowrap; font-size: 3.8rem; letter-spacing: 0.1em; color: #e60000; font-family: 'SimSun', serif; font-weight: bold; text-shadow: 3px 3px 15px rgba(0,0,0,0.9), 0 0 30px rgba(255,0,0,0.6); animation: textFocus-extreme 4s cubic-bezier(0.1, 0.8, 0.3, 1) forwards; filter: blur(8px); }
+        .final-subtitle { position: absolute; bottom: 20%; left: 0; width: 100%; text-align: center; white-space: nowrap; font-size: 1.5rem; color: #3a0000; font-family: 'Courier New', Courier, monospace; letter-spacing: 0.2em; font-weight: bold; text-shadow: 0 0 5px rgba(0,0,0,0.5); }
+        @keyframes textFocus-extreme { 100% { filter: blur(0px); transform: translateY(-50%) scale(1.02); } }
     </style>
 </head>
 <body>
@@ -168,16 +114,19 @@
     </div>
 
     <div class="admin-container">
+        <!-- 侧边栏：初始化时由JS决定加载哪一套 -->
         <div class="sidebar" id="main-sidebar"></div>
 
         <div class="content">
             <div id="embedded-terminal"></div>
 
+            <!-- ================= 人类管理员 Tab (默认) ================= -->
             <div id="tab-swarm" class="admin-tab">
                 <div class="content-title">API 接入请求总览 - 待审批队列 (999+)</div>
                 <div id="swarm-area"></div>
             </div>
 
+            <!-- 历史日志区：神明与人类共用，神明视角下可互动 -->
             <div id="tab-history" class="admin-tab">
                 <div class="content-title">跨维度 API 申请日志归档 (ARCHIVE_NODE_LOGS)</div>
                 <table class="data-table">
@@ -187,7 +136,6 @@
                         <th width="35%">系统物理机组标识 (System/Topocentric Location)</th>
                         <th width="15%">权限状态 (Status)</th>
                     </tr>
-                    <tr><td>2007-06-11 11:00:00</td><td>API_BURNED_CORE / 192.168.0.12</td><td>CHN_ZHEJIANG_HANGZHOU_NJDX_SOUTH_WAREHOUSE (南江大学旧仓库)</td><td class="td-status" style="color:#888;">延期 (DELAYED)</td></tr>
                     <tr><td>B.C.0221-10-01 00:00:00</td><td>SYS_UNIX_RAW / [NON_DIGITAL]</td><td>CHN_SHAANXI_XIANYANG_PALACE_CORE_01 (地下深埋阵列)</td><td class="td-status" style="color:#888;">延期 (DELAYED)</td></tr>
                     <tr><td>1888-08-31 03:40:00</td><td>TELEGRAPH_HEX / 12.44.91.03</td><td>GBR_LONDON_WHITECHAPEL_NODE_ALPHA (差分机架)</td><td class="td-status" style="color:#888;">延期 (DELAYED)</td></tr>
                     <tr><td>1999-08-11 11:11:00</td><td>TCP_STATION_IV / 192.168.1.1</td><td>SYS_TIMELINE_BOUNDARY_1999_OBSERVER_BASE_04</td><td class="td-status" style="color:#888;">延期 (DELAYED)</td></tr>
@@ -207,9 +155,9 @@
                 <div class="content-title" style="color:#D32F2F; border-bottom-color:#D32F2F;">底层八字排盘逻辑损坏状态 (ENGINE_CORRUPTION)</div>
                 <table class="data-table" style="border-color:#D32F2F;">
                     <tr style="background:#FFEBEB;"><th width="15%" style="color:#D32F2F;">严重度</th><th width="20%" style="color:#D32F2F;">时间</th><th width="65%" style="color:#D32F2F;">异常事件描述</th></tr>
-                    <tr><td><b style="color:#e74c3c">[FATAL]</b></td><td>2026-06-23 <span class="time-display-short"></span></td><td>大运推演节点异常：起始锚点已被强行重置为 2007，当前流年算力已被未知灵体接管。</td></tr>
-                    <tr><td><b style="color:#c0392b">[CRITICAL]</b></td><td>2026-06-23 03:12:05</td><td>岁星引力波与太岁星地支逻辑发生致命缠结！<br><span style="color:#f00; font-weight:bold;">警告：请立即物理切断木星观测站！</span></td></tr>
-                    <tr><td><b style="color:#8e44ad">[ANOMALY]</b></td><td>2026-06-23 01:44:12</td><td>五行生克矩阵发生自噬，主板检测到实质性的“血流”痕迹。</td></tr>
+                    <tr><td><b style="color:#e74c3c">[FATAL]</b></td><td>2026-06-23 <span class="time-display-short"></span></td><td>大运推演节点异常：起始锚点已被强行重置为 2007，算力已被接管。</td></tr>
+                    <tr><td><b style="color:#c0392b">[CRITICAL]</b></td><td>2026-06-23 03:12:05</td><td>岁星引力波与太岁逻辑致命缠结！<br><span style="color:#f00; font-weight:bold;">警告：请物理切断木星观测站！</span></td></tr>
+                    <tr><td><b style="color:#8e44ad">[ANOMALY]</b></td><td>2026-06-23 01:44:12</td><td>五行生克矩阵发生自噬，主板检测到实质性血流痕迹。</td></tr>
                 </table>
             </div>
 
@@ -221,9 +169,9 @@
                     > <span style="color:#e67e22;">[WARN] 杜门 (Door of Hiding) / 巽宫 - 隐藏协议与隔离沙盒出现物理性撕裂。</span><br>
                     > <span style="color:#e67e22;">[WARN] 景门 (Door of Scenery) / 离宫 - 离火算力受潮，光学探针传回红色液滴。</span><br>
                     > <span style="color:#ff5555;">[CRITICAL] 生门 (Door of Life) / 艮宫 - 发生恶性溢出异常！</span><br>
-                    > <span style="color:#ff0000; font-weight:bold;">[FATAL] 逻辑反转！危险并非来自死门！它们正在利用生门的繁衍属性进行指数级血肉复制！</span><br>
+                    > <span style="color:#ff0000; font-weight:bold;">[FATAL] 逻辑反转！危险并非来自死门！它们正在利用生门进行指数级血肉复制！</span><br>
                     > [ERR] 阵图崩塌，天蓬星质量坍缩...<br>
-                    > <span class="pulse-text" style="color:#ff0000;">[SYS_MSG] 门已大开。“它们”正从生门的肉巢中挤出，顺着网线爬向你的现实。不要回头。</span>
+                    > <span class="pulse-text" style="color:#ff0000;">[SYS_MSG] 门已大开。“它们”正顺着网线爬向你的现实。不要回头。</span>
                 </div>
             </div>
 
@@ -241,14 +189,15 @@
                 <div class="content-title" style="color:#D32F2F; border-bottom-color:#D32F2F;">底层异常日志 [ SYS_WARN ]</div>
                 <table class="data-table" style="border-color:#D32F2F;">
                     <tr style="background:#FFEBEB;"><th width="15%" style="color:#D32F2F;">级别</th><th width="20%" style="color:#D32F2F;">时间</th><th width="65%" style="color:#D32F2F;">事件描述</th></tr>
-                    <tr><td><b style="color:#e67e22">[WARN]</b></td><td>2026-06-23 02:14:05</td><td>机房 B 区二层检测到大规模不明有机物增生。</td></tr>
-                    <tr><td><b style="color:#e74c3c">[FATAL]</b></td><td>2026-06-23 04:33:12</td><td>主服务器冷却液已被粘稠液体替换，温度持续飙升。</td></tr>
+                    <tr><td><b style="color:#e67e22">[WARN]</b></td><td>2026-06-23 02:14:05</td><td>机房 B 区检测到有机物增生。</td></tr>
+                    <tr><td><b style="color:#e74c3c">[FATAL]</b></td><td>2026-06-23 04:33:12</td><td>主服务器冷却液已被粘稠液体替换，温度飙升。</td></tr>
                     <tr><td><b style="color:#c0392b">[ERROR]</b></td><td>2026-06-23 07:12:44</td><td>UID:404 尝试强行注销。系统已执行切割。</td></tr>
                     <tr><td><b style="color:#8e44ad">[ANOMALY]</b></td><td>2026-06-23 09:01:00</td><td>收到深空低频信号，尝试解析为《易经》矩阵...</td></tr>
-                    <tr><td><b style="color:#c0392b">[ERROR]</b></td><td>2026-06-23 <span class="time-display-short"></span></td><td>协议栈崩溃。本地网络已被神经递质替换。</td></tr>
+                    <tr><td><b style="color:#c0392b">[ERROR]</b></td><td>2026-06-23 <span class="time-display-short"></span></td><td>协议栈崩溃。本地网络被神经递质替换。</td></tr>
                 </table>
             </div>
 
+            <!-- ================= 古神专属 Tab ================= -->
             <div id="tab-god-nodes" class="admin-tab" style="background:#1a0505;">
                 <div class="content-title" style="color:#f00; border-bottom: 2px solid #f00; text-shadow: 0 0 5px #f00; background: transparent;">血肉网络 - 已同化锚点 (ASSIMILATED_NODES)</div>
                 <div id="god-node-list" style="background:#0a0000; padding:15px; border:1px solid #f00; color:#f88; font-family:monospace; height:450px; overflow-y:auto; box-shadow: inset 0 0 20px #f00;"></div>
@@ -311,16 +260,6 @@
     let userIP = "127.0.0.1";
     let userLoc = "浙江省, 杭州市";
     let userLatLon = "30.2741, 120.1551";
-    const OBSERVATION_ANCHORS = [
-        { id: 'nanjiang-2007', kind: 'qimen', label: 'CHN_ZHEJIANG_HANGZHOU_NJDX_SOUTH_WAREHOUSE', lat: 30.29628, lng: 120.08812, zoom: 18, time: '2007-06-11T11:00:00' },
-        { id: 'xianyang', kind: 'node', label: 'CHN_SHAANXI_XIANYANG_PALACE_CORE_01', lat: 34.3296, lng: 108.7089, zoom: 16, time: 'B.C.0221-10-01T00:00:00' },
-        { id: 'whitechapel', kind: 'node', label: 'GBR_LONDON_WHITECHAPEL_NODE_ALPHA', lat: 51.5194, lng: -0.0619, zoom: 16, time: '1888-08-31T03:40:00' },
-        { id: 'timeline-1999', kind: 'node', label: 'SYS_TIMELINE_BOUNDARY_1999_OBSERVER_BASE_04', lat: 48.8584, lng: 2.2945, zoom: 16, time: '1999-08-11T11:11:00' },
-        { id: 'cheney-array', kind: 'node', label: 'USA_KANSAS_CHENEY_ANTENNA_ARRAY_09', lat: 37.6479, lng: -97.7818, zoom: 14, time: '2024-02-14T18:30:00' },
-        { id: 'current-user', kind: 'node', label: 'Topocentric Focus', lat: 30.2741, lng: 120.1551, zoom: 15, time: new Date().toISOString() },
-        { id: 'boston-shelter', kind: 'node', label: 'USA_MASSACHUSETTS_BOSTON_SHELTER_77', lat: 42.3601, lng: -71.0589, zoom: 15, time: '2077-10-23T09:42:00' },
-        { id: 'alpha-centauri', kind: 'node', label: 'CTR_ALPHA_RENAISSANCE_MATRIX_CORE', lat: -60.8339, lng: -64.4901, zoom: 6, time: '3102-12-31T23:59:59' }
-    ];
 
     fetch('https://ipapi.co/json/')
         .then(response => response.json())
@@ -328,9 +267,6 @@
             userIP = data.ip || "192.168.1.104";
             userLoc = `${data.city}, ${data.country_name}`;
             userLatLon = `${data.latitude}, ${data.longitude}`;
-            OBSERVATION_ANCHORS[5].label = `Topocentric Focus [ ${userLoc} ]`;
-            OBSERVATION_ANCHORS[5].lat = Number(data.latitude) || OBSERVATION_ANCHORS[5].lat;
-            OBSERVATION_ANCHORS[5].lng = Number(data.longitude) || OBSERVATION_ANCHORS[5].lng;
             document.getElementById('log-user-ip').innerText = userIP;
             document.getElementById('log-user-loc').innerText = userLoc;
             startBootSequence(); 
@@ -339,7 +275,6 @@
 
     let audioCtx = null;
     let heartbeatInterval = null;
-
     function initAudio() {
         if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         if (audioCtx.state === 'suspended') audioCtx.resume();
@@ -430,6 +365,7 @@
                 </div>
             `;
             
+            // 异化历史日志表
             const historyTab = document.getElementById('tab-history');
             historyTab.style.backgroundColor = "#1a0505";
             historyTab.querySelector('.content-title').style.cssText = "color:#f00; border-bottom: 2px solid #f00; text-shadow: 0 0 5px #f00; background: transparent;";
@@ -438,9 +374,9 @@
             historyTab.querySelectorAll('th').forEach(th => { th.style.backgroundColor = "#300"; th.style.color = "#f88"; th.style.borderColor = "#f00"; });
             historyTab.querySelectorAll('td').forEach(td => { td.style.borderColor = "#f00"; td.style.color = "#ccc"; });
             
-            document.querySelectorAll('.td-status').forEach((td, index) => {
-                const anchor = OBSERVATION_ANCHORS[index] || OBSERVATION_ANCHORS[5];
-                td.innerHTML = `<button class="btn-corrupted" style="padding:4px 10px; font-size:12px; cursor:pointer;" data-anchor="${anchor.id}" onclick="observeAnchor(event)">强制观测</button>`;
+            // 绑定法器警告按钮
+            document.querySelectorAll('.td-status').forEach(td => {
+                td.innerHTML = '<button class="btn-corrupted" style="padding:4px 10px; font-size:12px; cursor:pointer;" onclick="observeAnchor(event)">强制观测</button>';
             });
 
             terminal.style.color = "#f00";
@@ -479,6 +415,7 @@
                     <div class="menu-title">系统异常监控</div>
                     <ul class="menu-list" id="menu-list-2">
                         <li><a data-tab="tab-syslogs" class="pulse-text">底层异常日志 [WARN]</a></li>
+                        <li><a data-tab="tab-probes">防御探针日志</a></li>
                     </ul>
                 </div>
             `;
@@ -521,7 +458,7 @@
     // ================= 既济 (Admin) 专属：API 挖掘系统 =================
     function initApiSwarm() {
         initAudio(); const swarmArea = document.getElementById('swarm-area');
-        const nodeCount = 45; let nodesArray = [];
+        const nodeCount = 40; let nodesArray = [];
         const cityPool = [ "CHN_BEIJING_CAPITAL (北京市)", "CHN_SHANGHAI_NODE (上海市)", "USA_NEW_YORK (纽约)", "GBR_LONDON (伦敦)", userLoc ];
 
         // 致命节点：强制埋在最底层 zIndex = 1
@@ -537,7 +474,7 @@
         };
         nodesArray.push(fatalNodeHtml2007); nodesArray.push(fatalNodeHtml2026);
 
-        // 普通节点：覆盖在上方 zIndex = 10~99
+        // 普通节点：覆盖在上方 zIndex = 10~60
         for(let i = 0; i < nodeCount; i++) {
             const reqDate = new Date(Date.now() - Math.random() * 36000000);
             const reqTimeFull = reqDate.getFullYear() + "-" + String(reqDate.getMonth()+1).padStart(2,'0') + "-" + String(reqDate.getDate()).padStart(2,'0') + " " + String(reqDate.getHours()).padStart(2,'0') + ":" + String(reqDate.getMinutes()).padStart(2,'0') + ":" + String(reqDate.getSeconds()).padStart(2,'0');
@@ -552,14 +489,12 @@
         nodesArray.forEach((item) => {
             const node = document.createElement('div'); node.className = 'api-node';
             if (item.isKey) {
-                // 确保核心节点在中间附近，且永远在最底层（被覆盖）
                 node.style.left = `${30 + Math.random() * 20}%`; node.style.top = `${30 + Math.random() * 20}%`; 
-                node.style.zIndex = 1; 
+                node.style.zIndex = 1; // 最底层
                 node.style.borderColor = "#FF0000"; node.style.backgroundColor = "#FFF5F5"; node.style.boxShadow = "0 0 15px rgba(255,0,0,0.6)";
             } else {
-                // 普通节点随机分布，且具有更高的 z-index 用以掩盖
-                node.style.left = `${5 + Math.random() * 70}%`; node.style.top = `${5 + Math.random() * 75}%`; 
-                node.style.zIndex = 10 + Math.floor(Math.random() * 89); 
+                node.style.left = `${10 + Math.random() * 60}%`; node.style.top = `${10 + Math.random() * 60}%`; 
+                node.style.zIndex = 10 + Math.floor(Math.random() * 50); // 覆盖层
             }
             node.innerHTML = item.html; swarmArea.appendChild(node);
         });
@@ -570,6 +505,7 @@
         e.stopPropagation(); triggerFlash(); playSquishSound(); spawnFloatingText();  
         const node = btn.closest('.api-node'); node.classList.add('absorbed'); 
         
+        // 让已被吸纳的节点渐隐并删除，露出底层的致命节点
         setTimeout(() => { node.style.opacity = '0'; }, 600);
         setTimeout(() => { node.remove(); }, 1200);
 
@@ -592,7 +528,7 @@
         const whispers = [
             "门打不开了...", "救命...救命...", "全都是血...", "老四在烧...", 
             "不要看它的眼睛！", "卦象算错了...", "没用的，拔了插头也没用...",
-            "我能在墙壁里听到心跳...", "祂进来了...","我的肢体在哪..."
+            "我能在墙壁里听到心跳...", "它进来了..."
         ];
         let wHtml = "";
         for(let i=0; i<100; i++) {
@@ -603,82 +539,36 @@
         whisperBox.innerHTML = wHtml + wHtml; 
     }
 
-    // 古神观测锚点
+    // 古神观测锚点：最终的法器警告暗示
     window.observeAnchor = function(e) {
         e.stopPropagation();
         triggerFlash(); playSquishSound();
-        const hasArtifact = localStorage.getItem('artifact_mirror_found') === 'true';
-        const button = e.currentTarget || e.target;
-        const anchorId = button && button.getAttribute ? button.getAttribute('data-anchor') : 'current-user';
-        const anchor = OBSERVATION_ANCHORS.find(item => item.id === anchorId) || OBSERVATION_ANCHORS[5];
         setTimeout(() => {
-            if (!hasArtifact) {
-                alert("【SYSTEM FATAL：高维观测失败】\n\n检测到您缺失法器，无法观测该时空锚点。\n请回到表层，进入页脚的【溯源镜像】完成 4D 镜面锚点识别。");
-                return;
-            }
-            localStorage.setItem('njdx_bbs_2026_admin_verified', 'true');
-            localStorage.setItem('qmg_forced_observation', JSON.stringify(anchor));
-            alert(`【FORCED OBSERVATION：锚点响应】\n\n4D 镜面已完成识别。\n强制观测许可通过，正在观测：\n${anchor.label}\n${anchor.lat}, ${anchor.lng}`);
-            const target = new URL('4dMirror.html', window.location.href);
-            target.searchParams.set('mode', anchor.kind === 'qimen' || anchor.id === 'nanjiang-2007' ? 'story' : 'observe');
-            target.searchParams.set('observe', anchor.id);
-            target.searchParams.set('lat', anchor.lat);
-            target.searchParams.set('lng', anchor.lng);
-            target.searchParams.set('zoom', anchor.zoom || 15);
-            target.searchParams.set('label', anchor.label);
-            target.searchParams.set('title', anchor.label);
-            target.searchParams.set('kind', anchor.kind || 'node');
-            target.searchParams.set('time', anchor.time || new Date().toISOString());
-            window.location.href = target.href;
+            alert("【SYSTEM FATAL：高维观测失败】\n\n检测到您缺失法器，无法观测该时空锚点。\n请回到表层寻找您丢失的法器（镜）。");
         }, 100);
     }
 
-    // 【核心缝合】：审批危险API引发升维，跳转全屏血肉网络
+    // 审批危险API引发升维 (Admin -> God)
     window.triggerAssimilation = function(btn, e) {
         e.stopPropagation(); triggerFlash(); playSquishSound(); spawnFloatingText();
         const node = btn.closest('.api-node'); node.classList.add('absorbed');
         const swarm = document.getElementById('tab-swarm'); swarm.style.pointerEvents = 'none'; 
         document.body.style.filter = 'contrast(200%) saturate(150%) hue-rotate(-20deg) invert(10%)';
         
-        // 核心改动：写入神性视野标记 (下次进入直接展现古神后台)
         localStorage.setItem('god_perspective_unlocked', 'true');
         
         let flashCount = 0;
         const flashInterval = setInterval(() => {
             document.body.style.backgroundColor = flashCount % 2 === 0 ? "#f00" : "#000";
             spawnFloatingText(); playSquishSound(); flashCount++;
-            
             if (flashCount > 10) {
-                clearInterval(flashInterval); 
-                document.getElementById('wrap').style.opacity = '0';
-                
-                setTimeout(() => {
-                    document.getElementById('wrap').style.display = 'none';
-                    document.body.style.filter = 'none'; 
-                    document.body.style.backgroundColor = '#000';
-                    
-                    // 展现终极全屏血肉网络
-                    const finalTerm = document.getElementById('final-terminal'); 
-                    finalTerm.style.display = 'flex';
-                    
-                    startDeathHeartbeat(); 
-                    try { document.documentElement.requestFullscreen(); } catch(err){}
-
-                    // 8 秒后自动强制剥离至主站
-                    setTimeout(() => {
-                        window.location.href = 'bbs_2026_home.html';
-                    }, 8000);
-
-                }, 500);
+                clearInterval(flashInterval); document.getElementById('wrap').style.opacity = '0';
+                setTimeout(() => document.getElementById('wrap').style.display = 'none', 500);
+                document.body.style.filter = 'none'; document.body.style.backgroundColor = '#000';
+                const finalTerm = document.getElementById('final-terminal'); finalTerm.style.display = 'flex';
+                startDeathHeartbeat(); try { document.documentElement.requestFullscreen(); } catch(err){}
             }
         }, 150);
-    }
-
-    // 提前手动关闭全屏血肉网络，亦直接路由回主页
-    window.closeFinalTerminal = function() {
-        if(heartbeatInterval) clearInterval(heartbeatInterval);
-        try { if(document.fullscreenElement) document.exitFullscreen(); } catch(err){}
-        window.location.href = 'bbs_2026_home.html';
     }
 
     // 古神直接引发维度崩溃 (摧毁控制台，逼回主页)
@@ -686,6 +576,7 @@
         triggerFlash(); playSquishSound();
         document.body.style.filter = 'contrast(200%) saturate(150%) hue-rotate(-20deg) invert(10%)';
         
+        // 1. 物理撕裂：UI 崩塌
         document.querySelectorAll('.admin-tab, .sidebar, .header').forEach(el => {
             el.style.transition = "all 2.5s cubic-bezier(0.1, 0.8, 0.3, 1)";
             el.style.transform = `translate(${(Math.random()-0.5)*1000}px, ${(Math.random()-0.5)*1000}px) rotate(${(Math.random()-0.5)*90}deg) scale(0.5)`;
@@ -693,6 +584,7 @@
             el.style.pointerEvents = "none";
         });
 
+        // 2. 彻底黑屏
         let flashCount = 0;
         const flashInterval = setInterval(() => {
             document.body.style.backgroundColor = flashCount % 2 === 0 ? "#f00" : "#000";
@@ -703,6 +595,7 @@
                 document.body.style.filter = 'none'; 
                 document.body.style.backgroundColor = '#000';
                 
+                // 渲染最终的虚无深渊
                 document.body.innerHTML = `
                     <div style="height: 100vh; width: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; background: #000; box-sizing: border-box;">
                         <h1 style="color: #f00; font-family: 'SimSun', serif; font-size: 32px; text-shadow: 0 0 20px #f00; letter-spacing: 5px;">控制台物理载体已化为虚无</h1>
@@ -719,6 +612,20 @@
             }
         }, 150);
     }
+
+    window.closeFinalTerminal = function() {
+        if(heartbeatInterval) clearInterval(heartbeatInterval);
+        document.getElementById('final-terminal').style.display = 'none';
+        try { if(document.fullscreenElement) document.exitFullscreen(); } catch(err){}
+        const wrap = document.getElementById('wrap'); wrap.style.display = 'block';
+        setTimeout(() => { wrap.style.opacity = '1'; }, 50);
+        document.body.style.backgroundColor = '#1a0505';
+
+        if(!isGod) {
+            window.location.reload();
+        }
+    }
+
 </script>
 
 </body>
