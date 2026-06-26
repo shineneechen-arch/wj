@@ -124,6 +124,7 @@
                         <th width="35%">系统物理机组标识 (System/Topocentric Location)</th>
                         <th width="15%">权限状态 (Status)</th>
                     </tr>
+                    <tr><td>2007-06-11 11:00:00</td><td>API_BURNED_CORE / 192.168.0.12</td><td>CHN_ZHEJIANG_HANGZHOU_NJDX_SOUTH_WAREHOUSE (南江大学旧仓库)</td><td class="td-status" style="color:#888;">延期 (DELAYED)</td></tr>
                     <tr><td>B.C.0221-10-01 00:00:00</td><td>SYS_UNIX_RAW / [NON_DIGITAL]</td><td>CHN_SHAANXI_XIANYANG_PALACE_CORE_01 (地下深埋阵列)</td><td class="td-status" style="color:#888;">延期 (DELAYED)</td></tr>
                     <tr><td>1888-08-31 03:40:00</td><td>TELEGRAPH_HEX / 12.44.91.03</td><td>GBR_LONDON_WHITECHAPEL_NODE_ALPHA (差分机架)</td><td class="td-status" style="color:#888;">延期 (DELAYED)</td></tr>
                     <tr><td>1999-08-11 11:11:00</td><td>TCP_STATION_IV / 192.168.1.1</td><td>SYS_TIMELINE_BOUNDARY_1999_OBSERVER_BASE_04</td><td class="td-status" style="color:#888;">延期 (DELAYED)</td></tr>
@@ -241,13 +242,14 @@
     let userLoc = "浙江省, 杭州市";
     let userLatLon = "30.2741, 120.1551";
     const OBSERVATION_ANCHORS = [
-        { id: 'xianyang', label: 'CHN_SHAANXI_XIANYANG_PALACE_CORE_01', lat: 34.3296, lng: 108.7089, zoom: 16 },
-        { id: 'whitechapel', label: 'GBR_LONDON_WHITECHAPEL_NODE_ALPHA', lat: 51.5194, lng: -0.0619, zoom: 16 },
-        { id: 'timeline-1999', label: 'SYS_TIMELINE_BOUNDARY_1999_OBSERVER_BASE_04', lat: 48.8584, lng: 2.2945, zoom: 16 },
-        { id: 'cheney-array', label: 'USA_KANSAS_CHENEY_ANTENNA_ARRAY_09', lat: 37.6479, lng: -97.7818, zoom: 14 },
-        { id: 'current-user', label: 'Topocentric Focus', lat: 30.2741, lng: 120.1551, zoom: 15 },
-        { id: 'boston-shelter', label: 'USA_MASSACHUSETTS_BOSTON_SHELTER_77', lat: 42.3601, lng: -71.0589, zoom: 15 },
-        { id: 'alpha-centauri', label: 'CTR_ALPHA_RENAISSANCE_MATRIX_CORE', lat: -60.8339, lng: -64.4901, zoom: 6 }
+        { id: 'nanjiang-2007', kind: 'qimen', label: 'CHN_ZHEJIANG_HANGZHOU_NJDX_SOUTH_WAREHOUSE', lat: 30.29628, lng: 120.08812, zoom: 18, time: '2007-06-11T11:00:00' },
+        { id: 'xianyang', kind: 'node', label: 'CHN_SHAANXI_XIANYANG_PALACE_CORE_01', lat: 34.3296, lng: 108.7089, zoom: 16, time: 'B.C.0221-10-01T00:00:00' },
+        { id: 'whitechapel', kind: 'node', label: 'GBR_LONDON_WHITECHAPEL_NODE_ALPHA', lat: 51.5194, lng: -0.0619, zoom: 16, time: '1888-08-31T03:40:00' },
+        { id: 'timeline-1999', kind: 'node', label: 'SYS_TIMELINE_BOUNDARY_1999_OBSERVER_BASE_04', lat: 48.8584, lng: 2.2945, zoom: 16, time: '1999-08-11T11:11:00' },
+        { id: 'cheney-array', kind: 'node', label: 'USA_KANSAS_CHENEY_ANTENNA_ARRAY_09', lat: 37.6479, lng: -97.7818, zoom: 14, time: '2024-02-14T18:30:00' },
+        { id: 'current-user', kind: 'node', label: 'Topocentric Focus', lat: 30.2741, lng: 120.1551, zoom: 15, time: new Date().toISOString() },
+        { id: 'boston-shelter', kind: 'node', label: 'USA_MASSACHUSETTS_BOSTON_SHELTER_77', lat: 42.3601, lng: -71.0589, zoom: 15, time: '2077-10-23T09:42:00' },
+        { id: 'alpha-centauri', kind: 'node', label: 'CTR_ALPHA_RENAISSANCE_MATRIX_CORE', lat: -60.8339, lng: -64.4901, zoom: 6, time: '3102-12-31T23:59:59' }
     ];
 
     fetch('https://ipapi.co/json/')
@@ -256,9 +258,9 @@
             userIP = data.ip || "192.168.1.104";
             userLoc = `${data.city}, ${data.country_name}`;
             userLatLon = `${data.latitude}, ${data.longitude}`;
-            OBSERVATION_ANCHORS[4].label = `Topocentric Focus [ ${userLoc} ]`;
-            OBSERVATION_ANCHORS[4].lat = Number(data.latitude) || OBSERVATION_ANCHORS[4].lat;
-            OBSERVATION_ANCHORS[4].lng = Number(data.longitude) || OBSERVATION_ANCHORS[4].lng;
+            OBSERVATION_ANCHORS[5].label = `Topocentric Focus [ ${userLoc} ]`;
+            OBSERVATION_ANCHORS[5].lat = Number(data.latitude) || OBSERVATION_ANCHORS[5].lat;
+            OBSERVATION_ANCHORS[5].lng = Number(data.longitude) || OBSERVATION_ANCHORS[5].lng;
             document.getElementById('log-user-ip').innerText = userIP;
             document.getElementById('log-user-loc').innerText = userLoc;
             startBootSequence(); 
@@ -353,7 +355,7 @@
             
             // 绑定法器警告按钮
             document.querySelectorAll('.td-status').forEach((td, index) => {
-                const anchor = OBSERVATION_ANCHORS[index] || OBSERVATION_ANCHORS[4];
+                const anchor = OBSERVATION_ANCHORS[index] || OBSERVATION_ANCHORS[5];
                 td.innerHTML = `<button class="btn-corrupted" style="padding:4px 10px; font-size:12px; cursor:pointer;" data-anchor="${anchor.id}" onclick="observeAnchor(event)">强制观测</button>`;
             });
 
@@ -523,21 +525,25 @@
         const hasArtifact = localStorage.getItem('artifact_mirror_found') === 'true';
         const button = e.currentTarget || e.target;
         const anchorId = button && button.getAttribute ? button.getAttribute('data-anchor') : 'current-user';
-        const anchor = OBSERVATION_ANCHORS.find(item => item.id === anchorId) || OBSERVATION_ANCHORS[4];
+        const anchor = OBSERVATION_ANCHORS.find(item => item.id === anchorId) || OBSERVATION_ANCHORS[5];
         setTimeout(() => {
             if (!hasArtifact) {
-                alert("【SYSTEM FATAL：高维观测失败】\n\n检测到您缺失法器，无法观测该时空锚点);
+                alert("【SYSTEM FATAL：高维观测失败】\n\n检测到您缺失法器，无法观测该时空锚点。\n请回到表层，进入页脚的【溯源镜像】完成 4D 镜面锚点识别。");
                 return;
             }
             localStorage.setItem('njdx_bbs_2026_admin_verified', 'true');
             localStorage.setItem('qmg_forced_observation', JSON.stringify(anchor));
             alert(`【FORCED OBSERVATION：锚点响应】\n\n4D 镜面已完成识别。\n强制观测许可通过，正在观测：\n${anchor.label}\n${anchor.lat}, ${anchor.lng}`);
             const target = new URL('4dMirror.html', window.location.href);
+            target.searchParams.set('mode', anchor.kind === 'qimen' || anchor.id === 'nanjiang-2007' ? 'story' : 'observe');
             target.searchParams.set('observe', anchor.id);
             target.searchParams.set('lat', anchor.lat);
             target.searchParams.set('lng', anchor.lng);
             target.searchParams.set('zoom', anchor.zoom || 15);
             target.searchParams.set('label', anchor.label);
+            target.searchParams.set('title', anchor.label);
+            target.searchParams.set('kind', anchor.kind || 'node');
+            target.searchParams.set('time', anchor.time || new Date().toISOString());
             window.location.href = target.href;
         }, 100);
     }
