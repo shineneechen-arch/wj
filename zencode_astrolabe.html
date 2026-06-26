@@ -715,11 +715,23 @@ const lblR = new CSS2DRenderer();
 lblR.setSize(window.innerWidth,window.innerHeight);
 Object.assign(lblR.domElement.style,{position:'absolute',top:'0',pointerEvents:'none',zIndex:'5'});
 if(wrap) wrap.appendChild(lblR.domElement);
-const composer = new EffectComposer(renderer);
-composer.addPass(new RenderPass(scene,camera));
-const bloom = new UnrealBloomPass(new THREE.Vector2(window.innerWidth,window.innerHeight),0.65,0.5,0.72);
-composer.addPass(bloom);
-composer.addPass(new OutputPass());
+let composer = null;
+let bloom = null;
+function createSafeComposer() {
+  try {
+    const c = new EffectComposer(renderer);
+    c.addPass(new RenderPass(scene,camera));
+    bloom = new UnrealBloomPass(new THREE.Vector2(window.innerWidth,window.innerHeight),0.65,0.5,0.72);
+    c.addPass(bloom);
+    c.addPass(new OutputPass());
+    return c;
+  } catch (err) {
+    console.warn('[Astrolabe] Postprocessing disabled:', err);
+    bloom = null;
+    return null;
+  }
+}
+composer = createSafeComposer();
 const OCtrl = new TrackballControls(camera, renderer.domElement);
 OCtrl.rotateSpeed = isMobile ? 2.5 : 3.5;
 OCtrl.zoomSpeed = isMobile ? 0.8 : 1.2;
@@ -1754,7 +1766,8 @@ function animate() {
   if (HORROR.active) updateHorror(dt, t);
 
   updateMeteors(dt);
-  composer.render(dt);
+  if (composer) composer.render(dt);
+  else renderer.render(scene, camera);
   lblR.render(scene, camera);
 }
 
@@ -1829,8 +1842,10 @@ function initButtons() {
 
   window.addEventListener('resize',()=>{
     camera.aspect=window.innerWidth/window.innerHeight;camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth,window.innerHeight);composer.setSize(window.innerWidth,window.innerHeight);
-    bloom.setSize(window.innerWidth,window.innerHeight);lblR.setSize(window.innerWidth,window.innerHeight);
+    renderer.setSize(window.innerWidth,window.innerHeight);
+    if(composer) composer.setSize(window.innerWidth,window.innerHeight);
+    if(bloom) bloom.setSize(window.innerWidth,window.innerHeight);
+    lblR.setSize(window.innerWidth,window.innerHeight);
     if(OCtrl&&OCtrl.handleResize)OCtrl.handleResize();
   });
 }
@@ -1849,7 +1864,9 @@ Promise.all(texPromises).then(() => {
 });
 
 } catch(err) {
-  alert('3D星象引擎加載失敗: '+err.message);
+  const msg = err && err.message ? err.message : String(err);
+  const isWebgl = /webgl|context|renderer/i.test(msg);
+  alert('3D星象引擎加載失敗: ' + msg + (isWebgl ? '\n\nPC端請檢查瀏覽器硬件加速 / WebGL 是否被禁用。' : ''));
   console.error(err);
 }
 </script>
