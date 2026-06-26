@@ -91,6 +91,9 @@
 
         .hack-transition { position: fixed; inset: 0; background: #000; color: #0F0; display: flex; flex-direction: column; justify-content: center; align-items: center; font-family: 'Courier New', Courier, monospace; z-index: 10000; text-align: center; animation: glitch-bg 0.1s infinite; }
         @keyframes glitch-bg { 0%{transform:translate(0)} 20%{transform:translate(-2px,2px)} 40%{transform:translate(2px,-2px)} 60%{transform:translate(-2px,-2px)} 80%{transform:translate(2px,2px)} 100%{transform:translate(0)} }
+        
+        /* 登录提示动态校验样式 */
+        .login-hint { height: 16px; font-size: 12px; font-weight: bold; margin-top: 4px; transition: color 0.2s; }
     </style>
 </head>
 <body>
@@ -450,7 +453,7 @@
 <div id="login-modal" class="modal-overlay">
     <div class="login-box">
         <div class="modal-header">
-            <span>系统安全校验 (Security Override)</span>
+            <span>系统安全校验 (Security Override) <span style="font-weight: normal; color: #CCC; font-size: 12px; margin-left: 8px;">欢迎新同学</span></span>
             <span onclick="document.getElementById('login-modal').style.display='none'" style="cursor:pointer;">X</span>
         </div>
         <div class="modal-body">
@@ -460,7 +463,10 @@
             <table style="width: 100%; line-height: 2.5; font-size: 14px;">
                 <tr>
                     <td style="width: 30%; text-align: right; padding-right: 10px;">授权账户：</td>
-                    <td><input type="text" id="login-user" style="border:1px solid #ccc; padding:6px; color:#333; font-weight:bold; width: 180px; outline:none;" autocomplete="off"></td>
+                    <td style="line-height: 1.2;">
+                        <input type="text" id="login-user" oninput="checkUsernameInput()" style="border:1px solid #ccc; padding:6px; color:#333; font-weight:bold; width: 180px; outline:none;" autocomplete="off">
+                        <div id="username-hint" class="login-hint"></div>
+                    </td>
                 </tr>
                 <tr>
                     <td style="text-align: right; padding-right: 10px;">验证密钥：</td>
@@ -491,6 +497,33 @@
     }
     setInterval(updateTime, 1000);
     updateTime();
+
+    // ================= 登录提示动态校验逻辑 =================
+    function checkUsernameInput() {
+        const userInput = document.getElementById('login-user').value.trim();
+        const hintEl = document.getElementById('username-hint');
+        
+        if (userInput === '') {
+            hintEl.innerText = '';
+            return;
+        }
+
+        // 完整正确输入 (兼容即济和既济)
+        if (userInput === '26级_既济' || userInput === '26级_即济' || userInput === 'Admin') {
+            hintEl.style.color = '#4CAF50'; // 绿色
+            hintEl.innerText = '用户数据已校准';
+        } 
+        // 包含部分关键字，但不完整
+        else if (userInput.includes('26') || userInput.includes('级') || userInput.includes('既') || userInput.includes('济') || userInput.includes('即') || userInput.includes('_')) {
+            hintEl.style.color = '#FF9800'; // 黄橙色
+            hintEl.innerText = '检索到关联碎片 (请核实完整格式)';
+        } 
+        // 毫不沾边的其他输入
+        else {
+            hintEl.style.color = '#F44336'; // 红色
+            hintEl.innerText = '数据库未收录';
+        }
+    }
 
     // ================= 访客权限拦截系统 (双重安全拦截验证) =================
     (function bindClickInterceptor() {
@@ -593,11 +626,15 @@
         const user = document.getElementById('login-user').value.trim();
         const pwd = document.getElementById('login-pwd').value.trim();
         
-        // 核心密码：26级_既济 / 101010
-        if(user === '26级_既济' && pwd === '101010') {
+        // 核心密码：26级_既济 / 101010 （兼容 即济）
+        if((user === '26级_既济' || user === '26级_即济') && pwd === '101010') {
             localStorage.setItem('njdx_bbs_override', 'true');
             document.getElementById('login-modal').style.display = 'none';
             applyLoggedInState(true); 
+        } else if(user === 'Admin' && pwd === 'GodMode') {
+            // 核心登录：开启观测者视角
+            localStorage.setItem('god_perspective_unlocked', 'true');
+            window.location.reload();
         } else {
             document.getElementById('error').style.display = 'block';
         }
@@ -676,7 +713,7 @@
                 cpLink.style.color = "#FF0000";
                 cpLink.onclick = function(e) { 
                     e.preventDefault();
-                    alert("【SYSTEM WARNING：控制台物理链路断裂】\n\n您虽已取得当前表层节点(2026)的观测权，但核心控制台的物理链路已被隐藏。\n必须先在数据残骸中找到真正的【2026溯源管理终端】入口，建立底层通信协议后才能彻底贯通高维通道！");
+                    alert("【SYSTEM WARNING：控制台物理链路断裂】\n\n您虽已取得当前表层节点(2026)的观测权，但核心控制台的物理链路已被隐藏。\n必须先在数据残骸中真正的【2026溯源管理终端】入口，建立底层通信协议后才能彻底贯通高维通道！");
                 };
             }
         };
