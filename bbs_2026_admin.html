@@ -240,6 +240,15 @@
     let userIP = "127.0.0.1";
     let userLoc = "浙江省, 杭州市";
     let userLatLon = "30.2741, 120.1551";
+    const OBSERVATION_ANCHORS = [
+        { id: 'xianyang', label: 'CHN_SHAANXI_XIANYANG_PALACE_CORE_01', lat: 34.3296, lng: 108.7089, zoom: 16 },
+        { id: 'whitechapel', label: 'GBR_LONDON_WHITECHAPEL_NODE_ALPHA', lat: 51.5194, lng: -0.0619, zoom: 16 },
+        { id: 'timeline-1999', label: 'SYS_TIMELINE_BOUNDARY_1999_OBSERVER_BASE_04', lat: 48.8584, lng: 2.2945, zoom: 16 },
+        { id: 'cheney-array', label: 'USA_KANSAS_CHENEY_ANTENNA_ARRAY_09', lat: 37.6479, lng: -97.7818, zoom: 14 },
+        { id: 'current-user', label: 'Topocentric Focus', lat: 30.2741, lng: 120.1551, zoom: 15 },
+        { id: 'boston-shelter', label: 'USA_MASSACHUSETTS_BOSTON_SHELTER_77', lat: 42.3601, lng: -71.0589, zoom: 15 },
+        { id: 'alpha-centauri', label: 'CTR_ALPHA_RENAISSANCE_MATRIX_CORE', lat: -60.8339, lng: -64.4901, zoom: 6 }
+    ];
 
     fetch('https://ipapi.co/json/')
         .then(response => response.json())
@@ -247,6 +256,9 @@
             userIP = data.ip || "192.168.1.104";
             userLoc = `${data.city}, ${data.country_name}`;
             userLatLon = `${data.latitude}, ${data.longitude}`;
+            OBSERVATION_ANCHORS[4].label = `Topocentric Focus [ ${userLoc} ]`;
+            OBSERVATION_ANCHORS[4].lat = Number(data.latitude) || OBSERVATION_ANCHORS[4].lat;
+            OBSERVATION_ANCHORS[4].lng = Number(data.longitude) || OBSERVATION_ANCHORS[4].lng;
             document.getElementById('log-user-ip').innerText = userIP;
             document.getElementById('log-user-loc').innerText = userLoc;
             startBootSequence(); 
@@ -340,8 +352,9 @@
             historyTab.querySelectorAll('td').forEach(td => { td.style.borderColor = "#f00"; td.style.color = "#ccc"; });
             
             // 绑定法器警告按钮
-            document.querySelectorAll('.td-status').forEach(td => {
-                td.innerHTML = '<button class="btn-corrupted" style="padding:4px 10px; font-size:12px; cursor:pointer;" onclick="observeAnchor(event)">强制观测</button>';
+            document.querySelectorAll('.td-status').forEach((td, index) => {
+                const anchor = OBSERVATION_ANCHORS[index] || OBSERVATION_ANCHORS[4];
+                td.innerHTML = `<button class="btn-corrupted" style="padding:4px 10px; font-size:12px; cursor:pointer;" data-anchor="${anchor.id}" onclick="observeAnchor(event)">强制观测</button>`;
             });
 
             terminal.style.color = "#f00";
@@ -507,8 +520,25 @@
     window.observeAnchor = function(e) {
         e.stopPropagation();
         triggerFlash(); playSquishSound();
+        const hasArtifact = localStorage.getItem('artifact_mirror_found') === 'true';
+        const button = e.currentTarget || e.target;
+        const anchorId = button && button.getAttribute ? button.getAttribute('data-anchor') : 'current-user';
+        const anchor = OBSERVATION_ANCHORS.find(item => item.id === anchorId) || OBSERVATION_ANCHORS[4];
         setTimeout(() => {
-            alert("【SYSTEM FATAL：高维观测失败】\n\n检测到您缺失法器，无法观测该时空锚点。\n请回到表层寻找您丢失的法器（鉴）。");
+            if (!hasArtifact) {
+                alert("【SYSTEM FATAL：高维观测失败】\n\n检测到您缺失法器，无法观测该时空锚点。\n请回到表层，进入页脚的【溯源镜像】完成 4D 镜面锚点识别。");
+                return;
+            }
+            localStorage.setItem('njdx_bbs_2026_admin_verified', 'true');
+            localStorage.setItem('qmg_forced_observation', JSON.stringify(anchor));
+            alert(`【FORCED OBSERVATION：锚点响应】\n\n4D 镜面已完成识别。\n强制观测许可通过，正在观测：\n${anchor.label}\n${anchor.lat}, ${anchor.lng}`);
+            const target = new URL('4dMirror.html', window.location.href);
+            target.searchParams.set('observe', anchor.id);
+            target.searchParams.set('lat', anchor.lat);
+            target.searchParams.set('lng', anchor.lng);
+            target.searchParams.set('zoom', anchor.zoom || 15);
+            target.searchParams.set('label', anchor.label);
+            window.location.href = target.href;
         }, 100);
     }
 
