@@ -559,6 +559,15 @@
 
         bindTabEvents();
 
+        // 确保启动时根据状态激活对应的第一个面板
+        if (isGod) {
+            document.getElementById('tab-god-nodes').classList.add('active');
+            document.getElementById('tab-swarm').classList.remove('active');
+        } else {
+            document.getElementById('tab-swarm').classList.add('active');
+            document.getElementById('tab-god-nodes').classList.remove('active');
+        }
+
         let delay = 0;
         logs.forEach((log, index) => {
             setTimeout(() => {
@@ -630,7 +639,6 @@
 
     function initGodMatrix() {
         initAudio();
-        document.getElementById('tab-god-nodes').classList.add('active');
 
         const nodeList = document.getElementById('god-node-list');
         const phrases = ["意识已剥离", "神经束接入完成", "灵魂化为养料", "物理躯体碳化中", "绝望波动已归档"];
