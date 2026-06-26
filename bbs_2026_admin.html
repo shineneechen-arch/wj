@@ -4,7 +4,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>控制面板 - 南江大学星火BBS</title>
     <script type="text/javascript">
-        // 强制路由保护：如果既不是管理员也不是古神，直接踢回主页，防止逃课
+        // 强制路由保护：防止逃课
         const isGod = localStorage.getItem('god_perspective_unlocked') === 'true';
         const isLogged = localStorage.getItem('njdx_bbs_override') === 'true';
         if (!isGod && !isLogged) {
@@ -66,7 +66,6 @@
         .btn-approve { background: #336699; color: #FFF; border: 1px solid #2B5E8A; padding: 4px 10px; cursor: pointer; font-size: 12px; font-family: SimSun; }
         .btn-approve:hover { background: #FF0000; border-color: #900; }
 
-        /* 批准后的异化状态 */
         .api-node.absorbed { background: #2a0505 !important; border: 1px solid #ff0000 !important; box-shadow: 0 0 15px rgba(255,0,0,0.5); justify-content: center; align-items: center; pointer-events: none; }
         .api-node.absorbed * { display: none; }
         .api-node.absorbed::after { content: "[ 已 融 合 ]"; color: #ff3333; font-size: 24px; font-weight: bold; letter-spacing: 4px; text-shadow: 0 0 8px #f00; display: block; }
@@ -87,17 +86,9 @@
         .btn-corrupted { background: #4a0000 !important; color: #ff5555 !important; border-color: #ff0000 !important; box-shadow: 0 0 10px #f00; font-weight: 900; text-shadow: 0 0 5px #f00; letter-spacing: 2px; }
         .btn-corrupted:hover { background: #ff0000 !important; color: #fff !important; }
         
-        /* 终极全屏屏幕 */
-        #final-terminal { display: none; position: fixed; inset: 0; z-index: 999999; background: linear-gradient(to bottom, #121212 15%, #b30006 15%); overflow: hidden; }
-        #final-bg-image { position: absolute; inset: 0; background-image: url('flesh_eye.jpg'); background-size: cover; background-position: center; opacity: 0.85; mix-blend-mode: normal; filter: blur(3px) contrast(150%) saturate(140%); animation: digital-corruption-loop 0.25s infinite linear; z-index: 1; -webkit-backface-visibility: hidden; backface-visibility: hidden; -webkit-transform: translate3d(0, 0, 0); transform: translate3d(0, 0, 0); }
-        #final-bg-image::before { content: ""; position: absolute; inset: 0; background: repeating-linear-gradient(0deg, rgba(0,0,0,0.35), rgba(0,0,0,0.35) 2px, transparent 2px, transparent 4px); pointer-events: none; z-index: 2; }
-        @keyframes digital-corruption-loop { 0% { filter: blur(4px) contrast(200%) saturate(130%); transform: scale(1) translate(0, 0); } 15% { filter: blur(2px) contrast(280%) hue-rotate(-15deg); transform: scale(1.03) translate(-4px, 3px); } 30% { filter: blur(7px) contrast(150%) brightness(1.2); transform: scale(0.98) translate(5px, -2px); opacity: 0.75; } 45% { clip-path: polygon(0 35%, 100% 35%, 100% 42%, 0 42%); transform: translateX(-25px); } 60% { clip-path: none; filter: blur(3px) contrast(250%) invert(5%); transform: scale(1.05) translate(-2px, -3px); } 85% { clip-path: polygon(0 75%, 100% 75%, 100% 88%, 0 88%); transform: translateX(30px) hue-rotate(45deg); } 100% { clip-path: none; filter: blur(5px) contrast(210%); transform: scale(1.01) translate(2px, 2px); } }
+        /* 终极全屏屏幕 (此处仅保留逻辑所需框架) */
+        #final-terminal { display: none; position: fixed; inset: 0; z-index: 999999; background: #000; overflow: hidden; }
         .final-content-wrapper { position: relative; z-index: 10; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; pointer-events: none; }
-        .final-close-btn { position: absolute; top: 20px; right: 30px; font-size: 50px; color: rgba(255,255,255,0.3); background: none; border: none; cursor: pointer; transition: color 0.3s, transform 0.2s; z-index: 9999999; pointer-events: auto; }
-        .final-close-btn:hover { color: #ffffff; transform: scale(1.1); text-shadow: 0 0 10px #f00; }
-        .final-title { position: absolute; top: 15%; transform: translateY(-50%); left: 0; width: 100%; text-align: center; white-space: nowrap; font-size: 3.8rem; letter-spacing: 0.1em; color: #e60000; font-family: 'SimSun', serif; font-weight: bold; text-shadow: 3px 3px 15px rgba(0,0,0,0.9), 0 0 30px rgba(255,0,0,0.6); animation: textFocus-extreme 4s cubic-bezier(0.1, 0.8, 0.3, 1) forwards; filter: blur(8px); }
-        .final-subtitle { position: absolute; bottom: 20%; left: 0; width: 100%; text-align: center; white-space: nowrap; font-size: 1.5rem; color: #3a0000; font-family: 'Courier New', Courier, monospace; letter-spacing: 0.2em; font-weight: bold; text-shadow: 0 0 5px rgba(0,0,0,0.5); }
-        @keyframes textFocus-extreme { 100% { filter: blur(0px); transform: translateY(-50%) scale(1.02); } }
     </style>
 </head>
 <body>
@@ -114,19 +105,16 @@
     </div>
 
     <div class="admin-container">
-        <!-- 侧边栏：初始化时由JS决定加载哪一套 -->
         <div class="sidebar" id="main-sidebar"></div>
 
         <div class="content">
             <div id="embedded-terminal"></div>
 
-            <!-- ================= 人类管理员 Tab (默认) ================= -->
             <div id="tab-swarm" class="admin-tab">
                 <div class="content-title">API 接入请求总览 - 待审批队列 (999+)</div>
                 <div id="swarm-area"></div>
             </div>
 
-            <!-- 历史日志区：神明与人类共用，神明视角下可互动 -->
             <div id="tab-history" class="admin-tab">
                 <div class="content-title">跨维度 API 申请日志归档 (ARCHIVE_NODE_LOGS)</div>
                 <table class="data-table">
@@ -197,7 +185,6 @@
                 </table>
             </div>
 
-            <!-- ================= 古神专属 Tab ================= -->
             <div id="tab-god-nodes" class="admin-tab" style="background:#1a0505;">
                 <div class="content-title" style="color:#f00; border-bottom: 2px solid #f00; text-shadow: 0 0 5px #f00; background: transparent;">血肉网络 - 已同化锚点 (ASSIMILATED_NODES)</div>
                 <div id="god-node-list" style="background:#0a0000; padding:15px; border:1px solid #f00; color:#f88; font-family:monospace; height:450px; overflow-y:auto; box-shadow: inset 0 0 20px #f00;"></div>
@@ -222,14 +209,7 @@
     </div>
 </div>
 
-<div id="final-terminal">
-    <div id="final-bg-image"></div>
-    <div class="final-content-wrapper">
-        <button class="final-close-btn" onclick="closeFinalTerminal()">×</button>
-        <h1 class="final-title">歡迎加入永恆的星空血肉網絡。</h1>
-        <p class="final-subtitle">[ UPLINK SECURED. ]</p>
-    </div>
-</div>
+<div id="final-terminal"></div>
 
 <script type="text/javascript">
     function updateTime() {
@@ -274,7 +254,6 @@
         .catch(() => { startBootSequence(); });
 
     let audioCtx = null;
-    let heartbeatInterval = null;
     function initAudio() {
         if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         if (audioCtx.state === 'suspended') audioCtx.resume();
@@ -295,20 +274,6 @@
         gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
         noiseSource.connect(filter); filter.connect(gain); gain.connect(audioCtx.destination);
         noiseSource.start();
-    }
-
-    function startDeathHeartbeat() {
-        initAudio();
-        if (heartbeatInterval) clearInterval(heartbeatInterval);
-        heartbeatInterval = setInterval(() => {
-            const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain(); const filter = audioCtx.createBiquadFilter();
-            filter.type = 'lowpass'; filter.frequency.value = 150;
-            osc.connect(filter); filter.connect(gain); gain.connect(audioCtx.destination);
-            osc.type = 'sine'; osc.frequency.setValueAtTime(60, audioCtx.currentTime); osc.frequency.exponentialRampToValueAtTime(10, audioCtx.currentTime + 0.5);
-            gain.gain.setValueAtTime(3.0, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
-            osc.start(); osc.stop(audioCtx.currentTime + 0.5);
-            playSquishSound(1.2); 
-        }, 500); 
     }
 
     function triggerFlash() {
@@ -505,7 +470,6 @@
         e.stopPropagation(); triggerFlash(); playSquishSound(); spawnFloatingText();  
         const node = btn.closest('.api-node'); node.classList.add('absorbed'); 
         
-        // 让已被吸纳的节点渐隐并删除，露出底层的致命节点
         setTimeout(() => { node.style.opacity = '0'; }, 600);
         setTimeout(() => { node.remove(); }, 1200);
 
@@ -528,7 +492,7 @@
         const whispers = [
             "门打不开了...", "救命...救命...", "全都是血...", "老四在烧...", 
             "不要看它的眼睛！", "卦象算错了...", "没用的，拔了插头也没用...",
-            "我能在墙壁里听到心跳...", "它进来了..."
+            "我能在墙壁里听到心跳...", "祂进来了...","我的肢体在哪..."
         ];
         let wHtml = "";
         for(let i=0; i<100; i++) {
@@ -544,7 +508,7 @@
         e.stopPropagation();
         triggerFlash(); playSquishSound();
         setTimeout(() => {
-            alert("【SYSTEM FATAL：高维观测失败】\n\n检测到您缺失法器，无法观测该时空锚点。\n请回到表层寻找您丢失的法器（镜）。");
+            alert("【SYSTEM FATAL：高维观测失败】\n\n检测到您缺失法器，无法观测该时空锚点。\n请回到表层寻找您丢失的法器（鉴）。");
         }, 100);
     }
 
@@ -563,10 +527,10 @@
             spawnFloatingText(); playSquishSound(); flashCount++;
             if (flashCount > 10) {
                 clearInterval(flashInterval); document.getElementById('wrap').style.opacity = '0';
-                setTimeout(() => document.getElementById('wrap').style.display = 'none', 500);
-                document.body.style.filter = 'none'; document.body.style.backgroundColor = '#000';
-                const finalTerm = document.getElementById('final-terminal'); finalTerm.style.display = 'flex';
-                startDeathHeartbeat(); try { document.documentElement.requestFullscreen(); } catch(err){}
+                setTimeout(() => {
+                    // 完成异化，直接在当前页面热刷新，载入古神版 UI
+                    window.location.reload(); 
+                }, 500);
             }
         }, 150);
     }
@@ -612,20 +576,6 @@
             }
         }, 150);
     }
-
-    window.closeFinalTerminal = function() {
-        if(heartbeatInterval) clearInterval(heartbeatInterval);
-        document.getElementById('final-terminal').style.display = 'none';
-        try { if(document.fullscreenElement) document.exitFullscreen(); } catch(err){}
-        const wrap = document.getElementById('wrap'); wrap.style.display = 'block';
-        setTimeout(() => { wrap.style.opacity = '1'; }, 50);
-        document.body.style.backgroundColor = '#1a0505';
-
-        if(!isGod) {
-            window.location.reload();
-        }
-    }
-
 </script>
 
 </body>
