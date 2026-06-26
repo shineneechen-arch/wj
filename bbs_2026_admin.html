@@ -4,7 +4,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>控制面板 - 南江大学星火BBS</title>
     <script type="text/javascript">
-        // 强制路由保护：如果既不是管理员也不是古神，直接踢回主页，防止通过URL逃课
+        // 强制路由保护：如果既不是管理员也不是古神，直接踢回主页，防止逃课
         const isGod = localStorage.getItem('god_perspective_unlocked') === 'true';
         const isLogged = localStorage.getItem('njdx_bbs_override') === 'true';
         if (!isGod && !isLogged) {
@@ -23,174 +23,81 @@
         .header { border-bottom: 3px solid #336699; padding-bottom: 10px; margin-bottom: 15px; font-weight: bold; font-size: 14px; display: flex; justify-content: space-between; align-items: flex-end; transition: background-color 1s, border-color 1s;}
         .logo-text { font-family: "Microsoft YaHei", "黑体", sans-serif; font-size: 24px; color: #336699; transition: color 1s;}
         
-        /* 顶部返回按钮 */
-        .btn-close-return {
-            font-weight: bold; color: #336699; font-size: 16px; 
-            border: 1px solid #A6CBE7; padding: 4px 10px; background: #F0F5FA; cursor: pointer; transition: 0.2s;
-        }
+        .btn-close-return { font-weight: bold; color: #336699; font-size: 16px; border: 1px solid #A6CBE7; padding: 4px 10px; background: #F0F5FA; cursor: pointer; transition: 0.2s; }
         .btn-close-return:hover { background: #FF0000; color: #FFF; border-color: #900; }
         .btn-close-return span { color: #FF0000; font-weight: 900; }
         .btn-close-return:hover span { color: #FFF; }
 
         .admin-container { display: flex; border: 1px solid #A6CBE7; background: #FFF; height: 75vh; position: relative; transition: border-color 1s;}
         
-        /* 左侧菜单栏 */
         .sidebar { width: 220px; background: #F0F5FA; border-right: 1px solid #A6CBE7; padding: 10px 0; z-index: 90; overflow-y: auto; transition: background-color 1s, border-color 1s; }
         .menu-group { margin-bottom: 15px; }
         .menu-title { background: #EBF2F8; padding: 6px 15px; font-weight: bold; color: #336699; border-top: 1px solid #FFF; border-bottom: 1px solid #D5E4F1; font-size: 13px; }
         .menu-list { list-style: none; margin: 0; padding: 0; }
         .menu-list li a { display: block; padding: 8px 15px 8px 25px; color: #333; border-bottom: 1px dashed #D5E4F1; transition: background 0.2s; cursor: pointer; }
         .menu-list li a:hover, .menu-list li a.active { background: #FFF; color: #FF6600; font-weight: bold; border-left: 3px solid #FF6600; padding-left: 22px; }
-        .menu-list li a.disabled { color: #aaa; text-decoration: line-through; cursor: not-allowed; border-left: none; }
-        .menu-list li a.disabled:hover { background: transparent; padding-left: 25px; }
 
-        /* 右侧内容区 */
         .content { flex: 1; padding: 0; background: transparent; position: relative; overflow: hidden; }
-        
-        /* TABS 逻辑 */
         .admin-tab { position: absolute; inset: 0; padding: 20px; overflow-y: auto; display: none; background: #FFF; z-index: 50; transition: background-color 1s;}
         .admin-tab.active { display: block; }
-
         .content-title { font-size: 16px; font-weight: bold; border-bottom: 2px solid #A6CBE7; padding-bottom: 8px; margin-bottom: 20px; color: #336699; position: relative; z-index: 60; background: rgba(255,255,255,0.9); transition: background-color 1s, border-color 1s, color 1s;}
         
-        /* 表格通用样式 */
-        .data-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom: 20px; border: 1px solid #A6CBE7; }
-        .data-table th { background: #F0F5FA; border: 1px solid #A6CBE7; padding: 10px; text-align: left; color: #336699; font-weight: bold; }
-        .data-table td { border: 1px solid #A6CBE7; padding: 10px; color: #444; }
-        .data-table tr:nth-child(even) { background-color: #F9FBFE; }
-        .data-table tr:hover { background-color: #FFF0F0; }
+        .data-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom: 20px; border: 1px solid #A6CBE7; transition: border-color 1s;}
+        .data-table th { background: #F0F5FA; border: 1px solid #A6CBE7; padding: 10px; text-align: left; color: #336699; font-weight: bold; transition: all 1s;}
+        .data-table td { border: 1px solid #A6CBE7; padding: 10px; color: #444; transition: all 1s;}
+        .data-table tr:nth-child(even) { background-color: rgba(249, 251, 254, 0.5); }
+        .data-table tr:hover { background-color: rgba(255, 240, 240, 0.5); }
 
-        /* ================= 嵌入式绿色终端 ================= */
-        #embedded-terminal {
-            position: absolute; inset: 0; background: #051005; color: #0f0; 
-            font-family: 'Courier New', Courier, monospace; font-size: 14px; padding: 20px;
-            z-index: 100; overflow: hidden; display: flex; flex-direction: column;
-            box-shadow: inset 0 0 20px #000; transition: opacity 1s;
-        }
+        #embedded-terminal { position: absolute; inset: 0; background: #051005; color: #0f0; font-family: 'Courier New', Courier, monospace; font-size: 14px; padding: 20px; z-index: 100; overflow: hidden; display: flex; flex-direction: column; box-shadow: inset 0 0 20px #000; transition: opacity 1s; }
         .term-line { margin-bottom: 6px; opacity: 0; text-shadow: 0 0 5px #0f0; transition: color 0.5s, text-shadow 0.5s; }
 
         /* ================= API 密集请求群 ================= */
         #swarm-area { position: relative; width: 100%; height: calc(100% - 50px); }
-
         .api-node {
             position: absolute; background: #F9FBFE; border: 1px solid #A6CBE7; 
             padding: 8px 12px; font-size: 12px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
             transition: all 0.3s; cursor: crosshair; display: flex; flex-direction: column; gap: 5px;
             width: 280px; min-height: 100px;
         }
-        .api-node:hover { z-index: 1000 !important; border-color: #FF0000; background: #FFF0F0; transform: scale(1.05); }
-        
+        .api-node:hover { border-color: #FF0000; background: #FFF0F0; transform: scale(1.05); }
         .node-header { font-weight: bold; color: #336699; font-family: Tahoma; font-size: 11px; border-bottom: 1px dashed #CCC; padding-bottom: 3px;}
         .node-body { color: #555; line-height: 1.4; }
         .node-action { text-align: right; margin-top: auto; }
-        
         .btn-approve { background: #336699; color: #FFF; border: 1px solid #2B5E8A; padding: 4px 10px; cursor: pointer; font-size: 12px; font-family: SimSun; }
         .btn-approve:hover { background: #FF0000; border-color: #900; }
 
         /* 批准后的异化状态 */
-        .api-node.absorbed { 
-            background: #2a0505 !important;
-            border: 1px solid #ff0000 !important; 
-            box-shadow: 0 0 15px rgba(255,0,0,0.5);
-            justify-content: center; align-items: center;
-            pointer-events: none;
-        }
+        .api-node.absorbed { background: #2a0505 !important; border: 1px solid #ff0000 !important; box-shadow: 0 0 15px rgba(255,0,0,0.5); justify-content: center; align-items: center; pointer-events: none; }
         .api-node.absorbed * { display: none; }
-        .api-node.absorbed::after {
-            content: "[ 已 融 合 ]"; color: #ff3333; font-size: 24px; font-weight: bold;
-            letter-spacing: 4px; text-shadow: 0 0 8px #f00; display: block;
-        }
+        .api-node.absorbed::after { content: "[ 已 融 合 ]"; color: #ff3333; font-size: 24px; font-weight: bold; letter-spacing: 4px; text-shadow: 0 0 8px #f00; display: block; }
 
         /* 屏闪特效 */
-        #flash-overlay {
-            position: fixed; inset: 0; background: #ff0000; z-index: 100000;
-            opacity: 0; pointer-events: none; transition: opacity 0.05s; mix-blend-mode: multiply;
-        }
+        #flash-overlay { position: fixed; inset: 0; background: #ff0000; z-index: 100000; opacity: 0; pointer-events: none; transition: opacity 0.05s; mix-blend-mode: multiply; }
+        .floating-text { position: fixed; bottom: -50px; color: #ff0000; font-size: 24px; font-weight: bold; font-family: "Microsoft YaHei", "黑体", sans-serif; text-shadow: 0 0 10px #ff0000, 0 0 20px #800000; z-index: 99990; pointer-events: none; animation: floatUp 3.5s ease-in forwards; opacity: 0.8; }
+        @keyframes floatUp { 0% { bottom: -50px; opacity: 1; transform: scale(1); } 100% { bottom: 100vh; opacity: 0; transform: scale(1.8); letter-spacing: 8px; } }
 
-        /* 向上浮动的血字 */
-        .floating-text {
-            position: fixed; bottom: -50px;
-            color: #ff0000; font-size: 24px; font-weight: bold;
-            font-family: "Microsoft YaHei", "黑体", sans-serif;
-            text-shadow: 0 0 10px #ff0000, 0 0 20px #800000;
-            z-index: 99990; pointer-events: none;
-            animation: floatUp 3.5s ease-in forwards;
-            opacity: 0.8;
-        }
-        @keyframes floatUp {
-            0% { bottom: -50px; opacity: 1; transform: scale(1); }
-            100% { bottom: 100vh; opacity: 0; transform: scale(1.8); letter-spacing: 8px; }
-        }
-
-        /* 动画：脉冲发光 */
         @keyframes pulse-red { 0% { color: #D32F2F; text-shadow: 0 0 0px #F00; } 50% { color: #FF0000; text-shadow: 0 0 8px #F00; } 100% { color: #D32F2F; text-shadow: 0 0 0px #F00; } }
         .pulse-text { animation: pulse-red 1.5s infinite; font-weight: bold; }
 
         /* ================= 神明视角专属 CSS ================= */
         .god-list-item { border-bottom: 1px dotted #f00; padding: 10px 0; font-size: 13px; line-height: 1.5; color: #f88; }
         .god-list-item span { color: #fff; font-weight: bold; }
-        @keyframes scrollUpInf { 0% { transform: translateY(100%); } 100% { transform: translateY(-100%); } }
-        
-        /* ================= 完美复刻的终极全屏屏幕 ================= */
-        #final-terminal {
-            display: none; position: fixed; inset: 0; z-index: 999999;
-            background: linear-gradient(to bottom, #121212 15%, #b30006 15%);
-            overflow: hidden;
-        }
+        @keyframes scrollUpInf { 0% { transform: translateY(0); } 100% { transform: translateY(-50%); } }
 
-        #final-bg-image {
-            position: absolute; inset: 0; background-image: url('flesh_eye.jpg'); 
-            background-size: cover; background-position: center; opacity: 0.85; 
-            mix-blend-mode: normal; filter: blur(3px) contrast(150%) saturate(140%);
-            animation: digital-corruption-loop 0.25s infinite linear; z-index: 1;
-            -webkit-backface-visibility: hidden; backface-visibility: hidden;
-            -webkit-transform: translate3d(0, 0, 0); transform: translate3d(0, 0, 0);
-        }
-        
-        #final-bg-image::before {
-            content: ""; position: absolute; inset: 0;
-            background: repeating-linear-gradient(0deg, rgba(0,0,0,0.35), rgba(0,0,0,0.35) 2px, transparent 2px, transparent 4px);
-            pointer-events: none; z-index: 2;
-        }
-
-        @keyframes digital-corruption-loop {
-            0% { filter: blur(4px) contrast(200%) saturate(130%); transform: scale(1) translate(0, 0); }
-            15% { filter: blur(2px) contrast(280%) hue-rotate(-15deg); transform: scale(1.03) translate(-4px, 3px); }
-            30% { filter: blur(7px) contrast(150%) brightness(1.2); transform: scale(0.98) translate(5px, -2px); opacity: 0.75; }
-            45% { clip-path: polygon(0 35%, 100% 35%, 100% 42%, 0 42%); transform: translateX(-25px); }
-            60% { clip-path: none; filter: blur(3px) contrast(250%) invert(5%); transform: scale(1.05) translate(-2px, -3px); }
-            85% { clip-path: polygon(0 75%, 100% 75%, 100% 88%, 0 88%); transform: translateX(30px) hue-rotate(45deg); }
-            100% { clip-path: none; filter: blur(5px) contrast(210%); transform: scale(1.01) translate(2px, 2px); }
-        }
-
-        .final-content-wrapper {
-            position: relative; z-index: 10; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; pointer-events: none;
-        }
-
-        .final-close-btn {
-            position: absolute; top: 20px; right: 30px; font-size: 50px; 
-            color: rgba(255,255,255,0.3); background: none; border: none; cursor: pointer;
-            transition: color 0.3s, transform 0.2s; z-index: 9999999; pointer-events: auto;
-        }
-        .final-close-btn:hover { color: #ffffff; transform: scale(1.1); text-shadow: 0 0 10px #f00; }
-        
-        .final-title {
-            position: absolute; top: 15%; transform: translateY(-50%); left: 0; width: 100%; text-align: center; white-space: nowrap; 
-            font-size: 3.8rem; letter-spacing: 0.1em; color: #e60000; 
-            font-family: 'SimSun', serif; font-weight: bold; text-shadow: 3px 3px 15px rgba(0,0,0,0.9), 0 0 30px rgba(255,0,0,0.6);
-            animation: textFocus-extreme 4s cubic-bezier(0.1, 0.8, 0.3, 1) forwards; filter: blur(8px);
-        }
-        .final-subtitle {
-            position: absolute; bottom: 20%; left: 0; width: 100%; text-align: center; white-space: nowrap;
-            font-size: 1.5rem; color: #3a0000; font-family: 'Courier New', Courier, monospace; letter-spacing: 0.2em; font-weight: bold; text-shadow: 0 0 5px rgba(0,0,0,0.5);
-        }
-        @keyframes textFocus-extreme { 100% { filter: blur(0px); transform: translateY(-50%) scale(1.02); } }
-
-        .btn-corrupted {
-            background: #4a0000 !important; color: #ff5555 !important; border-color: #ff0000 !important;
-            box-shadow: 0 0 10px #f00; font-weight: 900; text-shadow: 0 0 5px #f00; letter-spacing: 2px;
-        }
+        .btn-corrupted { background: #4a0000 !important; color: #ff5555 !important; border-color: #ff0000 !important; box-shadow: 0 0 10px #f00; font-weight: 900; text-shadow: 0 0 5px #f00; letter-spacing: 2px; }
         .btn-corrupted:hover { background: #ff0000 !important; color: #fff !important; }
+        
+        /* 终极全屏屏幕 */
+        #final-terminal { display: none; position: fixed; inset: 0; z-index: 999999; background: linear-gradient(to bottom, #121212 15%, #b30006 15%); overflow: hidden; }
+        #final-bg-image { position: absolute; inset: 0; background-image: url('flesh_eye.jpg'); background-size: cover; background-position: center; opacity: 0.85; mix-blend-mode: normal; filter: blur(3px) contrast(150%) saturate(140%); animation: digital-corruption-loop 0.25s infinite linear; z-index: 1; -webkit-backface-visibility: hidden; backface-visibility: hidden; -webkit-transform: translate3d(0, 0, 0); transform: translate3d(0, 0, 0); }
+        #final-bg-image::before { content: ""; position: absolute; inset: 0; background: repeating-linear-gradient(0deg, rgba(0,0,0,0.35), rgba(0,0,0,0.35) 2px, transparent 2px, transparent 4px); pointer-events: none; z-index: 2; }
+        @keyframes digital-corruption-loop { 0% { filter: blur(4px) contrast(200%) saturate(130%); transform: scale(1) translate(0, 0); } 15% { filter: blur(2px) contrast(280%) hue-rotate(-15deg); transform: scale(1.03) translate(-4px, 3px); } 30% { filter: blur(7px) contrast(150%) brightness(1.2); transform: scale(0.98) translate(5px, -2px); opacity: 0.75; } 45% { clip-path: polygon(0 35%, 100% 35%, 100% 42%, 0 42%); transform: translateX(-25px); } 60% { clip-path: none; filter: blur(3px) contrast(250%) invert(5%); transform: scale(1.05) translate(-2px, -3px); } 85% { clip-path: polygon(0 75%, 100% 75%, 100% 88%, 0 88%); transform: translateX(30px) hue-rotate(45deg); } 100% { clip-path: none; filter: blur(5px) contrast(210%); transform: scale(1.01) translate(2px, 2px); } }
+        .final-content-wrapper { position: relative; z-index: 10; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; pointer-events: none; }
+        .final-close-btn { position: absolute; top: 20px; right: 30px; font-size: 50px; color: rgba(255,255,255,0.3); background: none; border: none; cursor: pointer; transition: color 0.3s, transform 0.2s; z-index: 9999999; pointer-events: auto; }
+        .final-close-btn:hover { color: #ffffff; transform: scale(1.1); text-shadow: 0 0 10px #f00; }
+        .final-title { position: absolute; top: 15%; transform: translateY(-50%); left: 0; width: 100%; text-align: center; white-space: nowrap; font-size: 3.8rem; letter-spacing: 0.1em; color: #e60000; font-family: 'SimSun', serif; font-weight: bold; text-shadow: 3px 3px 15px rgba(0,0,0,0.9), 0 0 30px rgba(255,0,0,0.6); animation: textFocus-extreme 4s cubic-bezier(0.1, 0.8, 0.3, 1) forwards; filter: blur(8px); }
+        .final-subtitle { position: absolute; bottom: 20%; left: 0; width: 100%; text-align: center; white-space: nowrap; font-size: 1.5rem; color: #3a0000; font-family: 'Courier New', Courier, monospace; letter-spacing: 0.2em; font-weight: bold; text-shadow: 0 0 5px rgba(0,0,0,0.5); }
+        @keyframes textFocus-extreme { 100% { filter: blur(0px); transform: translateY(-50%) scale(1.02); } }
     </style>
 </head>
 <body>
@@ -207,17 +114,19 @@
     </div>
 
     <div class="admin-container">
-        <div class="sidebar" id="main-sidebar">
-            </div>
+        <!-- 侧边栏：初始化时由JS决定加载哪一套 -->
+        <div class="sidebar" id="main-sidebar"></div>
 
         <div class="content">
             <div id="embedded-terminal"></div>
 
+            <!-- ================= 人类管理员 Tab (默认) ================= -->
             <div id="tab-swarm" class="admin-tab">
                 <div class="content-title">API 接入请求总览 - 待审批队列 (999+)</div>
                 <div id="swarm-area"></div>
             </div>
 
+            <!-- 历史日志区：神明与人类共用，神明视角下可互动 -->
             <div id="tab-history" class="admin-tab">
                 <div class="content-title">跨维度 API 申请日志归档 (ARCHIVE_NODE_LOGS)</div>
                 <table class="data-table">
@@ -227,51 +136,28 @@
                         <th width="35%">系统物理机组标识 (System/Topocentric Location)</th>
                         <th width="15%">权限状态 (Status)</th>
                     </tr>
-                    <tr><td>B.C.0221-10-01 00:00:00</td><td>SYS_UNIX_RAW / [NON_DIGITAL]</td><td>CHN_SHAANXI_XIANYANG_PALACE_CORE_01 (地下深埋不變陣列)</td><td style="color:#888;">延期 (DELAYED)</td></tr>
-                    <tr><td>1888-08-31 03:40:00</td><td>TELEGRAPH_HEX / 12.44.91.03</td><td>GBR_LONDON_WHITECHAPEL_NODE_ALPHA (蒸氣動力差分機架)</td><td style="color:#888;">延期 (DELAYED)</td></tr>
-                    <tr><td>1999-08-11 11:11:00</td><td>TCP_STATION_IV / 192.168.1.1</td><td>SYS_TIMELINE_BOUNDARY_1999_OBSERVER_BASE_04</td><td style="color:#888;">延期 (DELAYED)</td></tr>
-                    <tr><td>2024-02-14 18:30:00</td><td>HTTPS_UPLINK / 104.28.19.45</td><td>USA_KANSAS_CHENEY_ANTENNA_ARRAY_09 (高空對流電波段)</td><td style="color:#888;">延期 (DELAYED)</td></tr>
+                    <tr><td>B.C.0221-10-01 00:00:00</td><td>SYS_UNIX_RAW / [NON_DIGITAL]</td><td>CHN_SHAANXI_XIANYANG_PALACE_CORE_01 (地下深埋阵列)</td><td class="td-status" style="color:#888;">延期 (DELAYED)</td></tr>
+                    <tr><td>1888-08-31 03:40:00</td><td>TELEGRAPH_HEX / 12.44.91.03</td><td>GBR_LONDON_WHITECHAPEL_NODE_ALPHA (差分机架)</td><td class="td-status" style="color:#888;">延期 (DELAYED)</td></tr>
+                    <tr><td>1999-08-11 11:11:00</td><td>TCP_STATION_IV / 192.168.1.1</td><td>SYS_TIMELINE_BOUNDARY_1999_OBSERVER_BASE_04</td><td class="td-status" style="color:#888;">延期 (DELAYED)</td></tr>
+                    <tr><td>2024-02-14 18:30:00</td><td>HTTPS_UPLINK / 104.28.19.45</td><td>USA_KANSAS_CHENEY_ANTENNA_ARRAY_09 (高空电波段)</td><td class="td-status" style="color:#888;">延期 (DELAYED)</td></tr>
                     <tr>
                         <td>2026-06-23 <span class="time-display-short"></span></td>
                         <td>HTTPS_NODE / <span id="log-user-ip">127.0.0.1</span></td>
                         <td>Topocentric Focus [ <span id="log-user-loc">定位中...</span> ]</td>
-                        <td style="color:#888;">延期 (DELAYED)</td>
+                        <td class="td-status" style="color:#888;">延期 (DELAYED)</td>
                     </tr>
-                    <tr><td>2077-10-23 09:42:00</td><td>NEURAL_BROADCAST / [IPv8_CORE]</td><td>USA_MASSACHUSETTS_BOSTON_SHELTER_77 (深層避難所陣列)</td><td style="color:#888;">延期 (DELAYED)</td></tr>
-                    <tr><td>3102-12-31 23:59:59</td><td>QUANTUM_ENTANGLE / [ERR_STB]</td><td>CTR_ALPHA_RENAISSANCE_MATRIX_CORE (半人馬座遺蹟主板)</td><td style="color:#888;">延期 (DELAYED)</td></tr>
-                    <tr style="background:#1a0505; border: 2px solid #F00; border-bottom: 1px dashed #600;">
-                        <td class="red bold" style="color:#f88;">2026-06-23 <span style="background:#f00; color:#f00; padding: 0 4px; font-weight:bold; letter-spacing:-2px;">██:██:██</span></td>
-                        <td class="red bold" style="color:#f88;">RESONANCE_DATA_STREAM</td>
-                        <td class="red bold" style="color:#f88;">CHN_SICHUAN_CHENGDU_DEEP_CORE_02 (西南深地主控機組)</td>
-                        <td class="red bold pulse-text" style="font-size:15px; color:#ff3333; text-shadow: 0 0 5px #f00;">苏醒 (AWAKENED)</td>
-                    </tr>
-                    <tr style="background:#3a0000; border: 2px solid #F00; border-top: none;">
-                        <td class="red bold" style="color:#FFF;">2007-06-11 11:00:00</td>
-                        <td class="red bold" style="color:#FFF;">192.168.0.12</td>
-                        <td class="red bold" style="color:#FFF;">CHN_ZHEJIANG_HANGZHOU_NANJIANG_CAMPUS_B4 (南江機房終端)</td>
-                        <td class="red bold pulse-text" style="font-size:15px; color:#FFF; text-shadow: 0 0 10px #f00;">降临 (DESCENDED)</td>
-                    </tr>
+                    <tr><td>2077-10-23 09:42:00</td><td>NEURAL_BROADCAST / [IPv8_CORE]</td><td>USA_MASSACHUSETTS_BOSTON_SHELTER_77 (避难所阵列)</td><td class="td-status" style="color:#888;">延期 (DELAYED)</td></tr>
+                    <tr><td>3102-12-31 23:59:59</td><td>QUANTUM_ENTANGLE / [ERR_STB]</td><td>CTR_ALPHA_RENAISSANCE_MATRIX_CORE (半人马座遗迹)</td><td class="td-status" style="color:#888;">延期 (DELAYED)</td></tr>
                 </table>
             </div>
 
             <div id="tab-bazi" class="admin-tab">
                 <div class="content-title" style="color:#D32F2F; border-bottom-color:#D32F2F;">底层八字排盘逻辑损坏状态 (ENGINE_CORRUPTION)</div>
                 <table class="data-table" style="border-color:#D32F2F;">
-                    <tr style="background:#FFEBEB;">
-                        <th width="15%" style="color:#D32F2F;">严重度</th><th width="20%" style="color:#D32F2F;">时间</th><th width="65%" style="color:#D32F2F;">异常事件描述</th>
-                    </tr>
-                    <tr>
-                        <td><b style="color:#e74c3c">[FATAL]</b></td><td>2026-06-23 <span class="time-display-short"></span></td>
-                        <td>大运(Great Luck)推演节点异常：起始锚点已被强行重置为 2007，当前流年算力已被未知灵体接管。</td>
-                    </tr>
-                    <tr>
-                        <td><b style="color:#c0392b">[CRITICAL]</b></td><td>2026-06-23 03:12:05</td>
-                        <td>岁星(Jupiter)引力波与太岁星(Tai Sui)地支逻辑发生致命缠结！<br><span style="color:#ff0000; font-weight:bold;">警告：两者物理定义不可混淆，请立即物理切断木星观测站的链接！</span></td>
-                    </tr>
-                    <tr>
-                        <td><b style="color:#8e44ad">[ANOMALY]</b></td><td>2026-06-23 01:44:12</td>
-                        <td>内存泄漏：天干地支五行生克矩阵发生自噬，系统主板检测到实质性的“血流”痕迹。</td>
-                    </tr>
+                    <tr style="background:#FFEBEB;"><th width="15%" style="color:#D32F2F;">严重度</th><th width="20%" style="color:#D32F2F;">时间</th><th width="65%" style="color:#D32F2F;">异常事件描述</th></tr>
+                    <tr><td><b style="color:#e74c3c">[FATAL]</b></td><td>2026-06-23 <span class="time-display-short"></span></td><td>大运推演节点异常：起始锚点已被强行重置为 2007，算力已被接管。</td></tr>
+                    <tr><td><b style="color:#c0392b">[CRITICAL]</b></td><td>2026-06-23 03:12:05</td><td>岁星引力波与太岁逻辑致命缠结！<br><span style="color:#f00; font-weight:bold;">警告：请物理切断木星观测站！</span></td></tr>
+                    <tr><td><b style="color:#8e44ad">[ANOMALY]</b></td><td>2026-06-23 01:44:12</td><td>五行生克矩阵发生自噬，主板检测到实质性血流痕迹。</td></tr>
                 </table>
             </div>
 
@@ -280,13 +166,12 @@
                 <div style="background:#051005; color:#0f0; padding:15px; font-family:monospace; font-size:13px; line-height:1.8; border:1px solid #333; height: 450px; overflow-y:auto;">
                     > [INIT] 正在重载奇门遁甲 (QIMEN_MATRIX) 底层防御栅格...<br>
                     > [OK] 惊门 (Door of Fear) / 兑宫 - 逻辑门暂时闭合。<br>
-                    > <span style="color:#e67e22;">[WARN] 杜门 (Door of Hiding) / 巽宫 - 隐藏协议与隔离沙盒出现物理性撕裂。曾经被屏蔽的[不可名状物]已暴露。</span><br>
-                    > <span style="color:#e67e22;">[WARN] 景门 (Door of Scenery) / 离宫 - 离火算力受潮，光学探针传回极度浓稠的红色液滴图像。</span><br>
+                    > <span style="color:#e67e22;">[WARN] 杜门 (Door of Hiding) / 巽宫 - 隐藏协议与隔离沙盒出现物理性撕裂。</span><br>
+                    > <span style="color:#e67e22;">[WARN] 景门 (Door of Scenery) / 离宫 - 离火算力受潮，光学探针传回红色液滴。</span><br>
                     > <span style="color:#ff5555;">[CRITICAL] 生门 (Door of Life) / 艮宫 - 发生恶性溢出异常！</span><br>
-                    > <span style="color:#ff5555;">[CRITICAL] 分析报告：系统中的“生”概念已被异化。检测到无序的细胞分裂、脏器畸胎与血管增生。</span><br>
-                    > <span style="color:#ff0000; font-weight:bold;">[FATAL] 逻辑反转！危险并非来自【死门】！它们正在利用【生门】的繁衍属性进行指数级血肉复制！</span><br>
-                    > [ERR] 阵图崩塌，天蓬星(大凶)质量无限坍缩，化为血肉奇点...<br>
-                    > <span class="pulse-text" style="color:#ff0000;">[SYS_MSG] 门已大开。“它们”正从生门的肉巢中挤出，顺着网线爬向你的现实。不要回头。</span>
+                    > <span style="color:#ff0000; font-weight:bold;">[FATAL] 逻辑反转！危险并非来自死门！它们正在利用生门进行指数级血肉复制！</span><br>
+                    > [ERR] 阵图崩塌，天蓬星质量坍缩...<br>
+                    > <span class="pulse-text" style="color:#ff0000;">[SYS_MSG] 门已大开。“它们”正顺着网线爬向你的现实。不要回头。</span>
                 </div>
             </div>
 
@@ -295,14 +180,8 @@
                 <table class="data-table">
                     <tr><th width="20%">挂载点 / 盘符</th><th width="30%">介质类型</th><th width="30%">容量占用</th><th width="20%">坏死块 / 溃烂区</th></tr>
                     <tr><td>/dev/sda1</td><td>硅基晶体固态盘</td><td>500GB / 500GB (100%)</td><td style="color:#444;">0</td></tr>
-                    <tr>
-                        <td>/dev/mapper/meat_root</td><td>有机质神经束</td><td style="color:#D32F2F; font-weight:bold;">42.1 PB / ∞ (无法测算)</td>
-                        <td class="pulse-text" style="color:#D32F2F;">快速增生中</td>
-                    </tr>
-                    <tr style="background:#FFF0F0;">
-                        <td>/mnt/abyss</td><td>未名温血软体组织</td><td style="color:#D32F2F; font-weight:bold;">正在吞噬同级目录</td>
-                        <td style="color:#D32F2F; font-weight:bold;">全盘腐败</td>
-                    </tr>
+                    <tr><td>/dev/mapper/meat_root</td><td>有机质神经束</td><td style="color:#D32F2F; font-weight:bold;">42.1 PB / ∞ (无法测算)</td><td class="pulse-text" style="color:#D32F2F;">快速增生中</td></tr>
+                    <tr style="background:#FFF0F0;"><td>/mnt/abyss</td><td>未名温血软体组织</td><td style="color:#D32F2F; font-weight:bold;">正在吞噬同级目录</td><td style="color:#D32F2F; font-weight:bold;">全盘腐败</td></tr>
                 </table>
             </div>
 
@@ -310,41 +189,24 @@
                 <div class="content-title" style="color:#D32F2F; border-bottom-color:#D32F2F;">底层异常日志 [ SYS_WARN ]</div>
                 <table class="data-table" style="border-color:#D32F2F;">
                     <tr style="background:#FFEBEB;"><th width="15%" style="color:#D32F2F;">级别</th><th width="20%" style="color:#D32F2F;">时间</th><th width="65%" style="color:#D32F2F;">事件描述</th></tr>
-                    <tr><td><b style="color:#e67e22">[WARN]</b></td><td>2026-06-23 02:14:05</td><td>机房 B 区二层检测到大规模不明有机物增生，湿度异常超标。</td></tr>
-                    <tr><td><b style="color:#e74c3c">[FATAL]</b></td><td>2026-06-23 04:33:12</td><td>主服务器冷却液已被不明红色粘稠液体替换，核心温度持续飙升，无法降温。</td></tr>
-                    <tr><td><b style="color:#c0392b">[ERROR]</b></td><td>2026-06-23 07:12:44</td><td>用户 UID:404 (江泊甲) 尝试强行注销。系统已执行物理级切割与记忆剥离程序。</td></tr>
-                    <tr><td><b style="color:#8e44ad">[ANOMALY]</b></td><td>2026-06-23 09:01:00</td><td>收到来自深空的低频广播信号。正在尝试解析为《易经》六十四卦矩阵...</td></tr>
-                    <tr><td><b style="color:#c0392b">[ERROR]</b></td><td>2026-06-23 <span class="time-display-short"></span></td><td>TCP/IP 协议栈崩溃。本地网络已被血肉神经递质完全替换。</td></tr>
+                    <tr><td><b style="color:#e67e22">[WARN]</b></td><td>2026-06-23 02:14:05</td><td>机房 B 区检测到有机物增生。</td></tr>
+                    <tr><td><b style="color:#e74c3c">[FATAL]</b></td><td>2026-06-23 04:33:12</td><td>主服务器冷却液已被粘稠液体替换，温度飙升。</td></tr>
+                    <tr><td><b style="color:#c0392b">[ERROR]</b></td><td>2026-06-23 07:12:44</td><td>UID:404 尝试强行注销。系统已执行切割。</td></tr>
+                    <tr><td><b style="color:#8e44ad">[ANOMALY]</b></td><td>2026-06-23 09:01:00</td><td>收到深空低频信号，尝试解析为《易经》矩阵...</td></tr>
+                    <tr><td><b style="color:#c0392b">[ERROR]</b></td><td>2026-06-23 <span class="time-display-short"></span></td><td>协议栈崩溃。本地网络被神经递质替换。</td></tr>
                 </table>
             </div>
 
-            <div id="tab-probes" class="admin-tab">
-                <div class="content-title">防御探针遥测日志 (PROBE_LOGS)</div>
-                <div style="background:#000; color:#0f0; padding:15px; font-family:monospace; font-size:13px; line-height:1.8; border:1px solid #333; height: 450px; overflow-y:auto;">
-                    > [<span class="probe-time" data-offset="-1020"></span>] 探针 #01 部署至公网层，信标回传：状态正常。<br>
-                    > [<span class="probe-time" data-offset="-698"></span>] 探针 #02 穿透暗网洋葱路由边界，未发现逻辑错误，状态正常。<br>
-                    > [<span class="probe-time" data-offset="-255"></span>] 探针 #03 遭遇严重的时空维度撕裂。正在尝试重建画面...<br>
-                    > [<span class="probe-time" data-offset="-252"></span>] 探针 #03 画面传输成功。分析：视野内全都是跳动的肉块与血管。<br>
-                    > <span style="color:#ff5555;">[<span class="probe-time" data-offset="-119"></span>] 探针 #04 失去网络信号。最后回传音频：骨骼碎裂声与密集的咀嚼声。</span><br>
-                    > <span style="color:#ff5555;">[<span class="probe-time" data-offset="-116"></span>] 探针 #05 失去网络信号。</span><br>
-                    > <span style="color:#ff5555;">[<span class="probe-time" data-offset="-111"></span>] 探针 #06 失去网络信号。</span><br>
-                    > [<span class="probe-time" data-offset="-30"></span>] 探针核心母体发生 logic 倒转。<br>
-                    > <span style="color:#ff0000; font-weight:bold; font-size:15px;">[<span class="probe-time" data-offset="0"></span>] 警告：所有失联探针已被同化并反叛。它们正在顺着网线向主服务器爬来。</span><br>
-                    > <span class="pulse-text" style="color:#ff0000;">[实时] 它们就在门外。</span>
-                </div>
-            </div>
-
+            <!-- ================= 古神专属 Tab ================= -->
             <div id="tab-god-nodes" class="admin-tab" style="background:#1a0505;">
                 <div class="content-title" style="color:#f00; border-bottom: 2px solid #f00; text-shadow: 0 0 5px #f00; background: transparent;">血肉网络 - 已同化锚点 (ASSIMILATED_NODES)</div>
-                <div id="god-node-list" style="background:#0a0000; padding:15px; border:1px solid #f00; color:#f88; font-family:monospace; height:450px; overflow-y:auto; box-shadow: inset 0 0 20px #f00;">
-                    </div>
+                <div id="god-node-list" style="background:#0a0000; padding:15px; border:1px solid #f00; color:#f88; font-family:monospace; height:450px; overflow-y:auto; box-shadow: inset 0 0 20px #f00;"></div>
             </div>
 
             <div id="tab-god-whispers" class="admin-tab" style="background:#1a0505;">
                 <div class="content-title" style="color:#f00; border-bottom: 2px solid #f00; text-shadow: 0 0 5px #f00; background: transparent;">集体潜意识海 (COLLECTIVE_UNCONSCIOUS_SCREAM)</div>
                 <div style="background:#000; border:1px solid #f00; height: 450px; overflow: hidden; position: relative;">
-                    <div id="god-whisper-box" style="position:absolute; width:100%; font-size: 16px; line-height: 2; padding: 20px; color: #d32f2f; text-shadow:0 0 5px #f00; animation: scrollUpInf 15s linear infinite;">
-                        </div>
+                    <div id="god-whisper-box" style="position:absolute; width:100%; font-size: 16px; line-height: 2; padding: 20px; color: #d32f2f; text-shadow:0 0 5px #f00; animation: scrollUpInf 15s linear infinite;"></div>
                 </div>
             </div>
 
@@ -379,19 +241,6 @@
     }
     setInterval(updateTime, 1000);
     updateTime();
-
-    function updateProbeTimes() {
-        const now = new Date();
-        document.querySelectorAll('.probe-time').forEach(el => {
-            const offset = parseInt(el.getAttribute('data-offset')) || 0;
-            const logTime = new Date(now.getTime() + offset * 1000); 
-            const tStr = String(logTime.getHours()).padStart(2, '0') + ":" + 
-                         String(logTime.getMinutes()).padStart(2, '0') + ":" + 
-                         String(logTime.getSeconds()).padStart(2, '0');
-            el.innerText = tStr;
-        });
-    }
-    updateProbeTimes(); 
 
     function bindTabEvents() {
         document.querySelectorAll('.menu-list a[data-tab]').forEach(link => {
@@ -510,11 +359,26 @@
                     <ul class="menu-list" id="menu-list-god">
                         <li><a class="active" data-tab="tab-god-nodes" style="color:#f88; border-color:#800;">现实侵蚀节点</a></li>
                         <li><a data-tab="tab-god-whispers" style="color:#f88; border-color:#800;">潜意识海捕获</a></li>
+                        <li><a data-tab="tab-history" style="color:#f88; border-color:#800;">历史维变日志 [残卷]</a></li>
                         <li><a data-tab="tab-god-override" class="pulse-text" style="color:#f00; border-color:#800;">[ 终极降临阵列 ]</a></li>
                     </ul>
                 </div>
             `;
             
+            // 异化历史日志表
+            const historyTab = document.getElementById('tab-history');
+            historyTab.style.backgroundColor = "#1a0505";
+            historyTab.querySelector('.content-title').style.cssText = "color:#f00; border-bottom: 2px solid #f00; text-shadow: 0 0 5px #f00; background: transparent;";
+            historyTab.querySelector('.content-title').innerText = "跨维度 API 申请日志 [残卷]";
+            historyTab.querySelectorAll('.data-table').forEach(t => t.style.borderColor = "#f00");
+            historyTab.querySelectorAll('th').forEach(th => { th.style.backgroundColor = "#300"; th.style.color = "#f88"; th.style.borderColor = "#f00"; });
+            historyTab.querySelectorAll('td').forEach(td => { td.style.borderColor = "#f00"; td.style.color = "#ccc"; });
+            
+            // 绑定法器警告按钮
+            document.querySelectorAll('.td-status').forEach(td => {
+                td.innerHTML = '<button class="btn-corrupted" style="padding:4px 10px; font-size:12px; cursor:pointer;" onclick="observeAnchor(event)">强制观测</button>';
+            });
+
             terminal.style.color = "#f00";
             terminal.style.textShadow = "0 0 5px #f00";
 
@@ -559,7 +423,6 @@
 
         bindTabEvents();
 
-        // 确保启动时根据状态激活对应的第一个面板
         if (isGod) {
             document.getElementById('tab-god-nodes').classList.add('active');
             document.getElementById('tab-swarm').classList.remove('active');
@@ -592,11 +455,26 @@
 
     let corruptionLevel = 0;
 
+    // ================= 既济 (Admin) 专属：API 挖掘系统 =================
     function initApiSwarm() {
         initAudio(); const swarmArea = document.getElementById('swarm-area');
-        const nodeCount = 35; let nodesArray = [];
+        const nodeCount = 40; let nodesArray = [];
         const cityPool = [ "CHN_BEIJING_CAPITAL (北京市)", "CHN_SHANGHAI_NODE (上海市)", "USA_NEW_YORK (纽约)", "GBR_LONDON (伦敦)", userLoc ];
 
+        // 致命节点：强制埋在最底层 zIndex = 1
+        const fatalNodeHtml2007 = {
+            html: `<div class="node-header" style="color:#d32f2f; border-bottom: 1px dashed #d32f2f;">[!] 核心协议请求 (ID:00042)</div><div class="node-body">时间: <span class="bold red">2007-06-11 11:00:00</span><br>来源 IP: <span class="bold">192.168.0.12</span><br>节点坐标: <span class="bold" style="color:#d32f2f;">CHN_ZHEJIANG_HANGZHOU (浙江杭州)</span><br>类型: 物理层降临与意识融合</div><div class="node-action"><button class="btn-approve" style="background:#800; border-color:#f00;" onclick="triggerAssimilation(this, event)">立即接入</button></div>`,
+            isKey: true
+        };
+        const now = new Date();
+        const sysTime2026 = `2026-06-${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}:${String(now.getSeconds()).padStart(2,'0')}`;
+        const fatalNodeHtml2026 = {
+            html: `<div class="node-header" style="color:#d32f2f; border-bottom: 1px dashed #d32f2f;">[!] 核心协议请求 (ID:00404)</div><div class="node-body">时间: <span class="bold red">${sysTime2026}</span><br>来源 IP: <span class="bold pulse-text">RESONANCE_STREAM</span><br>节点坐标: <span class="bold" style="color:#d32f2f;">CHN_SICHUAN_CHENGDU (四川成都)</span><br>类型: 维度撕裂与血肉苏醒</div><div class="node-action"><button class="btn-approve" style="background:#800; border-color:#f00;" onclick="triggerAssimilation(this, event)">立即接入</button></div>`,
+            isKey: true
+        };
+        nodesArray.push(fatalNodeHtml2007); nodesArray.push(fatalNodeHtml2026);
+
+        // 普通节点：覆盖在上方 zIndex = 10~60
         for(let i = 0; i < nodeCount; i++) {
             const reqDate = new Date(Date.now() - Math.random() * 36000000);
             const reqTimeFull = reqDate.getFullYear() + "-" + String(reqDate.getMonth()+1).padStart(2,'0') + "-" + String(reqDate.getDate()).padStart(2,'0') + " " + String(reqDate.getHours()).padStart(2,'0') + ":" + String(reqDate.getMinutes()).padStart(2,'0') + ":" + String(reqDate.getSeconds()).padStart(2,'0');
@@ -608,38 +486,36 @@
             });
         }
 
-        const fatalNodeHtml2007 = {
-            html: `<div class="node-header" style="color:#d32f2f; border-bottom: 1px dashed #d32f2f;">[!] 核心协议请求 (ID:00042)</div><div class="node-body">时间: <span class="bold red">2007-06-11 11:00:00</span><br>来源 IP: <span class="bold">192.168.0.12</span><br>节点坐标: <span class="bold" style="color:#d32f2f;">CHN_ZHEJIANG_HANGZHOU (浙江杭州)</span><br>类型: 物理层降临与意识融合</div><div class="node-action"><button class="btn-approve" style="background:#800; border-color:#f00;" onclick="triggerAssimilation(this, event)">立即接入</button></div>`,
-            isKey: true
-        };
-        
-        const now = new Date();
-        const dd = String(now.getDate()).padStart(2,'0'); const hh = String(now.getHours()).padStart(2,'0'); const mm = String(now.getMinutes()).padStart(2,'0'); const ss = String(now.getSeconds()).padStart(2,'0');
-        const sysTime2026 = `2026-06-${dd} ${hh}:${mm}:${ss}`;
-
-        const fatalNodeHtml2026 = {
-            html: `<div class="node-header" style="color:#d32f2f; border-bottom: 1px dashed #d32f2f;">[!] 核心协议请求 (ID:00404)</div><div class="node-body">时间: <span class="bold red">${sysTime2026}</span><br>来源 IP: <span class="bold pulse-text">RESONANCE_STREAM</span><br>节点坐标: <span class="bold" style="color:#d32f2f;">CHN_SICHUAN_CHENGDU (四川成都)</span><br>类型: 维度撕裂与血肉苏醒</div><div class="node-action"><button class="btn-approve" style="background:#800; border-color:#f00;" onclick="triggerAssimilation(this, event)">立即接入</button></div>`,
-            isKey: true
-        };
-
-        nodesArray.push(fatalNodeHtml2007); nodesArray.push(fatalNodeHtml2026);
-        nodesArray.sort(() => Math.random() - 0.5);
-
         nodesArray.forEach((item) => {
             const node = document.createElement('div'); node.className = 'api-node';
             if (item.isKey) {
-                node.style.left = `${15 + Math.random() * 50}%`; node.style.top = `${20 + Math.random() * 40}%`; node.style.zIndex = 9999;
+                node.style.left = `${30 + Math.random() * 20}%`; node.style.top = `${30 + Math.random() * 20}%`; 
+                node.style.zIndex = 1; // 最底层
                 node.style.borderColor = "#FF0000"; node.style.backgroundColor = "#FFF5F5"; node.style.boxShadow = "0 0 15px rgba(255,0,0,0.6)";
             } else {
-                node.style.left = `${Math.random() * 75}%`; node.style.top = `${Math.random() * 80}%`; node.style.zIndex = Math.floor(Math.random() * 50);
+                node.style.left = `${10 + Math.random() * 60}%`; node.style.top = `${10 + Math.random() * 60}%`; 
+                node.style.zIndex = 10 + Math.floor(Math.random() * 50); // 覆盖层
             }
             node.innerHTML = item.html; swarmArea.appendChild(node);
         });
     }
 
+    // 审批普通API触发：彻底消散，实现“挖掘”
+    window.absorbNode = function(btn, e) {
+        e.stopPropagation(); triggerFlash(); playSquishSound(); spawnFloatingText();  
+        const node = btn.closest('.api-node'); node.classList.add('absorbed'); 
+        
+        // 让已被吸纳的节点渐隐并删除，露出底层的致命节点
+        setTimeout(() => { node.style.opacity = '0'; }, 600);
+        setTimeout(() => { node.remove(); }, 1200);
+
+        corruptionLevel++;
+        if (corruptionLevel === 5) { document.getElementById('wrap').style.backgroundColor = "#ffebeb"; } else if (corruptionLevel === 12) { document.getElementById('wrap').style.backgroundColor = "#2a1515"; document.querySelector('.header').style.backgroundColor = "#110"; document.querySelector('.sidebar').style.backgroundColor = "#200"; }
+    }
+
+    // ================= 古神专属：初始化神性数据 =================
     function initGodMatrix() {
         initAudio();
-
         const nodeList = document.getElementById('god-node-list');
         const phrases = ["意识已剥离", "神经束接入完成", "灵魂化为养料", "物理躯体碳化中", "绝望波动已归档"];
         for(let i=0; i<30; i++) {
@@ -663,13 +539,16 @@
         whisperBox.innerHTML = wHtml + wHtml; 
     }
 
-    window.absorbNode = function(btn, e) {
-        e.stopPropagation(); triggerFlash(); playSquishSound(); spawnFloatingText();  
-        const node = btn.closest('.api-node'); node.classList.add('absorbed'); 
-        corruptionLevel++;
-        if (corruptionLevel === 5) { document.getElementById('wrap').style.backgroundColor = "#ffebeb"; } else if (corruptionLevel === 12) { document.getElementById('wrap').style.backgroundColor = "#2a1515"; document.querySelector('.header').style.backgroundColor = "#110"; document.querySelector('.sidebar').style.backgroundColor = "#200"; }
+    // 古神观测锚点：最终的法器警告暗示
+    window.observeAnchor = function(e) {
+        e.stopPropagation();
+        triggerFlash(); playSquishSound();
+        setTimeout(() => {
+            alert("【SYSTEM FATAL：高维观测失败】\n\n检测到您缺失法器，无法观测该时空锚点。\n请回到表层寻找您丢失的法器（镜）。");
+        }, 100);
     }
 
+    // 审批危险API引发升维 (Admin -> God)
     window.triggerAssimilation = function(btn, e) {
         e.stopPropagation(); triggerFlash(); playSquishSound(); spawnFloatingText();
         const node = btn.closest('.api-node'); node.classList.add('absorbed');
@@ -692,19 +571,44 @@
         }, 150);
     }
 
+    // 古神直接引发维度崩溃 (摧毁控制台，逼回主页)
     window.triggerFinalCollapse = function() {
         triggerFlash(); playSquishSound();
         document.body.style.filter = 'contrast(200%) saturate(150%) hue-rotate(-20deg) invert(10%)';
+        
+        // 1. 物理撕裂：UI 崩塌
+        document.querySelectorAll('.admin-tab, .sidebar, .header').forEach(el => {
+            el.style.transition = "all 2.5s cubic-bezier(0.1, 0.8, 0.3, 1)";
+            el.style.transform = `translate(${(Math.random()-0.5)*1000}px, ${(Math.random()-0.5)*1000}px) rotate(${(Math.random()-0.5)*90}deg) scale(0.5)`;
+            el.style.opacity = "0";
+            el.style.pointerEvents = "none";
+        });
+
+        // 2. 彻底黑屏
         let flashCount = 0;
         const flashInterval = setInterval(() => {
             document.body.style.backgroundColor = flashCount % 2 === 0 ? "#f00" : "#000";
-            spawnFloatingText(); playSquishSound(); flashCount++;
-            if (flashCount > 8) {
-                clearInterval(flashInterval); document.getElementById('wrap').style.opacity = '0';
-                setTimeout(() => document.getElementById('wrap').style.display = 'none', 500);
-                document.body.style.filter = 'none'; document.body.style.backgroundColor = '#000';
-                const finalTerm = document.getElementById('final-terminal'); finalTerm.style.display = 'flex';
-                startDeathHeartbeat(); try { document.documentElement.requestFullscreen(); } catch(err){}
+            spawnFloatingText(); playSquishSound(2.0); flashCount++;
+            
+            if (flashCount > 10) {
+                clearInterval(flashInterval); 
+                document.body.style.filter = 'none'; 
+                document.body.style.backgroundColor = '#000';
+                
+                // 渲染最终的虚无深渊
+                document.body.innerHTML = `
+                    <div style="height: 100vh; width: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; background: #000; box-sizing: border-box;">
+                        <h1 style="color: #f00; font-family: 'SimSun', serif; font-size: 32px; text-shadow: 0 0 20px #f00; letter-spacing: 5px;">控制台物理载体已化为虚无</h1>
+                        <p style="color: #666; font-family: monospace; font-size: 16px; margin-top: 20px;">[ SYSTEM_OBLITERATED ]</p>
+                        <p style="color: #ccc; font-size: 18px; margin-top: 40px; text-shadow: 0 0 8px #fff; letter-spacing: 2px;">去寻找你的法器，不要被表象迷惑。</p>
+                        
+                        <a href="bbs_2026_home.html" style="margin-top: 50px; padding: 15px 40px; border: 1px solid #f00; color: #f00; text-decoration: none; font-weight: bold; font-size: 18px; letter-spacing: 2px; text-shadow: 0 0 5px #f00; box-shadow: inset 0 0 10px rgba(255,0,0,0.2); transition: 0.3s;" 
+                           onmouseover="this.style.background='#2a0000'; this.style.color='#fff';" 
+                           onmouseout="this.style.background='transparent'; this.style.color='#f00';">
+                            [ 意 识 上 浮 至 表 层 ]
+                        </a>
+                    </div>
+                `;
             }
         }, 150);
     }
