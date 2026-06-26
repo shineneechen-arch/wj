@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh">
 <head>
 <meta charset="UTF-8"/>
@@ -64,14 +64,34 @@ body { background: #020304; font-family: 'Courier New', Consolas, monospace; ove
 .mirror-text-container { margin-top: 5vmin; z-index: 10; text-align: center; }
 .mirror-text { color: #5a738a; font-size: clamp(12px, 3vmin, 14px); line-height: 2; letter-spacing: 0.15em; text-shadow: 0 0 5px #000; }
 
-#mirror-btn { 
-  margin-top: 15px; padding: 12px 35px; background: rgba(5,10,15,0.8); 
-  border: 1px solid #6b5119; color: var(--color-gold); 
-  font-family: inherit; font-size: 14px; cursor: pointer; letter-spacing: 0.2em; 
-  transition: 0.5s; box-shadow: inset 0 0 10px rgba(0,0,0,0.8);
-  display: none; 
+#mirror-oracle {
+  position: absolute; inset: 8% 0 auto; z-index: 4; display: flex; justify-content: center;
+  pointer-events: none; opacity: 0; transform: translateY(10px) scale(0.98);
+  transition: opacity 1.2s ease, transform 1.2s ease; mix-blend-mode: screen;
 }
-#mirror-btn:hover { background: rgba(205,164,90,0.1); border-color: var(--color-gold); color: #fff; box-shadow: 0 0 20px rgba(212, 160, 23, 0.3) inset, 0 0 10px rgba(212,160,23,0.5); }
+#mirror-oracle.visible { opacity: 1; transform: translateY(0) scale(1); }
+.oracle-text {
+  writing-mode: vertical-rl; text-orientation: upright;
+  color: #d00000; font-family: "SimSun", "Noto Serif TC", serif; font-weight: 800;
+  font-size: clamp(18px, 3.6vmin, 34px); line-height: 1.7; letter-spacing: 0.08em;
+  text-shadow: 0 0 5px #ff1010, 0 0 16px rgba(160,0,0,0.9), 0 0 28px #000;
+  filter: drop-shadow(0 0 2px rgba(255,255,255,0.35));
+}
+.timeline-choices {
+  display: none; margin-top: 24px; gap: 12px; flex-wrap: wrap; justify-content: center;
+  z-index: 10; position: relative; padding: 0 16px;
+}
+.timeline-btn {
+  min-width: min(260px, calc(50vw - 24px)); padding: 13px 20px; background: rgba(2, 4, 6, 0.76);
+  border: 1px solid rgba(212, 160, 23, 0.58); color: var(--color-gold);
+  font-family: inherit; font-size: 14px; cursor: pointer; letter-spacing: 0.18em; transition: 0.26s ease;
+  box-shadow: 0 0 0 1px rgba(0,0,0,0.8), inset 0 0 18px rgba(0,0,0,0.72);
+}
+.timeline-btn:hover {
+  background: rgba(205,164,90,0.12); border-color: var(--color-gold); color: #fff;
+  box-shadow: 0 0 20px rgba(212,160,23,0.22) inset, 0 0 12px rgba(212,160,23,0.55);
+}
+@media (max-width: 720px) { .timeline-btn { min-width: min(330px, 84vw); } }
 
 #mirror-expand { position: fixed; inset: 0; z-index: 9998; display: none; pointer-events: none; }
 #mirror-expand canvas { width: 100%; height: 100%; }
@@ -698,6 +718,7 @@ body.falling #abuse-veil { opacity: 1; background: rgba(120,0,0,0.76); }
     <div id="mirror-glass">
       <video id="mirror-video" autoplay playsinline muted></video>
       <canvas id="mirror-noise"></canvas>
+      <div id="mirror-oracle"><div class="oracle-text">法器青冥鑑，上可觀青天，下可照黃泉。請選擇您要探測的時間線。</div></div>
     </div>
   </div>
   <div class="mirror-text-container">
@@ -705,7 +726,10 @@ body.falling #abuse-veil { opacity: 1; background: rgba(120,0,0,0.76); }
         [ 正在请求光学阵列权限... ]<br>
         请允许终端捕获您的现世物理特征。
       </div>
-      <button id="mirror-btn">▶ 确立锚点，接入深渊</button>
+      <div class="timeline-choices" id="timeline-choices">
+        <button class="timeline-btn" id="timeline-2007" type="button">2007年6月11日</button>
+        <button class="timeline-btn" id="timeline-now" type="button">現在時間</button>
+      </div>
   </div>
 </div>
 
@@ -846,11 +870,25 @@ body.falling #abuse-veil { opacity: 1; background: rgba(120,0,0,0.76); }
 })();
 
 // ================= 2. 摄像头与雪花屏逻辑 =================
+function pad2(num) { return String(num).padStart(2, '0'); }
+function toLocalInputValue(date) {
+  const local = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
+  return local.toISOString().slice(0, 16);
+}
+function formatLocalTimelineLabel(date) {
+  return `${date.getFullYear()}年${date.getMonth()+1}月${date.getDate()}日 ${pad2(date.getHours())}:${pad2(date.getMinutes())}`;
+}
+function updateNowChoiceLabel() {
+  const nowBtn = document.getElementById('timeline-now');
+  if(nowBtn) nowBtn.textContent = formatLocalTimelineLabel(new Date());
+}
+
 (function initMirror() {
     const video = document.getElementById('mirror-video');
     const noiseCanvas = document.getElementById('mirror-noise');
     const noiseCtx = noiseCanvas.getContext('2d');
-    const btn = document.getElementById('mirror-btn');
+    const choices = document.getElementById('timeline-choices');
+    const oracle = document.getElementById('mirror-oracle');
     const text = document.getElementById('init-text');
     let isNoise = false;
 
@@ -866,21 +904,28 @@ body.falling #abuse-veil { opacity: 1; background: rgba(120,0,0,0.76); }
         requestAnimationFrame(drawNoise);
     }
 
+    function revealTimelineChoices() {
+        updateNowChoiceLabel();
+        if(oracle) oracle.classList.add('visible');
+        if(choices) choices.style.display = 'flex';
+    }
+
     if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         navigator.mediaDevices.getUserMedia({video: {facingMode: 'user'}})
         .then(stream => {
             video.srcObject = stream; video.style.opacity = '1';
-            text.innerHTML = "[ 光学阵列已贯通 ]<br>物理特征捕获完毕，请注视深渊。";
-            btn.style.display = 'inline-block';
+            text.innerHTML = "[ 光学阵列已贯通 ]<br>物理特征捕获完毕。镜面正在回写法器铭文。";
+            revealTimelineChoices();
         })
         .catch(() => {
             isNoise = true; noiseCanvas.style.opacity = '1'; drawNoise();
-            text.innerHTML = "<span style='color:#a33131;'>[ 光学阵列被拒绝 ]</span><br>物理特征丢失，系统采用盲视降维协议。";
-            btn.style.display = 'inline-block';
+            text.innerHTML = "<span style='color:#a33131;'>[ 光学阵列被拒绝 ]</span><br>物理特征丢失，盲视镜面仍可选择时间线。";
+            revealTimelineChoices();
         });
     } else {
         isNoise = true; noiseCanvas.style.opacity = '1'; drawNoise();
-        text.innerHTML = "[ 设备异常 ]<br>启动备用盲视协议。"; btn.style.display = 'inline-block';
+        text.innerHTML = "[ 设备异常 ]<br>备用盲视协议已接管镜面。";
+        revealTimelineChoices();
     }
 })();
 
@@ -922,17 +967,45 @@ function playCinematicExpand(cb){
   frame();
 }
 
-document.getElementById('mirror-btn').onclick = () => {
+function stopMirrorCamera() {
   const video = document.getElementById('mirror-video');
-  if(video.srcObject) video.srcObject.getTracks().forEach(t => t.stop());
+  if(video && video.srcObject) {
+    video.srcObject.getTracks().forEach(t => t.stop());
+    video.srcObject = null;
+  }
+}
+
+async function enterMirrorTimeline(mode) {
+  stopMirrorCamera();
   localStorage.setItem('artifact_mirror_found', 'true');
+  updateNowChoiceLabel();
   document.getElementById('mirror-overlay').style.display = 'none';
+  if(mode === 'current') await prepareCurrentTimeline();
   playCinematicExpand(() => {
     document.getElementById('app').style.display = 'block';
-    if(!map) { initMap(); } else { map.invalidateSize(); }
-    setTimeout(() => { document.getElementById('narrative-dialog').style.display = 'block'; }, 1000);
+    if(!map) {
+      initMap(mode);
+    } else {
+      mirrorTimelineMode = mode;
+      map.setView(MAP_CENTER, mode === 'current' ? 16 : 18);
+      map.invalidateSize();
+      drawL1();
+      updateL2L3();
+    }
+    const dialog = document.getElementById('narrative-dialog');
+    if(mode === 'story') {
+      setTimeout(() => { dialog.style.display = 'block'; }, 1000);
+    } else {
+      dialog.style.display = 'none';
+      setTimeout(() => {
+        showOmen('door-jingmen', '[CURRENT] 青冥鉴只读观测', `已以 ${currentGeoLabel} 为中宫排盘。此时间线不写入剧情锚点。`, 5200);
+      }, 900);
+    }
   });
-};
+}
+
+document.getElementById('timeline-2007').onclick = () => enterMirrorTimeline('story');
+document.getElementById('timeline-now').onclick = () => enterMirrorTimeline('current');
 
 document.getElementById('close-detail').onclick = () => { document.getElementById('gong-detail').style.display = 'none'; };
 
@@ -966,8 +1039,8 @@ const SOUTH_GATE = [30.29708, 120.08779];
 const WAREHOUSE = [30.29628, 120.08812];
 const SPAN = 0.00095;
 // 让旧库房落入艮八宫：本盘生门在艮八，搜寻应从艮宫落点反推到地图。
-const CENTER = [WAREHOUSE[0] - SPAN, WAREHOUSE[1] - SPAN];
-const MAP_CENTER = [30.29624, 120.08805];
+let CENTER = [WAREHOUSE[0] - SPAN, WAREHOUSE[1] - SPAN];
+let MAP_CENTER = [30.29624, 120.08805];
 const NAMES = {1:'坎',8:'艮',3:'震',4:'巽',9:'离',2:'坤',7:'兑',6:'乾',5:'中'};
 const QIMEN_ORDER = [4,9,2,3,5,7,8,1,6];
 
@@ -1052,12 +1125,7 @@ const DEITY_YANG = ['值符','腾蛇','太阴','六合','勾陈','朱雀','九�
 const DEITY_YIN = ['值符','九天','九地','朱雀','勾陈','六合','太阴','腾蛇'];
 
 // 南门支巷调查范围：覆盖余杭塘路、紫荆花北路、西环河与小房子排。
-const campusBounds = [
-    [CENTER[0] + SPAN*1.55, CENTER[1] - SPAN*1.85],
-    [CENTER[0] + SPAN*1.55, CENTER[1] + SPAN*1.85],
-    [CENTER[0] - SPAN*1.95, CENTER[1] + SPAN*1.85],
-    [CENTER[0] - SPAN*1.95, CENTER[1] - SPAN*1.85]
-];
+let campusBounds = buildCampusBounds();
 
 let layersState = { L1: true, L2: true, L3: true };
 let warehouseRevealed = false;
@@ -1069,7 +1137,68 @@ let omenTimer = null;
 let falling = false;
 let projectionConflictCount = 0;
 let audioContext = null;
+let mirrorTimelineMode = 'story';
+let currentGeoLabel = 'IP 定位坐标';
+let currentDeadProfile = null;
+let currentDeadPan = null;
 const SHOW_L1_LOCATION_LABELS = false;
+
+function buildCampusBounds() {
+  return [
+    [CENTER[0] + SPAN*1.55, CENTER[1] - SPAN*1.85],
+    [CENTER[0] + SPAN*1.55, CENTER[1] + SPAN*1.85],
+    [CENTER[0] - SPAN*1.95, CENTER[1] + SPAN*1.85],
+    [CENTER[0] - SPAN*1.95, CENTER[1] - SPAN*1.85]
+  ];
+}
+
+function resetStoryCenter() {
+  CENTER = [WAREHOUSE[0] - SPAN, WAREHOUSE[1] - SPAN];
+  MAP_CENTER = [30.29624, 120.08805];
+  campusBounds = buildCampusBounds();
+}
+
+async function prepareCurrentTimeline() {
+  mirrorTimelineMode = 'current';
+  resetStoryCenter();
+  const now = new Date();
+  try {
+    const res = await fetch('https://ipapi.co/json/', { cache: 'no-store' });
+    if(!res.ok) throw new Error('geo failed');
+    const data = await res.json();
+    const lat = Number(data.latitude);
+    const lng = Number(data.longitude);
+    if(!Number.isFinite(lat) || !Number.isFinite(lng)) throw new Error('geo invalid');
+    CENTER = [lat, lng];
+    MAP_CENTER = [lat, lng];
+    const place = [data.city, data.region, data.country_name].filter(Boolean).join(' / ');
+    currentGeoLabel = `${lat.toFixed(5)}, ${lng.toFixed(5)}${place ? ' · ' + place : ''}`;
+  } catch (err) {
+    CENTER = [30.29624, 120.08805];
+    MAP_CENTER = CENTER.slice();
+    currentGeoLabel = '定位失败，暂以镜像默认坐标代替';
+  }
+  campusBounds = buildCampusBounds();
+  const localValue = toLocalInputValue(now);
+  const deadInput = document.getElementById('dead-time');
+  const liveInput = document.getElementById('live-time');
+  if(deadInput) deadInput.value = localValue;
+  if(liveInput) liveInput.value = localValue;
+  deadDateObj = new Date(localValue);
+  liveDateObj = new Date(localValue);
+}
+
+function getActiveDeadProfile() {
+  return mirrorTimelineMode === 'current' && currentDeadProfile ? currentDeadProfile : DEAD_TIME_PROFILE;
+}
+
+function getActiveDeadPanMap() {
+  return mirrorTimelineMode === 'current' && currentDeadPan && currentDeadPan.byPalace ? currentDeadPan.byPalace : DEAD_PAN;
+}
+
+function getDeadPalace(pos) {
+  return getActiveDeadPanMap()[pos] || DEAD_PAN[pos] || {};
+}
 
 function rotateFrom(list, startValue, forward = true) {
   const idx = list.indexOf(startValue);
@@ -1242,6 +1371,7 @@ function getLiveDoorAt(pos) {
 }
 
 function isFuyinDeadDoorCoincidence() {
+  if(mirrorTimelineMode === 'current') return false;
   return warehouseRevealed
     && isCorrectDeadJu()
     && isCorrectLiveJu()
@@ -1263,6 +1393,7 @@ function isCurrentFuyinEcho() {
 }
 
 function isFinalFusionReady() {
+  if(mirrorTimelineMode === 'current') return false;
   return warehouseRevealed
     && isCorrectDeadJu()
     && isCorrectLiveJu()
@@ -1432,6 +1563,9 @@ function populateJuOptions() {
 }
 
 function isCorrectDeadJu() {
+  if(mirrorTimelineMode === 'current') {
+    return !!currentDeadProfile && currentDeadProfile.ok && document.getElementById('dead-ju').value === currentDeadProfile.juValue;
+  }
   return document.getElementById('dead-ju').value === CORRECT_DEAD_JU;
 }
 
@@ -1599,6 +1733,27 @@ function updateDeadCalendarInfo() {
   const value = document.getElementById('dead-time').value;
   const ju = document.getElementById('dead-ju').value;
   const el = document.getElementById('dead-calendar');
+  if(mirrorTimelineMode === 'current') {
+    deadDateObj = value ? new Date(value) : new Date();
+    currentDeadProfile = buildTimeProfile(deadDateObj);
+    currentDeadPan = currentDeadProfile && currentDeadProfile.ok ? buildQimenPan(currentDeadProfile) : null;
+    if(currentDeadProfile && currentDeadProfile.ok && !ju) document.getElementById('dead-ju').value = currentDeadProfile.juValue;
+    const selectedJu = document.getElementById('dead-ju').value;
+    const juLine = !currentDeadProfile.ok
+      ? `<span class="bad">[ERR] 历法核心未加载，当前死盘不可闭合。</span>`
+      : (selectedJu === currentDeadProfile.juValue
+        ? `<span class="ok">[OK] ${currentDeadProfile.juValue} 校验通过，当前死盘已生成。</span>`
+        : `<span class="bad">[ERR] ${selectedJu || '未选局'} 与当前拆补定局不合。</span>`);
+    el.innerHTML = `
+      <b>坐标</b> ${currentGeoLabel}<br>
+      <b>四柱</b> 年 ${currentDeadProfile.bazi.year} / 月 ${currentDeadProfile.bazi.month} / 日 ${currentDeadProfile.bazi.day} / 时 ${currentDeadProfile.bazi.hour}<br>
+      <b>农历</b> ${currentDeadProfile.lunar}<br>
+      <b>节气</b> ${currentDeadProfile.solarTerms}<br>
+      <b>拆补</b> ${currentDeadProfile.note}<br>
+      ${juLine}
+    `;
+    return;
+  }
   const knownTime = value && value.startsWith('2007-06-11T11');
   if(!knownTime) {
     el.innerHTML = `<span class="warn">[CAL] 暂无该时刻历法缓存。</span><br>请回到死盘记录时间：2007-06-11 午时。`;
@@ -1682,11 +1837,26 @@ function setNow() {
   updateLiveCalendarInfo();
 }
 
-function initMap() {
+function initMap(mode = 'story') {
+  mirrorTimelineMode = mode;
+  if(mode === 'story') resetStoryCenter();
   populateJuOptions();
-  updateDeadCalendarInfo();
-  setNow();
-  map = L.map('map',{zoomControl:false, attributionControl:false}).setView(MAP_CENTER, 18);
+  if(mode === 'current') {
+    updateDeadCalendarInfo();
+    if(currentDeadProfile && currentDeadProfile.ok) document.getElementById('dead-ju').value = currentDeadProfile.juValue;
+    updateDeadCalendarInfo();
+    document.getElementById('live-time').value = document.getElementById('dead-time').value;
+    liveDateObj = new Date(document.getElementById('live-time').value);
+    updateLiveCalendarInfo();
+    if(liveProfile && liveProfile.ok) {
+      document.getElementById('live-ju').value = liveProfile.juValue;
+      updateLiveCalendarInfo();
+    }
+  } else {
+    updateDeadCalendarInfo();
+    setNow();
+  }
+  map = L.map('map',{zoomControl:false, attributionControl:false}).setView(MAP_CENTER, mode === 'current' ? 16 : 18);
   L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{maxZoom:20}).addTo(map);
   
   l1Group = L.layerGroup().addTo(map);
@@ -1698,7 +1868,8 @@ function initMap() {
 }
 
 function showGongDetail(pos){
-  const pan = DEAD_PAN[pos];
+  const pan = getDeadPalace(pos);
+  const activeDeadProfile = getActiveDeadProfile();
   const panReady = isCorrectDeadJu();
   const d = panReady ? (pan.door || '中') : '未定';
   if(!liveProfile) updateLiveCalendarInfo();
@@ -1717,14 +1888,15 @@ function showGongDetail(pos){
   if(window.innerWidth > 768) { detail.style.top = '20px'; detail.style.right = '320px'; detail.style.left = 'auto'; detail.style.bottom = 'auto'; }
   document.getElementById('detail-title').textContent = `${NAMES[pos]}${pos}宫 参量比对`;
   document.getElementById('detail-body').innerHTML = panReady ? `
-    <div style="color:var(--color-l2);font-size:12px;margin-bottom:4px;">L2死盘: ${DEAD_TIME_PROFILE.method}</div>
+    <div style="color:var(--color-l2);font-size:12px;margin-bottom:4px;">L2死盘: ${activeDeadProfile.method || activeDeadProfile.juValue || '当前时间盘'}</div>
     <div style="color:var(--color-l2);font-size:12px;margin-bottom:4px;">${pan.deity || '—'} / ${pan.star || '—'} / ${d}门</div>
     <div style="color:var(--color-l3);font-size:12px;">L3活盘: ${liveStatus}</div>
     <div style="color:${liveJuReady ? (liveJuCorrect ? 'var(--color-l3)' : '#ff8aa1') : 'var(--text-mute)'};font-size:12px;">${liveJuReady ? `${live.deity || '—'} / ${live.star || '—'} / ${l}门` : '请先选择 L3 拆补局数。'}</div>
     <div style="margin-top:8px;color:var(--text-mute);font-size:11px;">${pan.clue}</div>
+    ${mirrorTimelineMode === 'current' ? '<div style="margin-top:8px;color:var(--text-mute);font-size:11px;">当前时间线为只读观测，不开放剧情搜寻。</div>' : `
     <div class="desktop-only-hint" style="margin-top:8px;color:#ffcccc;font-size:11px;">右键此宫可执行「注视搜寻」。</div>
     <div class="mobile-only-hint" style="margin-top:8px;color:#ffcccc;font-size:11px;">长按此宫，或点下方按钮执行「注视搜寻」。</div>
-    <button class="focus-search-btn" type="button" onclick="attemptFocusSearch(${pos})">${getFocusActionLabel(pos)}</button>
+    <button class="focus-search-btn" type="button" onclick="attemptFocusSearch(${pos})">${getFocusActionLabel(pos)}</button>`}
     ${pos === FUGITIVE_GONG ? `
       <div style="margin-top:8px;color:${finalReady ? '#ffcccc' : 'var(--text-mute)'};font-size:11px;">
         ${apiFusionStalled ? (isCurrentFuyinEcho() ? '坤二显出死门，但当前系统时间只是回声。把 L3 拨到未来，寻找下一次伏吟死门，才能读取未济_Admin 记忆日志。' : '这里的低电位与逃逸养料相连。让 L3 当前活盘在此处排出死门，即可读取未济_Admin 记忆日志。') : (warehouseRevealed ? '这里仍被 98.8% 死锁遮蔽。先批准艮八 API 降临。' : '此处记录被代理节点遮蔽。先处理艮八宫。')}
@@ -1943,7 +2115,11 @@ function showFamilyPopupAndExit() {
 }
 
 function attemptFocusSearch(pos) {
-  const pan = DEAD_PAN[pos];
+  const pan = getDeadPalace(pos);
+  if(mirrorTimelineMode === 'current') {
+    showOmen('door-jingmen', '[CURRENT] 只读观测', '当前时间线只用于排盘，不执行搜寻、降临或历史日志读取。', 4200);
+    return;
+  }
   const actionText = getFocusActionLabel(pos).replace('👁 ', '') + '？';
   const ok = window.confirm(`选中 ${NAMES[pos]}${pos}宫（${pan.door || '中'}门）？\n\n${actionText}`);
   if(!ok) return;
@@ -2043,8 +2219,22 @@ function drawBuilding(points, name, tone = 'dark') {
   }
 }
 
+function drawCurrentTimelineBase() {
+  L.polygon(campusBounds, { color: 'var(--color-l1)', weight: 2, fillOpacity: 0.025, dashArray: '8 6' }).addTo(l1Group);
+  L.circleMarker(CENTER,{radius:7,color:'#cda45a',weight:2,fillColor:'#0a1828',fillOpacity:0.95}).addTo(l1Group);
+  L.marker(CENTER,{icon:fixedLabel(`当前观测坐标<br><span style="font-size:0.82em">${currentGeoLabel}</span>`,'anchor')}).addTo(l1Group);
+  const latLine = [[CENTER[0], CENTER[1]-SPAN*1.85], [CENTER[0], CENTER[1]+SPAN*1.85]];
+  const lngLine = [[CENTER[0]-SPAN*1.95, CENTER[1]], [CENTER[0]+SPAN*1.55, CENTER[1]]];
+  L.polyline(latLine,{color:'#31465a',weight:2,opacity:0.72,dashArray:'3 5'}).addTo(l1Group);
+  L.polyline(lngLine,{color:'#31465a',weight:2,opacity:0.72,dashArray:'3 5'}).addTo(l1Group);
+}
+
 function drawL1() {
   l1Group.clearLayers();
+  if(mirrorTimelineMode === 'current') {
+    drawCurrentTimelineBase();
+    return;
+  }
   
   // 1. 南门支巷调查边界
   L.polygon(campusBounds, { 
@@ -2109,12 +2299,13 @@ function updateL2L3() {
   const liveJuCorrect = isCorrectLiveJu();
   const liveMen = isLivePanUsable() ? livePan.doors : {};
   const panReady = isCorrectDeadJu();
+  const deadPanMap = getActiveDeadPanMap();
   projectionConflictCount = 0;
 
   Object.entries(GONG_OFF).forEach(([posStr, [dlat, dlng]]) => {
     const pos = parseInt(posStr);
     const lat = CENTER[0] + dlat, lng = CENTER[1] + dlng;
-    const pan = DEAD_PAN[pos];
+    const pan = deadPanMap[pos] || DEAD_PAN[pos];
     const live = isLivePanUsable() ? (livePan.byPalace[pos] || {}) : {};
     const dm = panReady ? (pan.door || '中') : '未定', lm = liveMen[pos] || '—';
     const finalLock = isFinalFusionReady() && pos === FUGITIVE_GONG;
