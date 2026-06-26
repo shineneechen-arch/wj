@@ -7,14 +7,12 @@
         // 【开发者测试专用】时光倒流：在 URL 后面加上 ?reset=1 即可清除古神状态缓存，重置为人类既济。
         if (window.location.search.includes('reset=1')) {
             localStorage.removeItem('god_perspective_unlocked');
-            // 清理掉 URL 里的 reset 参数避免一直重置
             window.history.replaceState(null, '', window.location.pathname);
         }
 
         // 强制路由保护：防止逃课
         const isGod = localStorage.getItem('god_perspective_unlocked') === 'true';
         const isLogged = localStorage.getItem('njdx_bbs_override') === 'true';
-        
         if (!isGod && !isLogged) {
             window.location.href = 'bbs_2026_home.html';
         }
@@ -97,14 +95,17 @@
         /* ================= 完美复刻的终极全屏屏幕 ================= */
         #final-terminal { display: none; position: fixed; inset: 0; z-index: 999999; background: linear-gradient(to bottom, #121212 15%, #b30006 15%); overflow: hidden; }
         
-        /* 高级特效：带数码故障损坏、失焦模糊与色彩溶解的血肉星盘 */
+        /* 【关键修复】使用纯 CSS 渲染血肉质感，彻底抛弃本地图片，解决不显示问题 */
         #final-bg-image {
             position: absolute; inset: 0;
-            background-image: url('flesh_eye.jpg'); 
-            background-size: cover; background-position: center;
+            background:
+                radial-gradient(circle at 50% 50%, #0a0000 2%, #ff2a2a 6%, #8b0000 15%, #3a0000 35%, #050000 70%),
+                repeating-conic-gradient(from 0deg, rgba(200,0,0,0.3) 0deg, rgba(100,0,0,0.5) 8deg, rgba(20,0,0,0.7) 15deg),
+                repeating-radial-gradient(circle at 50% 50%, rgba(150,0,0,0.2) 0px, rgba(50,0,0,0.4) 15px, transparent 30px);
+            background-blend-mode: normal, overlay, multiply;
             opacity: 0.85; 
             mix-blend-mode: normal; 
-            filter: blur(3px) contrast(150%) saturate(140%);
+            filter: blur(2px) contrast(150%) saturate(140%);
             animation: digital-corruption-loop 0.25s infinite linear;
             z-index: 1;
             -webkit-backface-visibility: hidden;
@@ -208,6 +209,7 @@
                     <tr><td>2077-10-23 09:42:00</td><td>NEURAL_BROADCAST / [IPv8_CORE]</td><td>USA_MASSACHUSETTS_BOSTON_SHELTER_77 (避难所阵列)</td><td class="td-status" style="color:#888;">延期 (DELAYED)</td></tr>
                     <tr><td>3102-12-31 23:59:59</td><td>QUANTUM_ENTANGLE / [ERR_STB]</td><td>CTR_ALPHA_RENAISSANCE_MATRIX_CORE (半人马座遗迹)</td><td class="td-status" style="color:#888;">延期 (DELAYED)</td></tr>
                     
+                    <!-- 这两行是历史记录里强制显示的“已同化”异化数据 -->
                     <tr class="flesh-history-row" style="background:#1a0505; border: 2px solid #F00; border-bottom: 1px dashed #600; display:none;">
                         <td class="red bold" style="color:#f88;">2026-06-23 <span style="background:#f00; color:#f00; padding: 0 4px; font-weight:bold; letter-spacing:-2px;">██:██:██</span></td>
                         <td class="red bold" style="color:#f88;">RESONANCE_DATA_STREAM</td>
@@ -269,6 +271,7 @@
                 </table>
             </div>
 
+            <!-- 神明模式独有 TABS -->
             <div id="tab-god-nodes" class="admin-tab" style="background:#1a0505;">
                 <div class="content-title" style="color:#f00; border-bottom: 2px solid #f00; text-shadow: 0 0 5px #f00; background: transparent;">血肉网络 - 已同化锚点 (ASSIMILATED_NODES)</div>
                 <div id="god-node-list" style="background:#0a0000; padding:15px; border:1px solid #f00; color:#f88; font-family:monospace; height:450px; overflow-y:auto; box-shadow: inset 0 0 20px #f00;"></div>
@@ -687,9 +690,9 @@
                     startDeathHeartbeat(); 
                     try { document.documentElement.requestFullscreen(); } catch(err){}
 
-                    // 8 秒后自动强制剥离至【古神登录页面】 
+                    // 8 秒后自动强制剥离至主站 (之前这里写成了login导致404)
                     setTimeout(() => {
-                        window.location.href = 'bbs_2026_login.html'; // 注意修改为你的实际登录页面名字
+                        window.location.href = 'bbs_2026_home.html'; 
                     }, 8000);
 
                 }, 500);
@@ -697,11 +700,11 @@
         }, 150);
     }
 
-    // 提前手动关闭全屏血肉网络，亦直接路由回古神登录页面
+    // 提前手动关闭全屏血肉网络，亦直接路由回主站
     window.closeFinalTerminal = function() {
         if(heartbeatInterval) clearInterval(heartbeatInterval);
         try { if(document.fullscreenElement) document.exitFullscreen(); } catch(err){}
-        window.location.href = 'bbs_2026_login.html';
+        window.location.href = 'bbs_2026_home.html';
     }
 
     // 古神直接引发维度崩溃 (摧毁控制台，逼回主页)
