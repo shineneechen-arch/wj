@@ -267,9 +267,26 @@
     function getThreadDate() {
         var now = new Date();
         var today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-        var daySerial = Math.floor(today.getTime() / DAY_MS);
-        var daysAgo = daySerial % 15 + 1;
-        return new Date(today.getTime() - daysAgo * DAY_MS);
+        var storageKey = 'njdx_bbs_thread_date_v1';
+        var storedDate = '';
+        try {
+            storedDate = window.sessionStorage.getItem(storageKey) || '';
+        } catch (err) {}
+
+        if (/^\d{4}-\d{2}-\d{2}$/.test(storedDate)) {
+            var cached = new Date(storedDate + 'T00:00:00');
+            if (!Number.isNaN(cached.getTime())) return cached;
+        }
+
+        var daysAgo = Math.floor(Math.random() * 15) + 1;
+        var threadDate = new Date(today.getTime() - daysAgo * DAY_MS);
+        var stamp = threadDate.getFullYear() + '-' +
+            pad(threadDate.getMonth() + 1) + '-' +
+            pad(threadDate.getDate());
+        try {
+            window.sessionStorage.setItem(storageKey, stamp);
+        } catch (err) {}
+        return threadDate;
     }
 
     function formatDateWithClock(baseDate, clockText) {
