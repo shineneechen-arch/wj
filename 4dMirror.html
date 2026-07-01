@@ -399,6 +399,10 @@ h4 { font-size: 13px; color: #8fa6c0; border-left: 2px solid var(--color-l3); pa
 #omen-overlay.door-sheng .omen-panel { border-color: #7d0000; box-shadow: 0 0 38px rgba(255,0,0,0.5), inset 0 0 30px rgba(110,0,0,0.55); }
 #omen-overlay.door-jingmen .omen-panel { border-color: #bfc7d5; box-shadow: 0 0 28px rgba(255,255,255,0.26), inset 0 0 18px rgba(255,255,255,0.08); }
 #omen-overlay.fall .omen-panel { text-align: center; border-color: #ff0000; box-shadow: 0 0 60px rgba(255,0,0,0.75), inset 0 0 30px rgba(255,0,0,0.35); }
+body.forced-ejection {
+  animation: scareFlicker .12s steps(1,end) infinite;
+  pointer-events: none;
+}
 #final-interference {
   position: fixed; inset: 0; z-index: 2700; display: none; pointer-events: none;
   background:
@@ -498,6 +502,12 @@ body.falling #abuse-veil { opacity: 1; background: rgba(120,0,0,0.76); }
   0% { filter: invert(0); transform: translate(0,0); }
   50% { filter: invert(1) contrast(1.8); transform: translate(5px,-3px); }
   100% { filter: invert(0); transform: translate(-4px,4px); }
+}
+@keyframes scareFlicker {
+  0%, 100% { filter: invert(0) brightness(1); }
+  25% { filter: invert(1) brightness(.42) hue-rotate(90deg); }
+  50% { filter: invert(.85) brightness(2.1) contrast(2.2); }
+  75% { filter: invert(1) contrast(3); }
 }
 @keyframes screenShake {
   0% { transform: translate(0,0); }
@@ -1111,7 +1121,7 @@ const DEAD_PAN = {
   6: { door:'开', star:'天任', deity:'朱雀', clue:'外泄通道' }
 };
 
-const FALL_THRESHOLD = 4;
+const MISUSE_THRESHOLD = 3;
 const WRONG_JU_OMENS = [
   { kind:'door-du', title:'[WARN] 拆补符头失准', body:'三元没有对齐。死盘坐标被拖出原位，隐藏协议短暂撕开。' },
   { kind:'door-jing', title:'[WARN] 节气边界回流', body:'芒种与夏至之间的时间噪声开始渗血。系统要求重新判断上中下元。' },
@@ -1175,7 +1185,7 @@ let warehouseRevealed = false;
 let fugitiveRevealed = false;
 let apiFusionStalled = false;
 let finalFusionComplete = false;
-let wrongJuCount = 0;
+let misuseCount = 0;
 let omenTimer = null;
 let falling = false;
 let projectionConflictCount = 0;
@@ -1599,7 +1609,7 @@ function isForbiddenLiveTime() {
 
 function triggerForbiddenLiveTime() {
   document.body.classList.add('falling');
-  setAbuseLevel(FALL_THRESHOLD + 1);
+  setAbuseLevel(MISUSE_THRESHOLD + 1);
   showOmen('fall', '[FORBIDDEN] 时间线自噬', 'L3 是未来观测端，不允许回拨到 2007-06-11 死盘现场。你正在把观测者塞回火灾当天，闭环会先吞掉你的入口。', 7200);
   window.setTimeout(() => {
     document.body.classList.remove('falling');
@@ -1701,37 +1711,54 @@ function showOmen(kind, title, body, duration = 3600) {
   }, duration);
 }
 
-function fallFromGrace() {
-  if(falling) return;
+function clearMisuse() {
+  misuseCount = 0;
+}
+
+function forceRestartFromMisuse(reason) {
+  if(falling) return true;
   falling = true;
-  setAbuseLevel(FALL_THRESHOLD + 1);
-  document.body.classList.add('falling');
-  showOmen('fall', '滥用神力，陨落', '死盘拒绝继续响应。错误局数被连续调用，观测者权限已回收。', 5200);
+  playTone('bad');
+  setAbuseLevel(MISUSE_THRESHOLD + 1);
+  document.body.classList.add('falling', 'forced-ejection');
+  showOmen(
+    'fall',
+    '滥用神力，系统崩溃',
+    `${reason}。连续三次无效观测，观测者已被反噬，青冥鉴正在强制断开连接...`,
+    3200
+  );
   window.setTimeout(() => {
-    if(window.history.length > 1) window.history.back();
-    else window.location.reload();
-  }, 2400);
+    window.location.reload();
+  }, 3200);
+  return true;
+}
+
+function registerMisuse(reason) {
+  if(falling) return true;
+  misuseCount += 1;
+  setAbuseLevel(misuseCount);
+  if(misuseCount >= MISUSE_THRESHOLD) return forceRestartFromMisuse(reason);
+  return false;
 }
 
 function triggerWrongJuScare(reason = '局数校验') {
   if(falling) return false;
+  if(registerMisuse(reason)) return false;
   playTone('bad');
-  wrongJuCount += 1;
-  setAbuseLevel(wrongJuCount);
-  const omen = WRONG_JU_OMENS[(wrongJuCount - 1) % WRONG_JU_OMENS.length];
-  showOmen(omen.kind, `${omen.title} #${wrongJuCount}`, `${reason}失败：${omen.body}`, 4600);
-  if(wrongJuCount >= FALL_THRESHOLD) window.setTimeout(fallFromGrace, 620);
+  const omen = WRONG_JU_OMENS[(misuseCount - 1) % WRONG_JU_OMENS.length];
+  showOmen(omen.kind, `${omen.title} #${misuseCount}`, `${reason}失败：${omen.body}`, 4600);
   return false;
 }
 
 function validateDeadJuOrScare(reason) {
   const ju = document.getElementById('dead-ju').value;
   if(!ju) {
+    if(registerMisuse('死盘局数未定却尝试观测')) return false;
     showOmen('door-jingmen', '[ERR] 死盘未定', '尚未选择拆补局数。四柱、农历与节气信息仍在等待你完成定局。', 4500);
     return false;
   }
   if(ju !== CORRECT_DEAD_JU) return triggerWrongJuScare(reason);
-  wrongJuCount = 0;
+  clearMisuse();
   setAbuseLevel(0);
   playTone('ok');
   return true;
@@ -1739,6 +1766,7 @@ function validateDeadJuOrScare(reason) {
 
 function triggerWrongGongOmen(pos) {
   const omen = GONG_OMENS[pos] || { kind:'door-jingmen', title:'[TRACE] 未知宫位', body:'搜寻没有返回稳定坐标。' };
+  if(registerMisuse(`误搜${NAMES[pos] || '未知'}${pos || ''}宫`)) return;
   showOmen(omen.kind, omen.title, omen.body, 4600);
 }
 
@@ -1746,7 +1774,7 @@ function handleDeadJuChange() {
   const ju = document.getElementById('dead-ju').value;
   if(ju && ju !== CORRECT_DEAD_JU) triggerWrongJuScare('局数选择');
   if(ju === CORRECT_DEAD_JU) {
-    wrongJuCount = 0;
+    clearMisuse();
     setAbuseLevel(0);
     playTone('ok');
   }
@@ -1768,7 +1796,7 @@ function handleLiveJuChange() {
   if(ju && !isCorrectLiveJu()) {
     triggerWrongJuScare('L3 活盘局数选择');
   } else if(ju && isCorrectLiveJu()) {
-    wrongJuCount = 0;
+    clearMisuse();
     setAbuseLevel(0);
     playTone('ok');
   }
@@ -2191,6 +2219,7 @@ function attemptFocusSearch(pos) {
   if(!ok) return;
   if(!validateDeadJuOrScare('注视搜寻')) return;
   if(!qimenOrientation) {
+    if(registerMisuse('方位未反转却尝试搜寻')) return;
     showOmen('door-jingmen', '[ERR] 方位未反转', '现实地图仍是上北下南。奇门盘需要上南下北，否则生门坐标会被镜像投错。', 4800);
     return;
   }
@@ -2227,6 +2256,7 @@ function attemptFocusSearch(pos) {
       showOmen('door-du', '[ERR] 死门锁相失败', `坤二需要 L3 当前活盘排出死门。现在坤二为「${fugitiveDoor}门」，只能扫到代理残影。`, 5600);
       return;
     }
+    clearMisuse();
     playTone('ok');
     if(window.confirm('坤二死门锁相完成。\n\n是否读取目标记忆日志？')) {
       runFinalFusionSequence();
@@ -2251,6 +2281,7 @@ function attemptFocusSearch(pos) {
     }
     return;
   }
+  clearMisuse();
   warehouseRevealed = true;
   drawL1();
   const mapEl = document.getElementById('map');
@@ -2507,7 +2538,10 @@ document.getElementById('apply-live').onclick = () => {
     updateL2L3();
     const ju = document.getElementById('live-ju').value;
     if(ju && !isCorrectLiveJu()) triggerWrongJuScare('应用 L3 错误局数');
-    if(ju && isCorrectLiveJu()) playTone('ok');
+    if(ju && isCorrectLiveJu()) {
+      clearMisuse();
+      playTone('ok');
+    }
   }
 };
 </script>
