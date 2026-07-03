@@ -88,7 +88,7 @@
                 </div>
                 <div class="post-right">
                     <div class="post-info">
-                        发表于 2026-06-20 22:15:00 <span class="floor-num">楼主</span>
+                        发表于 <span class="js-forum-time" data-post-time="22:15:00"></span> <span class="floor-num">楼主</span>
                     </div>
                     <div class="content">
                         今天晚上在计科系第三机房靠窗的位置，捡到一个 2TB 的黑色移动硬盘。<br><br>
@@ -105,7 +105,7 @@
                     <div class="user-stats">发帖: 211<br>积分: 650</div>
                 </div>
                 <div class="post-right">
-                    <div class="post-info">发表于 2026-06-20 22:30:12 <span class="floor-num">沙发</span></div>
+                    <div class="post-info">发表于 <span class="js-forum-time" data-post-time="22:30:12"></span> <span class="floor-num">沙发</span></div>
                     <div class="content">
                         楼主，那绝对不是什么祈福保佑不宕机的符！<br>
                         如果有红色朱砂线条交叉成网状，那叫“锁煞符”或者“镇压符”！是用来封印极其阴邪的东西的。你千万千万别好奇把它插到电脑上！
@@ -121,10 +121,10 @@
                     <div class="user-stats">发帖: 65<br>积分: 210</div>
                 </div>
                 <div class="post-right">
-                    <div class="post-info">发表于 2026-06-20 23:45:10 <span class="floor-num">板凳</span></div>
+                    <div class="post-info">发表于 <span class="js-forum-time" data-post-time="23:45:10"></span> <span class="floor-num">板凳</span></div>
                     <div class="content">
                         <div class="quote-box">
-                            <b>引用 道系青年 在 2026-06-20 22:30:12 发表的帖子:</b><br>
+                            <b>引用 道系青年 在 <span class="js-forum-time" data-post-time="22:30:12"></span> 发表的帖子:</b><br>
                             你千万千万别好奇把它插到电脑上！
                         </div>
                         来不及了...我刚才为了找失主的简历信息，把它插上去了。<br><br>
@@ -164,6 +164,63 @@
         </div>
     </div>
 </div>
+
+<script>
+(function () {
+    var DAY_MS = 24 * 60 * 60 * 1000;
+    var STORAGE_KEY = 'njdx_bbs_thread_fu_date_v1';
+
+    function pad(n) {
+        return String(n).padStart(2, '0');
+    }
+
+    function stampDate(date) {
+        return date.getFullYear() + '-' + pad(date.getMonth() + 1) + '-' + pad(date.getDate());
+    }
+
+    function getThreadDate() {
+        var now = new Date();
+        var today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        var storedDate = '';
+
+        try {
+            storedDate = window.sessionStorage.getItem(STORAGE_KEY) || '';
+        } catch (e) {}
+
+        if (/^\d{4}-\d{2}-\d{2}$/.test(storedDate)) {
+            var cached = new Date(storedDate + 'T00:00:00');
+            if (!Number.isNaN(cached.getTime())) return cached;
+        }
+
+        var daysAgo = Math.floor(Math.random() * 15) + 1;
+        var threadDate = new Date(today.getTime() - daysAgo * DAY_MS);
+
+        try {
+            window.sessionStorage.setItem(STORAGE_KEY, stampDate(threadDate));
+        } catch (e) {}
+
+        return threadDate;
+    }
+
+    function formatForumTime(baseDate, clockText) {
+        var parts = String(clockText || '00:00:00').split(':').map(function (v) {
+            return parseInt(v, 10) || 0;
+        });
+        var date = new Date(baseDate);
+        date.setHours(parts[0], parts[1], parts[2], 0);
+        return stampDate(date) + ' ' + pad(date.getHours()) + ':' + pad(date.getMinutes()) + ':' + pad(date.getSeconds());
+    }
+
+    function renderForumTimes() {
+        var threadDate = getThreadDate();
+        document.querySelectorAll('.js-forum-time').forEach(function (el) {
+            el.textContent = formatForumTime(threadDate, el.getAttribute('data-post-time'));
+        });
+    }
+
+    renderForumTimes();
+})();
+</script>
 
 </body>
 </html>
