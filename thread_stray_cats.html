@@ -88,7 +88,7 @@
                 </div>
                 <div class="post-right">
                     <div class="post-info">
-                        发表于 2026-06-20 16:30:00 <span class="floor-num">楼主</span>
+                        发表于 <span class="js-forum-time" data-day-offset="0" data-post-time="16:30:00"></span> <span class="floor-num">楼主</span>
                     </div>
                     <div class="content">
                         激动！！经常在二食堂后面转悠的那只大橘猫做妈妈啦！生了四只小可爱，目前我用纸箱垫了旧衣服给它们安了家，很安全。<br><br>
@@ -105,7 +105,7 @@
                     <div class="user-stats">发帖: 211<br>积分: 650</div>
                 </div>
                 <div class="post-right">
-                    <div class="post-info">发表于 2026-06-21 08:20:10 <span class="floor-num">沙发</span></div>
+                    <div class="post-info">发表于 <span class="js-forum-time" data-day-offset="1" data-post-time="08:20:10"></span> <span class="floor-num">沙发</span></div>
                     <div class="content">
                         楼主，小猫是不是被人抱走了？<br>
                         我今天早上特意拿着猫罐头过去看，纸箱里是空的，四只小猫都没了。而且纸箱底部有一摊像是烧焦的黑色灰烬，周围还有一股臭臭的味道，像是臭氧混着烤肉的味儿...
@@ -121,10 +121,10 @@
                     <div class="user-stats">发帖: 1205<br>积分: 3500</div>
                 </div>
                 <div class="post-right">
-                    <div class="post-info">发表于 2026-06-21 09:45:33 <span class="floor-num">板凳</span></div>
+                    <div class="post-info">发表于 <span class="js-forum-time" data-day-offset="1" data-post-time="09:45:33"></span> <span class="floor-num">板凳</span></div>
                     <div class="content">
                         <div class="quote-box">
-                            <b>引用 干饭第一名 在 2026-06-21 08:20:10 发表的帖子:</b><br>
+                            <b>引用 干饭第一名 在 <span class="js-forum-time" data-day-offset="1" data-post-time="08:20:10"></span> 发表的帖子:</b><br>
                             而且纸箱底部有一摊像是烧焦的黑色灰烬...
                         </div>
                         我也看到了... 我现在在纸箱旁边，手脚发凉。<br>
@@ -164,6 +164,63 @@
         </div>
     </div>
 </div>
+
+<script>
+(function () {
+    var DAY_MS = 24 * 60 * 60 * 1000;
+    var STORAGE_KEY = 'njdx_bbs_thread_stray_cats_date_v1';
+
+    function pad(n) {
+        return String(n).padStart(2, '0');
+    }
+
+    function stampDate(date) {
+        return date.getFullYear() + '-' + pad(date.getMonth() + 1) + '-' + pad(date.getDate());
+    }
+
+    function getThreadStartDate() {
+        var now = new Date();
+        var today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        var storedDate = '';
+
+        try {
+            storedDate = window.sessionStorage.getItem(STORAGE_KEY) || '';
+        } catch (e) {}
+
+        if (/^\d{4}-\d{2}-\d{2}$/.test(storedDate)) {
+            var cached = new Date(storedDate + 'T00:00:00');
+            if (!Number.isNaN(cached.getTime())) return cached;
+        }
+
+        var daysAgo = 2 + Math.floor(Math.random() * 14);
+        var threadDate = new Date(today.getTime() - daysAgo * DAY_MS);
+
+        try {
+            window.sessionStorage.setItem(STORAGE_KEY, stampDate(threadDate));
+        } catch (e) {}
+
+        return threadDate;
+    }
+
+    function formatForumTime(startDate, dayOffset, clockText) {
+        var parts = String(clockText || '00:00:00').split(':').map(function (v) {
+            return parseInt(v, 10) || 0;
+        });
+        var date = new Date(startDate.getTime() + (parseInt(dayOffset, 10) || 0) * DAY_MS);
+        date.setHours(parts[0], parts[1], parts[2], 0);
+        return stampDate(date) + ' ' + pad(date.getHours()) + ':' + pad(date.getMinutes()) + ':' + pad(date.getSeconds());
+    }
+
+    function renderForumTimes() {
+        var startDate = getThreadStartDate();
+        document.querySelectorAll('.js-forum-time').forEach(function (el) {
+            el.textContent = formatForumTime(startDate, el.getAttribute('data-day-offset'), el.getAttribute('data-post-time'));
+        });
+    }
+
+    renderForumTimes();
+})();
+</script>
 
 </body>
 </html>
