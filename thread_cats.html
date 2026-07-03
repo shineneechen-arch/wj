@@ -88,7 +88,7 @@
                 </div>
                 <div class="post-right">
                     <div class="post-info">
-                        发表于 2026-06-20 02:45:00 <span class="floor-num">楼主</span>
+                        发表于 <span class="js-forum-time" data-post-time="02:45:00"></span> <span class="floor-num">楼主</span>
                     </div>
                     <div class="content">
                         无语子！！我刚才晋级赛打到最后一波团战，网直接断了！<br><br>
@@ -105,7 +105,7 @@
                     <div class="user-stats">发帖: 302<br>积分: 890</div>
                 </div>
                 <div class="post-right">
-                    <div class="post-info">发表于 2026-06-20 03:10:12 <span class="floor-num">沙发</span></div>
+                    <div class="post-info">发表于 <span class="js-forum-time" data-post-time="03:10:12"></span> <span class="floor-num">沙发</span></div>
                     <div class="content">
                         别什么锅都往猫猫身上甩！我负责喂南区流浪猫的，最近南门机房外边根本没有猫！不知怎么回事，这几天猫都不去南边了，丢了好几只大橘，我都急死了。
                     </div>
@@ -120,7 +120,7 @@
                     <div class="user-stats">发帖: 156<br>积分: 450</div>
                 </div>
                 <div class="post-right">
-                    <div class="post-info">发表于 2026-06-20 08:15:45 <span class="floor-num">板凳</span></div>
+                    <div class="post-info">发表于 <span class="js-forum-time" data-post-time="08:15:45"></span> <span class="floor-num">板凳</span></div>
                     <div class="content">
                         我是去修网的助理……确实不是猫尿的。<br><br>
                         但我宁可是猫尿的。我凌晨去机房查线，打开机柜的时候人都傻了。那根连着外网的主干光缆，外面原本是绝缘胶皮的，但我摸上去的时候，它是<b>软的，而且是热的</b>。<br>
@@ -137,10 +137,10 @@
                     <div class="user-stats">发帖: 440<br>积分: 2100</div>
                 </div>
                 <div class="post-right">
-                    <div class="post-info">发表于 2026-06-20 09:30:22 <span class="floor-num">地板</span></div>
+                    <div class="post-info">发表于 <span class="js-forum-time" data-post-time="09:30:22"></span> <span class="floor-num">地板</span></div>
                     <div class="content">
                         <div class="quote-box">
-                            <b>引用 网管小哥 在 2026-06-20 08:15:45 发表的帖子:</b><br>
+                            <b>引用 网管小哥 在 <span class="js-forum-time" data-post-time="08:15:45"></span> 发表的帖子:</b><br>
                             那根几厘米粗的光缆，像大动脉一样在我的手里有规律地跳动！
                         </div>
                         兄弟们，细思极恐。你们去把隔壁帖子里那个叫「ZenCode」的 3D 星盘后台接口的发包频率，和昨晚全校断网的时间点对比一下。<br><br>
@@ -181,6 +181,63 @@
         </div>
     </div>
 </div>
+
+<script>
+(function () {
+    var DAY_MS = 24 * 60 * 60 * 1000;
+    var STORAGE_KEY = 'njdx_bbs_thread_cats_date_v1';
+
+    function pad(n) {
+        return String(n).padStart(2, '0');
+    }
+
+    function stampDate(date) {
+        return date.getFullYear() + '-' + pad(date.getMonth() + 1) + '-' + pad(date.getDate());
+    }
+
+    function getThreadDate() {
+        var now = new Date();
+        var today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        var storedDate = '';
+
+        try {
+            storedDate = window.sessionStorage.getItem(STORAGE_KEY) || '';
+        } catch (e) {}
+
+        if (/^\d{4}-\d{2}-\d{2}$/.test(storedDate)) {
+            var cached = new Date(storedDate + 'T00:00:00');
+            if (!Number.isNaN(cached.getTime())) return cached;
+        }
+
+        var daysAgo = Math.floor(Math.random() * 15) + 1;
+        var threadDate = new Date(today.getTime() - daysAgo * DAY_MS);
+
+        try {
+            window.sessionStorage.setItem(STORAGE_KEY, stampDate(threadDate));
+        } catch (e) {}
+
+        return threadDate;
+    }
+
+    function formatForumTime(baseDate, clockText) {
+        var parts = String(clockText || '00:00:00').split(':').map(function (v) {
+            return parseInt(v, 10) || 0;
+        });
+        var date = new Date(baseDate);
+        date.setHours(parts[0], parts[1], parts[2], 0);
+        return stampDate(date) + ' ' + pad(date.getHours()) + ':' + pad(date.getMinutes()) + ':' + pad(date.getSeconds());
+    }
+
+    function renderForumTimes() {
+        var threadDate = getThreadDate();
+        document.querySelectorAll('.js-forum-time').forEach(function (el) {
+            el.textContent = formatForumTime(threadDate, el.getAttribute('data-post-time'));
+        });
+    }
+
+    renderForumTimes();
+})();
+</script>
 
 </body>
 </html>
