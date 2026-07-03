@@ -92,12 +92,12 @@
                 </div>
                 <div class="post-right">
                     <div class="post-info">
-                        发表于 2026-06-21 09:00:00 <span class="floor-num">楼主</span>
+                        发表于 <span class="js-forum-time" data-post-time="09:00:00"></span> <span class="floor-num">楼主</span>
                     </div>
                     <div class="content">
                         各位校友：<br><br>
                         近日，我们收到大量用户反馈，在深夜访问本“溯源镜像服”时，页面偶尔会出现极其短暂的频闪，并随机刷出一些落款时间为 **2007年6月11日** 的血红色求救贴。<br><br>
-                        经过网络中心初步排查，这是由于我们在构建这个 2026 年镜像服时，为了保留历史归档，挂载了一块 2007 年服务器的物理旧硬盘。由于年代久远，该硬盘存在严重的坏道（Bad Sectors）和磁道漏读现象，导致在 I/O 高峰期，旧表的缓存数据会溢出并覆盖当前页面的 DOM 树。<br><br>
+                        经过网络中心初步排查，这是由于我们在构建当前镜像服时，为了保留历史归档，挂载了一块 2007 年服务器的物理旧硬盘。由于年代久远，该硬盘存在严重的坏道（Bad Sectors）和磁道漏读现象，导致在 I/O 高峰期，旧表的缓存数据会溢出并覆盖当前页面的 DOM 树。<br><br>
                         我们保证这<b>只是一次单纯的硬件读取故障</b>，绝非黑客攻击或恶作剧。技术团队正在尝试对该旧硬盘进行物理隔离，请大家保持理性，不要在版内传播不实谣言。
                     </div>
                 </div>
@@ -111,7 +111,7 @@
                     <div class="user-stats">发帖: 840<br>积分: 3420</div>
                 </div>
                 <div class="post-right">
-                    <div class="post-info">发表于 2026-06-21 11:30:15 <span class="floor-num">沙发</span></div>
+                    <div class="post-info">发表于 <span class="js-forum-time" data-post-time="11:30:15"></span> <span class="floor-num">沙发</span></div>
                     <div class="content">
                         管理员别洗地了，你这套说辞骗骗文科生还行。<br><br>
                         我是上届计协的技术部部长，有部分读库的权限。我昨天出于好奇，跑去 dump 了一下你说的那个“2007年旧版数据库表”。<br>
@@ -130,11 +130,11 @@
                     <div class="user-stats">发帖: 840<br>积分: 3420</div>
                 </div>
                 <div class="post-right">
-                    <div class="post-info">发表于 2026-06-21 11:35:40 <span class="floor-num">板凳</span></div>
+                    <div class="post-info">发表于 <span class="js-forum-time" data-post-time="11:35:40"></span> <span class="floor-num">板凳</span></div>
                     <div class="content">
                         补充一下：<br>
                         死掉的数据是不会自己写 SQL 插入新行的。<br>
-                        这说明在 19 年前的那个时间点，有某种东西卡在了网络层里。它（或者他们）正在以极其惊人的并发量，疯狂地向我们的 2026 年现代数据库里执行 <code>INSERT</code> 操作。<br>
+                        这说明在 2007年的那个时间点，有某种东西卡在了网络层里。它（或者他们）正在以极其惊人的并发量，疯狂地向我们的现代数据库里执行 <code>INSERT</code> 操作。<br>
                         赶紧把那块盘砸了吧，里面装的根本不是坏道，是活的。
                     </div>
                 </div>
@@ -148,7 +148,7 @@
                     <div class="user-stats">发帖: 5<br>积分: 12</div>
                 </div>
                 <div class="post-right">
-                    <div class="post-info">发表于 2026-06-21 12:01:10 <span class="floor-num">地板</span></div>
+                    <div class="post-info">发表于 <span class="js-forum-time" data-post-time="12:01:10"></span> <span class="floor-num">地板</span></div>
                     <div class="content">
                         救命啊，这楼走向怎么越来越阴间了...我今晚都不敢登BBS了！
                     </div>
@@ -186,5 +186,62 @@
         </div>
     </div>
 </div>
+<script>
+(function () {
+    var DAY_MS = 24 * 60 * 60 * 1000;
+    var STORAGE_KEY = 'njdx_bbs_thread_announcement_date_v1';
+
+    function pad(n) {
+        return String(n).padStart(2, '0');
+    }
+
+    function stampDate(date) {
+        return date.getFullYear() + '-' + pad(date.getMonth() + 1) + '-' + pad(date.getDate());
+    }
+
+    function getThreadDate() {
+        var now = new Date();
+        var today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        var storedDate = '';
+
+        try {
+            storedDate = window.sessionStorage.getItem(STORAGE_KEY) || '';
+        } catch (e) {}
+
+        if (/^\d{4}-\d{2}-\d{2}$/.test(storedDate)) {
+            var cached = new Date(storedDate + 'T00:00:00');
+            if (!Number.isNaN(cached.getTime())) return cached;
+        }
+
+        var daysAgo = Math.floor(Math.random() * 15) + 1;
+        var threadDate = new Date(today.getTime() - daysAgo * DAY_MS);
+
+        try {
+            window.sessionStorage.setItem(STORAGE_KEY, stampDate(threadDate));
+        } catch (e) {}
+
+        return threadDate;
+    }
+
+    function formatForumTime(baseDate, clockText) {
+        var parts = String(clockText || '00:00:00').split(':').map(function (v) {
+            return parseInt(v, 10) || 0;
+        });
+        var date = new Date(baseDate);
+        date.setHours(parts[0], parts[1], parts[2], 0);
+        return stampDate(date) + ' ' + pad(date.getHours()) + ':' + pad(date.getMinutes()) + ':' + pad(date.getSeconds());
+    }
+
+    function renderForumTimes() {
+        var threadDate = getThreadDate();
+        document.querySelectorAll('.js-forum-time').forEach(function (el) {
+            el.textContent = formatForumTime(threadDate, el.getAttribute('data-post-time'));
+        });
+    }
+
+    renderForumTimes();
+})();
+</script>
+
 </body>
 </html>
