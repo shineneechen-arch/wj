@@ -88,7 +88,7 @@
                 </div>
                 <div class="post-right">
                     <div class="post-info">
-                        发表于 2026-06-21 12:15:00 <span class="floor-num">楼主</span>
+                        发表于 <span class="js-forum-time" data-post-time="12:15:00"></span> <span class="floor-num">楼主</span>
                     </div>
                     <div class="content">
                         离大谱！二食堂一楼那个刚引进的“AI全自动炒菜机械臂”，今天中午又抽风了！<br><br>
@@ -105,7 +105,7 @@
                     <div class="user-stats">发帖: 102<br>积分: 340</div>
                 </div>
                 <div class="post-right">
-                    <div class="post-info">发表于 2026-06-21 12:30:12 <span class="floor-num">沙发</span></div>
+                    <div class="post-info">发表于 <span class="js-forum-time" data-post-time="12:30:12"></span> <span class="floor-num">沙发</span></div>
                     <div class="content">
                         那个机器是连着云端大模型 API 算菜谱的。最近咱们校园网的对外接口不稳定，估计是丢包导致动作指令卡死了，机械臂停在加热环节没翻锅呗。
                     </div>
@@ -120,10 +120,10 @@
                     <div class="user-stats">发帖: 14<br>积分: 35</div>
                 </div>
                 <div class="post-right">
-                    <div class="post-info">发表于 2026-06-21 13:05:45 <span class="floor-num">板凳</span></div>
+                    <div class="post-info">发表于 <span class="js-forum-time" data-post-time="13:05:45"></span> <span class="floor-num">板凳</span></div>
                     <div class="content">
                         <div class="quote-box">
-                            <b>引用 自动化打工人 在 2026-06-21 12:30:12 发表的帖子:</b><br>
+                            <b>引用 自动化打工人 在 <span class="js-forum-time" data-post-time="12:30:12"></span> 发表的帖子:</b><br>
                             估计是丢包导致动作指令卡死了，机械臂停在加热环节没翻锅呗。
                         </div>
                         不是没翻锅！当时我就排在楼主后面，我看得清清楚楚！<br><br>
@@ -140,7 +140,7 @@
                     <div class="user-stats" style="margin-top: 10px;">发帖: 850<br>积分: 5000</div>
                 </div>
                 <div class="post-right">
-                    <div class="post-info">发表于 2026-06-21 14:20:22 <span class="floor-num">地板</span></div>
+                    <div class="post-info">发表于 <span class="js-forum-time" data-post-time="14:20:22"></span> <span class="floor-num">地板</span></div>
                     <div class="content">
                         内部通报一下：刚去查了路由日志。中午12点机器故障的时候，它并没有连接烹饪大模型的云端 API。<br><br>
                         它不知道被什么东西劫持了，后台协议被改成了局域网直连，指向了南门外一个不存在的内网 IP 段。下载的数据包标识为 <b>[PROTOCOL_FLESH_PROCESSING_01]</b>（有机物处理协议）。目前机器已经断电锁在仓库了，大家别猜了。
@@ -179,6 +179,63 @@
         </div>
     </div>
 </div>
+
+<script>
+(function () {
+    var DAY_MS = 24 * 60 * 60 * 1000;
+    var STORAGE_KEY = 'njdx_bbs_thread_robot_date_v1';
+
+    function pad(n) {
+        return String(n).padStart(2, '0');
+    }
+
+    function stampDate(date) {
+        return date.getFullYear() + '-' + pad(date.getMonth() + 1) + '-' + pad(date.getDate());
+    }
+
+    function getThreadDate() {
+        var now = new Date();
+        var today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        var storedDate = '';
+
+        try {
+            storedDate = window.sessionStorage.getItem(STORAGE_KEY) || '';
+        } catch (e) {}
+
+        if (/^\d{4}-\d{2}-\d{2}$/.test(storedDate)) {
+            var cached = new Date(storedDate + 'T00:00:00');
+            if (!Number.isNaN(cached.getTime())) return cached;
+        }
+
+        var daysAgo = Math.floor(Math.random() * 15) + 1;
+        var threadDate = new Date(today.getTime() - daysAgo * DAY_MS);
+
+        try {
+            window.sessionStorage.setItem(STORAGE_KEY, stampDate(threadDate));
+        } catch (e) {}
+
+        return threadDate;
+    }
+
+    function formatForumTime(baseDate, clockText) {
+        var parts = String(clockText || '00:00:00').split(':').map(function (v) {
+            return parseInt(v, 10) || 0;
+        });
+        var date = new Date(baseDate);
+        date.setHours(parts[0], parts[1], parts[2], 0);
+        return stampDate(date) + ' ' + pad(date.getHours()) + ':' + pad(date.getMinutes()) + ':' + pad(date.getSeconds());
+    }
+
+    function renderForumTimes() {
+        var threadDate = getThreadDate();
+        document.querySelectorAll('.js-forum-time').forEach(function (el) {
+            el.textContent = formatForumTime(threadDate, el.getAttribute('data-post-time'));
+        });
+    }
+
+    renderForumTimes();
+})();
+</script>
 
 </body>
 </html>
