@@ -92,7 +92,7 @@
                 </div>
                 <div class="post-right">
                     <div class="post-info">
-                        发表于 2026-06-20 16:30:00 <span class="floor-num">楼主</span>
+                        发表于 <span class="js-forum-time" data-post-time="16:30:00"></span> <span class="floor-num">楼主</span>
                     </div>
                     <div class="content">
                         救命啊兄弟们！我写的《基于深度学习的图像特征提取》被知网的 AI 检测系统判定生成率 85%！<br><br>
@@ -109,7 +109,7 @@
                     <div class="user-stats">发帖: 215<br>积分: 890</div>
                 </div>
                 <div class="post-right">
-                    <div class="post-info">发表于 2026-06-20 16:45:12 <span class="floor-num">沙发</span></div>
+                    <div class="post-info">发表于 <span class="js-forum-time" data-post-time="16:45:12"></span> <span class="floor-num">沙发</span></div>
                     <div class="content">
                         本地开源模型没微调过是这样的，容易胡言乱语。你贴一下它给你生成的什么玩意儿？是不是 prompt（提示词）没写对？
                     </div>
@@ -124,7 +124,7 @@
                     <div class="user-stats">发帖: 42<br>积分: 120</div>
                 </div>
                 <div class="post-right">
-                    <div class="post-info">发表于 2026-06-20 17:10:45 <span class="floor-num">板凳</span></div>
+                    <div class="post-info">发表于 <span class="js-forum-time" data-post-time="17:10:45"></span> <span class="floor-num">板凳</span></div>
                     <div class="content">
                         提示词绝对没问题！但它给我返回的文章，前面几段还正常，写着写着突然就开始串台了，还夹杂着大量我根本没投喂过的奇怪汉字。你们看这段：<br>
                         <div class="code-box">
@@ -146,7 +146,7 @@
                     <div class="user-stats">发帖: 304<br>积分: 1250</div>
                 </div>
                 <div class="post-right">
-                    <div class="post-info">发表于 2026-06-20 18:22:10 <span class="floor-num">地板</span></div>
+                    <div class="post-info">发表于 <span class="js-forum-time" data-post-time="18:22:10"></span> <span class="floor-num">地板</span></div>
                     <div class="content">
                         卧槽，楼主你不是一个人！<br>
                         我下午用 AI 代码助手写前端，让它帮我补全一段 <code>for</code> 循环，结果它给我自动补全了十几万行的 <code>while(true) { burn(); scream(); }</code>！<br>
@@ -186,5 +186,62 @@
         </div>
     </div>
 </div>
+<script>
+(function () {
+    var DAY_MS = 24 * 60 * 60 * 1000;
+    var STORAGE_KEY = 'njdx_bbs_thread_ai_paper_date_v1';
+
+    function pad(n) {
+        return String(n).padStart(2, '0');
+    }
+
+    function stampDate(date) {
+        return date.getFullYear() + '-' + pad(date.getMonth() + 1) + '-' + pad(date.getDate());
+    }
+
+    function getThreadDate() {
+        var now = new Date();
+        var today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        var storedDate = '';
+
+        try {
+            storedDate = window.sessionStorage.getItem(STORAGE_KEY) || '';
+        } catch (e) {}
+
+        if (/^\d{4}-\d{2}-\d{2}$/.test(storedDate)) {
+            var cached = new Date(storedDate + 'T00:00:00');
+            if (!Number.isNaN(cached.getTime())) return cached;
+        }
+
+        var daysAgo = Math.floor(Math.random() * 15) + 1;
+        var threadDate = new Date(today.getTime() - daysAgo * DAY_MS);
+
+        try {
+            window.sessionStorage.setItem(STORAGE_KEY, stampDate(threadDate));
+        } catch (e) {}
+
+        return threadDate;
+    }
+
+    function formatForumTime(baseDate, clockText) {
+        var parts = String(clockText || '00:00:00').split(':').map(function (v) {
+            return parseInt(v, 10) || 0;
+        });
+        var date = new Date(baseDate);
+        date.setHours(parts[0], parts[1], parts[2], 0);
+        return stampDate(date) + ' ' + pad(date.getHours()) + ':' + pad(date.getMinutes()) + ':' + pad(date.getSeconds());
+    }
+
+    function renderForumTimes() {
+        var threadDate = getThreadDate();
+        document.querySelectorAll('.js-forum-time').forEach(function (el) {
+            el.textContent = formatForumTime(threadDate, el.getAttribute('data-post-time'));
+        });
+    }
+
+    renderForumTimes();
+})();
+</script>
+
 </body>
 </html>
