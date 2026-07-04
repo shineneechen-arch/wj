@@ -17,18 +17,18 @@
         /* ================= 容器与图层堆叠 ================= */
         #app-container { position: relative; width: 100%; min-height: 100vh; }
         .layer { width: 100%; transition: opacity 0.05s ease; }
-        #layer-2026 { position: relative; z-index: 10; opacity: 1; }
+        #layer-current { position: relative; z-index: 10; opacity: 1; }
         #layer-2007 { position: absolute; top: 0; left: 0; z-index: 20; opacity: 0; pointer-events: none; filter: contrast(1.2) sepia(0.3) hue-rotate(-10deg); }
 
         /* ================= 主体内容区 ================= */
         .main-wrap { width: 96%; min-width: 980px; margin: 15px auto; background-color: #FFFFFF; border: 1px solid #A6CBE7; padding: 18px; box-sizing: border-box; transition: box-shadow 1s; }
         
-        .header-2026 { background-color: #245b84; padding: 25px 30px; margin: -18px -18px 15px -18px; color: #fff; }
-        .header-2026 .logo { font-size: 28px; font-weight: bold; font-family: "Microsoft YaHei", "黑体", sans-serif; text-shadow: 1px 1px 3px rgba(0,0,0,0.6); margin-bottom: 18px; letter-spacing: 1px; }
-        .header-2026 .nav { font-size: 14px; font-family: "Microsoft YaHei", sans-serif; }
-        .header-2026 .nav a { color: #fff; text-decoration: none; font-weight: normal; }
-        .header-2026 .nav a:hover { text-decoration: underline; }
-        .header-2026 .nav span { margin: 0 12px; font-weight: bold; color: #fff; }
+        .header-current { background-color: #245b84; padding: 25px 30px; margin: -18px -18px 15px -18px; color: #fff; }
+        .header-current .logo { font-size: 28px; font-weight: bold; font-family: "Microsoft YaHei", "黑体", sans-serif; text-shadow: 1px 1px 3px rgba(0,0,0,0.6); margin-bottom: 18px; letter-spacing: 1px; }
+        .header-current .nav { font-size: 14px; font-family: "Microsoft YaHei", sans-serif; }
+        .header-current .nav a { color: #fff; text-decoration: none; font-weight: normal; }
+        .header-current .nav a:hover { text-decoration: underline; }
+        .header-current .nav span { margin: 0 12px; font-weight: bold; color: #fff; }
 
         .header-bg-2007 { background-color: #1A2233; padding: 25px 30px 20px 30px; border-bottom: 2px solid #F00; margin: -18px -18px 15px -18px; }
         .logo-2007 { font-family: "Microsoft YaHei", "黑体", sans-serif; font-size: 28px; font-weight: bold; color: #FF0000; text-shadow: 1px 1px 3px rgba(255,0,0,0.6); margin-bottom: 18px; letter-spacing: 2px; }
@@ -94,10 +94,10 @@
 
 <div id="app-container">
     
-    <div id="layer-2026" class="layer">
-        <div class="main-wrap" id="main-content-2026">
+    <div id="layer-current" class="layer">
+        <div class="main-wrap" id="main-content-current">
             
-            <div class="header-2026">
+            <div class="header-current">
                 <div class="logo">南江大学 - 溯源BBS (Since 2004)</div>
         
                 <div class="nav">
@@ -110,7 +110,7 @@
                 </div>
             </div>
 
-            <div class="user-status-bar" id="status-bar-2026">
+            <div class="user-status-bar" id="status-bar-current">
                 <span class="info-stats">今日新帖: <span class="bold blue">1,024</span> | 在线人数: 8,452</span>
                 欢迎您，<span class="bold blue">游客</span> ( <a href="#" onclick="showLogin()">登录</a> | <a href="#">免费注册</a> ) 
                 &nbsp;&nbsp;&nbsp;系统时间: <span class="bold time-display"></span>
@@ -121,7 +121,7 @@
                 <div class="top10-list">
                     <div class="top10-item"><span class="rank rank-hot">1</span> <a href="thread_zencode.html" class="bold red">【八卦】今年计科系的毕业设计居然有人交了个算命排盘系统？</a></div>
                     <div class="top10-item"><span class="rank">6</span> <a href="thread_qimen.html" class="bold">【科普】干货警告！奇门遁甲小白入门指南，从定局开始手把手教</a></div>
-                    <div class="top10-item"><span class="rank rank-hot">2</span> <a href="bz.html" class="bold">【闲聊】深夜玄学探讨：你们到底信不信生辰八字？</a></div>
+                    <div class="top10-item"><span class="rank rank-hot">2</span> <a href="bbs_bazi_thread.html" class="bold">【闲聊】深夜玄学探讨：你们到底信不信生辰八字？</a></div>
                     <div class="top10-item"><span class="rank">7</span> <a href="thread_rules.html">【吐槽】本学期关于晚归断电的新规定太坑了</a></div>
                     <div class="top10-item"><span class="rank">3</span> <a href="thread_canteen.html">【吐槽】食堂三楼的阿姨手又抖了，排骨全掉锅里</a></div>
                     <div class="top10-item"><span class="rank">8</span> <a href="thread_1234.html">【科幻】谈谈多维度的世界：0到4维到底怎么理解？</a></div>
@@ -145,7 +145,7 @@
                         <div class="forum-desc">最近发现有旧表缓存溢出覆盖当前页面的情况，请大家珍惜论坛环境，切勿听信谣言。</div>
                     </td>
                     <td style="text-align: center;" class="gray">主题: 12<br />贴数: 145</td>
-                    <td><span class="gray"><span class="js-home-thread-time" data-thread-key="announcement" data-post-time="09:00"></span> <br><a href="#">现任管理员</a></span></td>
+                    <td><span class="gray"><span class="js-home-thread-time" data-thread-key="announcement" data-storage-key="njdx_bbs_thread_announcement_date_v1" data-post-time="09:00"></span> <br><a href="#">现任管理员</a></span></td>
                 </tr>
                 <tr>
                     <td>
@@ -153,7 +153,7 @@
                         <div class="forum-desc">别人都在做电商后台，她搞了个极客玄学工具，3D星盘连公转自转都做出来了，神仙学姐！</div>
                     </td>
                     <td style="text-align: center;" class="gray">主题: 342<br />贴数: 1205</td>
-                    <td><span class="gray"><span class="js-home-thread-time" data-thread-key="zencode-chat" data-post-time="14:20"></span> <br><a href="#">吃瓜大队长</a></span></td>
+                    <td><span class="gray"><span class="js-home-thread-time" data-thread-key="zencode-chat" data-storage-key="njdx_bbs_thread_zencode_date_v1" data-min-days-ago="2" data-post-time="14:20"></span> <br><a href="#">吃瓜大队长</a></span></td>
                 </tr>
                 <tr class="forum-row-alt">
                     <td>
@@ -161,7 +161,7 @@
                         <div class="forum-desc">本地跑的模型疯狂产生诡异幻觉，一直弹易经卦象和人体导热，语料库是不是被污染了？</div>
                     </td>
                     <td style="text-align: center;" class="gray">主题: 8<br />贴数: 92</td>
-                    <td><span class="gray"><span class="js-home-thread-time" data-thread-key="ai-paper" data-post-time="16:30"></span> <br><a href="#">毕设愁秃头</a></span></td>
+                    <td><span class="gray"><span class="js-home-thread-time" data-thread-key="ai-paper" data-storage-key="njdx_bbs_thread_ai_paper_date_v1" data-post-time="16:30"></span> <br><a href="#">毕设愁秃头</a></span></td>
                 </tr>
                 <tr>
                     <td>
@@ -169,7 +169,7 @@
                         <div class="forum-desc">主干网线摸上去又软又热，像血管一样有规律地跳动，机柜里全是血腥味。</div>
                     </td>
                     <td style="text-align: center;" class="gray">主题: 2<br />贴数: 15</td>
-                    <td><span class="gray"><span class="js-home-thread-time" data-thread-key="campus-network" data-post-time="02:45"></span> <br><a href="#">祖安钢琴家</a></span></td>
+                    <td><span class="gray"><span class="js-home-thread-time" data-thread-key="campus-network" data-storage-key="njdx_bbs_thread_cats_date_v1" data-post-time="02:45"></span> <br><a href="#">祖安钢琴家</a></span></td>
                 </tr>
             </table>
 
@@ -181,7 +181,7 @@
                         <div class="forum-desc">结合七政四余与二十八宿，黑金奢华配色，支持发光行星自转流光与地心日心双模型。</div>
                     </td>
                     <td style="text-align: center;" class="gray">主题: 45<br />贴数: 890</td>
-                    <td><span class="gray"><span class="js-home-thread-time" data-thread-key="zencode-release" data-post-time="14:30"></span> <br><a href="#">Zen_Coder</a></span></td>
+                    <td><span class="gray"><span class="js-home-thread-time" data-thread-key="zencode-release" data-storage-key="njdx_bbs_thread_zencode_release_date_v1" data-min-days-ago="8" data-post-time="14:30"></span> <br><a href="#">Zen_Coder</a></span></td>
                 </tr>
                 <tr>
                     <td>
@@ -189,7 +189,7 @@
                         <div class="forum-desc">前两天看见有人在颐高称斤回收废旧主板，现在攒机硬件价格波动大，求带。</div>
                     </td>
                     <td style="text-align: center;" class="gray">主题: 14<br />贴数: 85</td>
-                    <td><span class="gray"><span class="js-home-thread-time" data-thread-key="yanyun-pc" data-post-time="20:30"></span> <br><a href="#">网瘾少年</a></span></td>
+                    <td><span class="gray"><span class="js-home-thread-time" data-thread-key="yanyun-pc" data-storage-key="njdx_bbs_thread_yanyun_date_v1" data-min-days-ago="2" data-post-time="20:30"></span> <br><a href="#">网瘾少年</a></span></td>
                 </tr>
             </table>
 
@@ -197,11 +197,11 @@
             <table class="forum-table">
                 <tr class="forum-row-alt">
                     <td>
-                        <a href="bz.html" class="thread-title bold" style="color: #660099;">【闲聊】深夜玄学探讨：你们到底信不信生辰八字？</a>
+                        <a href="bbs_bazi_thread.html" class="thread-title bold" style="color: #660099;">【闲聊】深夜玄学探讨：你们到底信不信生辰八字？</a>
                         <div class="forum-desc">感觉最近身边发生了好多科学解释不了的诡异事情，想问问大家有没有遇到过什么玄乎的经历？</div>
                     </td>
                     <td style="text-align: center;" class="gray">主题: 305<br />贴数: 2210</td>
-                    <td><span class="gray"><span class="js-home-thread-time" data-thread-key="bazi-talk" data-post-time="23:45"></span> <br><a href="#">塔罗小女巫</a></span></td>
+                    <td><span class="gray"><span class="js-home-thread-time" data-thread-key="bazi-talk" data-storage-key="njdx_bbs_bazi_thread_date_v1" data-post-time="23:45"></span> <br><a href="#">塔罗小女巫</a></span></td>
                 </tr>
                 <tr>
                     <td>
@@ -209,7 +209,7 @@
                         <div class="forum-desc">听上届学长说，南门外以前不是这样子的，十多年前好像烧掉过一个废弃仓库...</div>
                     </td>
                     <td style="text-align: center;" class="gray">主题: 88<br />贴数: 532</td>
-                    <td><span class="gray"><span class="js-home-thread-time" data-thread-key="fire-rumor" data-post-time="01:20"></span> <br><a href="#">半夜不睡觉</a></span></td>
+                    <td><span class="gray"><span class="js-home-thread-time" data-thread-key="fire-rumor" data-storage-key="njdx_bbs_thread_date_v1" data-post-time="03:50"></span> <br><a href="#">半夜不睡觉</a></span></td>
                 </tr>
                 <tr class="forum-row-alt">
                     <td>
@@ -217,7 +217,7 @@
                         <div class="forum-desc">店名挂着【未济：数据回收与硬件超度】，满地的紫铜走线像个赛博法阵。</div>
                     </td>
                     <td style="text-align: center;" class="gray">主题: 104<br />贴数: 1420</td>
-                    <td><span class="gray"><span class="js-home-thread-time" data-thread-key="deep-water" data-post-time="02:14" data-sync-deep-water="true"></span> <br><a href="#">熬夜掉头发</a></span></td>
+                    <td><span class="gray"><span class="js-home-thread-time" data-thread-key="deep-water" data-storage-key="njdx_bbs_thread_date_v1" data-post-time="02:14" data-sync-deep-water="true"></span> <br><a href="#">熬夜掉头发</a></span></td>
                 </tr>
                 <tr>
                     <td>
@@ -225,7 +225,7 @@
                         <div class="forum-desc">机械臂在空锅里做着类似剥皮剔骨的精细动作，后台协议好像被南门奇怪IP劫持了。</div>
                     </td>
                     <td style="text-align: center;" class="gray">主题: 56<br />贴数: 231</td>
-                    <td><span class="gray"><span class="js-home-thread-time" data-thread-key="robot-cook" data-post-time="12:15"></span> <br><a href="#">干饭第一名</a></span></td>
+                    <td><span class="gray"><span class="js-home-thread-time" data-thread-key="robot-cook" data-storage-key="njdx_bbs_thread_robot_date_v1" data-post-time="12:15"></span> <br><a href="#">干饭第一名</a></span></td>
                 </tr>
                 <tr class="forum-row-alt">
                     <td>
@@ -233,7 +233,7 @@
                         <div class="forum-desc">雷达扫描Bug，能在南门上空照出一个全是血管、像心脏一样跳动的高维血肉星盘！</div>
                     </td>
                     <td style="text-align: center;" class="gray">主题: 18<br />贴数: 44</td>
-                    <td><span class="gray"><span class="js-home-thread-time" data-thread-key="vision-pro" data-post-time="10:20"></span> <br><a href="#">赛博穷鬼</a></span></td>
+                    <td><span class="gray"><span class="js-home-thread-time" data-thread-key="vision-pro" data-storage-key="njdx_bbs_thread_vision_pro_date_v1" data-post-time="10:20"></span> <br><a href="#">赛博穷鬼</a></span></td>
                 </tr>
             </table>
 
@@ -241,11 +241,11 @@
             <table class="forum-table">
                 <tr class="forum-row-alt">
                     <td>
-                        <a href="thread_lol.html" class="thread-title">【活动】电竞社《英雄联盟》校内争霸赛报名开启！</a>
-                        <div class="forum-desc">冠军奖励五百元网费，各路大神速速组队。</div>
+                        <a href="thread_lol.html" class="thread-title">【活动】电竞社《无畏契约》校内争霸赛报名开启！</a>
+                        <div class="forum-desc">5v5 标准模式，冠军奖励五百元网费，北区机房海选。</div>
                     </td>
                     <td style="text-align: center;" class="gray">主题: 33<br />贴数: 210</td>
-                    <td><span class="gray"><span class="js-home-thread-time" data-thread-key="lol-event" data-post-time="09:12"></span> <br><a href="#">电竞社长</a></span></td>
+                    <td><span class="gray"><span class="js-home-thread-time" data-thread-key="lol-event" data-storage-key="njdx_bbs_thread_lol_date_v1" data-post-time="09:12"></span> <br><a href="#">电竞社长</a></span></td>
                 </tr>
                 <tr>
                     <td>
@@ -253,7 +253,7 @@
                         <div class="forum-desc">本周末天气晴朗，组织去西山观星，名额有限先到先得。</div>
                     </td>
                     <td style="text-align: center;" class="gray">主题: 21<br />贴数: 99</td>
-                    <td><span class="gray"><span class="js-home-thread-time" data-thread-key="astronomy-event" data-post-time="21:05"></span> <br><a href="#">追星者</a></span></td>
+                    <td><span class="gray"><span class="js-home-thread-time" data-thread-key="astronomy-event" data-storage-key="njdx_bbs_thread_astronomy_date_v1" data-post-time="21:05"></span> <br><a href="#">追星者</a></span></td>
                 </tr>
                 <tr class="forum-row-alt">
                     <td>
@@ -261,15 +261,15 @@
                         <div class="forum-desc">橘猫妈妈生了四只小可爱，目前在纸箱里很安全。大家带点火腿肠来看看呀。</div>
                     </td>
                     <td style="text-align: center;" class="gray">主题: 156<br />贴数: 1205</td>
-                    <td><span class="gray"><span class="js-home-thread-time" data-thread-key="stray-cats" data-post-time="16:30"></span> <br><a href="#">爱猫人士</a></span></td>
+                    <td><span class="gray"><span class="js-home-thread-time" data-thread-key="stray-cats" data-storage-key="njdx_bbs_thread_stray_cats_date_v1" data-min-days-ago="2" data-post-time="16:30"></span> <br><a href="#">爱猫人士</a></span></td>
                 </tr>
             </table>
 
             <div class="footer">
                 <b>友情链接：</b> <a href="#">南江大学教务网</a> | <a href="#">水木清华BBS</a> | <a href="#">北大未名BBS</a><br /><br />
-                版权所有：南江大学信息化网络中心 &copy; 2026 南江大学星火BBS管理团队<br />
+                版权所有：南江大学信息化网络中心 &copy; <span class="current-year"></span> 南江大学星火BBS管理团队<br />
                 Powered by <span class="bold" style="color:#336699;">Discuz!
-<a href="4dMirror.html" style="color:#336699; text-decoration:none;">溯源镜像</a>服</span> &copy; 2001-2026 <a href="#">Comsenz Inc.</a><br />
+<a href="4dMirror.html" style="color:#336699; text-decoration:none;">溯源镜像</a>服</span> &copy; 2001-<span class="current-year"></span> <a href="#">Comsenz Inc.</a><br />
                 Gzip enabled | 页面执行时间: 0.0121 秒 | 数据库查询: 8 次 | 在线总人数: 8,452 人
             </div>
         </div>
@@ -484,12 +484,29 @@
             now.getMinutes().toString().padStart(2, '0') + ":" + 
             now.getSeconds().toString().padStart(2, '0');
         document.querySelectorAll('.time-display').forEach(d => d.innerText = timeStr);
+        document.querySelectorAll('.current-year').forEach(d => d.innerText = now.getFullYear());
     }
     setInterval(updateTime, 1000);
     updateTime();
 
     // ================= 首页帖子时间：本次浏览内稳定随机 =================
     const DAY_MS = 24 * 60 * 60 * 1000;
+    const HOME_THREAD_TIME_CONFIG = {
+        announcement: { storageKey: 'njdx_bbs_thread_announcement_date_v1' },
+        'zencode-chat': { storageKey: 'njdx_bbs_thread_zencode_date_v1', minDaysAgo: 2 },
+        'ai-paper': { storageKey: 'njdx_bbs_thread_ai_paper_date_v1' },
+        'campus-network': { storageKey: 'njdx_bbs_thread_cats_date_v1' },
+        'zencode-release': { storageKey: 'njdx_bbs_thread_zencode_release_date_v1', minDaysAgo: 8 },
+        'yanyun-pc': { storageKey: 'njdx_bbs_thread_yanyun_date_v1', minDaysAgo: 2 },
+        'bazi-talk': { storageKey: 'njdx_bbs_bazi_thread_date_v1' },
+        'fire-rumor': { storageKey: 'njdx_bbs_thread_date_v1' },
+        'deep-water': { storageKey: 'njdx_bbs_thread_date_v1' },
+        'robot-cook': { storageKey: 'njdx_bbs_thread_robot_date_v1' },
+        'vision-pro': { storageKey: 'njdx_bbs_thread_vision_pro_date_v1' },
+        'lol-event': { storageKey: 'njdx_bbs_thread_lol_date_v1' },
+        'astronomy-event': { storageKey: 'njdx_bbs_thread_astronomy_date_v1' },
+        'stray-cats': { storageKey: 'njdx_bbs_thread_stray_cats_date_v1', minDaysAgo: 2 }
+    };
 
     function pad2(num) {
         return String(num).padStart(2, '0');
@@ -516,11 +533,13 @@
         return null;
     }
 
-    function getRandomRecentDate(storageKey) {
+    function getRandomRecentDate(storageKey, minDaysAgo, maxDaysAgo) {
         const cached = readStoredDate(storageKey);
         if (cached) return cached;
 
-        const daysAgo = Math.floor(Math.random() * 15) + 1;
+        const minDays = Math.min(15, Math.max(1, parseInt(minDaysAgo, 10) || 1));
+        const maxDays = Math.min(15, Math.max(minDays, parseInt(maxDaysAgo, 10) || 15));
+        const daysAgo = minDays + Math.floor(Math.random() * (maxDays - minDays + 1));
         const picked = new Date(todayStart().getTime() - daysAgo * DAY_MS);
         try {
             window.sessionStorage.setItem(storageKey, dateStamp(picked));
@@ -528,21 +547,28 @@
         return picked;
     }
 
-    function formatThreadTime(baseDate, clockText) {
+    function formatThreadTime(baseDate, clockText, dayOffset) {
         const parts = String(clockText || '00:00').split(':').map(part => parseInt(part, 10) || 0);
-        const date = new Date(baseDate);
+        const date = new Date(baseDate.getTime() + (parseInt(dayOffset, 10) || 0) * DAY_MS);
         date.setHours(parts[0] || 0, parts[1] || 0, parts[2] || 0, 0);
         return dateStamp(date) + ' ' + pad2(date.getHours()) + ':' + pad2(date.getMinutes());
     }
 
     function renderHomeThreadTimes() {
         document.querySelectorAll('.js-home-thread-time').forEach(el => {
+            const threadKey = el.getAttribute('data-thread-key') || 'thread';
+            const config = HOME_THREAD_TIME_CONFIG[threadKey] || {};
             const isDeepWater = el.getAttribute('data-sync-deep-water') === 'true';
-            const key = isDeepWater
+            const explicitKey = el.getAttribute('data-storage-key') || config.storageKey;
+            const key = explicitKey || (isDeepWater
                 ? 'njdx_bbs_thread_date_v1'
-                : 'njdx_bbs_home_thread_date_v1_' + (el.getAttribute('data-thread-key') || 'thread');
-            const threadDate = getRandomRecentDate(key);
-            el.innerText = formatThreadTime(threadDate, el.getAttribute('data-post-time'));
+                : 'njdx_bbs_home_thread_date_v1_' + threadKey);
+            const minDaysAgo = el.getAttribute('data-min-days-ago') || config.minDaysAgo;
+            const maxDaysAgo = el.getAttribute('data-max-days-ago') || config.maxDaysAgo;
+            const postTime = el.getAttribute('data-post-time') || config.postTime;
+            const dayOffset = el.getAttribute('data-day-offset') || config.dayOffset;
+            const threadDate = getRandomRecentDate(key, minDaysAgo, maxDaysAgo);
+            el.innerText = formatThreadTime(threadDate, postTime, dayOffset);
         });
     }
 
@@ -570,6 +596,12 @@
         }
     }
 
+    const HOME_LOGIN_KEY = 'njdx_bbs_home_login_verified';
+
+    function isHomeLoggedIn() {
+        return localStorage.getItem(HOME_LOGIN_KEY) === 'true';
+    }
+
     // ================= 访客权限拦截系统 (双重安全拦截验证) =================
     (function bindClickInterceptor() {
         document.addEventListener('click', function(e) {
@@ -583,7 +615,7 @@
             if (cleanHref === 'index.html') return;
             
             const isGod = localStorage.getItem('god_perspective_unlocked') === 'true';
-            const isLogged = localStorage.getItem('njdx_bbs_override') === 'true';
+            const isLogged = isHomeLoggedIn();
 
             // 特殊逻辑：如果是溯源镜像服，必须拥有古神权限
             if (href.includes('4dMirror.html')) {
@@ -609,7 +641,7 @@
     })();
 
     // ================= 全局状态控制与恐怖随机频闪逻辑 =================
-    const layer2026 = document.getElementById('layer-2026');
+    const layerCurrent = document.getElementById('layer-current');
     const layer2007 = document.getElementById('layer-2007');
     const glitchOverlay = document.getElementById('glitch-overlay');
     let isGlitching = true;
@@ -617,9 +649,9 @@
     
     window.onload = function() {
         const isGod = localStorage.getItem('god_perspective_unlocked') === 'true';
-        const isLogged = localStorage.getItem('njdx_bbs_override') === 'true';
+        const isLogged = isHomeLoggedIn();
 
-        if(isGod || isLogged) {
+        if(isLogged) {
             applyLoggedInState(false);
         } else {
             triggerRandomGlitch();
@@ -631,12 +663,12 @@
         const nextGlitchTime = 1000 + Math.random() * 4000;
         flashTimeout = setTimeout(() => {
             if (!isGlitching) return;
-            layer2026.style.opacity = '0';
+            layerCurrent.style.opacity = '0';
             layer2007.style.opacity = '1';
             glitchOverlay.style.opacity = '1';
             setTimeout(() => {
                 if (!isGlitching) return;
-                layer2026.style.opacity = '1';
+                layerCurrent.style.opacity = '1';
                 layer2007.style.opacity = '0';
                 glitchOverlay.style.opacity = '0';
                 triggerRandomGlitch();
@@ -645,7 +677,7 @@
     }
 
     function showLogin() {
-        if(localStorage.getItem('njdx_bbs_override') === 'true' || localStorage.getItem('god_perspective_unlocked') === 'true') {
+        if(isHomeLoggedIn()) {
             // 如果玩家是古神，允许去后台；如果是人类既济，因为下面绑了点击拦截，这里不需要干啥
             return;
         }
@@ -659,10 +691,12 @@
         const pwd = document.getElementById('login-pwd').value.trim();
         
         if((user === '26级_既济' || user === '26级_即济') && pwd === '101010') {
+            localStorage.setItem(HOME_LOGIN_KEY, 'true');
             localStorage.setItem('njdx_bbs_override', 'true');
             document.getElementById('login-modal').style.display = 'none';
             applyLoggedInState(true); 
         } else if(user === 'Admin' && pwd === 'GodMode') {
+            localStorage.setItem(HOME_LOGIN_KEY, 'true');
             localStorage.setItem('god_perspective_unlocked', 'true');
             window.location.reload();
         } else {
@@ -675,18 +709,18 @@
         if(flashTimeout) clearTimeout(flashTimeout);
         
         layer2007.style.display = 'none';
-        layer2026.style.opacity = '1';
-        layer2026.style.pointerEvents = 'auto';
+        layerCurrent.style.opacity = '1';
+        layerCurrent.style.pointerEvents = 'auto';
         glitchOverlay.style.opacity = '0';
         
         const doUpdateUI = () => {
             const isGod = localStorage.getItem('god_perspective_unlocked') === 'true';
             const cpLink = document.getElementById('nav-control-panel');
-            const mainWrap = document.getElementById('main-content-2026');
+            const mainWrap = document.getElementById('main-content-current');
             
             if (isGod) {
                 // 【状态3：古神登录】
-                document.getElementById('status-bar-2026').innerHTML = `
+                document.getElementById('status-bar-current').innerHTML = `
                     <span class="info-stats" style="color:#D32F2F; font-weight:bold; text-shadow: 0 0 5px #F00;">SYS_OVERRIDE: 血肉网络已同化</span>
                     欢迎，<span class="bold red" style="font-size:16px;">不可名状的观测者</span> 
                     &nbsp;&nbsp;&nbsp;现实时间: <span class="bold time-display"></span>
@@ -695,7 +729,7 @@
                 document.querySelector('.main-wrap').style.boxShadow = "0 0 20px rgba(255,0,0,0.3)";
             } else {
                 // 【状态2：人类Admin登录】
-                document.getElementById('status-bar-2026').innerHTML = `
+                document.getElementById('status-bar-current').innerHTML = `
                     <span class="info-stats" style="color:#D32F2F; font-weight:bold;">SYS_OVERRIDE: 维度已锚定</span>
                     欢迎回来，<span class="bold red" style="font-size:16px;">26级_既济 (高维观测者)</span> 
                     &nbsp;&nbsp;&nbsp;现实时间: <span class="bold time-display"></span>
@@ -755,6 +789,7 @@
 
     function resetGame() {
         localStorage.removeItem('njdx_bbs_override');
+        localStorage.removeItem(HOME_LOGIN_KEY);
         localStorage.removeItem('god_perspective_unlocked');
         window.location.reload();
     }
