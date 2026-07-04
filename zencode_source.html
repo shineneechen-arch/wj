@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>ZenCode Astrolabe - NJDX Git Mirror</title>
+<style>
+    body { margin: 0; background: #0d1117; color: #c9d1d9; font: 14px Consolas, "Microsoft YaHei", monospace; }
+    a { color: #58a6ff; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .top { background: #161b22; border-bottom: 1px solid #30363d; padding: 14px 24px; display: flex; justify-content: space-between; align-items: center; }
+    .brand { font-weight: bold; color: #f0f6fc; }
+    .wrap { max-width: 1080px; margin: 24px auto; padding: 0 20px 40px; }
+    .repo { border: 1px solid #30363d; border-radius: 6px; overflow: hidden; background: #0d1117; }
+    .repo-head { background: #161b22; padding: 14px 16px; border-bottom: 1px solid #30363d; }
+    .repo-name { font-size: 20px; color: #58a6ff; margin-bottom: 6px; }
+    .meta { color: #8b949e; font-size: 12px; }
+    .tabs { display: flex; gap: 16px; padding: 10px 16px; border-bottom: 1px solid #30363d; background: #0d1117; }
+    .tab.active { color: #f0f6fc; font-weight: bold; }
+    .stats { display: flex; gap: 12px; margin-top: 10px; color: #8b949e; font-size: 12px; }
+    .badge { border: 1px solid #30363d; border-radius: 999px; padding: 2px 8px; }
+    .file-row { display: grid; grid-template-columns: 270px 1fr 130px; gap: 12px; padding: 10px 16px; border-top: 1px solid #21262d; }
+    .file-row:first-child { border-top: 0; }
+    .file-row:hover { background: #161b22; }
+    .muted { color: #8b949e; }
+    .ok { color: #7ee787; }
+    .warn { color: #d29922; }
+    .panel { margin-top: 22px; border: 1px solid #30363d; border-radius: 6px; overflow: hidden; background: #0d1117; }
+    .panel-title { background: #161b22; padding: 10px 14px; border-bottom: 1px solid #30363d; color: #f0f6fc; }
+    .readme { padding: 18px 20px; line-height: 1.8; font-family: "Microsoft YaHei", Consolas, monospace; }
+    .readme h2 { color: #f0f6fc; margin: 0 0 10px; font-size: 20px; }
+    .readme h3 { color: #f0f6fc; margin: 18px 0 8px; font-size: 15px; }
+    code { background: rgba(110,118,129,.18); border-radius: 4px; padding: 1px 5px; }
+    pre { margin: 0; padding: 16px; overflow: auto; line-height: 1.65; background: #0d1117; }
+    .ln { color: #6e7681; display: inline-block; width: 34px; user-select: none; }
+    .kw { color: #ff7b72; }
+    .str { color: #a5d6ff; }
+    .fn { color: #d2a8ff; }
+    .comment { color: #8b949e; }
+    .commits { padding: 0; }
+    .commit { display: grid; grid-template-columns: 110px 1fr 150px; gap: 12px; padding: 10px 14px; border-top: 1px solid #21262d; align-items: center; }
+    .commit:first-child { border-top: 0; }
+    .hash { color: #58a6ff; cursor: pointer; background: none; border: 0; padding: 0; font: inherit; }
+    .hash:hover { text-decoration: underline; }
+    .egg { display: none; margin-top: 12px; border: 1px solid rgba(210,153,34,.45); background: rgba(210,153,34,.08); color: #d29922; padding: 10px 12px; border-radius: 6px; font-size: 12px; }
+    .egg.show { display: block; }
+    .footer { margin-top: 24px; color: #8b949e; font-size: 12px; }
+</style>
+</head>
+<body>
+<div class="top">
+    <div class="brand">NJDX Git Mirror</div>
+    <div><a href="thread_zencode_release.html">返回发布帖</a> · <a href="zencode_astrolabe.html">在线体验</a></div>
+</div>
+
+<div class="wrap">
+    <div class="repo">
+        <div class="repo-head">
+            <div class="repo-name">Zen_Coder / zencode-astrolabe</div>
+            <div class="meta">Public mirror · v1.0.0 · MIT License · archived by NJDX-CS mirror service</div>
+            <div class="stats">
+                <span class="badge">★ 128</span>
+                <span class="badge">Fork 19</span>
+                <span class="badge">Three.js</span>
+                <span class="badge">Astrology Engine</span>
+            </div>
+        </div>
+        <div class="tabs">
+            <span class="tab active">Code</span>
+            <span class="tab">Issues</span>
+            <span class="tab">Pull requests</span>
+            <span class="tab">Releases</span>
+        </div>
+        <div class="file-list">
+            <div class="file-row"><a href="#readme">README.md</a><span class="muted">project overview and build guide</span><span>stable</span></div>
+            <div class="file-row"><a href="#weiji">core/weiji_hexagram.js</a><span class="muted">moving-line mask and hexagram transform helper</span><span>v1.0</span></div>
+            <div class="file-row"><a href="#render">src/render/astrolabe_3d.js</a><span class="muted">ecliptic/equatorial 3D projection layer</span><span class="ok">stable</span></div>
+            <div class="file-row"><a href="#audit">docs/security-audit.md</a><span class="muted">campus mirror static audit log</span><span class="warn">reviewed</span></div>
+        </div>
+    </div>
+
+    <div class="panel" id="readme">
+        <div class="panel-title">README.md</div>
+        <div class="readme">
+            <h2>ZenCode Astrolabe</h2>
+            <p>ZenCode 是一个基于 Three.js 的 3D 星盘渲染实验项目，用于把黄道坐标、赤道坐标、宫位系统和传统术数映射放进同一套可视化场景中。</p>
+            <h3>Features</h3>
+            <p>支持黄道/赤道坐标切换、行星轨道拖拽、整宫制与 Placidus 宫制切换、二十八宿叠加显示、基础相位线实时重算。</p>
+            <h3>Local Build</h3>
+            <p><code>npm install</code> · <code>npm run dev</code> · <code>npm run build</code></p>
+        </div>
+    </div>
+
+    <div class="panel" id="weiji">
+        <div class="panel-title">core/weiji_hexagram.js</div>
+<pre><span class="ln">01</span><span class="kw">export function</span> <span class="fn">buildWeijiMask</span>(movingLines) {
+<span class="ln">02</span>  <span class="kw">const</span> staticBits = movingLines.map(line =&gt; line.value ? <span class="str">'1'</span> : <span class="str">'0'</span>).join(<span class="str">''</span>);
+<span class="ln">03</span>  <span class="kw">const</span> movingBits = movingLines.map(line =&gt; line.moving ? <span class="str">'1'</span> : <span class="str">'0'</span>).join(<span class="str">''</span>);
+<span class="ln">04</span>  <span class="kw">return</span> staticBits + movingBits;
+<span class="ln">05</span>}
+<span class="ln">06</span>
+<span class="ln">07</span><span class="comment">// Converts changing-line state into a 12-bit projection key.</span>
+<span class="ln">08</span><span class="kw">export function</span> <span class="fn">splitMask</span>(mask) {
+<span class="ln">09</span>  <span class="kw">return</span> { base: mask.slice(0, 6), moving: mask.slice(6, 12) };
+<span class="ln">10</span>}
+</pre>
+    </div>
+
+    <div class="panel" id="audit">
+        <div class="panel-title">docs/security-audit.md</div>
+        <div class="commits">
+            <div class="commit"><button class="hash" id="audit-hash">9e4c1d8</button><span>remove experimental remote-cache adapter from public build</span><span class="muted">2 days ago</span></div>
+            <div class="commit"><span class="muted">4b2a91f</span><span>fix Placidus house boundary at high latitude</span><span class="muted">4 days ago</span></div>
+            <div class="commit"><span class="muted">1a77c02</span><span>add twenty-eight mansion overlay</span><span class="muted">6 days ago</span></div>
+        </div>
+        <div class="readme">
+            <p class="muted">The public mirror excludes local test adapters, private deployment keys, and campus-only telemetry stubs.</p>
+            <div class="egg" id="audit-egg">pre-release residue: symbol <code>ORGANIC_TRANSFER_PROTOCOL</code> was referenced by a removed adapter. target hash: <code>SG-LAB-07</code>. public mirror redacted.</div>
+        </div>
+    </div>
+
+    <div class="footer">NJDX Git Mirror serves static snapshots only. Some files may be omitted from public archive.</div>
+</div>
+
+<script>
+(function () {
+    var clicks = 0;
+    var trigger = document.getElementById('audit-hash');
+    var egg = document.getElementById('audit-egg');
+    if (!trigger || !egg) return;
+    trigger.addEventListener('click', function () {
+        clicks += 1;
+        if (clicks >= 4) egg.classList.add('show');
+    });
+})();
+</script>
+</body>
+</html>
