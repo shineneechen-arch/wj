@@ -89,7 +89,7 @@
                 </div>
                 <div class="post-right">
                     <div class="post-info">
-                        发表于 2026-06-20 14:20:00 <span class="floor-num">楼主</span>
+                        发表于 <span class="js-forum-time" data-day-offset="0" data-post-time="14:20:00"></span> <span class="floor-num">楼主</span>
                     </div>
                     <div class="content">
                         家人们，谁懂啊，前几天去围观计科系大四的毕设答辩，有个学姐简直神仙下凡。别人都在做电商后台、管理系统这种烂大街的选题，她搞了一个叫<b>「ZenCode」</b>的极客玄学工具，还同步弄了个配套的微信公众号叫「ZenCode青冥鉴」。<br><br>
@@ -108,7 +108,7 @@
                     <div class="user-stats">发帖: 156<br>积分: 890</div>
                 </div>
                 <div class="post-right">
-                    <div class="post-info">发表于 2026-06-20 15:05:12 <span class="floor-num">沙发</span></div>
+                    <div class="post-info">发表于 <span class="js-forum-time" data-day-offset="0" data-post-time="15:05:12"></span> <span class="floor-num">沙发</span></div>
                     <div class="content">
                         我也关注了青冥鉴那个公众号，黑金配色（Black & Gold）绝了，高级感直接拉满。她的排盘算法全是用 Node.js 自己写的底层逻辑，不是调的破烂开源库，这学姐是真大佬。<br><br>
                         不过我之前私信请教过她，这么逆天的真太阳时和星历数据（Ephemeris）是从哪搞来的 API 接口？她神神叨叨地回了我一句：<b>“不是 API，我破解了校园网主楼机房里一个 2007 年的废弃幽灵端口，那些数据是自己流出来的……”</b> <br>
@@ -125,7 +125,7 @@
                     <div class="user-stats">发帖: 89<br>积分: 320</div>
                 </div>
                 <div class="post-right">
-                    <div class="post-info">发表于 2026-06-21 02:11:45 <span class="floor-num">板凳</span></div>
+                    <div class="post-info">发表于 <span class="js-forum-time" data-day-offset="1" data-post-time="02:11:45"></span> <span class="floor-num">板凳</span></div>
                     <div class="content">
                         根本不是熬夜累的！！听她舍友说，那学姐后期在本地跑那个 3D 星盘进行极值测试的时候，整个人状态就极其不对劲了。<br><br>
                         有一天半夜她舍友起来上厕所，看她还坐在电脑前，就顺眼瞟了一下。结果发现她电脑屏幕上的 3D 星盘根本不是什么发光的行星轨迹！原本散发着金光的节点，全变成了<b>暗红色的血管和神经索</b>，中间还有一大块散发着腥气的肉团在有规律地跳动自转……<br><br>
@@ -145,7 +145,7 @@
                     <div class="user-stats">发帖: 1850<br>积分: 6700</div>
                 </div>
                 <div class="post-right">
-                    <div class="post-info">发表于 2026-06-21 08:30:22 <span class="floor-num">地板</span></div>
+                    <div class="post-info">发表于 <span class="js-forum-time" data-day-offset="1" data-post-time="08:30:22"></span> <span class="floor-num">地板</span></div>
                     <div class="content">
                         证实一下，我是她隔壁寝室的。休学倒是没有，但是她最近精神状态确实很差，整天把自己锁在床帐里不怎么见人，还总是买大量的生肉堆在宿舍的微型冰箱里（不知道干什么用）。<br><br>
                         而且最诡异的网络安全问题来了：她明明已经把本地的 Node.js 渲染服务给关了，甚至物理拔了自己电脑的网线，但那个 3D 星盘的线上接口，<b>到现在还在利用校园局域网的算力自己往外发包跑数据！</b><br>
@@ -168,7 +168,7 @@
                     <div class="user-stats">发帖: 211<br>积分: 650</div>
                 </div>
                 <div class="post-right">
-                    <div class="post-info">发表于 2026-06-21 09:05:14 <span class="floor-num">5楼</span></div>
+                    <div class="post-info">发表于 <span class="js-forum-time" data-day-offset="1" data-post-time="09:05:14"></span> <span class="floor-num">5楼</span></div>
                     <div class="content">
                         在传统数术里，想要精确推演天道，是需要支付“代价”的。<br>
                         如果她用的算法核心，真的是从十多年前某个被封锁的诡异端口里提取出来的……那她接通的根本不是什么开源数据库，而是一个数字化的赛博祭坛。<br>
@@ -208,6 +208,63 @@
         </div>
     </div>
 </div>
+
+<script>
+(function () {
+    var DAY_MS = 24 * 60 * 60 * 1000;
+    var STORAGE_KEY = 'njdx_bbs_thread_zencode_date_v1';
+
+    function pad(n) {
+        return String(n).padStart(2, '0');
+    }
+
+    function stampDate(date) {
+        return date.getFullYear() + '-' + pad(date.getMonth() + 1) + '-' + pad(date.getDate());
+    }
+
+    function getThreadStartDate() {
+        var now = new Date();
+        var today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        var storedDate = '';
+
+        try {
+            storedDate = window.sessionStorage.getItem(STORAGE_KEY) || '';
+        } catch (e) {}
+
+        if (/^\d{4}-\d{2}-\d{2}$/.test(storedDate)) {
+            var cached = new Date(storedDate + 'T00:00:00');
+            if (!Number.isNaN(cached.getTime())) return cached;
+        }
+
+        var daysAgo = 2 + Math.floor(Math.random() * 14);
+        var threadDate = new Date(today.getTime() - daysAgo * DAY_MS);
+
+        try {
+            window.sessionStorage.setItem(STORAGE_KEY, stampDate(threadDate));
+        } catch (e) {}
+
+        return threadDate;
+    }
+
+    function formatForumTime(startDate, dayOffset, clockText) {
+        var parts = String(clockText || '00:00:00').split(':').map(function (v) {
+            return parseInt(v, 10) || 0;
+        });
+        var date = new Date(startDate.getTime() + (parseInt(dayOffset, 10) || 0) * DAY_MS);
+        date.setHours(parts[0], parts[1], parts[2], 0);
+        return stampDate(date) + ' ' + pad(date.getHours()) + ':' + pad(date.getMinutes()) + ':' + pad(date.getSeconds());
+    }
+
+    function renderForumTimes() {
+        var startDate = getThreadStartDate();
+        document.querySelectorAll('.js-forum-time').forEach(function (el) {
+            el.textContent = formatForumTime(startDate, el.getAttribute('data-day-offset'), el.getAttribute('data-post-time'));
+        });
+    }
+
+    renderForumTimes();
+})();
+</script>
 
 </body>
 </html>
