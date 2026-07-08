@@ -278,7 +278,7 @@ select.inp option{background:#0C0000;color:var(--text);}
 
 <script>
 /* ═══════════════════════════════════════════════════════
-   控制台魔法防禦：打破第四面牆 (極度污染版)
+   控制台魔法防禦：打破第四面牆 (色彩增強版)
 ═══════════════════════════════════════════════════════ */
 const skullArt = `
       _.--""--._
@@ -289,10 +289,16 @@ const skullArt = `
       \\ '----' /
        '--..--'
 `;
+
+// 利用多個 %c 區分渲染不同區塊的顏色和效果
 console.log(
-    `%c${skullArt}\n[ 1101 0010 1111 ]\n警告：偵測到未授權的靈魂觀測者...\n你以為在螢幕之外看著這一切，就很安全嗎？`, 
-    "color:#ff003c; font-size:14px; font-family:'Noto Sans TC',sans-serif; text-shadow:0 0 5px rgba(255,0,0,0.8); line-height:1.2;"
+    `%c${skullArt}\n%c[ 1101 0010 1111 ]\n%c警告：偵測到未授權的靈魂觀測者...\n%c你以為在螢幕之外看著這一切，就很安全嗎？`, 
+    "color: #a8a8a8; text-shadow: 0 0 5px #ffffff;", // 骷髏：慘白色發光
+    "color: #00ff00; background: #002200; font-family: monospace; padding: 2px;", // 系統日誌：幽暗綠色矩陣風格
+    "color: #ff0000; font-size: 16px; font-weight: bold; text-shadow: 0 0 8px red;", // 警告：刺眼血紅
+    "color: #8b0000; font-size: 14px; font-style: italic;" // 恐嚇語：暗沉的血色
 );
+
 console.log("%c[系統底層日誌] %c如需強制覆寫前端陣法，請執行 admin_bypass()", "color:gray", "color:#555; font-style:italic; text-decoration:underline; cursor:pointer;");
 
 // 背景持續的控制台污染 (緩慢滴漏)
