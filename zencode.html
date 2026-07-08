@@ -50,7 +50,7 @@ html,body{background:var(--bg);color:var(--text);font-family:'Noto Serif TC',ser
 .t-main{font-family:'Ma Shan Zheng',cursive;font-size:clamp(3rem,6.5vw,5rem);line-height:1;letter-spacing:0.1em;display:block;width:100%;
   background:linear-gradient(160deg,#8b0000 0%,#ff003c 38%,#4a0000 68%,#d32f2f 100%);
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
-  filter:drop-shadow(0 0 25px rgba(255,0,0,0.6));}
+  filter:drop-shadow(0 0 25px rgba(255,0,0,0.6)); transition: all 0.3s;}
 .t-glow{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 65%,rgba(255,0,0,0.2) 0%,transparent 70%);filter:blur(22px);pointer-events:none;}
 .t-sub{font-size:0.82rem;letter-spacing:0.38em;color:var(--text-d);font-family:'Noto Sans TC',sans-serif;opacity:0;animation:fsd 1s ease .5s forwards;}
 .hdiv{width:280px;height:1px;margin:30px auto 40px;background:linear-gradient(90deg,transparent,var(--gold),transparent);position:relative;opacity:0;animation:fi 1s ease .6s forwards;}
@@ -88,7 +88,6 @@ select.inp option{background:#0C0000;color:var(--text);}
 .solar-hint{font-family:'Noto Sans TC',sans-serif;font-size:0.67rem;color:rgba(255,0,0,0.7);letter-spacing:0.08em;margin-top:6px;padding:7px 10px;background:rgba(255,0,0,0.05);border-left:2px solid rgba(255,0,0,0.6);display:none;}
 .solar-hint.show{display:block;}
 
-/* 按鈕戰損鎖定/解鎖狀態 */
 .sbtn{width:100%;padding:17px;background:#1a0505;color:#555;border:1px solid #401010;border-radius:2px;font-family:'Ma Shan Zheng',cursive;font-size:1.25rem;letter-spacing:5px;cursor:not-allowed;position:relative;overflow:hidden;transition:all .3s;}
 .sbtn.unlocked{
     background:linear-gradient(135deg,#5A0A0A 0%,#ff003c 55%,#8B0000 100%);
@@ -126,10 +125,8 @@ select.inp option{background:#0C0000;color:var(--text);}
 .astro-orbit-reverse { animation: spin-orbit 18s linear infinite reverse; transform-origin: center; }
 @keyframes spin-orbit { 100% { transform: rotate(360deg); } }
 
-/* 禁用原生DST行 */
 .dst-row, .dst-panel, #roc { display: none !important; }
 
-/* 📱 移動端戰損佈局適配 */
 @media (max-width: 768px) {
   .floating-right-group { right: 12px; top: auto; bottom: 25px; transform: none; z-index: 999 !important; }
   .floating-astrolabe { left: 12px !important; top: auto !important; bottom: 25px !important; transform: none !important; z-index: 999 !important; }
@@ -137,6 +134,9 @@ select.inp option{background:#0C0000;color:var(--text);}
   .liuyao-text, .astrolabe-text { font-size: 0.55rem; letter-spacing: 0.3em; }
   .form-card { padding: 30px 20px 25px; }
 }
+
+/* 駭客反噬專用特效 */
+.hacked-bg { filter: invert(1) hue-rotate(180deg) contrast(1.5) !important; transition: all 0.5s ease-in; }
 </style>
 </head>
 <body>
@@ -270,12 +270,71 @@ select.inp option{background:#0C0000;color:var(--text);}
 
 <script>
 /* ═══════════════════════════════════════════════════════
-   控制台駭客警告：12位元二進制掩碼封印
+   控制台魔法防禦：打破第四面牆
 ═══════════════════════════════════════════════════════ */
+const skullArt = `
+      _.--""--._
+     /  _    _  \\
+    |  (o)  (o)  |
+    |    \\  /    |
+     \\  .----.  /
+      \\ '----' /
+       '--..--'
+`;
 console.log(
-    "%c[ 1101 0010 1111 ]\n警告：偵測到未授權的靈魂觀測者。\n前端源碼僅為表象，真正的因果已在後端陣法中鎖死。", 
-    "color:#ff003c; font-size:16px; font-family:'Noto Sans TC',sans-serif; text-shadow:0 0 5px rgba(255,0,0,0.8); line-height:1.5;"
+    `%c${skullArt}\n[ 1101 0010 1111 ]\n警告：偵測到未授權的靈魂觀測者...\n你以為在螢幕之外看著這一切，就很安全嗎？`, 
+    "color:#ff003c; font-size:14px; font-family:'Noto Sans TC',sans-serif; text-shadow:0 0 5px rgba(255,0,0,0.8); line-height:1.2;"
 );
+console.log("%c[系統底層日誌] %c如需強制覆寫前端陣法，請執行 admin_bypass()", "color:gray", "color:#555; font-style:italic; text-decoration:underline; cursor:pointer;");
+
+// Honeypot 陷阱函數：吸引想逃課的玩家調用
+window.admin_bypass = function() {
+    const overlay = document.getElementById('scare-overlay');
+    document.querySelector('#scare-overlay h2').innerText = '【 警告：思維遭到反向入侵 】';
+    document.querySelector('#scare-overlay p').innerHTML = '自作聰明的觀測者...<br>你主動向深淵敞開了心智的後門。';
+    overlay.style.display = 'flex';
+    document.body.classList.add('hacked-bg');
+    
+    // 鎖死 UI，禁止滾動與交互
+    document.body.style.overflow = 'hidden';
+    document.querySelector('.form-card').style.pointerEvents = 'none';
+    
+    let glitchInterval = setInterval(() => {
+        document.querySelector('.t-main').innerText = Math.random().toString(36).substring(2);
+    }, 50);
+
+    setTimeout(() => {
+        clearInterval(glitchInterval);
+        document.querySelector('.t-main').innerText = '靈 魂 錨 定 完 成';
+        // 假裝跳轉到一個詭異的深淵頁面或直接卡死
+        alert("CRITICAL ERROR: SOUL_NOT_FOUND");
+    }, 4000);
+
+    return "執行中... 正在格式化你的物理坐標...";
+};
+
+// 觀測者感知（簡單的 DevTools 打開檢測）
+let isDevToolsOpen = false;
+window.addEventListener('resize', () => {
+    // 當視窗寬度或高度被強制壓縮（通常是因為打開了控制台）
+    const threshold = 160;
+    const widthDiff = window.outerWidth - window.innerWidth > threshold;
+    const heightDiff = window.outerHeight - window.innerHeight > threshold;
+    
+    if ((widthDiff || heightDiff) && !isDevToolsOpen) {
+        isDevToolsOpen = true;
+        const tMain = document.querySelector('.t-main');
+        const oldText = tMain.innerText;
+        tMain.innerText = '你在看哪裡？';
+        tMain.classList.add('glitch-active');
+        
+        setTimeout(() => {
+             tMain.innerText = oldText;
+             tMain.classList.remove('glitch-active');
+        }, 2500);
+    }
+});
+
 
 /* ═══════════════════════════════════════════════════════
    戰損故障動效腳本
@@ -285,6 +344,9 @@ setInterval(() => {
     if(!els.length) return;
     const target = els[Math.floor(Math.random() * els.length)];
     const orig = target.innerText;
+    // 如果已經被駭客腳本覆蓋，就不要執行普通 glitch
+    if(document.body.classList.contains('hacked-bg')) return;
+    
     target.classList.add('glitch-active');
     target.innerText = '死亡數據'.slice(0, orig.length);
     setTimeout(() => {
@@ -591,15 +653,12 @@ window.addEventListener('DOMContentLoaded', () => {
 document.getElementById('un').addEventListener('blur', function(e) {
     const val = e.target.value.trim().toLowerCase();
     
-    // 【修改點】大幅擴展彩蛋觸發範圍（加入系統級佔位符、測試名與天道神祇、近現代中外知名領導人）
     const forbiddenNames = [
         'test', 'admin', 'root', 'system', 'null', 'undefined', '123', '123456', 
         '張三', '李四', '王五', 
         '鬼谷子', '太歲', '天道', '老天爺', '玉皇大帝', '閻羅王', '閻王', '上帝', '佛祖', '耶穌',
-        // 中國領導人 (繁/簡)
         '毛澤東', '毛泽东', '鄧小平', '邓小平', '習近平', '习近平', '江澤民', '江泽民', '胡錦濤', '胡锦涛', 
         '溫家寶', '温家宝', '李克強', '李克强', '華國鋒', '华国锋', '孫中山', '孙中山', '蔣介石', '蒋介石',
-        // 世界領導人 (繁/簡/英)
         '拜登', 'biden', '川普', '特朗普', 'trump', '普丁', '普京', 'putin', '歐巴馬', '奥巴马', 'obama', 
         '斯大林', '史達林', 'stalin', '列寧', '列宁', 'lenin', '希特勒', 'hitler', '丘吉爾', '邱吉爾', 'churchill', '羅斯福', '罗斯福', 'roosevelt'
     ];
