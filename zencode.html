@@ -378,9 +378,9 @@ function getJQPrecise(year, mIdx){
 
 function getLng(birthplace){
   if(!birthplace)return null;
-  if(/杭州|浙江/.test(birthplace)) return 120.21;
-  if(/四川|成都/.test(birthplace)) return 102.50;
-  if(birthplace.includes('北京')) return 116.4;
+  if(/杭州|浙江|hangzhou|zhejiang/i.test(birthplace)) return 120.21;
+  if(/四川|成都|sichuan|chengdu/i.test(birthplace)) return 102.50;
+  if(/北京|beijing/i.test(birthplace)) return 116.4;
   return 120.0; 
 }
 
@@ -530,8 +530,8 @@ function validateBazi() {
         </div>
     `;
     
-    const condA = baziStr === '丁亥 丙午 丙子 甲午' && /杭州|浙江/.test(bp);
-    const condB = baziStr === '丁亥 丙午 丙子 癸巳' && /四川|成都/.test(bp);
+    const condA = baziStr === '丁亥 丙午 丙子 甲午' && /杭州|浙江|hangzhou|zhejiang/i.test(bp);
+    const condB = baziStr === '丁亥 丙午 丙子 癸巳' && /四川|成都|sichuan|chengdu/i.test(bp);
     const extremeAnomalies = [
         '壬子 壬子 壬子 壬子',
         '丙午 丙午 丙午 丙午',
@@ -590,7 +590,19 @@ window.addEventListener('DOMContentLoaded', () => {
 
 document.getElementById('un').addEventListener('blur', function(e) {
     const val = e.target.value.trim().toLowerCase();
-    const forbiddenNames = ['test', 'admin', 'root', '123', '鬼谷子', '太歲'];
+    
+    // 【修改點】大幅擴展彩蛋觸發範圍（加入系統級佔位符、測試名與天道神祇、近現代中外知名領導人）
+    const forbiddenNames = [
+        'test', 'admin', 'root', 'system', 'null', 'undefined', '123', '123456', 
+        '張三', '李四', '王五', 
+        '鬼谷子', '太歲', '天道', '老天爺', '玉皇大帝', '閻羅王', '閻王', '上帝', '佛祖', '耶穌',
+        // 中國領導人 (繁/簡)
+        '毛澤東', '毛泽东', '鄧小平', '邓小平', '習近平', '习近平', '江澤民', '江泽民', '胡錦濤', '胡锦涛', 
+        '溫家寶', '温家宝', '李克強', '李克强', '華國鋒', '华国锋', '孫中山', '孙中山', '蔣介石', '蒋介石',
+        // 世界領導人 (繁/簡/英)
+        '拜登', 'biden', '川普', '特朗普', 'trump', '普丁', '普京', 'putin', '歐巴馬', '奥巴马', 'obama', 
+        '斯大林', '史達林', 'stalin', '列寧', '列宁', 'lenin', '希特勒', 'hitler', '丘吉爾', '邱吉爾', 'churchill', '羅斯福', '罗斯福', 'roosevelt'
+    ];
     
     if (forbiddenNames.includes(val)) {
         e.target.value = '天道不允戲言';
@@ -643,10 +655,10 @@ function odc(){
     }
 
     if(bp){
-        if(/杭州|浙江/.test(bp)){
+        if(/杭州|浙江|hangzhou|zhejiang/i.test(bp)){
             stHint.textContent = `✦ 經度 120.21° → 真太陽時偏差 +1 分`;
             stHint.style.display = 'block';
-        } else if(/四川|成都/.test(bp)){
+        } else if(/四川|成都|sichuan|chengdu/i.test(bp)){
             stHint.textContent = `✦ 經度 102.50° → 真太陽時偏差 -70 分`;
             stHint.style.display = 'block';
         } else {
@@ -725,9 +737,9 @@ function submitCorrupted() {
 
     let targetFile = '';
     
-    if (baziStr === '丁亥 丙午 丙子 甲午' && /杭州|浙江/.test(bp)) {
+    if (baziStr === '丁亥 丙午 丙子 甲午' && /杭州|浙江|hangzhou|zhejiang/i.test(bp)) {
         targetFile = 'archive_hz_v1_stable.html';
-    } else if (baziStr === '丁亥 丙午 丙子 癸巳' && /四川|成都/.test(bp)) {
+    } else if (baziStr === '丁亥 丙午 丙子 癸巳' && /四川|成都|sichuan|chengdu/i.test(bp)) {
         targetFile = 'archive_sc_v1_critical.html';
     } else if (baziStr === '壬子 壬子 壬子 壬子') {
         targetFile = 'archive_abyss_water_v3_anomaly.html';
