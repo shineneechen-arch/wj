@@ -11,7 +11,10 @@
   --bg:#030000;--text:#e0e0e0;--text-d:rgba(255,100,100,0.52);--text-f:rgba(255,0,60,0.4);
 }
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
-html,body{background:var(--bg);color:var(--text);font-family:'Noto Serif TC',serif;overflow-x:hidden;min-height:100vh;}
+html,body{background:var(--bg);color:var(--text);font-family:'Noto Serif TC',serif;overflow-x:hidden;min-height:100vh; transition: filter 2s ease;}
+
+/* 觀測者污染模式：被發現看代碼後，整個網頁濾鏡變異 */
+.observer-polluted { filter: contrast(1.4) sepia(0.5) hue-rotate(-15deg) saturate(1.5); }
 
 /* 故障亂碼閃爍動畫 */
 @keyframes glitch-anim {
@@ -26,6 +29,11 @@ html,body{background:var(--bg);color:var(--text);font-family:'Noto Serif TC',ser
   animation: glitch-anim 0.1s infinite; 
   color: #ff003c !important; 
   text-shadow: -2px 0 #00ff00, 2px 0 #0000ff !important; 
+}
+.glitch-permanent {
+  animation: glitch-anim 0.1s infinite; 
+  color: #ff0000 !important; 
+  text-shadow: -3px 0 #8b0000, 3px 0 #ff003c !important;
 }
 
 #bg-canvas{position:fixed;inset:0;z-index:0;pointer-events:none; filter: contrast(1.5) saturate(1.2);}
@@ -270,7 +278,7 @@ select.inp option{background:#0C0000;color:var(--text);}
 
 <script>
 /* ═══════════════════════════════════════════════════════
-   控制台魔法防禦：打破第四面牆
+   控制台魔法防禦：打破第四面牆 (極度污染版)
 ═══════════════════════════════════════════════════════ */
 const skullArt = `
       _.--""--._
@@ -287,6 +295,21 @@ console.log(
 );
 console.log("%c[系統底層日誌] %c如需強制覆寫前端陣法，請執行 admin_bypass()", "color:gray", "color:#555; font-style:italic; text-decoration:underline; cursor:pointer;");
 
+// 背景持續的控制台污染 (緩慢滴漏)
+const creepyLogs = [
+    "【系統底層】無法解析的實體正在靠近...",
+    "01100100 01100101 01100001 01110100 01101000",
+    "ERR_SOUL_NOT_FOUND",
+    "你在螢幕外，真的安全嗎？",
+    "這不是代碼，這是詛咒",
+    "// TODO: 救救我"
+];
+let passivePollution = setInterval(() => {
+    let msg = creepyLogs[Math.floor(Math.random() * creepyLogs.length)];
+    let hex = Math.random().toString(16).substring(2, 10).toUpperCase();
+    console.log(`%c[0x${hex}] ${msg}`, "color:rgba(255,0,0,0.4); text-shadow: 0 0 2px red; font-family: monospace; font-size: 11px;");
+}, 4000);
+
 // Honeypot 陷阱函數：吸引想逃課的玩家調用
 window.admin_bypass = function() {
     const overlay = document.getElementById('scare-overlay');
@@ -295,7 +318,6 @@ window.admin_bypass = function() {
     overlay.style.display = 'flex';
     document.body.classList.add('hacked-bg');
     
-    // 鎖死 UI，禁止滾動與交互
     document.body.style.overflow = 'hidden';
     document.querySelector('.form-card').style.pointerEvents = 'none';
     
@@ -306,32 +328,59 @@ window.admin_bypass = function() {
     setTimeout(() => {
         clearInterval(glitchInterval);
         document.querySelector('.t-main').innerText = '靈 魂 錨 定 完 成';
-        // 假裝跳轉到一個詭異的深淵頁面或直接卡死
         alert("CRITICAL ERROR: SOUL_NOT_FOUND");
     }, 4000);
 
     return "執行中... 正在格式化你的物理坐標...";
 };
 
-// 觀測者感知（簡單的 DevTools 打開檢測）
+// 觀測者感知（持久化恐嚇模式）
 let isDevToolsOpen = false;
+let aggressivePollution;
+let textCorruptor;
+
 window.addEventListener('resize', () => {
-    // 當視窗寬度或高度被強制壓縮（通常是因為打開了控制台）
     const threshold = 160;
     const widthDiff = window.outerWidth - window.innerWidth > threshold;
     const heightDiff = window.outerHeight - window.innerHeight > threshold;
     
     if ((widthDiff || heightDiff) && !isDevToolsOpen) {
         isDevToolsOpen = true;
+        
+        // 1. 永久視覺變異
+        document.body.classList.add('observer-polluted');
+        
+        // 2. 主標題永久鎖死為恐嚇文本
         const tMain = document.querySelector('.t-main');
-        const oldText = tMain.innerText;
         tMain.innerText = '你在看哪裡？';
-        tMain.classList.add('glitch-active');
+        tMain.classList.add('glitch-permanent');
+        
+        // 3. UI 元素隨機突變 (緩慢替換表單文字)
+        const cursedWords = ['不要看', '閉上眼', '它來了', '血', '深淵', '死'];
+        textCorruptor = setInterval(() => {
+            const els = document.querySelectorAll('.flbl, .slbl, .liuyao-text, .astrolabe-text');
+            const target = els[Math.floor(Math.random() * els.length)];
+            if(target) {
+                target.innerText = cursedWords[Math.floor(Math.random() * cursedWords.length)];
+                target.style.color = '#ff003c';
+            }
+        }, 3000);
+
+        // 4. 控制台狂暴模式 (Console Flood)
+        clearInterval(passivePollution);
+        console.clear();
+        console.error("%c警告：觀測行為已觸發底層防禦機制！", "color:red; font-size:24px; text-shadow: 0 0 10px red;");
         
         setTimeout(() => {
-             tMain.innerText = oldText;
-             tMain.classList.remove('glitch-active');
-        }, 2500);
+            console.log("%c      👁️      \n 我 看 見 你 了 ", "color: #ff003c; font-size: 50px; font-weight: bold; text-shadow: 0 0 20px red; background: black;");
+        }, 1000);
+
+        // 每 300ms 刷屏一次，確保干擾閱讀但不會卡死瀏覽器
+        aggressivePollution = setInterval(() => {
+            let garbage = "";
+            for(let i=0; i<50; i++) garbage += Math.random().toString(36).substring(2);
+            console.log(`%c[FATAL ERROR] 視線交匯... ${garbage}`, "color: red; background: rgba(50,0,0,0.5); font-size: " + (10 + Math.random()*15) + "px;");
+        }, 300);
     }
 });
 
@@ -344,8 +393,8 @@ setInterval(() => {
     if(!els.length) return;
     const target = els[Math.floor(Math.random() * els.length)];
     const orig = target.innerText;
-    // 如果已經被駭客腳本覆蓋，就不要執行普通 glitch
-    if(document.body.classList.contains('hacked-bg')) return;
+    
+    if(document.body.classList.contains('hacked-bg') || target.classList.contains('glitch-permanent')) return;
     
     target.classList.add('glitch-active');
     target.innerText = '死亡數據'.slice(0, orig.length);
@@ -579,7 +628,6 @@ function validateBazi() {
     });
     const baziStr = baziArr.join(' ');
     
-    // 【修改點】加入 ARG 風格的隱晦拖動與五極提示
     document.getElementById('bpex').innerHTML = `
         <span style="font-size:0.8rem; letter-spacing:0.2em; color:#ff003c; font-weight:bold; text-shadow: 0 0 8px rgba(255,0,0,0.6);">${baziStr}</span>
         <div style="margin-top:14px; display:flex; flex-direction:column; gap:8px; padding: 10px; background: rgba(255,0,0,0.03); border: 1px dashed rgba(255,0,0,0.3);">
@@ -602,7 +650,6 @@ function validateBazi() {
         '乙卯 乙卯 乙卯 乙卯'
     ];
     
-    // 【修改點】極端局無視地點，只要拖出來就觸發彩蛋，保證彩蛋的「重見天日」
     const condC = extremeAnomalies.includes(baziStr); 
 
     if (isAutoFilled) {
