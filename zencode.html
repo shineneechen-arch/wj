@@ -116,9 +116,63 @@ select.inp option{background:#0C0000;color:var(--text);}
 #death-screen { display:none; position:fixed; inset:0; background:#050000; color:#ff003c; z-index:2147483647; align-items:center; justify-content:center; flex-direction:column; font-family:'Ma Shan Zheng',cursive; text-align:center; user-select:none; }
 #death-screen h1 { font-size:clamp(4rem, 10vw, 8rem); animation:glitch-anim 0.05s infinite; text-shadow:0 0 30px red; margin:0; line-height:1.2;}
 #death-screen p { font-size:1.5rem; font-family:'Noto Sans TC',sans-serif; letter-spacing:1em; margin-top:20px; opacity:0.7; }
+
+body.san-console-open{overflow:hidden;}
+body.san-console-open #ifc{width:calc(100% - min(520px, 42vw));margin-right:min(520px, 42vw);filter:contrast(1.35) saturate(1.8) brightness(.62) hue-rotate(-18deg);transition:width .42s ease,margin-right .42s ease,filter .42s ease;}
+body.san-console-open .grid-ov{background-size:42px 42px;opacity:.9;}
+body.san-console-open .scan{animation-duration:1.4s;background:linear-gradient(90deg,transparent,rgba(255,0,0,.4),rgba(255,255,255,.85),rgba(255,0,0,.4),transparent);}
+.san-left-threat{position:fixed;inset:0 min(520px,42vw) 0 0;z-index:80;pointer-events:none;opacity:0;transition:opacity .4s ease;background:radial-gradient(circle at 22% 46%,rgba(255,0,60,.24),transparent 26%),repeating-linear-gradient(0deg,rgba(255,0,0,.06) 0 1px,transparent 1px 7px);mix-blend-mode:screen;}
+body.san-console-open .san-left-threat{opacity:1;}
+.san-left-threat::before{content:'SAN CHECK FAILED';position:absolute;left:34px;top:32px;font-family:Consolas,monospace;font-size:12px;letter-spacing:.28em;color:rgba(255,0,60,.75);text-shadow:0 0 12px #ff003c;animation:glitch-anim .12s infinite;}
+.san-left-threat::after{content:'你不在控制台里。控制台在你里面。';position:absolute;left:38px;bottom:38px;max-width:360px;font-family:'Noto Sans TC',sans-serif;font-size:13px;line-height:1.8;letter-spacing:.22em;color:rgba(255,190,190,.72);text-shadow:0 0 16px rgba(255,0,60,.8);}
+.san-console{position:fixed;top:0;right:0;width:min(520px,42vw);height:100vh;z-index:12000;background:#050101;border-left:1px solid rgba(255,0,60,.55);box-shadow:-20px 0 80px rgba(0,0,0,.85),-4px 0 30px rgba(255,0,60,.22);transform:translateX(102%);transition:transform .42s cubic-bezier(.2,.7,.15,1);display:flex;flex-direction:column;font-family:Consolas,'Courier New',monospace;color:#d8ffd8;}
+body.san-console-open .san-console{transform:translateX(0);}
+.san-console::before{content:'';position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(0deg,rgba(255,255,255,.035) 0 1px,transparent 1px 3px);opacity:.38;}
+.san-bar{height:38px;display:flex;align-items:center;gap:8px;padding:0 12px;background:#120202;border-bottom:1px solid rgba(255,0,60,.35);color:#ffb6c7;font-size:12px;letter-spacing:.06em;position:relative;z-index:1;}
+.san-dot{width:10px;height:10px;border-radius:50%;background:#ff003c;box-shadow:0 0 12px #ff003c;}
+.san-dot:nth-child(2){background:#ff7a00;box-shadow:0 0 10px #ff7a00;}
+.san-dot:nth-child(3){background:#00ff88;box-shadow:0 0 10px #00ff88;}
+.san-title{margin-left:8px;color:#ffccd5;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.san-close{margin-left:auto;background:transparent;border:1px solid rgba(255,0,60,.5);color:#ff8aa4;width:26px;height:24px;cursor:pointer;font:inherit;}
+.san-meter{padding:12px 14px;border-bottom:1px solid rgba(255,0,60,.22);position:relative;z-index:1;background:linear-gradient(90deg,rgba(255,0,60,.12),transparent);}
+.san-meter-row{display:flex;justify-content:space-between;font-size:11px;color:#ff9aae;margin-bottom:8px;letter-spacing:.14em;}
+.san-meter-track{height:6px;background:#170303;border:1px solid rgba(255,0,60,.35);overflow:hidden;}
+.san-meter-fill{height:100%;width:71%;background:linear-gradient(90deg,#00ff88,#ffe600,#ff003c);box-shadow:0 0 16px rgba(255,0,60,.8);transition:width .4s ease;}
+.san-output{flex:1;overflow:auto;padding:14px;position:relative;z-index:1;font-size:12px;line-height:1.65;text-shadow:0 0 6px rgba(0,255,120,.25);}
+.san-line{white-space:pre-wrap;word-break:break-word;margin:0 0 6px;}
+.san-line.sys{color:#78ffae;}
+.san-line.warn{color:#ff4c72;text-shadow:0 0 10px rgba(255,0,60,.8);}
+.san-line.dim{color:rgba(190,255,210,.52);}
+.san-line.user{color:#fff;}
+.san-input-row{display:flex;align-items:center;gap:8px;padding:12px 14px;border-top:1px solid rgba(255,0,60,.28);background:#090101;position:relative;z-index:1;}
+.san-prompt{color:#ff003c;text-shadow:0 0 10px #ff003c;}
+.san-input{flex:1;background:transparent;border:0;outline:0;color:#e9ffe9;font:13px Consolas,'Courier New',monospace;caret-color:#ff003c;}
+@media (max-width: 860px){
+  body.san-console-open #ifc{width:100%;margin-right:0;filter:contrast(1.3) saturate(1.6) brightness(.55);}
+  .san-left-threat{inset:0;}
+  .san-console{width:100vw;}
+}
 </style>
 </head>
 <body>
+
+<div class="san-left-threat" aria-hidden="true"></div>
+<aside id="san-console" class="san-console" aria-hidden="true">
+  <div class="san-bar">
+    <span class="san-dot"></span><span class="san-dot"></span><span class="san-dot"></span>
+    <span class="san-title">ZenCode://observer/devtools-shadow</span>
+    <button class="san-close" type="button" onclick="closeSanConsole()">×</button>
+  </div>
+  <div class="san-meter">
+    <div class="san-meter-row"><span>SANITY INDEX</span><span id="san-value">71%</span></div>
+    <div class="san-meter-track"><div id="san-fill" class="san-meter-fill"></div></div>
+  </div>
+  <div id="san-output" class="san-output" aria-live="polite"></div>
+  <form id="san-form" class="san-input-row" autocomplete="off">
+    <span class="san-prompt">root@abyss:~$</span>
+    <input id="san-input" class="san-input" spellcheck="false" placeholder="help">
+  </form>
+</aside>
 
 <div id="death-screen">
   <h1>作弊者死</h1>
@@ -259,36 +313,103 @@ select.inp option{background:#0C0000;color:var(--text);}
 ═══════════════════════════════════════════════════════ */
 let isDevToolsOpen = false;
 let aggressivePollution;
+let sanLevel = 71;
+let sanNoiseTimer = null;
+let sanMutationTimer = null;
 
-function triggerScare() {
-    if(isDevToolsOpen) return;
-    isDevToolsOpen = true;
+function sanLog(text, type = 'sys') {
+    const output = document.getElementById('san-output');
+    if (!output) return;
+    const line = document.createElement('div');
+    line.className = `san-line ${type}`;
+    line.textContent = text;
+    output.appendChild(line);
+    output.scrollTop = output.scrollHeight;
+}
 
-    document.body.classList.add('observer-polluted');
-    const tMain = document.querySelector('.t-main');
-    tMain.innerText = '你在看哪裡？';
-    tMain.classList.add('glitch-permanent');
-    
+function setSanLevel(next) {
+    sanLevel = Math.max(0, Math.min(100, next));
+    const value = document.getElementById('san-value');
+    const fill = document.getElementById('san-fill');
+    if (value) value.textContent = `${sanLevel}%`;
+    if (fill) fill.style.width = `${sanLevel}%`;
+    document.body.style.setProperty('--san-shake', `${(100 - sanLevel) / 100}`);
+}
+
+function startSanNoise() {
+    if (sanNoiseTimer) return;
+    const noise = [
+        'observer.trace: pupil_reflection matched',
+        'karma_log.sys: permission denied',
+        'stack[13]: return address points behind you',
+        'sanity_check(): failed but continuing',
+        'SIGIL_READ_FAULT at 0x0000DEAD',
+        '有人把呼吸写进了缓存'
+    ];
+    sanNoiseTimer = setInterval(() => {
+        sanLog(`[${Math.random().toString(16).slice(2, 10).toUpperCase()}] ${noise[Math.floor(Math.random() * noise.length)]}`, Math.random() > .72 ? 'warn' : 'dim');
+        setSanLevel(sanLevel - (Math.random() > .66 ? 1 : 0));
+    }, 1850);
+}
+
+function startLeftMutation() {
+    if (sanMutationTimer) return;
     const cursedWords = ['不要看', '閉上眼', '它來了', '血', '深淵', '死'];
-    setInterval(() => {
+    sanMutationTimer = setInterval(() => {
         const els = document.querySelectorAll('.flbl, .slbl, .liuyao-text, .astrolabe-text');
         const target = els[Math.floor(Math.random() * els.length)];
-        if(target) { target.innerText = cursedWords[Math.floor(Math.random() * cursedWords.length)]; target.style.color = '#ff003c'; }
-    }, 800);
+        if(target) {
+            target.innerText = cursedWords[Math.floor(Math.random() * cursedWords.length)];
+            target.style.color = '#ff003c';
+            target.style.textShadow = '0 0 12px rgba(255,0,60,.9)';
+        }
+    }, 1600);
+}
 
+function openSanConsole() {
+    const panel = document.getElementById('san-console');
+    document.body.classList.add('san-console-open', 'observer-polluted');
+    if (panel) panel.setAttribute('aria-hidden', 'false');
+    const input = document.getElementById('san-input');
+    if (input) setTimeout(() => input.focus(), 250);
+}
+
+function closeSanConsole() {
+    document.body.classList.remove('san-console-open');
+    const panel = document.getElementById('san-console');
+    if (panel) panel.setAttribute('aria-hidden', 'true');
+}
+
+function bootSanConsole() {
+    if (isDevToolsOpen) {
+        openSanConsole();
+        sanLog('第二次觀測確認：你不是在打開控制台，你是在被控制台打開。', 'warn');
+        setSanLevel(sanLevel - 7);
+        return;
+    }
+    isDevToolsOpen = true;
     clearInterval(passivePollution);
-    console.clear();
-    console.error("%c警告：觀測行為已觸發底層防禦機制！", "color:red; font-size:24px; text-shadow: 0 0 10px red;");
-    setTimeout(() => { console.log("%c      👁️      \n 我 看 見 你 了 ", "color: #ff003c; font-size: 50px; font-weight: bold; text-shadow: 0 0 20px red; background: black;"); }, 500);
-    aggressivePollution = setInterval(() => {
-        let garbage = ""; for(let i=0; i<30; i++) garbage += Math.random().toString(36).substring(2);
-        console.log(`%c[FATAL ERROR] 視線交匯... ${garbage}`, "color: red; background: rgba(50,0,0,0.5); font-size: " + (10 + Math.random()*15) + "px;");
-    }, 150);
+    openSanConsole();
 
-    setTimeout(() => {
-        document.getElementById('death-screen').style.display = 'flex';
-        document.body.style.overflow = 'hidden';
-    }, 7000);
+    const tMain = document.querySelector('.t-main');
+    if (tMain) {
+        tMain.innerText = '你在看哪裡？';
+        tMain.classList.add('glitch-permanent');
+    }
+
+    [
+        ['ZenCode shadow console mounted.', 'sys'],
+        ['DevTools handshake rejected. Mirror terminal substituted.', 'warn'],
+        ['左側頁面已進入觀測污染。不要相信仍然可讀的文字。', 'sys'],
+        ['輸入 help。不要輸入 root。', 'dim']
+    ].forEach(([text, type], i) => setTimeout(() => sanLog(text, type), i * 520));
+
+    startSanNoise();
+    startLeftMutation();
+}
+
+function triggerScare() {
+    bootSanConsole();
 }
 
 window.addEventListener('keydown', (e) => {
@@ -365,9 +486,8 @@ const terminalCommands = {
         return "目錄讀取完成。但你什麼也帶不走。";
     },
     root: () => {
-        triggerScare();
-        document.getElementById('death-screen').style.display = 'flex';
-        return "【致命錯誤】越權操作！深淵已強行接管你的設備。";
+        bootSanConsole();
+        return "【警告】真實控制台已被鏡像終端接管。請看右側。";
     },
     sudo: () => {
         return terminalCommands.root();
@@ -378,6 +498,78 @@ const terminalCommands = {
 for (let cmd in terminalCommands) {
     Object.defineProperty(window, cmd, {
         get: function() { return terminalCommands[cmd](); }
+    });
+}
+
+const sanCommands = {
+    help: () => [
+        '可用指令：',
+        '  whoami  - 解析觀測者身份',
+        '  ls      - 列出殘留檔案',
+        '  san     - 查看理智值',
+        '  seal    - 暫時封印側邊終端',
+        '  clear   - 清空這個假的終端',
+        '  root    - 不要輸入'
+    ].join('\n'),
+    whoami: () => {
+        setSanLevel(sanLevel - 4);
+        return 'uid=0(observer) gid=abyss groups=offscreen,watcher\n狀態：你看見了不該被 UI 表示的東西。';
+    },
+    ls: () => [
+        'drwx------  karma_log.sys',
+        '-rw-r--r--  eye_contact.tmp',
+        '-rw-r--r--  last_breath.cache',
+        '----------  your_name.locked',
+        'lrwxrwxrwx  escape -> /dev/null'
+    ].join('\n'),
+    san: () => `SANITY INDEX: ${sanLevel}%\n${sanLevel < 35 ? '建議：停止觀測。它已經開始回看。' : '建議：不要把游標停在輸入框太久。'}`,
+    seal: () => {
+        sanLog('seal: 正在封印鏡像終端...', 'sys');
+        setTimeout(closeSanConsole, 650);
+        return '封印成功，但裂縫還在。再次按 F12 會重新打開。';
+    },
+    clear: () => {
+        const output = document.getElementById('san-output');
+        if (output) output.innerHTML = '';
+        return '清屏完成。痕跡沒有消失，只是換了地方。';
+    },
+    exit: () => {
+        closeSanConsole();
+        return 'session detached.';
+    },
+    root: () => {
+        setSanLevel(sanLevel - 23);
+        document.body.classList.add('hacked-bg');
+        setTimeout(() => document.body.classList.remove('hacked-bg'), 620);
+        if (sanLevel <= 5) {
+            return 'root: granted\nkernel panic: SANITY_INDEX_UNDERFLOW\n畫面仍然亮著，這才是最壞的部分。';
+        }
+        return 'root: permission granted for 0.04s\n錯誤：權限來自你的影子，不來自系統。';
+    },
+    sudo: () => sanCommands.root()
+};
+
+function runSanCommand(raw) {
+    const cmd = raw.trim().toLowerCase();
+    if (!cmd) return;
+    sanLog(`root@abyss:~$ ${raw}`, 'user');
+    const fn = sanCommands[cmd];
+    if (!fn) {
+        setSanLevel(sanLevel - 2);
+        sanLog(`${cmd}: command not found. 但它聽見了。`, 'warn');
+        return;
+    }
+    const result = fn();
+    if (result) sanLog(result, cmd === 'root' ? 'warn' : 'sys');
+}
+
+const sanForm = document.getElementById('san-form');
+if (sanForm) {
+    sanForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const input = document.getElementById('san-input');
+        runSanCommand(input.value);
+        input.value = '';
     });
 }
 
