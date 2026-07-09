@@ -13,10 +13,8 @@
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
 html,body{background:var(--bg);color:var(--text);font-family:'Noto Serif TC',serif;overflow-x:hidden;min-height:100vh; transition: filter 2s ease;}
 
-/* 觀測者污染模式：被發現看代碼後，整個網頁濾鏡變異 */
 .observer-polluted { filter: contrast(1.5) sepia(0.8) hue-rotate(-20deg) saturate(2) brightness(0.8); }
 
-/* 故障亂碼閃爍動畫 */
 @keyframes glitch-anim {
   0% { transform: translate(0) }
   20% { transform: translate(-2px, 1px) }
@@ -115,8 +113,6 @@ select.inp option{background:#0C0000;color:var(--text);}
 }
 
 .hacked-bg { filter: invert(1) hue-rotate(180deg) contrast(1.5) !important; transition: all 0.5s ease-in; }
-
-/* 最終處裁畫面 */
 #death-screen { display:none; position:fixed; inset:0; background:#050000; color:#ff003c; z-index:2147483647; align-items:center; justify-content:center; flex-direction:column; font-family:'Ma Shan Zheng',cursive; text-align:center; user-select:none; }
 #death-screen h1 { font-size:clamp(4rem, 10vw, 8rem); animation:glitch-anim 0.05s infinite; text-shadow:0 0 30px red; margin:0; line-height:1.2;}
 #death-screen p { font-size:1.5rem; font-family:'Noto Sans TC',sans-serif; letter-spacing:1em; margin-top:20px; opacity:0.7; }
@@ -259,39 +255,20 @@ select.inp option{background:#0C0000;color:var(--text);}
 
 <script>
 /* ═══════════════════════════════════════════════════════
-   核心暗號化 (Base64 編碼，殺死 Ctrl+F)
-═══════════════════════════════════════════════════════ */
-const _0xEncode = (str) => btoa(unescape(encodeURIComponent(str)));
-const _0xT1 = "5LiB5LqkIOS4meWNiCDkuJnlrZAg55Sy5Y2I"; 
-const _0xT2 = "5LiB5LqkIOS4meWNiCDkuJnlrZAg55m45bey";
-const _0xAnoms = [
-    "5aSc5a2QIOWknOWtkCDlpJzlrZAg5aSc5a2Q", 
-    "5LiZ5Y2IIOS4meWNiCDkuJnlrYgg5LiZ5Y2I", 
-    "5oiK6L6wIOaIuui+sCDmiLrovrAg5oiK6L6w", 
-    "5bqa55SzIOW6mueUsyDlupnnlLMg5bqa55Sz", 
-    "5LqZ5Y+vIOW6meWPryDlupl5Y+vIOW6meWPry"  
-];
-
-/* ═══════════════════════════════════════════════════════
    控制台魔法防禦 & JUMPSCARE 核心
 ═══════════════════════════════════════════════════════ */
 let isDevToolsOpen = false;
 let aggressivePollution;
 
-// 觸發全面崩壞視覺
 function triggerScare() {
     if(isDevToolsOpen) return;
     isDevToolsOpen = true;
 
-    // 1. 視覺濾鏡變異
     document.body.classList.add('observer-polluted');
-    
-    // 2. 主標題鎖死為故障文本
     const tMain = document.querySelector('.t-main');
     tMain.innerText = '你在看哪裡？';
     tMain.classList.add('glitch-permanent');
     
-    // 3. UI 元素隨機詛咒替換
     const cursedWords = ['不要看', '閉上眼', '它來了', '血', '深淵', '死'];
     setInterval(() => {
         const els = document.querySelectorAll('.flbl, .slbl, .liuyao-text, .astrolabe-text');
@@ -299,7 +276,6 @@ function triggerScare() {
         if(target) { target.innerText = cursedWords[Math.floor(Math.random() * cursedWords.length)]; target.style.color = '#ff003c'; }
     }, 800);
 
-    // 4. 控制台狂暴模式
     clearInterval(passivePollution);
     console.clear();
     console.error("%c警告：觀測行為已觸發底層防禦機制！", "color:red; font-size:24px; text-shadow: 0 0 10px red;");
@@ -309,31 +285,24 @@ function triggerScare() {
         console.log(`%c[FATAL ERROR] 視線交匯... ${garbage}`, "color: red; background: rgba(50,0,0,0.5); font-size: " + (10 + Math.random()*15) + "px;");
     }, 150);
 
-    // 5. 終極處刑：幾秒後徹底卡死在「作弊者死」畫面
     setTimeout(() => {
         document.getElementById('death-screen').style.display = 'flex';
         document.body.style.overflow = 'hidden';
     }, 7000);
 }
 
-// 攔截常用 F12、審查元素快捷鍵，一旦按下立刻觸發恐嚇
 window.addEventListener('keydown', (e) => {
-    if (e.key === 'F12' || 
-       (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) || 
-       (e.ctrlKey && e.key === 'U')) {
-        triggerScare();
-        e.preventDefault();
+    if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) || (e.ctrlKey && e.key === 'U')) {
+        triggerScare(); e.preventDefault();
     }
 });
 
-// 如果玩家是透過瀏覽器選單打開 F12，則依賴視窗檢測觸發
 window.addEventListener('resize', () => {
     const widthDiff = window.outerWidth - window.innerWidth > 160;
     const heightDiff = window.outerHeight - window.innerHeight > 160;
     if (widthDiff || heightDiff) triggerScare();
 });
 
-// 防禦矩陣：DOM 結界 (防篡改 HTML 刪除遮罩)
 const mo = new MutationObserver((mutations) => {
     mutations.forEach((mutation) => {
         if (mutation.removedNodes) {
@@ -350,7 +319,7 @@ const mo = new MutationObserver((mutations) => {
 mo.observe(document.body, { childList: true, subtree: true });
 
 /* ═══════════════════════════════════════════════════════
-   控制台畫布渲染與靜態污染
+   控制台「偽造命令行」彩蛋 (Interactive ARG Terminal)
 ═══════════════════════════════════════════════════════ */
 const skullArt = `
       _.--""--._
@@ -362,13 +331,55 @@ const skullArt = `
        '--..--'
 `;
 console.log(
-    `%c${skullArt}\n%c[ 1101 0010 1111 ]\n%c警告：偵測到未授權的靈魂觀測者...\n%c你以為在螢幕之外看著這一切，就很安全嗎？`, 
+    `%c${skullArt}\n%c[ 1101 0010 1111 ]\n%c警告：偵測到未授權的靈魂觀測者...\n%c你以為在螢幕之外看著這一切，就很安全嗎？\n\n%c[系統] 終端接口已暴露。直接輸入 help 可查看指令。`, 
     "color: #a8a8a8; text-shadow: 0 0 5px #ffffff;", 
     "color: #00ff00; background: #002200; font-family: monospace; padding: 2px;", 
     "color: #ff0000; font-size: 16px; font-weight: bold; text-shadow: 0 0 8px red;", 
-    "color: #8b0000; font-size: 14px; font-style: italic;" 
+    "color: #8b0000; font-size: 14px; font-style: italic;",
+    "color: #00ff00; font-size: 12px; font-family: monospace; text-decoration: underline;"
 );
-console.log("%c[系統底層日誌] %c如需強制覆寫前端陣法，請執行 admin_bypass()", "color:gray", "color:#555; font-style:italic; text-decoration:underline; cursor:pointer;");
+
+// 劫持 console.clear 阻止玩家清屏
+const originalClear = console.clear;
+console.clear = function() {
+    originalClear.apply(console);
+    console.log("%c[系統拒絕] 你無法抹除留下的痕跡。罪孽已記錄在案。", "color: #ff003c; font-size: 16px; font-weight: bold; text-shadow: 0 0 5px red;");
+};
+
+// 定義伪終端指令 (利用 Object.defineProperty 讓玩家不需要輸入括號)
+const terminalCommands = {
+    help: () => {
+        console.log("%c=== Z̸e̸n̸C̸o̸d̸e̸ 終端接口 ===\n- whoami : 確認當前觀測者狀態\n- ls     : 列出節點中的實體目錄\n- root   : 獲取底層最高權限\n- clear  : 嘗試清除日誌", "color: #00ff00; font-family: monospace; font-size: 14px; line-height: 1.5;");
+        return "等待輸入...";
+    },
+    whoami: () => {
+        console.log("%c[系統解析中...] \n實體身分：【祭品】\n狀態：已被鎖定。無處可逃。", "color: #ff003c; font-weight:bold; font-size: 14px;");
+        return "你就是代價。";
+    },
+    ls: () => {
+        console.table([
+            { 文件名: "karma_log.sys", 狀態: "已損壞", 備註: "不可讀" },
+            { 文件名: "soul_fragment.dat", 狀態: "正在上傳...", 備註: "你的碎片" },
+            { 文件名: "TAISUI.exe", 狀態: "運行中", 備註: "祂在看著" }
+        ]);
+        return "目錄讀取完成。但你什麼也帶不走。";
+    },
+    root: () => {
+        triggerScare();
+        document.getElementById('death-screen').style.display = 'flex';
+        return "【致命錯誤】越權操作！深淵已強行接管你的設備。";
+    },
+    sudo: () => {
+        return terminalCommands.root();
+    }
+};
+
+// 將指令綁定到 window 對象上
+for (let cmd in terminalCommands) {
+    Object.defineProperty(window, cmd, {
+        get: function() { return terminalCommands[cmd](); }
+    });
+}
 
 let passivePollution = setInterval(() => {
     let msg = ["【系統底層】無法解析的實體正在靠近...", "01100100 01100101 01100001", "ERR_SOUL_NOT_FOUND", "你在螢幕外，真的安全嗎？", "這不是代碼，這是詛咒", "// TODO: 救救我"][Math.floor(Math.random() * 6)];
@@ -376,10 +387,19 @@ let passivePollution = setInterval(() => {
     console.log(`%c[0x${hex}] ${msg}`, "color:rgba(255,0,0,0.4); text-shadow: 0 0 2px red; font-family: monospace; font-size: 11px;");
 }, 4000);
 
-window.admin_bypass = function() {
-    triggerScare();
-    return "執行中... 正在格式化你的物理坐標...";
-};
+/* ═══════════════════════════════════════════════════════
+   核心暗號化 (Base64 編碼)
+═══════════════════════════════════════════════════════ */
+const _0xEncode = (str) => btoa(unescape(encodeURIComponent(str)));
+const _0xT1 = "5LiB5LqkIOS4meWNiCDkuJnlrZAg55Sy5Y2I"; 
+const _0xT2 = "5LiB5LqkIOS4meWNiCDkuJnlrZAg55m45bey";
+const _0xAnoms = [
+    "5aSc5a2QIOWknOWtkCDlpJzlrZAg5aSc5a2Q", 
+    "5LiZ5Y2IIOS4meWNiCDkuJnlrYgg5LiZ5Y2I", 
+    "5oiK6L6wIOaIuui+sCDmiLrovrAg5oiK6L6w", 
+    "5bqa55SzIOW6mueUsyDlupnnlLMg5bqa55Sz", 
+    "5LqZ5Y+vIOW6meWPryDlupl5Y+vIOW6meWPry"  
+];
 
 /* ═══════════════════════════════════════════════════════
    戰損故障動效腳本與畫布渲染
