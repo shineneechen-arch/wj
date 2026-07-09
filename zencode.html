@@ -113,10 +113,16 @@ select.inp option{background:#0C0000;color:var(--text);}
 }
 
 .hacked-bg { filter: invert(1) hue-rotate(180deg) contrast(1.5) !important; transition: all 0.5s ease-in; }
+
+/* 最終處裁畫面與偽造終端 */
 #death-screen { display:none; position:fixed; inset:0; background:#050000; color:#ff003c; z-index:2147483647; align-items:center; justify-content:center; flex-direction:column; font-family:'Ma Shan Zheng',cursive; text-align:center; user-select:none; }
 #death-screen h1 { font-size:clamp(4rem, 10vw, 8rem); animation:glitch-anim 0.05s infinite; text-shadow:0 0 30px red; margin:0; line-height:1.2;}
 #death-screen p { font-size:1.5rem; font-family:'Noto Sans TC',sans-serif; letter-spacing:1em; margin-top:20px; opacity:0.7; }
+#terminal-view { display:none; width: 85%; max-width: 800px; height: 60vh; text-align: left; font-family: Consolas, 'Courier New', monospace; font-size: 16px; color: #00ff00; background: rgba(0,20,0,0.1); border: 1px solid rgba(0,255,0,0.3); padding: 20px; box-shadow: 0 0 20px rgba(0,255,0,0.1); overflow-y: auto;}
+#terminal-view div { margin-bottom: 5px; text-shadow: 0 0 5px rgba(0,255,0,0.5); }
+#terminal-view input { font-family: Consolas, 'Courier New', monospace; font-size: 16px; background: transparent; border: none; color: #00ff00; width: 80%; outline: none; text-shadow: 0 0 5px rgba(0,255,0,0.5); }
 
+/* --- 側邊面板視覺 (之前保留的) --- */
 body.san-console-open{overflow:hidden;}
 body.san-console-open #ifc{filter:contrast(1.35) saturate(1.8) brightness(.62) hue-rotate(-18deg);transition:filter .42s ease;}
 body.san-console-open .grid-ov{background-size:42px 42px;opacity:.9;}
@@ -128,40 +134,31 @@ body.san-console-open .san-left-threat{opacity:1;}
 .san-console{position:fixed;right:0;top:0;width:min(680px,48vw);height:100vh;z-index:12000;background:#151515;border-left:1px solid #3c4043;box-shadow:-24px 0 90px rgba(0,0,0,.9),-3px 0 34px rgba(255,0,60,.18);transform:translateX(102%);opacity:1;visibility:hidden;transition:transform .34s cubic-bezier(.2,.7,.15,1),visibility .28s ease;display:flex;flex-direction:column;font-family:Consolas,'Courier New',monospace;color:#d8ffd8;}
 body.san-console-open .san-console{transform:translateX(0);opacity:1;visibility:visible;}
 .san-console::before{content:'';position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(0deg,rgba(255,255,255,.025) 0 1px,transparent 1px 3px);opacity:.28;}
-.san-bar{height:34px;display:flex;align-items:center;gap:4px;padding:0 8px;background:#202124;border-bottom:1px solid #3c4043;color:#bdc1c6;font-size:12px;letter-spacing:0;position:relative;z-index:1;}
-.san-dot{display:none;}
-.san-title{display:flex;align-items:center;height:100%;padding:0 12px;border-bottom:2px solid #8ab4f8;color:#e8eaed;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.san-title::before{content:'Console';}
-.san-title{font-size:0;}
-.san-title::before{font-size:12px;}
+.san-bar{height:34px;display:flex;align-items:center;gap:4px;padding:0 8px;background:#202124;border-bottom:1px solid #3c4043;color:#bdc1c6;font-size:12px;position:relative;z-index:1;}
+.san-title{display:flex;align-items:center;height:100%;padding:0 12px;border-bottom:2px solid #8ab4f8;color:#e8eaed;font-size:0;}
+.san-title::before{content:'Console'; font-size:12px;}
 .san-title::after{content:'  2';font-size:11px;color:#ff6b81;margin-left:8px;}
-.san-close{margin-left:auto;background:transparent;border:0;color:#bdc1c6;width:28px;height:28px;cursor:pointer;font:16px Arial,sans-serif;}
+.san-close{margin-left:auto;background:transparent;border:0;color:#bdc1c6;width:28px;height:28px;cursor:pointer;font:16px Arial;}
 .san-close:hover{background:#3c4043;color:#fff;}
-.san-tabs{height:34px;display:flex;align-items:center;gap:14px;padding:0 12px;background:#202124;border-bottom:1px solid #3c4043;color:#9aa0a6;font:12px Arial,sans-serif;position:relative;z-index:1;}
+.san-tabs{height:34px;display:flex;align-items:center;gap:14px;padding:0 12px;background:#202124;border-bottom:1px solid #3c4043;color:#9aa0a6;font:12px Arial;position:relative;z-index:1;}
 .san-tab{height:100%;display:flex;align-items:center;}
 .san-tab.active{color:#e8eaed;border-bottom:2px solid #8ab4f8;}
-.san-filter{margin-left:auto;color:#bdc1c6;border:1px solid #3c4043;border-radius:3px;padding:3px 8px;background:#151515;min-width:118px;}
+.san-filter{margin-left:auto;color:#bdc1c6;border:1px solid #3c4043;border-radius:3px;padding:3px 8px;background:#151515;}
 .san-meter{padding:8px 12px;border-bottom:1px solid #3c4043;position:relative;z-index:1;background:#151515;}
-.san-meter-row{display:flex;justify-content:space-between;font-size:11px;color:#bdc1c6;margin-bottom:6px;letter-spacing:0;font-family:Arial,sans-serif;}
+.san-meter-row{display:flex;justify-content:space-between;font-size:11px;color:#bdc1c6;margin-bottom:6px;font-family:Arial;}
 .san-meter-track{height:4px;background:#2b1116;border:1px solid rgba(255,0,60,.35);overflow:hidden;}
 .san-meter-fill{height:100%;width:71%;background:linear-gradient(90deg,#00ff88,#ffe600,#ff003c);box-shadow:0 0 16px rgba(255,0,60,.8);transition:width .4s ease;}
-.san-output{flex:1;overflow:auto;padding:0;position:relative;z-index:1;font-size:12px;line-height:1.55;text-shadow:none;background:#151515;}
-.san-line{white-space:pre-wrap;word-break:break-word;margin:0 0 6px;}
+.san-output{flex:1;overflow:auto;padding:0;position:relative;z-index:1;font-size:12px;line-height:1.55;background:#151515;}
 .san-line{padding:5px 12px 5px 30px;margin:0;border-bottom:1px solid rgba(60,64,67,.55);position:relative;font-family:Consolas,'Courier New',monospace;}
 .san-line::before{position:absolute;left:10px;color:#9aa0a6;}
-.san-line.sys{color:#e8eaed;}
-.san-line.sys::before{content:'›';}
-.san-line.warn{color:#ff6b81;background:rgba(255,0,60,.06);text-shadow:0 0 10px rgba(255,0,60,.45);}
-.san-line.warn::before{content:'⚠';color:#ffb74d;}
-.san-line.dim{color:#9aa0a6;}
-.san-line.dim::before{content:'i';font-family:Arial,sans-serif;}
-.san-line.user{color:#8ab4f8;}
-.san-line.user::before{content:'>';}
-.san-line.art{color:#ff4c72;font-size:12px;line-height:1.05;letter-spacing:0;text-shadow:0 0 10px rgba(255,0,60,.8);margin:0;padding:10px 12px 12px 30px;white-space:pre;word-break:normal;overflow-x:auto;font-family:'Courier New',Consolas,monospace;}
-.san-line.art::before{content:'';}
+.san-line.sys{color:#e8eaed;}.san-line.sys::before{content:'›';}
+.san-line.warn{color:#ff6b81;background:rgba(255,0,60,.06);text-shadow:0 0 10px rgba(255,0,60,.45);}.san-line.warn::before{content:'⚠';color:#ffb74d;}
+.san-line.dim{color:#9aa0a6;}.san-line.dim::before{content:'i';font-family:Arial;}
+.san-line.user{color:#8ab4f8;}.san-line.user::before{content:'>';}
+.san-line.art{color:#ff4c72;font-size:12px;line-height:1.05;text-shadow:0 0 10px rgba(255,0,60,.8);margin:0;padding:10px 12px 12px 30px;white-space:pre;}
 .san-input-row{display:flex;align-items:center;gap:8px;padding:8px 12px;border-top:1px solid #3c4043;background:#151515;position:relative;z-index:1;}
-.san-prompt{color:#8ab4f8;text-shadow:none;}
-.san-input{flex:1;background:transparent;border:0;outline:0;color:#e8eaed;font:13px Consolas,'Courier New',monospace;caret-color:#8ab4f8;}
+.san-prompt{color:#8ab4f8;}
+.san-input{flex:1;background:transparent;border:0;outline:0;color:#e8eaed;font:13px Consolas;}
 .san-watch-flash{position:fixed;inset:0;z-index:11999;display:flex;align-items:center;justify-content:center;pointer-events:none;opacity:0;color:#ff003c;font-family:'Ma Shan Zheng',cursive;font-size:clamp(3.2rem,9vw,8rem);letter-spacing:.08em;text-shadow:0 0 18px #ff003c,3px 0 #00ffe1,-3px 0 #003cff;background:radial-gradient(circle,rgba(255,0,60,.24),rgba(0,0,0,.72) 58%,transparent 74%);transition:opacity .18s ease;}
 .san-watch-flash.show{opacity:1;animation:glitch-anim .06s infinite;}
 @media (max-width: 860px){
@@ -177,15 +174,12 @@ body.san-console-open .san-console{transform:translateX(0);opacity:1;visibility:
 <div id="san-watch-flash" class="san-watch-flash" aria-hidden="true">你在看哪裡？</div>
 <aside id="san-console" class="san-console" aria-hidden="true">
   <div class="san-bar">
-    <span class="san-dot"></span><span class="san-dot"></span><span class="san-dot"></span>
     <span class="san-title">ZenCode://observer/devtools-shadow</span>
     <button class="san-close" type="button" onclick="closeSanConsole()">×</button>
   </div>
   <div class="san-tabs">
     <span class="san-tab">Elements</span>
     <span class="san-tab active">Console</span>
-    <span class="san-tab">Sources</span>
-    <span class="san-tab">Network</span>
     <span class="san-filter">Filter</span>
   </div>
   <div class="san-meter">
@@ -200,8 +194,16 @@ body.san-console-open .san-console{transform:translateX(0);opacity:1;visibility:
 </aside>
 
 <div id="death-screen">
-  <h1>作弊者死</h1>
-  <p>凝視深淵的代價</p>
+  <h1 id="death-msg">作弊者死</h1>
+  <p id="death-sub">凝視深淵的代價</p>
+  
+  <div id="terminal-view">
+    <div id="console-output" style="margin-bottom: 10px;"></div>
+    <div style="display:flex; align-items:center;">
+      <span style="margin-right: 8px;">root@zen:~$ </span>
+      <input type="text" id="term-input" autocomplete="off" spellcheck="false">
+    </div>
+  </div>
 </div>
 
 <canvas id="bg-canvas"></canvas>
@@ -342,10 +344,10 @@ let sanLevel = 71;
 let sanNoiseTimer = null;
 let sanMutationTimer = null;
 const sanEyeSigil = String.raw`
-        .---------------------------.
+       .---------------------------.
      .-'   ((o))     ((o))     ((o)) '-.
-   .'     /  |  \   /  |  \   /  |  \  '.
-  /      <---+---> <---+---> <---+--->   \
+   .'     /  |  \   /  |  \   /  |  \   '.
+  /      <---+---> <---+---> <---+--->    \
  ;             .-"""""""""""-.             ;
  |    ((o))   /   _     _    \   ((o))    |
  |           |   (o)   (o)    |           |
@@ -354,7 +356,7 @@ const sanEyeSigil = String.raw`
  ;             '-._____.-'                ;
   \      ((o))    /| | |\      ((o))     /
    '.             /_|_|_|_\             .'
-     '-.     THE CONSOLE LOOKS BACK .-'
+     '-.      THE CONSOLE LOOKS BACK .-'
         '---------------------------'
 `;
 
@@ -381,7 +383,6 @@ function setSanLevel(next) {
     const fill = document.getElementById('san-fill');
     if (value) value.textContent = `${sanLevel}%`;
     if (fill) fill.style.width = `${sanLevel}%`;
-    document.body.style.setProperty('--san-shake', `${(100 - sanLevel) / 100}`);
 }
 
 function startSanNoise() {
@@ -392,7 +393,7 @@ function startSanNoise() {
         'stack[13]: return address points behind you',
         'sanity_check(): failed but continuing',
         'SIGIL_READ_FAULT at 0x0000DEAD',
-        '有人把呼吸写进了缓存'
+        '有人把呼吸寫進了緩存'
     ];
     sanNoiseTimer = setInterval(() => {
         sanLog(`[${Math.random().toString(16).slice(2, 10).toUpperCase()}] ${noise[Math.floor(Math.random() * noise.length)]}`, Math.random() > .72 ? 'warn' : 'dim');
@@ -450,7 +451,6 @@ function bootSanConsole() {
         return;
     }
     isDevToolsOpen = true;
-    clearInterval(passivePollution);
     openSanConsole();
 
     [
@@ -470,10 +470,49 @@ function bootSanConsole() {
 
 function triggerScare() {
     bootSanConsole();
+    setTimeout(() => {
+        document.getElementById('death-screen').style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }, 7000);
 }
 
+/* ═══════════════════════════════════════════════════════
+   終局：偽造終端 (死後按F12觸發)
+═══════════════════════════════════════════════════════ */
+const terminal = document.getElementById('terminal-view');
+const output = document.getElementById('console-output');
+const input = document.getElementById('term-input');
+
+function termLog(msg) {
+    output.innerHTML += `<div>${msg}</div>`;
+    terminal.scrollTop = terminal.scrollHeight;
+}
+
+input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+        const cmd = input.value.trim().toLowerCase();
+        termLog(`> ${cmd}`);
+        if (cmd === 'help') termLog("可用指令: reboot, trace, reveal, clear");
+        else if (cmd === 'reboot') window.location.reload();
+        else if (cmd === 'trace') termLog("[WARN] 追蹤到物理 IP: 127.0.0.1 (本地坐標已暴露給系統)");
+        else if (cmd === 'reveal') termLog("你以為你在玩遊戲嗎？這是靈魂的沙盒。");
+        else if (cmd === 'clear') output.innerHTML = '';
+        else if (cmd === 'root') termLog("[FATAL] 權限不足。你只是一個祭品。");
+        else if (cmd !== '') termLog("未知的指令。深淵拒絕了你的請求。");
+        input.value = '';
+    }
+});
+
+// 當玩家在死局按 F12，揭開偽造控制台
 window.addEventListener('keydown', (e) => {
-    if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) || (e.ctrlKey && e.key === 'U')) {
+    if (e.key === 'F12' && document.getElementById('death-screen').style.display === 'flex') {
+        e.preventDefault();
+        document.getElementById('death-msg').style.display = 'none';
+        document.querySelector('#death-screen p').style.display = 'none';
+        terminal.style.display = 'block';
+        termLog("警告：已進入系統內核模式...");
+        setTimeout(() => input.focus(), 100);
+    } else if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) || (e.ctrlKey && e.key === 'U')) {
         triggerScare(); e.preventDefault();
     }
 });
@@ -500,67 +539,8 @@ const mo = new MutationObserver((mutations) => {
 mo.observe(document.body, { childList: true, subtree: true });
 
 /* ═══════════════════════════════════════════════════════
-   控制台「偽造 DevTools」彩蛋 (Interactive ARG Console)
+   指令處理 (防禦面板)
 ═══════════════════════════════════════════════════════ */
-const skullArt = `
-      _.--""--._
-     /  _    _  \\
-    |  (o)  (o)  |
-    |    \\  /    |
-     \\  .----.  /
-      \\ '----' /
-       '--..--'
-`;
-console.log(
-    `%c${skullArt}\n%c[ 1101 0010 1111 ]\n%c警告：偵測到未授權的靈魂觀測者...\n%c你以為在螢幕之外看著這一切，就很安全嗎？\n\n%c[系統] Console 鏡像接口已暴露。直接輸入 help 可查看指令。`, 
-    "color: #a8a8a8; text-shadow: 0 0 5px #ffffff;", 
-    "color: #00ff00; background: #002200; font-family: monospace; padding: 2px;", 
-    "color: #ff0000; font-size: 16px; font-weight: bold; text-shadow: 0 0 8px red;", 
-    "color: #8b0000; font-size: 14px; font-style: italic;",
-    "color: #00ff00; font-size: 12px; font-family: monospace; text-decoration: underline;"
-);
-
-// 劫持 console.clear 阻止玩家清屏
-const originalClear = console.clear;
-console.clear = function() {
-    originalClear.apply(console);
-    console.log("%c[系統拒絕] 你無法抹除留下的痕跡。罪孽已記錄在案。", "color: #ff003c; font-size: 16px; font-weight: bold; text-shadow: 0 0 5px red;");
-};
-
-// 定義伪控制台指令 (利用 Object.defineProperty 讓玩家不需要輸入括號)
-const terminalCommands = {
-    help: () => {
-        console.log("%c=== Z̸e̸n̸C̸o̸d̸e̸ DevTools Console Mirror ===\n- whoami : 解析當前觀測者物件\n- ls     : 列出被污染的 DOM 節點\n- root   : 觸發鏡像控制台\n- clear  : 嘗試清除 Console 日誌", "color: #00ff00; font-family: monospace; font-size: 14px; line-height: 1.5;");
-        return "等待輸入...";
-    },
-    whoami: () => {
-        console.log("%cObserver { identity: '祭品', locked: true, escape: null }", "color: #ff003c; font-weight:bold; font-size: 14px;");
-        return "你就是代價。";
-    },
-    ls: () => {
-        console.table([
-            { 文件名: "karma_log.sys", 狀態: "已損壞", 備註: "不可讀" },
-            { 文件名: "soul_fragment.dat", 狀態: "正在上傳...", 備註: "你的碎片" },
-            { 文件名: "TAISUI.exe", 狀態: "運行中", 備註: "祂在看著" }
-        ]);
-        return "目錄讀取完成。但你什麼也帶不走。";
-    },
-    root: () => {
-        bootSanConsole();
-        return "【警告】真實 Console 已被鏡像面板接管。請看右側。";
-    },
-    sudo: () => {
-        return terminalCommands.root();
-    }
-};
-
-// 將指令綁定到 window 對象上
-for (let cmd in terminalCommands) {
-    Object.defineProperty(window, cmd, {
-        get: function() { return terminalCommands[cmd](); }
-    });
-}
-
 const sanCommands = {
     help: () => [
         '可用指令：',
@@ -573,24 +553,9 @@ const sanCommands = {
     ].join('\n'),
     whoami: () => {
         setSanLevel(sanLevel - 4);
-        return [
-            'Observer {',
-            '  origin: location.href,',
-            '  userAgentHash: "0xDEAD66",',
-            '  watching: true,',
-            '  watchedBack: true,',
-            '  note: "你看見了不該被 UI 表示的東西。"',
-            '}'
-        ].join('\n');
+        return ['Observer {', '  origin: location.href,', '  userAgentHash: "0xDEAD66",', '  watching: true,', '  watchedBack: true,', '  note: "你看見了不該被 UI 表示的東西。"', '}'].join('\n');
     },
-    ls: () => [
-        'console.table([',
-        '  { node: "#ifc", state: "mutating", note: "left pane contaminated" },',
-        '  { node: ".t-main", state: "watching", note: "text replaced by watcher" },',
-        '  { node: "localStorage.soul", state: "locked", note: "permission denied" },',
-        '  { node: "document.body", state: "not alone", note: "observer-polluted" }',
-        '])'
-    ].join('\n'),
+    ls: () => ['console.table([', '  { node: "#ifc", state: "mutating", note: "left pane contaminated" },', '  { node: ".t-main", state: "watching", note: "text replaced by watcher" },', '  { node: "document.body", state: "not alone", note: "observer-polluted" }', '])'].join('\n'),
     san: () => `SANITY INDEX: ${sanLevel}%\n${sanLevel < 35 ? '建議：停止觀測。它已經開始回看。' : '建議：不要把游標停在輸入框太久。'}`,
     seal: () => {
         sanLog('seal: 正在封印鏡像 Console...', 'sys');
@@ -598,21 +563,14 @@ const sanCommands = {
         return '封印成功，但裂縫還在。再次按 F12 會重新打開。';
     },
     clear: () => {
-        const output = document.getElementById('san-output');
-        if (output) output.innerHTML = '';
+        const out = document.getElementById('san-output');
+        if (out) out.innerHTML = '';
         return '清屏完成。痕跡沒有消失，只是換了地方。';
-    },
-    exit: () => {
-        closeSanConsole();
-        return 'session detached.';
     },
     root: () => {
         setSanLevel(sanLevel - 23);
         document.body.classList.add('hacked-bg');
         setTimeout(() => document.body.classList.remove('hacked-bg'), 620);
-        if (sanLevel <= 5) {
-            return 'root: granted\nkernel panic: SANITY_INDEX_UNDERFLOW\n畫面仍然亮著，這才是最壞的部分。';
-        }
         return 'root: permission granted for 0.04s\n錯誤：權限來自你的影子，不來自系統。';
     },
     sudo: () => sanCommands.root()
@@ -636,30 +594,25 @@ const sanForm = document.getElementById('san-form');
 if (sanForm) {
     sanForm.addEventListener('submit', (e) => {
         e.preventDefault();
-        const input = document.getElementById('san-input');
-        runSanCommand(input.value);
-        input.value = '';
+        const inp = document.getElementById('san-input');
+        runSanCommand(inp.value);
+        inp.value = '';
     });
 }
 
-let passivePollution = setInterval(() => {
-    let msg = ["【系統底層】無法解析的實體正在靠近...", "01100100 01100101 01100001", "ERR_SOUL_NOT_FOUND", "你在螢幕外，真的安全嗎？", "這不是代碼，這是詛咒", "// TODO: 救救我"][Math.floor(Math.random() * 6)];
-    let hex = Math.random().toString(16).substring(2, 10).toUpperCase();
-    console.log(`%c[0x${hex}] ${msg}`, "color:rgba(255,0,0,0.4); text-shadow: 0 0 2px red; font-family: monospace; font-size: 11px;");
-}, 4000);
-
 /* ═══════════════════════════════════════════════════════
-   核心暗號化 (Base64 編碼)
+   核心加密：Unicode 轉義 (完美防 Ctrl+F 且保證比對正確)
 ═══════════════════════════════════════════════════════ */
-const _0xEncode = (str) => btoa(unescape(encodeURIComponent(str)));
-const _0xT1 = "5LiB5LqkIOS4meWNiCDkuJnlrZAg55Sy5Y2I"; 
-const _0xT2 = "5LiB5LqkIOS4meWNiCDkuJnlrZAg55m45bey";
+// "丁亥 丙午 丙子 甲午"
+const _0xT1 = "\u4e01\u4ea5 \u4e19\u5348 \u4e19\u5b50 \u7532\u5348"; 
+// "丁亥 丙午 丙子 癸巳"
+const _0xT2 = "\u4e01\u4ea5 \u4e19\u5348 \u4e19\u5b50 \u7678\u5df3";
 const _0xAnoms = [
-    "5aSc5a2QIOWknOWtkCDlpJzlrZAg5aSc5a2Q", 
-    "5LiZ5Y2IIOS4meWNiCDkuJnlrYgg5LiZ5Y2I", 
-    "5oiK6L6wIOaIuui+sCDmiLrovrAg5oiK6L6w", 
-    "5bqa55SzIOW6mueUsyDlupnnlLMg5bqa55Sz", 
-    "5LqZ5Y+vIOW6meWPryDlupl5Y+vIOW6meWPry"  
+    "\u58ec\u5b50 \u58ec\u5b50 \u58ec\u5b50 \u58ec\u5b50", // 壬子
+    "\u4e19\u5348 \u4e19\u5348 \u4e19\u5348 \u4e19\u5348", // 丙午
+    "\u620a\u8fb0 \u620a\u8fb0 \u620a\u8fb0 \u620a\u8fb0", // 戊辰
+    "\u5e9a\u7533 \u5e9a\u7533 \u5e9a\u7533 \u5e9a\u7533", // 庚申
+    "\u4e59\u536f \u4e59\u536f \u4e59\u536f \u4e59\u536f"  // 乙卯
 ];
 
 /* ═══════════════════════════════════════════════════════
@@ -761,9 +714,12 @@ function getJQPrecise(year, mIdx){
 function getLng(birthplace){
   if(!birthplace)return null;
   const bp = birthplace.toLowerCase();
-  if(bp.indexOf('杭州')!==-1 || bp.indexOf('浙江')!==-1 || bp.indexOf('hangzhou')!==-1 || bp.indexOf('zhejiang')!==-1) return 120.21;
-  if(bp.indexOf('四川')!==-1 || bp.indexOf('成都')!==-1 || bp.indexOf('sichuan')!==-1 || bp.indexOf('chengdu')!==-1) return 102.50;
-  if(bp.indexOf('北京')!==-1 || bp.indexOf('beijing')!==-1) return 116.4;
+  // 杭州 / 浙江
+  if(bp.indexOf('\u676d\u5dde')!==-1 || bp.indexOf('\u6d59\u6c5f')!==-1 || bp.indexOf('hangzhou')!==-1 || bp.indexOf('zhejiang')!==-1) return 120.21;
+  // 四川 / 成都
+  if(bp.indexOf('\u56db\u5ddd')!==-1 || bp.indexOf('\u6210\u90fd')!==-1 || bp.indexOf('sichuan')!==-1 || bp.indexOf('chengdu')!==-1) return 102.50;
+  // 北京
+  if(bp.indexOf('\u5317\u4eac')!==-1 || bp.indexOf('beijing')!==-1) return 116.4;
   return 120.0; 
 }
 
@@ -851,7 +807,10 @@ function bindDragEvents() {
         el.ontouchmove = (e) => {
             if (currentDragElement !== el) return;
             let dy = e.touches[0].clientY - dragStartY;
-            if (Math.abs(dy) > 15) { shiftValue(el, dy > 0 ? -1 : 1); dragStartY = e.touches[0].clientY; }
+            if (Math.abs(dy) > 15) {
+                shiftValue(el, dy > 0 ? -1 : 1);
+                dragStartY = e.touches[0].clientY;
+            }
             e.preventDefault(); 
         };
         el.ontouchend = () => { currentDragElement = null; };
@@ -898,13 +857,13 @@ function validateBazi() {
         </div>
     `;
     
-    const encodedCurrent = _0xEncode(baziStr);
-    const isHZ = bp.indexOf('杭州')!==-1 || bp.indexOf('浙江')!==-1 || bp.indexOf('hangzhou')!==-1 || bp.indexOf('zhejiang')!==-1;
-    const isSC = bp.indexOf('四川')!==-1 || bp.indexOf('成都')!==-1 || bp.indexOf('sichuan')!==-1 || bp.indexOf('chengdu')!==-1;
+    // 直接比對 Unicode 字串，避開任何 Base64 解碼錯誤
+    const isHZ = bp.indexOf('\u676d\u5dde')!==-1 || bp.indexOf('\u6d59\u6c5f')!==-1 || bp.indexOf('hangzhou')!==-1 || bp.indexOf('zhejiang')!==-1;
+    const isSC = bp.indexOf('\u56db\u5ddd')!==-1 || bp.indexOf('\u6210\u90fd')!==-1 || bp.indexOf('sichuan')!==-1 || bp.indexOf('chengdu')!==-1;
 
-    const condA = (encodedCurrent === _0xT1) && isHZ;
-    const condB = (encodedCurrent === _0xT2) && isSC;
-    const condC = _0xAnoms.includes(encodedCurrent);
+    const condA = (baziStr === _0xT1) && isHZ;
+    const condB = (baziStr === _0xT2) && isSC;
+    const condC = _0xAnoms.includes(baziStr);
 
     if (isAutoFilled) {
         btn.disabled = false;
@@ -1089,18 +1048,18 @@ function submitCorrupted() {
     const baziStr = baziArr.join(' ');
     const bp = document.getElementById('ubp').value.trim().toLowerCase();
 
-    const enc = _0xEncode(baziStr);
     let targetFile = '';
     
-    if (enc === _0xT1 && (bp.indexOf('杭州')!==-1 || bp.indexOf('浙江')!==-1 || bp.indexOf('hangzhou')!==-1 || bp.indexOf('zhejiang')!==-1)) {
+    // 直接比對 Unicode 字串
+    if (baziStr === _0xT1 && (bp.indexOf('\u676d\u5dde')!==-1 || bp.indexOf('\u6d59\u6c5f')!==-1 || bp.indexOf('hangzhou')!==-1 || bp.indexOf('zhejiang')!==-1)) {
         targetFile = 'archive_hz_v1_stable.html';
-    } else if (enc === _0xT2 && (bp.indexOf('四川')!==-1 || bp.indexOf('成都')!==-1 || bp.indexOf('sichuan')!==-1 || bp.indexOf('chengdu')!==-1)) {
+    } else if (baziStr === _0xT2 && (bp.indexOf('\u56db\u5ddd')!==-1 || bp.indexOf('\u6210\u90fd')!==-1 || bp.indexOf('sichuan')!==-1 || bp.indexOf('chengdu')!==-1)) {
         targetFile = 'archive_sc_v1_critical.html';
-    } else if (enc === _0xAnoms[0]) { targetFile = 'archive_abyss_water_v3_anomaly.html';
-    } else if (enc === _0xAnoms[1]) { targetFile = 'archive_abyss_fire_v3_anomaly.html';
-    } else if (enc === _0xAnoms[2]) { targetFile = 'archive_abyss_earth_v3_anomaly.html';
-    } else if (enc === _0xAnoms[3]) { targetFile = 'archive_abyss_metal_v3_anomaly.html';
-    } else if (enc === _0xAnoms[4]) { targetFile = 'archive_abyss_wood_v3_anomaly.html';
+    } else if (baziStr === _0xAnoms[0]) { targetFile = 'archive_abyss_water_v3_anomaly.html';
+    } else if (baziStr === _0xAnoms[1]) { targetFile = 'archive_abyss_fire_v3_anomaly.html';
+    } else if (baziStr === _0xAnoms[2]) { targetFile = 'archive_abyss_earth_v3_anomaly.html';
+    } else if (baziStr === _0xAnoms[3]) { targetFile = 'archive_abyss_metal_v3_anomaly.html';
+    } else if (baziStr === _0xAnoms[4]) { targetFile = 'archive_abyss_wood_v3_anomaly.html';
     } else {
         alert("【錯誤】底層邏輯崩潰，未知的時空坐標。");
         return;
