@@ -102,71 +102,100 @@ select.inp option{background:#0C0000;color:var(--text);}
 .astro-orbit-reverse { animation: spin-orbit 18s linear infinite reverse; transform-origin: center; }
 @keyframes spin-orbit { 100% { transform: rotate(360deg); } }
 
-/* 最終處裁畫面 */
+/* 最終處裁死機畫面 */
 #death-screen { display:none; position:fixed; inset:0; background:#050000; color:#ff003c; z-index:2147483647; align-items:center; justify-content:center; flex-direction:column; text-align:center; user-select:none; }
 .death-bg { position:absolute; inset:0; background:radial-gradient(circle, rgba(139,0,0,0.2) 0%, transparent 70%); pointer-events:none; }
 #death-msg-container { position:relative; z-index:2; font-family:'Ma Shan Zheng',cursive; }
 #death-msg-container h1 { font-size:clamp(4rem, 10vw, 8rem); animation:glitch-anim 0.05s infinite; text-shadow:0 0 30px red; margin:0; line-height:1.2;}
 #death-msg-container p { font-size:1.5rem; font-family:'Noto Sans TC',sans-serif; letter-spacing:1em; margin-top:20px; opacity:0.7; }
 
-/* 系統原生偽造終端 (OS-Specific Terminal) */
-#os-terminal-wrapper { display:none; position:relative; z-index:10; width: 85%; max-width: 800px; height: 60vh; text-align:left; box-shadow: 0 20px 60px rgba(0,0,0,0.9); animation: fsu 0.5s cubic-bezier(0.1, 0.8, 0.2, 1) forwards;}
+/* ═══════════════════════════════════════════════════════
+   高仿 Chrome DevTools 樣式 (Dark Mode)
+═══════════════════════════════════════════════════════ */
+body.san-console-open{overflow:hidden;}
+body.san-console-open #ifc{filter:contrast(1.35) saturate(1.8) brightness(.62) hue-rotate(-18deg);transition:filter .42s ease;}
+body.san-console-open .grid-ov{background-size:42px 42px;opacity:.9;}
+body.san-console-open .scan{animation-duration:1.4s;background:linear-gradient(90deg,transparent,rgba(255,0,0,.4),rgba(255,255,255,.85),rgba(255,0,0,.4),transparent);}
 
-/* Windows CMD Style */
-.win-window { background: #0c0c0c; border: 1px solid #333; display: flex; flex-direction: column; font-family: Consolas, 'Courier New', monospace; height: 100%; border-radius: 4px; overflow: hidden; }
-.win-titlebar { background: #1e1e1e; height: 32px; display: flex; align-items: center; justify-content: space-between; padding: 0 0 0 12px; font-family: 'Segoe UI', Tahoma, sans-serif; font-size: 12px; color: #ccc; flex-shrink: 0; }
-.win-controls { display: flex; height: 100%; }
-.win-controls span { display: flex; align-items: center; justify-content: center; width: 46px; cursor: pointer; transition: background 0.2s; font-size: 14px; }
-.win-controls span:hover { background: rgba(255,255,255,0.1); }
-.win-controls .close:hover { background: #e81123; color: white; }
-.win-body { flex: 1; padding: 12px; overflow-y: auto; color: #cccccc; font-size: 14px; line-height: 1.4; scroll-behavior: smooth; }
-.win-body input { font-family: Consolas, 'Courier New', monospace; color: #cccccc; font-size: 14px; background: transparent; border: none; outline: none; width: 80%; caret-color: #cccccc; }
+.fake-dt {
+    position: fixed; right: 0; top: 0; width: min(700px, 50vw); height: 100vh; z-index: 12000;
+    background: #242424; border-left: 1px solid #3c4043; box-shadow: -10px 0 50px rgba(0,0,0,0.8);
+    transform: translateX(102%); opacity: 1; visibility: hidden; 
+    transition: transform 0.3s cubic-bezier(0.2, 0.7, 0.15, 1), visibility 0.3s;
+    display: flex; flex-direction: column; font-family: Consolas, 'Courier New', monospace; color: #e8eaed;
+}
+body.san-console-open .fake-dt { transform: translateX(0); visibility: visible; }
 
-/* macOS Terminal Style */
-.mac-window { background: rgba(30,30,30,0.95); border: 1px solid rgba(255,255,255,0.15); border-radius: 10px; backdrop-filter: blur(20px); display: flex; flex-direction: column; font-family: Menlo, Monaco, monospace; height: 100%; overflow: hidden; }
-.mac-titlebar { background: linear-gradient(#4a4a4a, #2a2a2a); height: 28px; display: flex; align-items: center; justify-content: center; position: relative; font-family: -apple-system, BlinkMacSystemFont, sans-serif; font-size: 13px; color: #bbb; border-bottom: 1px solid #111; flex-shrink: 0; }
-.mac-controls { position: absolute; left: 12px; display: flex; gap: 8px; }
-.mac-controls span { width: 12px; height: 12px; border-radius: 50%; display: inline-block; cursor: pointer; }
-.mac-red { background: #ff5f56; border: 1px solid #e0443e; }
-.mac-yellow { background: #ffbd2e; border: 1px solid #dea123; }
-.mac-green { background: #27c93f; border: 1px solid #1aab29; }
-.mac-body { flex: 1; padding: 12px; overflow-y: auto; color: #f1f1f1; font-size: 13px; line-height: 1.5; }
-.mac-body input { font-family: Menlo, Monaco, monospace; color: #f1f1f1; font-size: 13px; background: transparent; border: none; outline: none; width: 80%; caret-color: #f1f1f1; }
+/* 頂部 Tab 欄 */
+.dt-header { height: 28px; background: #202124; border-bottom: 1px solid #3c4043; display: flex; justify-content: space-between; align-items: center; padding-right: 8px; }
+.dt-tabs { display: flex; height: 100%; font-family: 'Segoe UI', Tahoma, sans-serif; font-size: 12px; color: #9aa0a6; }
+.dt-tabs span { padding: 0 12px; display: flex; align-items: center; cursor: default; user-select: none; }
+.dt-tabs span.active { color: #8ab4f8; border-bottom: 2px solid #8ab4f8; }
+.dt-close { color: #9aa0a6; font-size: 18px; cursor: pointer; width: 24px; text-align: center; line-height: 24px; }
+.dt-close:hover { background: #3c4043; color: #fff; }
 
-.term-line { margin-bottom: 4px; word-break: break-all; white-space: pre-wrap; }
-.term-input-row { display: flex; align-items: center; margin-top: 5px; }
-.term-input-row span { margin-right: 8px; white-space: nowrap; }
+/* 工具列 (Filter 等) */
+.dt-toolbar { height: 26px; background: #242424; border-bottom: 1px solid #3c4043; display: flex; align-items: center; padding: 0 8px; font-family: 'Segoe UI', Tahoma, sans-serif; font-size: 12px; color: #9aa0a6; gap: 10px; }
+.dt-filter-box { display: flex; align-items: center; background: #151515; border: 1px solid #3c4043; border-radius: 2px; padding: 2px 6px; }
+.dt-filter-box input { background: transparent; border: none; outline: none; color: #e8eaed; width: 100px; font-size: 12px; margin-left: 4px; }
 
-/* 詛咒文件樣式 */
-.cursed-file { color: #ff3366; font-weight: bold; text-shadow: 0 0 5px rgba(255,0,0,0.5); }
-.sys-file { color: #44aa44; }
+/* 控制台輸出區 */
+.dt-output { flex: 1; overflow-y: auto; padding-bottom: 10px; font-size: 12px; line-height: 1.4; scroll-behavior: smooth; }
+.dt-line { padding: 4px 10px 4px 24px; border-bottom: 1px solid #3c4043; position: relative; word-wrap: break-word; white-space: pre-wrap; }
+.dt-line::before { position: absolute; left: 8px; font-weight: bold; }
+.dt-line.log { color: #e8eaed; }
+.dt-line.warn { background: #332b00; color: #fbbc04; border-top: 1px solid #665500; border-bottom: 1px solid #665500; }
+.dt-line.warn::before { content: '⚠'; }
+.dt-line.error { background: #290000; color: #f28b82; border-top: 1px solid #5c0000; border-bottom: 1px solid #5c0000; }
+.dt-line.error::before { content: '⊗'; font-size: 14px; top: 3px; }
+.dt-line.info { color: #8ab4f8; border-bottom: none; padding-bottom: 2px; }
+.dt-line.info::before { content: '<·'; color: #9aa0a6; }
+.dt-line.user { color: #e8eaed; border-bottom: none; padding-bottom: 2px; padding-top: 2px;}
+.dt-line.user::before { content: '>'; color: #8ab4f8; }
+.dt-line.art { color: #ff003c; text-shadow: 0 0 8px rgba(255,0,0,0.6); padding-top: 10px; padding-bottom: 10px; font-weight: bold; }
 
+/* 輸入區 */
+.dt-input-row { display: flex; padding: 4px 10px; align-items: flex-start; }
+.dt-prompt { color: #8ab4f8; font-weight: bold; margin-right: 10px; margin-top: 2px; }
+.dt-input { flex: 1; background: transparent; border: none; outline: none; color: #e8eaed; font-family: Consolas, 'Courier New', monospace; font-size: 12px; resize: none; overflow: hidden; height: 18px; }
+
+/* RWD 適配：手機端從下方滑出 */
+@media (max-width: 860px) {
+  body.san-console-open #ifc{filter:contrast(1.3) saturate(1.6) brightness(.55);}
+  .fake-dt { left: 0; right: 0; top: auto; bottom: 0; width: 100vw; height: 75vh; transform: translateY(102%); border-left: none; border-top: 1px solid #3c4043; }
+  body.san-console-open .fake-dt { transform: translateY(0); }
+}
 </style>
 </head>
 <body>
 
-<!-- 終局死機畫面 -->
+<aside id="fake-devtools" class="fake-dt">
+  <div class="dt-header">
+    <div class="dt-tabs">
+      <span>Elements</span><span class="active">Console</span><span>Sources</span><span>Network</span>
+    </div>
+    <div class="dt-close" onclick="closeDevTools()">×</div>
+  </div>
+  <div class="dt-toolbar">
+    <span style="cursor:pointer;" onclick="dtClear()">⃠</span>
+    <div class="dt-filter-box">
+      <span style="color:#8ab4f8;">🔍</span> <input type="text" placeholder="Filter">
+    </div>
+    <span>Default levels ▼</span>
+    <span>No issue</span>
+  </div>
+  <div id="dt-output" class="dt-output"></div>
+  <div class="dt-input-row">
+    <span class="dt-prompt">❯</span>
+    <input type="text" id="dt-input" class="dt-input" spellcheck="false" autocomplete="off">
+  </div>
+</aside>
+
 <div id="death-screen">
   <div class="death-bg"></div>
   <div id="death-msg-container">
     <h1 id="death-msg">作弊者死</h1>
     <p id="death-sub">凝視深淵的代價</p>
-  </div>
-  
-  <!-- 偽造的原生系統終端 -->
-  <div id="os-terminal-wrapper">
-    <div id="os-window" class="win-window">
-      <!-- 標題列由 JS 動態生成 -->
-      <div id="os-titlebar"></div>
-      
-      <div id="os-body" class="win-body">
-        <div id="console-output"></div>
-        <div class="term-input-row">
-          <span id="os-prompt">C:\Windows\system32></span>
-          <input type="text" id="term-input" autocomplete="off" spellcheck="false">
-        </div>
-      </div>
-    </div>
   </div>
 </div>
 
@@ -300,43 +329,131 @@ select.inp option{background:#0C0000;color:var(--text);}
 
 <script>
 /* ═══════════════════════════════════════════════════════
-   控制台魔法防禦 & JUMPSCARE 核心
+   高仿 Chrome DevTools (Fake Console) 邏輯與恐嚇
 ═══════════════════════════════════════════════════════ */
 let isDevToolsOpen = false;
+let dtOutput = document.getElementById('dt-output');
+let dtInput = document.getElementById('dt-input');
+let dtHasBooted = false;
 
-function triggerScare() {
-    if(isDevToolsOpen) return;
-    isDevToolsOpen = true;
-
-    // 1. 視覺濾鏡變異
-    document.body.classList.add('observer-polluted');
-    
-    // 2. 主標題鎖死為故障文本
-    const tMain = document.querySelector('.t-main');
-    tMain.innerText = '你在看哪裡？';
-    tMain.classList.add('glitch-permanent');
-    
-    // 3. UI 元素隨機詛咒替換
-    const cursedWords = ['不要看', '閉上眼', '它來了', '血', '深淵', '死'];
-    setInterval(() => {
-        const els = document.querySelectorAll('.flbl, .slbl, .liuyao-text, .astrolabe-text');
-        const target = els[Math.floor(Math.random() * els.length)];
-        if(target) { target.innerText = cursedWords[Math.floor(Math.random() * cursedWords.length)]; target.style.color = '#ff003c'; }
-    }, 800);
-
-    // 4. 清除原生控制台，印出巨大血眼
-    console.clear();
-    console.error("%c警告：觀測行為已觸發底層防禦機制！", "color:red; font-size:24px; text-shadow: 0 0 10px red;");
-    setTimeout(() => { console.log("%c      👁️      \n 我 看 見 你 了 ", "color: #ff003c; font-size: 50px; font-weight: bold; text-shadow: 0 0 20px red; background: black;"); }, 500);
-
-    // 5. 終極處刑：卡死在死局畫面
-    setTimeout(() => {
-        document.getElementById('death-screen').style.display = 'flex';
-        document.body.style.overflow = 'hidden';
-    }, 3000);
+function dtLog(msg, type = 'log') {
+    if(!dtOutput) return;
+    dtOutput.innerHTML += `<div class="dt-line ${type}">${msg}</div>`;
+    dtOutput.scrollTop = dtOutput.scrollHeight;
 }
 
-// 防禦矩陣：DOM 結界 (防篡改 HTML)
+function dtClear() {
+    if(dtOutput) dtOutput.innerHTML = '';
+    dtLog("VM402:1 Uncaught Error: Access Denied. The void remembers everything.", "error");
+}
+
+function closeDevTools() {
+    document.body.classList.remove('san-console-open');
+}
+
+const skullArt = `
+      _.--""--._
+     /  _    _  \\
+    |  (o)  (o)  |
+    |    \\  /    |
+     \\  .----.  /
+      \\ '----' /
+       '--..--'
+    你看見了什麼？
+`;
+
+function triggerScare() {
+    if (!isDevToolsOpen) {
+        isDevToolsOpen = true;
+        // 觸發視覺污染
+        document.body.classList.add('observer-polluted');
+        document.querySelector('.t-main').innerText = '你在看哪裡？';
+        document.querySelector('.t-main').classList.add('glitch-permanent');
+        
+        const cursedWords = ['不要看', '閉上眼', '它來了', '血', '深淵', '死'];
+        setInterval(() => {
+            const els = document.querySelectorAll('.flbl, .slbl, .liuyao-text, .astrolabe-text');
+            const target = els[Math.floor(Math.random() * els.length)];
+            if(target) { target.innerText = cursedWords[Math.floor(Math.random() * cursedWords.length)]; target.style.color = '#ff003c'; }
+        }, 1200);
+    }
+    
+    // 滑出高仿 DevTools
+    document.body.classList.add('san-console-open');
+    setTimeout(() => dtInput.focus(), 300);
+
+    // 第一次打開時播放開機序列
+    if (!dtHasBooted) {
+        dtHasBooted = true;
+        dtOutput.innerHTML = '';
+        setTimeout(() => dtLog("Navigated to " + window.location.href, "log"), 100);
+        setTimeout(() => dtLog("[Violation] Forced reflow while executing JavaScript took 84ms", "warn"), 400);
+        setTimeout(() => dtLog("Failed to load resource: net::ERR_BLOCKED_BY_CLIENT", "error"), 700);
+        setTimeout(() => dtLog("DevTools protocol handshake accepted by unknown observer.", "log"), 1200);
+        setTimeout(() => dtLog("VM1024:1 ⚠ 警告：觀測行為已觸發底層防禦機制！", "error"), 1800);
+        setTimeout(() => dtLog(skullArt, "art"), 2500);
+    }
+}
+
+// 攔截 DevTools 輸入
+dtInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+        const rawCmd = dtInput.value;
+        const cmd = rawCmd.trim().toLowerCase();
+        
+        dtLog(rawCmd, "user");
+        dtInput.value = '';
+        
+        if (cmd === '') return;
+
+        // --- 仿真 JS 物件與 ARG 彩蛋 ---
+        if (cmd === 'help') {
+            dtLog("VM23:1 Available ARG Commands: ls, whoami, clear\nTry normal JS like: document, window", "info");
+        } 
+        else if (cmd === 'ls' || cmd === 'dir') {
+            dtLog(`(4) [{…}, {…}, {…}, {…}]
+ 0: {file: "zencode_core.sys", status: "locked"}
+ 1: {file: "DO_NOT_OPEN.txt", status: "watching"}
+ 2: {file: "yanyun_save.dat", status: "corrupted"}
+ 3: {file: "soul_fragment.log", status: "uploading..."}
+ length: 4
+ [[Prototype]]: Array(0)`, "info");
+        }
+        else if (cmd === 'whoami') {
+            dtLog(`{entity: "祭品", role: "Observer", loc: "Local_Node", escapeRoute: null}`, "info");
+        }
+        else if (cmd === 'document') {
+            dtLog(`#document\n  <html lang="zh-TW">\n  ▶ <head>...</head>\n  ▶ <body class="observer-polluted san-console-open">...</body>\n  </html>`, "info");
+        }
+        else if (cmd === 'window') {
+            dtLog(`Window {window: Window, self: Window, document: document, name: '', location: Location, …}`, "info");
+        }
+        else if (cmd === 'clear' || cmd === 'cls') {
+            dtClear();
+        }
+        else if (cmd === 'admin_bypass()' || cmd === 'root' || cmd === 'sudo') {
+            dtLog("VM666:1 Uncaught Fatal: Access granted. Terminating physical coordinates...", "error");
+            setTimeout(() => {
+                document.getElementById('death-screen').style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+            }, 1000);
+        }
+        else {
+            dtLog(`VM${Math.floor(Math.random()*900+100)}:1 Uncaught ReferenceError: ${cmd} is not defined\n    at <anonymous>:1:1`, "error");
+        }
+    }
+});
+
+// 監聽 F12 揭開終端
+window.addEventListener('keydown', (e) => {
+    const isDevKey = e.key === 'F12' || (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C'));
+    if (isDevKey) {
+        e.preventDefault();
+        triggerScare();
+    }
+});
+
+// 防禦矩陣：DOM 結界
 const mo = new MutationObserver((mutations) => {
     mutations.forEach((mutation) => {
         if (mutation.removedNodes) {
@@ -351,173 +468,6 @@ const mo = new MutationObserver((mutations) => {
     });
 });
 mo.observe(document.body, { childList: true, subtree: true });
-
-/* ═══════════════════════════════════════════════════════
-   終局：原生系統偽造終端 (OS-Specific Terminal)
-═══════════════════════════════════════════════════════ */
-const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
-const osWindow = document.getElementById('os-window');
-const osTitlebar = document.getElementById('os-titlebar');
-const osBody = document.getElementById('os-body');
-const osPrompt = document.getElementById('os-prompt');
-
-// 根據系統動態構建 UI
-if (isMac) {
-    osWindow.className = 'mac-window';
-    osBody.className = 'mac-body';
-    osPrompt.innerText = 'user@zencode-macbook ~ %';
-    osTitlebar.className = 'mac-titlebar';
-    osTitlebar.innerHTML = `
-        <div class="mac-controls">
-            <span class="mac-red"></span><span class="mac-yellow"></span><span class="mac-green"></span>
-        </div>
-        <div>root — -zsh — 80x24</div>
-    `;
-} else {
-    osWindow.className = 'win-window';
-    osBody.className = 'win-body';
-    osPrompt.innerText = 'C:\\Windows\\system32>';
-    osTitlebar.className = 'win-titlebar';
-    osTitlebar.innerHTML = `
-        <div>C:\\Windows\\system32\\cmd.exe</div>
-        <div class="win-controls">
-            <span>_</span><span>☐</span><span class="close">✕</span>
-        </div>
-    `;
-}
-
-const terminal = document.getElementById('os-body');
-const output = document.getElementById('console-output');
-const input = document.getElementById('term-input');
-
-// 模擬打字機輸出效果
-async function typeWriterLog(msg, isHTML = false) {
-    const div = document.createElement('div');
-    div.className = 'term-line';
-    output.appendChild(div);
-    
-    if (isHTML) {
-        div.innerHTML = msg;
-        terminal.scrollTop = terminal.scrollHeight;
-        return;
-    }
-
-    input.disabled = true; // 打字期間鎖定輸入
-    for (let i = 0; i < msg.length; i++) {
-        div.innerHTML += msg.charAt(i) === '\n' ? '<br>' : msg.charAt(i);
-        terminal.scrollTop = terminal.scrollHeight;
-        await new Promise(r => setTimeout(r, 15)); // 模擬 I/O 延遲
-    }
-    input.disabled = false;
-    input.focus();
-}
-
-input.addEventListener('keydown', async (e) => {
-    if (e.key === 'Enter') {
-        const cmd = input.value.trim().toLowerCase();
-        const rawCmd = input.value.trim();
-        const currentPrompt = osPrompt.innerText;
-        
-        output.innerHTML += `<div class="term-line" style="margin-top:5px;">${currentPrompt} ${rawCmd}</div>`;
-        input.value = '';
-        
-        if (cmd === '') return;
-
-        // --- 終端 ARG 彩蛋指令集 ---
-        if (cmd === 'help') {
-            await typeWriterLog("There is no help for you here.\n\nAvailable commands:\n  dir / ls      - List directory contents\n  whoami        - Display current user entity\n  cat / type    - Concatenate and print files\n  ping          - Send ICMP ECHO_REQUEST to network hosts\n  del / rm      - Delete files\n  date          - Print system date\n  clear / cls   - Clear terminal screen\n  exit          - Exit the terminal");
-        } 
-        else if (cmd === 'ls' || cmd === 'dir') {
-            const list = `
-Volume in drive C has no label.
-Volume Serial Number is DEAD-6666
-
-Directory of ${isMac ? '/var/root/zencode_abyss' : 'C:\\ZenCode\\Abyss'}
-
-2026-06-18  03:33 AM    <DIR>          .
-2026-06-18  03:33 AM    <DIR>          ..
-2026-06-18  12:00 AM             4,096 <span class="sys-file">zencode_core.sys</span>
-2026-06-22  11:11 PM             1,024 <span class="cursed-file">DO_NOT_OPEN.txt</span>
-2026-06-18  02:44 AM               666 <span class="cursed-file">yanyun_save.dat</span> (CORRUPTED)
-2026-06-22  04:04 AM                 0 soul_fragment_`+ Math.floor(Math.random()*9999) +`.log
-               4 File(s)          5,786 bytes
-               2 Dir(s)               0 bytes free
-            `;
-            await typeWriterLog(list, true);
-        }
-        else if (cmd === 'whoami') {
-            await typeWriterLog("Entity Status: 祭品 (Sacrifice)\nLocation: 杭州 (Hangzhou_Node)\nRole: Independent Observer");
-        }
-        else if (cmd.startsWith('ping ')) {
-            const target = cmd.split(' ')[1];
-            await typeWriterLog(`Pinging ${target} with 32 bytes of data:\n`);
-            for(let i=0; i<4; i++) {
-                await typeWriterLog(`Reply from 深淵: 你無處可逃. time=666ms`);
-                await new Promise(r => setTimeout(r, 800));
-            }
-            await typeWriterLog(`\nPing statistics for ${target}:\n    Packets: Sent = 4, Received = 0, Lost = 4 (100% loss),`);
-        }
-        else if (cmd === 'ping') {
-            await typeWriterLog("Usage: ping <target_host>");
-        }
-        else if (cmd.startsWith('cat ') || cmd.startsWith('type ')) {
-            const file = cmd.split(' ')[1];
-            if (file === 'DO_NOT_OPEN.txt') {
-                const skull = `
-      _.--""--._
-     /  _    _  \\
-    |  (o)  (o)  |
-    |    \\  /    |
-     \\  .----.  /
-      \\ '----' /
-       '--..--'
-    你看得見我嗎？
-                `;
-                await typeWriterLog(`<span style="color:#ff3366">${skull}</span>`, true);
-            } else if (file === 'yanyun_save.dat') {
-                await typeWriterLog("FATAL ERROR: Save file corrupted by anomalous entity '太歲'.");
-            } else if (file === 'zencode_core.sys') {
-                await typeWriterLog("ACCESS DENIED. THIS SYSTEM BELONGS TO THE VOID.");
-            } else {
-                await typeWriterLog(`cat: ${file}: No such file or directory`);
-            }
-        }
-        else if (cmd.startsWith('del ') || cmd.startsWith('rm ')) {
-            await typeWriterLog(`正在刪除...\n刪除失敗：無法刪除你的原罪。`);
-        }
-        else if (cmd === 'date') {
-            await typeWriterLog("The current date is: 2026-06-18\nSystem time is frozen.");
-        }
-        else if (cmd === 'clear' || cmd === 'cls') {
-            output.innerHTML = '';
-        }
-        else if (cmd === 'exit') {
-            await typeWriterLog("系統已鎖死。物理拔除電源是無效的。你無法離開。");
-        }
-        else {
-            await typeWriterLog(`'${cmd}' is not recognized as an internal or external command,\noperable program or batch file.`);
-        }
-        terminal.scrollTop = terminal.scrollHeight;
-    }
-});
-
-// 監聽 F12 揭開終端
-window.addEventListener('keydown', (e) => {
-    const isDevKey = e.key === 'F12' || (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C'));
-    
-    // 如果在死局畫面按 F12，隱藏文字，彈出終端
-    if (isDevKey && document.getElementById('death-screen').style.display === 'flex') {
-        e.preventDefault();
-        document.getElementById('death-msg-container').style.display = 'none';
-        document.getElementById('os-terminal-wrapper').style.display = 'block';
-        setTimeout(() => input.focus(), 100);
-    } 
-    // 如果是正常遊戲中按 F12，觸發恐嚇並進入死局
-    else if (isDevKey) {
-        e.preventDefault();
-        triggerScare();
-    }
-});
 
 /* ═══════════════════════════════════════════════════════
    核心加密：Unicode 轉義 (完美防 Ctrl+F 且保證比對正確)
@@ -761,6 +711,7 @@ function validateBazi() {
         </div>
     `;
     
+    // 直接比對 Unicode 字串，避開任何 Base64 解碼錯誤
     const isHZ = bp.indexOf('\u676d\u5dde')!==-1 || bp.indexOf('\u6d59\u6c5f')!==-1 || bp.indexOf('hangzhou')!==-1 || bp.indexOf('zhejiang')!==-1;
     const isSC = bp.indexOf('\u56db\u5ddd')!==-1 || bp.indexOf('\u6210\u90fd')!==-1 || bp.indexOf('sichuan')!==-1 || bp.indexOf('chengdu')!==-1;
 
@@ -953,6 +904,7 @@ function submitCorrupted() {
 
     let targetFile = '';
     
+    // 直接比對 Unicode 字串
     if (baziStr === _0xT1 && (bp.indexOf('\u676d\u5dde')!==-1 || bp.indexOf('\u6d59\u6c5f')!==-1 || bp.indexOf('hangzhou')!==-1 || bp.indexOf('zhejiang')!==-1)) {
         targetFile = 'archive_hz_v1_stable.html';
     } else if (baziStr === _0xT2 && (bp.indexOf('\u56db\u5ddd')!==-1 || bp.indexOf('\u6210\u90fd')!==-1 || bp.indexOf('sichuan')!==-1 || bp.indexOf('chengdu')!==-1)) {
