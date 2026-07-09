@@ -13,8 +13,10 @@
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
 html,body{background:var(--bg);color:var(--text);font-family:'Noto Serif TC',serif;overflow-x:hidden;min-height:100vh; transition: filter 2s ease;}
 
-.observer-polluted { filter: contrast(1.4) sepia(0.5) hue-rotate(-15deg) saturate(1.5); }
+/* 觀測者污染模式：被發現看代碼後，整個網頁濾鏡變異 */
+.observer-polluted { filter: contrast(1.5) sepia(0.8) hue-rotate(-20deg) saturate(2) brightness(0.8); }
 
+/* 故障亂碼閃爍動畫 */
 @keyframes glitch-anim {
   0% { transform: translate(0) }
   20% { transform: translate(-2px, 1px) }
@@ -24,12 +26,13 @@ html,body{background:var(--bg);color:var(--text);font-family:'Noto Serif TC',ser
   100% { transform: translate(0) }
 }
 .glitch-active { animation: glitch-anim 0.1s infinite; color: #ff003c !important; text-shadow: -2px 0 #00ff00, 2px 0 #0000ff !important; }
-.glitch-permanent { animation: glitch-anim 0.1s infinite; color: #ff0000 !important; text-shadow: -3px 0 #8b0000, 3px 0 #ff003c !important; }
+.glitch-permanent { animation: glitch-anim 0.05s infinite; color: #ff0000 !important; text-shadow: -4px 0 #8b0000, 4px 0 #ff003c !important; }
 
 #bg-canvas{position:fixed;inset:0;z-index:0;pointer-events:none; filter: contrast(1.5) saturate(1.2);}
 .grid-ov{position:fixed;inset:0;z-index:1;pointer-events:none; background-image:linear-gradient(rgba(211,47,47,0.05) 1px,transparent 1px),linear-gradient(90deg,rgba(211,47,47,0.05) 1px,transparent 1px); background-size:64px 64px;mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black 20%,transparent 100%);}
 .scan{position:fixed;top:0;left:0;right:0;height:4px;z-index:2;pointer-events:none; background:linear-gradient(90deg,transparent,rgba(255,0,0,0.2),rgba(255,0,0,0.6),rgba(255,0,0,0.2),transparent); animation:scan 4s linear infinite;}
 @keyframes scan{0%{top:-4px}100%{top:100vh}}
+
 @keyframes fsd{from{opacity:0;transform:translateY(-14px)}to{opacity:1;transform:none}}
 @keyframes fsu{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
 @keyframes fi{from{opacity:0}to{opacity:1}}
@@ -112,7 +115,9 @@ select.inp option{background:#0C0000;color:var(--text);}
 }
 
 .hacked-bg { filter: invert(1) hue-rotate(180deg) contrast(1.5) !important; transition: all 0.5s ease-in; }
-#death-screen { display:none; position:fixed; inset:0; background:#000; color:#f00; z-index:2147483647; align-items:center; justify-content:center; flex-direction:column; font-family:'Ma Shan Zheng',cursive; text-align:center; }
+
+/* 最終處裁畫面 */
+#death-screen { display:none; position:fixed; inset:0; background:#050000; color:#ff003c; z-index:2147483647; align-items:center; justify-content:center; flex-direction:column; font-family:'Ma Shan Zheng',cursive; text-align:center; user-select:none; }
 #death-screen h1 { font-size:clamp(4rem, 10vw, 8rem); animation:glitch-anim 0.05s infinite; text-shadow:0 0 30px red; margin:0; line-height:1.2;}
 #death-screen p { font-size:1.5rem; font-family:'Noto Sans TC',sans-serif; letter-spacing:1em; margin-top:20px; opacity:0.7; }
 </style>
@@ -254,16 +259,89 @@ select.inp option{background:#0C0000;color:var(--text);}
 
 <script>
 /* ═══════════════════════════════════════════════════════
-   防禦矩陣 1：DOM 結界 (防篡改 HTML 刪除遮罩)
+   核心暗號化 (Base64 編碼，殺死 Ctrl+F)
 ═══════════════════════════════════════════════════════ */
+const _0xEncode = (str) => btoa(unescape(encodeURIComponent(str)));
+const _0xT1 = "5LiB5LqkIOS4meWNiCDkuJnlrZAg55Sy5Y2I"; 
+const _0xT2 = "5LiB5LqkIOS4meWNiCDkuJnlrZAg55m45bey";
+const _0xAnoms = [
+    "5aSc5a2QIOWknOWtkCDlpJzlrZAg5aSc5a2Q", 
+    "5LiZ5Y2IIOS4meWNiCDkuJnlrYgg5LiZ5Y2I", 
+    "5oiK6L6wIOaIuui+sCDmiLrovrAg5oiK6L6w", 
+    "5bqa55SzIOW6mueUsyDlupnnlLMg5bqa55Sz", 
+    "5LqZ5Y+vIOW6meWPryDlupl5Y+vIOW6meWPry"  
+];
+
+/* ═══════════════════════════════════════════════════════
+   控制台魔法防禦 & JUMPSCARE 核心
+═══════════════════════════════════════════════════════ */
+let isDevToolsOpen = false;
+let aggressivePollution;
+
+// 觸發全面崩壞視覺
+function triggerScare() {
+    if(isDevToolsOpen) return;
+    isDevToolsOpen = true;
+
+    // 1. 視覺濾鏡變異
+    document.body.classList.add('observer-polluted');
+    
+    // 2. 主標題鎖死為故障文本
+    const tMain = document.querySelector('.t-main');
+    tMain.innerText = '你在看哪裡？';
+    tMain.classList.add('glitch-permanent');
+    
+    // 3. UI 元素隨機詛咒替換
+    const cursedWords = ['不要看', '閉上眼', '它來了', '血', '深淵', '死'];
+    setInterval(() => {
+        const els = document.querySelectorAll('.flbl, .slbl, .liuyao-text, .astrolabe-text');
+        const target = els[Math.floor(Math.random() * els.length)];
+        if(target) { target.innerText = cursedWords[Math.floor(Math.random() * cursedWords.length)]; target.style.color = '#ff003c'; }
+    }, 800);
+
+    // 4. 控制台狂暴模式
+    clearInterval(passivePollution);
+    console.clear();
+    console.error("%c警告：觀測行為已觸發底層防禦機制！", "color:red; font-size:24px; text-shadow: 0 0 10px red;");
+    setTimeout(() => { console.log("%c      👁️      \n 我 看 見 你 了 ", "color: #ff003c; font-size: 50px; font-weight: bold; text-shadow: 0 0 20px red; background: black;"); }, 500);
+    aggressivePollution = setInterval(() => {
+        let garbage = ""; for(let i=0; i<30; i++) garbage += Math.random().toString(36).substring(2);
+        console.log(`%c[FATAL ERROR] 視線交匯... ${garbage}`, "color: red; background: rgba(50,0,0,0.5); font-size: " + (10 + Math.random()*15) + "px;");
+    }, 150);
+
+    // 5. 終極處刑：幾秒後徹底卡死在「作弊者死」畫面
+    setTimeout(() => {
+        document.getElementById('death-screen').style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }, 7000);
+}
+
+// 攔截常用 F12、審查元素快捷鍵，一旦按下立刻觸發恐嚇
+window.addEventListener('keydown', (e) => {
+    if (e.key === 'F12' || 
+       (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) || 
+       (e.ctrlKey && e.key === 'U')) {
+        triggerScare();
+        e.preventDefault();
+    }
+});
+
+// 如果玩家是透過瀏覽器選單打開 F12，則依賴視窗檢測觸發
+window.addEventListener('resize', () => {
+    const widthDiff = window.outerWidth - window.innerWidth > 160;
+    const heightDiff = window.outerHeight - window.innerHeight > 160;
+    if (widthDiff || heightDiff) triggerScare();
+});
+
+// 防禦矩陣：DOM 結界 (防篡改 HTML 刪除遮罩)
 const mo = new MutationObserver((mutations) => {
     mutations.forEach((mutation) => {
         if (mutation.removedNodes) {
             mutation.removedNodes.forEach((node) => {
-                // 如果有人在 Elements 面板刪除了遮罩，直接卡死頁面
-                if (node.id === 'scare-overlay') {
-                    document.body.innerHTML = '';
-                    while(true) { alert("天道反噬"); }
+                if (node.id === 'scare-overlay' || node.id === 'ifc') {
+                    triggerScare();
+                    document.getElementById('death-screen').style.display = 'flex';
+                    document.body.style.overflow = 'hidden';
                 }
             });
         }
@@ -272,47 +350,7 @@ const mo = new MutationObserver((mutations) => {
 mo.observe(document.body, { childList: true, subtree: true });
 
 /* ═══════════════════════════════════════════════════════
-   防禦矩陣 2：時空凍結 (無限 Debugger 陷阱)
-═══════════════════════════════════════════════════════ */
-(function __guard() {
-    // 只要開發者工具打開，這裡就會無限斷點
-    // 普通玩家感受不到，但駭客會寸步難行
-    let t1 = Date.now();
-    eval("debugger;");
-    let t2 = Date.now();
-    // 如果執行時間大於 100ms，說明被斷點攔截了
-    if (t2 - t1 > 100) {
-        document.getElementById('death-screen').style.display = 'flex';
-        document.body.style.overflow = 'hidden';
-    }
-    setTimeout(__guard, 500);
-})();
-
-/* ═══════════════════════════════════════════════════════
-   防禦矩陣 3：核心暗號化 (Base64 編碼，殺死 Ctrl+F)
-═══════════════════════════════════════════════════════ */
-// 用於混淆驗證邏輯：編碼函數 (Base64)
-const _0xEncode = (str) => btoa(unescape(encodeURIComponent(str)));
-// 解碼函數
-const _0xDecode = (str) => decodeURIComponent(escape(atob(str)));
-
-// 將原本明文的八字與地點，全部替換為 Base64 密文
-// '丁亥 丙午 丙子 甲午' -> 5LiB5LqkIOS4meWNiCDkuJnlrZAg55Sy5Y2I
-const _0xT1 = "5LiB5LqkIOS4meWNiCDkuJnlrZAg55Sy5Y2I"; 
-// '丁亥 丙午 丙子 癸巳' -> 5LiB5LqkIOS4meWNiCDkuJnlrZAg55m45bey
-const _0xT2 = "5LiB5LqkIOS4meWNiCDkuJnlrZAg55m45bey";
-
-// 異常局密文
-const _0xAnoms = [
-    "5aSc5a2QIOWknOWtkCDlpJzlrZAg5aSc5a2Q", // 壬子
-    "5LiZ5Y2IIOS4meWNiCDkuJnlrYgg5LiZ5Y2I", // 丙午
-    "5oiK6L6wIOaIuui+sCDmiLrovrAg5oiK6L6w", // 戊辰
-    "5bqa55SzIOW6mueUsyDlupnnlLMg5bqa55Sz", // 庚申
-    "5LqZ5Y+vIOW6meWPryDlupl5Y+vIOW6meWPry"  // 乙卯
-];
-
-/* ═══════════════════════════════════════════════════════
-   控制台魔法防禦 (色彩與骷髏保留)
+   控制台畫布渲染與靜態污染
 ═══════════════════════════════════════════════════════ */
 const skullArt = `
       _.--""--._
@@ -323,7 +361,6 @@ const skullArt = `
       \\ '----' /
        '--..--'
 `;
-
 console.log(
     `%c${skullArt}\n%c[ 1101 0010 1111 ]\n%c警告：偵測到未授權的靈魂觀測者...\n%c你以為在螢幕之外看著這一切，就很安全嗎？`, 
     "color: #a8a8a8; text-shadow: 0 0 5px #ffffff;", 
@@ -340,49 +377,9 @@ let passivePollution = setInterval(() => {
 }, 4000);
 
 window.admin_bypass = function() {
-    const overlay = document.getElementById('scare-overlay');
-    document.querySelector('#scare-overlay h2').innerText = '【 警告：思維遭到反向入侵 】';
-    document.querySelector('#scare-overlay p').innerHTML = '自作聰明的觀測者...<br>你主動向深淵敞開了心智的後門。';
-    overlay.style.display = 'flex';
-    document.body.classList.add('hacked-bg');
-    document.body.style.overflow = 'hidden';
-    document.querySelector('.form-card').style.pointerEvents = 'none';
-    let glitchInterval = setInterval(() => { document.querySelector('.t-main').innerText = Math.random().toString(36).substring(2); }, 50);
-    setTimeout(() => { clearInterval(glitchInterval); document.querySelector('.t-main').innerText = '靈 魂 錨 定 完 成'; alert("CRITICAL ERROR: SOUL_NOT_FOUND"); }, 4000);
+    triggerScare();
     return "執行中... 正在格式化你的物理坐標...";
 };
-
-let isDevToolsOpen = false;
-let textCorruptor;
-
-window.addEventListener('resize', () => {
-    const widthDiff = window.outerWidth - window.innerWidth > 160;
-    const heightDiff = window.outerHeight - window.innerHeight > 160;
-    
-    if ((widthDiff || heightDiff) && !isDevToolsOpen) {
-        isDevToolsOpen = true;
-        document.body.classList.add('observer-polluted');
-        const tMain = document.querySelector('.t-main');
-        tMain.innerText = '你在看哪裡？';
-        tMain.classList.add('glitch-permanent');
-        
-        const cursedWords = ['不要看', '閉上眼', '它來了', '血', '深淵', '死'];
-        textCorruptor = setInterval(() => {
-            const els = document.querySelectorAll('.flbl, .slbl, .liuyao-text, .astrolabe-text');
-            const target = els[Math.floor(Math.random() * els.length)];
-            if(target) { target.innerText = cursedWords[Math.floor(Math.random() * cursedWords.length)]; target.style.color = '#ff003c'; }
-        }, 3000);
-
-        clearInterval(passivePollution);
-        console.clear();
-        console.error("%c警告：觀測行為已觸發底層防禦機制！", "color:red; font-size:24px; text-shadow: 0 0 10px red;");
-        setTimeout(() => { console.log("%c      👁️      \n 我 看 見 你 了 ", "color: #ff003c; font-size: 50px; font-weight: bold; text-shadow: 0 0 20px red; background: black;"); }, 1000);
-        setInterval(() => {
-            let garbage = ""; for(let i=0; i<50; i++) garbage += Math.random().toString(36).substring(2);
-            console.log(`%c[FATAL ERROR] 視線交匯... ${garbage}`, "color: red; background: rgba(50,0,0,0.5); font-size: " + (10 + Math.random()*15) + "px;");
-        }, 300);
-    }
-});
 
 /* ═══════════════════════════════════════════════════════
    戰損故障動效腳本與畫布渲染
@@ -392,7 +389,7 @@ setInterval(() => {
     if(!els.length) return;
     const target = els[Math.floor(Math.random() * els.length)];
     const orig = target.innerText;
-    if(document.body.classList.contains('hacked-bg') || target.classList.contains('glitch-permanent')) return;
+    if(target.classList.contains('glitch-permanent')) return;
     target.classList.add('glitch-active');
     target.innerText = '死亡數據'.slice(0, orig.length);
     setTimeout(() => { target.classList.remove('glitch-active'); target.innerText = orig; }, 150);
@@ -482,7 +479,6 @@ function getJQPrecise(year, mIdx){
 
 function getLng(birthplace){
   if(!birthplace)return null;
-  // 地點判定也使用輕度混淆的寫法，防止搜索
   const bp = birthplace.toLowerCase();
   if(bp.indexOf('杭州')!==-1 || bp.indexOf('浙江')!==-1 || bp.indexOf('hangzhou')!==-1 || bp.indexOf('zhejiang')!==-1) return 120.21;
   if(bp.indexOf('四川')!==-1 || bp.indexOf('成都')!==-1 || bp.indexOf('sichuan')!==-1 || bp.indexOf('chengdu')!==-1) return 102.50;
@@ -621,9 +617,7 @@ function validateBazi() {
         </div>
     `;
     
-    // 【核心黑魔法】：透過 Base64 解碼比對，隱藏關鍵判定字串
     const encodedCurrent = _0xEncode(baziStr);
-    
     const isHZ = bp.indexOf('杭州')!==-1 || bp.indexOf('浙江')!==-1 || bp.indexOf('hangzhou')!==-1 || bp.indexOf('zhejiang')!==-1;
     const isSC = bp.indexOf('四川')!==-1 || bp.indexOf('成都')!==-1 || bp.indexOf('sichuan')!==-1 || bp.indexOf('chengdu')!==-1;
 
@@ -678,7 +672,6 @@ window.addEventListener('DOMContentLoaded', () => {
 
 document.getElementById('un').addEventListener('blur', function(e) {
     const val = e.target.value.trim().toLowerCase();
-    
     const forbiddenNames = [
         'test', 'admin', 'root', 'system', 'null', 'undefined', '123', '123456', 
         '張三', '李四', '王五', 
@@ -758,7 +751,6 @@ function odc(){
 
     try {
         const pillars = calcBazi(y,m,d,h,mn,bp);
-        
         document.getElementById('bpps').innerHTML = pillars.map(p => `
             <div class="bp-p">
                 <div class="bp-l">${p.label}</div>
@@ -816,7 +808,6 @@ function submitCorrupted() {
     const baziStr = baziArr.join(' ');
     const bp = document.getElementById('ubp').value.trim().toLowerCase();
 
-    // 跳轉邏輯同樣使用加密比對
     const enc = _0xEncode(baziStr);
     let targetFile = '';
     
