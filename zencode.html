@@ -102,106 +102,70 @@ select.inp option{background:#0C0000;color:var(--text);}
 .astro-orbit-reverse { animation: spin-orbit 18s linear infinite reverse; transform-origin: center; }
 @keyframes spin-orbit { 100% { transform: rotate(360deg); } }
 
-.dst-row, .dst-panel, #roc { display: none !important; }
+/* 最終處裁畫面 */
+#death-screen { display:none; position:fixed; inset:0; background:#050000; color:#ff003c; z-index:2147483647; align-items:center; justify-content:center; flex-direction:column; text-align:center; user-select:none; }
+.death-bg { position:absolute; inset:0; background:radial-gradient(circle, rgba(139,0,0,0.2) 0%, transparent 70%); pointer-events:none; }
+#death-msg-container { position:relative; z-index:2; font-family:'Ma Shan Zheng',cursive; }
+#death-msg-container h1 { font-size:clamp(4rem, 10vw, 8rem); animation:glitch-anim 0.05s infinite; text-shadow:0 0 30px red; margin:0; line-height:1.2;}
+#death-msg-container p { font-size:1.5rem; font-family:'Noto Sans TC',sans-serif; letter-spacing:1em; margin-top:20px; opacity:0.7; }
 
-@media (max-width: 768px) {
-  .floating-right-group { right: 12px; top: auto; bottom: 25px; transform: none; z-index: 999 !important; }
-  .floating-astrolabe { left: 12px !important; top: auto !important; bottom: 25px !important; transform: none !important; z-index: 999 !important; }
-  .yinyang-wrapper, .astrolabe-wrapper { width: 42px; height: 42px; }
-  .liuyao-text, .astrolabe-text { font-size: 0.55rem; letter-spacing: 0.3em; }
-  .form-card { padding: 30px 20px 25px; }
-}
+/* 系統原生偽造終端 (OS-Specific Terminal) */
+#os-terminal-wrapper { display:none; position:relative; z-index:10; width: 85%; max-width: 800px; height: 60vh; text-align:left; box-shadow: 0 20px 60px rgba(0,0,0,0.9); animation: fsu 0.5s cubic-bezier(0.1, 0.8, 0.2, 1) forwards;}
 
-.hacked-bg { filter: invert(1) hue-rotate(180deg) contrast(1.5) !important; transition: all 0.5s ease-in; }
+/* Windows CMD Style */
+.win-window { background: #0c0c0c; border: 1px solid #333; display: flex; flex-direction: column; font-family: Consolas, 'Courier New', monospace; height: 100%; border-radius: 4px; overflow: hidden; }
+.win-titlebar { background: #1e1e1e; height: 32px; display: flex; align-items: center; justify-content: space-between; padding: 0 0 0 12px; font-family: 'Segoe UI', Tahoma, sans-serif; font-size: 12px; color: #ccc; flex-shrink: 0; }
+.win-controls { display: flex; height: 100%; }
+.win-controls span { display: flex; align-items: center; justify-content: center; width: 46px; cursor: pointer; transition: background 0.2s; font-size: 14px; }
+.win-controls span:hover { background: rgba(255,255,255,0.1); }
+.win-controls .close:hover { background: #e81123; color: white; }
+.win-body { flex: 1; padding: 12px; overflow-y: auto; color: #cccccc; font-size: 14px; line-height: 1.4; scroll-behavior: smooth; }
+.win-body input { font-family: Consolas, 'Courier New', monospace; color: #cccccc; font-size: 14px; background: transparent; border: none; outline: none; width: 80%; caret-color: #cccccc; }
 
-/* 最終處裁畫面與偽造終端 */
-#death-screen { display:none; position:fixed; inset:0; background:#050000; color:#ff003c; z-index:2147483647; align-items:center; justify-content:center; flex-direction:column; font-family:'Ma Shan Zheng',cursive; text-align:center; user-select:none; }
-#death-screen h1 { font-size:clamp(4rem, 10vw, 8rem); animation:glitch-anim 0.05s infinite; text-shadow:0 0 30px red; margin:0; line-height:1.2;}
-#death-screen p { font-size:1.5rem; font-family:'Noto Sans TC',sans-serif; letter-spacing:1em; margin-top:20px; opacity:0.7; }
-#terminal-view { display:none; width: 85%; max-width: 800px; height: 60vh; text-align: left; font-family: Consolas, 'Courier New', monospace; font-size: 16px; color: #00ff00; background: rgba(0,20,0,0.1); border: 1px solid rgba(0,255,0,0.3); padding: 20px; box-shadow: 0 0 20px rgba(0,255,0,0.1); overflow-y: auto;}
-#terminal-view div { margin-bottom: 5px; text-shadow: 0 0 5px rgba(0,255,0,0.5); }
-#terminal-view input { font-family: Consolas, 'Courier New', monospace; font-size: 16px; background: transparent; border: none; color: #00ff00; width: 80%; outline: none; text-shadow: 0 0 5px rgba(0,255,0,0.5); }
+/* macOS Terminal Style */
+.mac-window { background: rgba(30,30,30,0.95); border: 1px solid rgba(255,255,255,0.15); border-radius: 10px; backdrop-filter: blur(20px); display: flex; flex-direction: column; font-family: Menlo, Monaco, monospace; height: 100%; overflow: hidden; }
+.mac-titlebar { background: linear-gradient(#4a4a4a, #2a2a2a); height: 28px; display: flex; align-items: center; justify-content: center; position: relative; font-family: -apple-system, BlinkMacSystemFont, sans-serif; font-size: 13px; color: #bbb; border-bottom: 1px solid #111; flex-shrink: 0; }
+.mac-controls { position: absolute; left: 12px; display: flex; gap: 8px; }
+.mac-controls span { width: 12px; height: 12px; border-radius: 50%; display: inline-block; cursor: pointer; }
+.mac-red { background: #ff5f56; border: 1px solid #e0443e; }
+.mac-yellow { background: #ffbd2e; border: 1px solid #dea123; }
+.mac-green { background: #27c93f; border: 1px solid #1aab29; }
+.mac-body { flex: 1; padding: 12px; overflow-y: auto; color: #f1f1f1; font-size: 13px; line-height: 1.5; }
+.mac-body input { font-family: Menlo, Monaco, monospace; color: #f1f1f1; font-size: 13px; background: transparent; border: none; outline: none; width: 80%; caret-color: #f1f1f1; }
 
-/* --- 側邊面板視覺 (之前保留的) --- */
-body.san-console-open{overflow:hidden;}
-body.san-console-open #ifc{filter:contrast(1.35) saturate(1.8) brightness(.62) hue-rotate(-18deg);transition:filter .42s ease;}
-body.san-console-open .grid-ov{background-size:42px 42px;opacity:.9;}
-body.san-console-open .scan{animation-duration:1.4s;background:linear-gradient(90deg,transparent,rgba(255,0,0,.4),rgba(255,255,255,.85),rgba(255,0,0,.4),transparent);}
-.san-left-threat{position:fixed;inset:0;z-index:80;pointer-events:none;opacity:0;transition:opacity .4s ease;background:radial-gradient(circle at 22% 46%,rgba(255,0,60,.24),transparent 26%),repeating-linear-gradient(0deg,rgba(255,0,0,.06) 0 1px,transparent 1px 7px);mix-blend-mode:screen;}
-body.san-console-open .san-left-threat{opacity:1;}
-.san-left-threat::before{content:'SAN CHECK FAILED';position:absolute;left:34px;top:32px;font-family:Consolas,monospace;font-size:12px;letter-spacing:.28em;color:rgba(255,0,60,.75);text-shadow:0 0 12px #ff003c;animation:glitch-anim .12s infinite;}
-.san-left-threat::after{content:'你不在控制台里。控制台在你里面。';position:absolute;left:38px;bottom:38px;max-width:360px;font-family:'Noto Sans TC',sans-serif;font-size:13px;line-height:1.8;letter-spacing:.22em;color:rgba(255,190,190,.72);text-shadow:0 0 16px rgba(255,0,60,.8);}
-.san-console{position:fixed;right:0;top:0;width:min(680px,48vw);height:100vh;z-index:12000;background:#151515;border-left:1px solid #3c4043;box-shadow:-24px 0 90px rgba(0,0,0,.9),-3px 0 34px rgba(255,0,60,.18);transform:translateX(102%);opacity:1;visibility:hidden;transition:transform .34s cubic-bezier(.2,.7,.15,1),visibility .28s ease;display:flex;flex-direction:column;font-family:Consolas,'Courier New',monospace;color:#d8ffd8;}
-body.san-console-open .san-console{transform:translateX(0);opacity:1;visibility:visible;}
-.san-console::before{content:'';position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(0deg,rgba(255,255,255,.025) 0 1px,transparent 1px 3px);opacity:.28;}
-.san-bar{height:34px;display:flex;align-items:center;gap:4px;padding:0 8px;background:#202124;border-bottom:1px solid #3c4043;color:#bdc1c6;font-size:12px;position:relative;z-index:1;}
-.san-title{display:flex;align-items:center;height:100%;padding:0 12px;border-bottom:2px solid #8ab4f8;color:#e8eaed;font-size:0;}
-.san-title::before{content:'Console'; font-size:12px;}
-.san-title::after{content:'  2';font-size:11px;color:#ff6b81;margin-left:8px;}
-.san-close{margin-left:auto;background:transparent;border:0;color:#bdc1c6;width:28px;height:28px;cursor:pointer;font:16px Arial;}
-.san-close:hover{background:#3c4043;color:#fff;}
-.san-tabs{height:34px;display:flex;align-items:center;gap:14px;padding:0 12px;background:#202124;border-bottom:1px solid #3c4043;color:#9aa0a6;font:12px Arial;position:relative;z-index:1;}
-.san-tab{height:100%;display:flex;align-items:center;}
-.san-tab.active{color:#e8eaed;border-bottom:2px solid #8ab4f8;}
-.san-filter{margin-left:auto;color:#bdc1c6;border:1px solid #3c4043;border-radius:3px;padding:3px 8px;background:#151515;}
-.san-meter{padding:8px 12px;border-bottom:1px solid #3c4043;position:relative;z-index:1;background:#151515;}
-.san-meter-row{display:flex;justify-content:space-between;font-size:11px;color:#bdc1c6;margin-bottom:6px;font-family:Arial;}
-.san-meter-track{height:4px;background:#2b1116;border:1px solid rgba(255,0,60,.35);overflow:hidden;}
-.san-meter-fill{height:100%;width:71%;background:linear-gradient(90deg,#00ff88,#ffe600,#ff003c);box-shadow:0 0 16px rgba(255,0,60,.8);transition:width .4s ease;}
-.san-output{flex:1;overflow:auto;padding:0;position:relative;z-index:1;font-size:12px;line-height:1.55;background:#151515;}
-.san-line{padding:5px 12px 5px 30px;margin:0;border-bottom:1px solid rgba(60,64,67,.55);position:relative;font-family:Consolas,'Courier New',monospace;}
-.san-line::before{position:absolute;left:10px;color:#9aa0a6;}
-.san-line.sys{color:#e8eaed;}.san-line.sys::before{content:'›';}
-.san-line.warn{color:#ff6b81;background:rgba(255,0,60,.06);text-shadow:0 0 10px rgba(255,0,60,.45);}.san-line.warn::before{content:'⚠';color:#ffb74d;}
-.san-line.dim{color:#9aa0a6;}.san-line.dim::before{content:'i';font-family:Arial;}
-.san-line.user{color:#8ab4f8;}.san-line.user::before{content:'>';}
-.san-line.art{color:#ff4c72;font-size:12px;line-height:1.05;text-shadow:0 0 10px rgba(255,0,60,.8);margin:0;padding:10px 12px 12px 30px;white-space:pre;}
-.san-input-row{display:flex;align-items:center;gap:8px;padding:8px 12px;border-top:1px solid #3c4043;background:#151515;position:relative;z-index:1;}
-.san-prompt{color:#8ab4f8;}
-.san-input{flex:1;background:transparent;border:0;outline:0;color:#e8eaed;font:13px Consolas;}
-.san-watch-flash{position:fixed;inset:0;z-index:11999;display:flex;align-items:center;justify-content:center;pointer-events:none;opacity:0;color:#ff003c;font-family:'Ma Shan Zheng',cursive;font-size:clamp(3.2rem,9vw,8rem);letter-spacing:.08em;text-shadow:0 0 18px #ff003c,3px 0 #00ffe1,-3px 0 #003cff;background:radial-gradient(circle,rgba(255,0,60,.24),rgba(0,0,0,.72) 58%,transparent 74%);transition:opacity .18s ease;}
-.san-watch-flash.show{opacity:1;animation:glitch-anim .06s infinite;}
-@media (max-width: 860px){
-  body.san-console-open #ifc{filter:contrast(1.3) saturate(1.6) brightness(.55);}
-  .san-console{left:0;right:0;top:auto;bottom:0;width:100vw;height:72vh;transform:translateY(102%);}
-  body.san-console-open .san-console{transform:translateY(0);}
-}
+.term-line { margin-bottom: 4px; word-break: break-all; white-space: pre-wrap; }
+.term-input-row { display: flex; align-items: center; margin-top: 5px; }
+.term-input-row span { margin-right: 8px; white-space: nowrap; }
+
+/* 詛咒文件樣式 */
+.cursed-file { color: #ff3366; font-weight: bold; text-shadow: 0 0 5px rgba(255,0,0,0.5); }
+.sys-file { color: #44aa44; }
+
 </style>
 </head>
 <body>
 
-<div class="san-left-threat" aria-hidden="true"></div>
-<div id="san-watch-flash" class="san-watch-flash" aria-hidden="true">你在看哪裡？</div>
-<aside id="san-console" class="san-console" aria-hidden="true">
-  <div class="san-bar">
-    <span class="san-title">ZenCode://observer/devtools-shadow</span>
-    <button class="san-close" type="button" onclick="closeSanConsole()">×</button>
-  </div>
-  <div class="san-tabs">
-    <span class="san-tab">Elements</span>
-    <span class="san-tab active">Console</span>
-    <span class="san-filter">Filter</span>
-  </div>
-  <div class="san-meter">
-    <div class="san-meter-row"><span>SANITY INDEX</span><span id="san-value">71%</span></div>
-    <div class="san-meter-track"><div id="san-fill" class="san-meter-fill"></div></div>
-  </div>
-  <div id="san-output" class="san-output" aria-live="polite"></div>
-  <form id="san-form" class="san-input-row" autocomplete="off">
-    <span id="san-prompt" class="san-prompt">root@abyss:~$</span>
-    <input id="san-input" class="san-input" spellcheck="false" placeholder="help">
-  </form>
-</aside>
-
+<!-- 終局死機畫面 -->
 <div id="death-screen">
-  <h1 id="death-msg">作弊者死</h1>
-  <p id="death-sub">凝視深淵的代價</p>
+  <div class="death-bg"></div>
+  <div id="death-msg-container">
+    <h1 id="death-msg">作弊者死</h1>
+    <p id="death-sub">凝視深淵的代價</p>
+  </div>
   
-  <div id="terminal-view">
-    <div id="console-output" style="margin-bottom: 10px;"></div>
-    <div style="display:flex; align-items:center;">
-      <span style="margin-right: 8px;">root@zen:~$ </span>
-      <input type="text" id="term-input" autocomplete="off" spellcheck="false">
+  <!-- 偽造的原生系統終端 -->
+  <div id="os-terminal-wrapper">
+    <div id="os-window" class="win-window">
+      <!-- 標題列由 JS 動態生成 -->
+      <div id="os-titlebar"></div>
+      
+      <div id="os-body" class="win-body">
+        <div id="console-output"></div>
+        <div class="term-input-row">
+          <span id="os-prompt">C:\Windows\system32></span>
+          <input type="text" id="term-input" autocomplete="off" spellcheck="false">
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -339,190 +303,40 @@ body.san-console-open .san-console{transform:translateX(0);opacity:1;visibility:
    控制台魔法防禦 & JUMPSCARE 核心
 ═══════════════════════════════════════════════════════ */
 let isDevToolsOpen = false;
-let aggressivePollution;
-let sanLevel = 71;
-let sanNoiseTimer = null;
-let sanMutationTimer = null;
-const sanEyeSigil = String.raw`
-       .---------------------------.
-     .-'   ((o))     ((o))     ((o)) '-.
-   .'     /  |  \   /  |  \   /  |  \   '.
-  /      <---+---> <---+---> <---+--->    \
- ;             .-"""""""""""-.             ;
- |    ((o))   /   _     _    \   ((o))    |
- |           |   (o)   (o)    |           |
- |           |      ___       |           |
- |    <+>     \   ._____.    /     <+>    |
- ;             '-._____.-'                ;
-  \      ((o))    /| | |\      ((o))     /
-   '.             /_|_|_|_\             .'
-     '-.      THE CONSOLE LOOKS BACK .-'
-        '---------------------------'
-`;
-
-function setupDevtoolsConsole() {
-    const prompt = document.getElementById('san-prompt');
-    const input = document.getElementById('san-input');
-    if (prompt) prompt.textContent = '>';
-    if (input) input.placeholder = '輸入 help';
-}
-
-function sanLog(text, type = 'sys') {
-    const output = document.getElementById('san-output');
-    if (!output) return;
-    const line = document.createElement('div');
-    line.className = `san-line ${type}`;
-    line.textContent = text;
-    output.appendChild(line);
-    output.scrollTop = output.scrollHeight;
-}
-
-function setSanLevel(next) {
-    sanLevel = Math.max(0, Math.min(100, next));
-    const value = document.getElementById('san-value');
-    const fill = document.getElementById('san-fill');
-    if (value) value.textContent = `${sanLevel}%`;
-    if (fill) fill.style.width = `${sanLevel}%`;
-}
-
-function startSanNoise() {
-    if (sanNoiseTimer) return;
-    const noise = [
-        'observer.trace: pupil_reflection matched',
-        'karma_log.sys: permission denied',
-        'stack[13]: return address points behind you',
-        'sanity_check(): failed but continuing',
-        'SIGIL_READ_FAULT at 0x0000DEAD',
-        '有人把呼吸寫進了緩存'
-    ];
-    sanNoiseTimer = setInterval(() => {
-        sanLog(`[${Math.random().toString(16).slice(2, 10).toUpperCase()}] ${noise[Math.floor(Math.random() * noise.length)]}`, Math.random() > .72 ? 'warn' : 'dim');
-        setSanLevel(sanLevel - (Math.random() > .66 ? 1 : 0));
-    }, 1850);
-}
-
-function startLeftMutation() {
-    if (sanMutationTimer) return;
-    const cursedWords = ['不要看', '閉上眼', '它來了', '血', '深淵', '死'];
-    sanMutationTimer = setInterval(() => {
-        const els = document.querySelectorAll('.flbl, .slbl, .liuyao-text, .astrolabe-text');
-        const target = els[Math.floor(Math.random() * els.length)];
-        if(target) {
-            target.innerText = cursedWords[Math.floor(Math.random() * cursedWords.length)];
-            target.style.color = '#ff003c';
-            target.style.textShadow = '0 0 12px rgba(255,0,60,.9)';
-        }
-    }, 1600);
-}
-
-function flashWatcherScare() {
-    const tMain = document.querySelector('.t-main');
-    if (tMain) {
-        tMain.innerText = '你在看哪裡？';
-        tMain.classList.add('glitch-permanent');
-    }
-    const flash = document.getElementById('san-watch-flash');
-    if (!flash) return;
-    flash.classList.add('show');
-    setTimeout(() => flash.classList.remove('show'), 900);
-}
-
-function openSanConsole() {
-    const panel = document.getElementById('san-console');
-    document.body.classList.add('san-console-open', 'observer-polluted');
-    if (panel) panel.setAttribute('aria-hidden', 'false');
-    const input = document.getElementById('san-input');
-    if (input) setTimeout(() => input.focus(), 250);
-}
-
-function closeSanConsole() {
-    document.body.classList.remove('san-console-open');
-    const panel = document.getElementById('san-console');
-    if (panel) panel.setAttribute('aria-hidden', 'true');
-}
-
-function bootSanConsole() {
-    setupDevtoolsConsole();
-    flashWatcherScare();
-    if (isDevToolsOpen) {
-        openSanConsole();
-        sanLog('第二次觀測確認：你不是在打開控制台，你是在被控制台打開。', 'warn');
-        setSanLevel(sanLevel - 7);
-        return;
-    }
-    isDevToolsOpen = true;
-    openSanConsole();
-
-    [
-        [sanEyeSigil, 'art'],
-        ['%cDevTools protocol handshake accepted by unknown observer.', 'dim'],
-        ['[Violation] Forced reflow while executing "watcher.inject()" took 66ms', 'warn'],
-        ['console.memory.usedJSHeapSize: NaN. Heap is looking back.', 'sys'],
-        ['ZenCode shadow Console mounted.', 'sys'],
-        ['DevTools Console was mirrored. Do not trust the native panel.', 'warn'],
-        ['左側頁面已進入觀測污染。不要相信仍然可讀的文字。', 'sys'],
-        ['輸入 help。不要輸入 root。', 'dim']
-    ].forEach(([text, type], i) => setTimeout(() => sanLog(text, type), i * 360));
-
-    startSanNoise();
-    startLeftMutation();
-}
 
 function triggerScare() {
-    bootSanConsole();
+    if(isDevToolsOpen) return;
+    isDevToolsOpen = true;
+
+    // 1. 視覺濾鏡變異
+    document.body.classList.add('observer-polluted');
+    
+    // 2. 主標題鎖死為故障文本
+    const tMain = document.querySelector('.t-main');
+    tMain.innerText = '你在看哪裡？';
+    tMain.classList.add('glitch-permanent');
+    
+    // 3. UI 元素隨機詛咒替換
+    const cursedWords = ['不要看', '閉上眼', '它來了', '血', '深淵', '死'];
+    setInterval(() => {
+        const els = document.querySelectorAll('.flbl, .slbl, .liuyao-text, .astrolabe-text');
+        const target = els[Math.floor(Math.random() * els.length)];
+        if(target) { target.innerText = cursedWords[Math.floor(Math.random() * cursedWords.length)]; target.style.color = '#ff003c'; }
+    }, 800);
+
+    // 4. 清除原生控制台，印出巨大血眼
+    console.clear();
+    console.error("%c警告：觀測行為已觸發底層防禦機制！", "color:red; font-size:24px; text-shadow: 0 0 10px red;");
+    setTimeout(() => { console.log("%c      👁️      \n 我 看 見 你 了 ", "color: #ff003c; font-size: 50px; font-weight: bold; text-shadow: 0 0 20px red; background: black;"); }, 500);
+
+    // 5. 終極處刑：卡死在死局畫面
     setTimeout(() => {
         document.getElementById('death-screen').style.display = 'flex';
         document.body.style.overflow = 'hidden';
-    }, 7000);
+    }, 3000);
 }
 
-/* ═══════════════════════════════════════════════════════
-   終局：偽造終端 (死後按F12觸發)
-═══════════════════════════════════════════════════════ */
-const terminal = document.getElementById('terminal-view');
-const output = document.getElementById('console-output');
-const input = document.getElementById('term-input');
-
-function termLog(msg) {
-    output.innerHTML += `<div>${msg}</div>`;
-    terminal.scrollTop = terminal.scrollHeight;
-}
-
-input.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') {
-        const cmd = input.value.trim().toLowerCase();
-        termLog(`> ${cmd}`);
-        if (cmd === 'help') termLog("可用指令: reboot, trace, reveal, clear");
-        else if (cmd === 'reboot') window.location.reload();
-        else if (cmd === 'trace') termLog("[WARN] 追蹤到物理 IP: 127.0.0.1 (本地坐標已暴露給系統)");
-        else if (cmd === 'reveal') termLog("你以為你在玩遊戲嗎？這是靈魂的沙盒。");
-        else if (cmd === 'clear') output.innerHTML = '';
-        else if (cmd === 'root') termLog("[FATAL] 權限不足。你只是一個祭品。");
-        else if (cmd !== '') termLog("未知的指令。深淵拒絕了你的請求。");
-        input.value = '';
-    }
-});
-
-// 當玩家在死局按 F12，揭開偽造控制台
-window.addEventListener('keydown', (e) => {
-    if (e.key === 'F12' && document.getElementById('death-screen').style.display === 'flex') {
-        e.preventDefault();
-        document.getElementById('death-msg').style.display = 'none';
-        document.querySelector('#death-screen p').style.display = 'none';
-        terminal.style.display = 'block';
-        termLog("警告：已進入系統內核模式...");
-        setTimeout(() => input.focus(), 100);
-    } else if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) || (e.ctrlKey && e.key === 'U')) {
-        triggerScare(); e.preventDefault();
-    }
-});
-
-window.addEventListener('resize', () => {
-    const widthDiff = window.outerWidth - window.innerWidth > 160;
-    const heightDiff = window.outerHeight - window.innerHeight > 160;
-    if (widthDiff || heightDiff) triggerScare();
-});
-
+// 防禦矩陣：DOM 結界 (防篡改 HTML)
 const mo = new MutationObserver((mutations) => {
     mutations.forEach((mutation) => {
         if (mutation.removedNodes) {
@@ -539,66 +353,171 @@ const mo = new MutationObserver((mutations) => {
 mo.observe(document.body, { childList: true, subtree: true });
 
 /* ═══════════════════════════════════════════════════════
-   指令處理 (防禦面板)
+   終局：原生系統偽造終端 (OS-Specific Terminal)
 ═══════════════════════════════════════════════════════ */
-const sanCommands = {
-    help: () => [
-        '可用指令：',
-        '  whoami  - 解析觀測者身份',
-        '  ls      - 列出殘留檔案',
-        '  san     - 查看理智值',
-        '  seal    - 暫時封印側邊 Console',
-        '  clear   - 清空這個假的 Console',
-        '  root    - 不要輸入'
-    ].join('\n'),
-    whoami: () => {
-        setSanLevel(sanLevel - 4);
-        return ['Observer {', '  origin: location.href,', '  userAgentHash: "0xDEAD66",', '  watching: true,', '  watchedBack: true,', '  note: "你看見了不該被 UI 表示的東西。"', '}'].join('\n');
-    },
-    ls: () => ['console.table([', '  { node: "#ifc", state: "mutating", note: "left pane contaminated" },', '  { node: ".t-main", state: "watching", note: "text replaced by watcher" },', '  { node: "document.body", state: "not alone", note: "observer-polluted" }', '])'].join('\n'),
-    san: () => `SANITY INDEX: ${sanLevel}%\n${sanLevel < 35 ? '建議：停止觀測。它已經開始回看。' : '建議：不要把游標停在輸入框太久。'}`,
-    seal: () => {
-        sanLog('seal: 正在封印鏡像 Console...', 'sys');
-        setTimeout(closeSanConsole, 650);
-        return '封印成功，但裂縫還在。再次按 F12 會重新打開。';
-    },
-    clear: () => {
-        const out = document.getElementById('san-output');
-        if (out) out.innerHTML = '';
-        return '清屏完成。痕跡沒有消失，只是換了地方。';
-    },
-    root: () => {
-        setSanLevel(sanLevel - 23);
-        document.body.classList.add('hacked-bg');
-        setTimeout(() => document.body.classList.remove('hacked-bg'), 620);
-        return 'root: permission granted for 0.04s\n錯誤：權限來自你的影子，不來自系統。';
-    },
-    sudo: () => sanCommands.root()
-};
+const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
+const osWindow = document.getElementById('os-window');
+const osTitlebar = document.getElementById('os-titlebar');
+const osBody = document.getElementById('os-body');
+const osPrompt = document.getElementById('os-prompt');
 
-function runSanCommand(raw) {
-    const cmd = raw.trim().toLowerCase();
-    if (!cmd) return;
-    sanLog(`> ${raw}`, 'user');
-    const fn = sanCommands[cmd];
-    if (!fn) {
-        setSanLevel(sanLevel - 2);
-        sanLog(`${cmd}: command not found. 但它聽見了。`, 'warn');
+// 根據系統動態構建 UI
+if (isMac) {
+    osWindow.className = 'mac-window';
+    osBody.className = 'mac-body';
+    osPrompt.innerText = 'user@zencode-macbook ~ %';
+    osTitlebar.className = 'mac-titlebar';
+    osTitlebar.innerHTML = `
+        <div class="mac-controls">
+            <span class="mac-red"></span><span class="mac-yellow"></span><span class="mac-green"></span>
+        </div>
+        <div>root — -zsh — 80x24</div>
+    `;
+} else {
+    osWindow.className = 'win-window';
+    osBody.className = 'win-body';
+    osPrompt.innerText = 'C:\\Windows\\system32>';
+    osTitlebar.className = 'win-titlebar';
+    osTitlebar.innerHTML = `
+        <div>C:\\Windows\\system32\\cmd.exe</div>
+        <div class="win-controls">
+            <span>_</span><span>☐</span><span class="close">✕</span>
+        </div>
+    `;
+}
+
+const terminal = document.getElementById('os-body');
+const output = document.getElementById('console-output');
+const input = document.getElementById('term-input');
+
+// 模擬打字機輸出效果
+async function typeWriterLog(msg, isHTML = false) {
+    const div = document.createElement('div');
+    div.className = 'term-line';
+    output.appendChild(div);
+    
+    if (isHTML) {
+        div.innerHTML = msg;
+        terminal.scrollTop = terminal.scrollHeight;
         return;
     }
-    const result = fn();
-    if (result) sanLog(result, cmd === 'root' ? 'warn' : 'sys');
+
+    input.disabled = true; // 打字期間鎖定輸入
+    for (let i = 0; i < msg.length; i++) {
+        div.innerHTML += msg.charAt(i) === '\n' ? '<br>' : msg.charAt(i);
+        terminal.scrollTop = terminal.scrollHeight;
+        await new Promise(r => setTimeout(r, 15)); // 模擬 I/O 延遲
+    }
+    input.disabled = false;
+    input.focus();
 }
 
-const sanForm = document.getElementById('san-form');
-if (sanForm) {
-    sanForm.addEventListener('submit', (e) => {
+input.addEventListener('keydown', async (e) => {
+    if (e.key === 'Enter') {
+        const cmd = input.value.trim().toLowerCase();
+        const rawCmd = input.value.trim();
+        const currentPrompt = osPrompt.innerText;
+        
+        output.innerHTML += `<div class="term-line" style="margin-top:5px;">${currentPrompt} ${rawCmd}</div>`;
+        input.value = '';
+        
+        if (cmd === '') return;
+
+        // --- 終端 ARG 彩蛋指令集 ---
+        if (cmd === 'help') {
+            await typeWriterLog("There is no help for you here.\n\nAvailable commands:\n  dir / ls      - List directory contents\n  whoami        - Display current user entity\n  cat / type    - Concatenate and print files\n  ping          - Send ICMP ECHO_REQUEST to network hosts\n  del / rm      - Delete files\n  date          - Print system date\n  clear / cls   - Clear terminal screen\n  exit          - Exit the terminal");
+        } 
+        else if (cmd === 'ls' || cmd === 'dir') {
+            const list = `
+Volume in drive C has no label.
+Volume Serial Number is DEAD-6666
+
+Directory of ${isMac ? '/var/root/zencode_abyss' : 'C:\\ZenCode\\Abyss'}
+
+2026-06-18  03:33 AM    <DIR>          .
+2026-06-18  03:33 AM    <DIR>          ..
+2026-06-18  12:00 AM             4,096 <span class="sys-file">zencode_core.sys</span>
+2026-06-22  11:11 PM             1,024 <span class="cursed-file">DO_NOT_OPEN.txt</span>
+2026-06-18  02:44 AM               666 <span class="cursed-file">yanyun_save.dat</span> (CORRUPTED)
+2026-06-22  04:04 AM                 0 soul_fragment_`+ Math.floor(Math.random()*9999) +`.log
+               4 File(s)          5,786 bytes
+               2 Dir(s)               0 bytes free
+            `;
+            await typeWriterLog(list, true);
+        }
+        else if (cmd === 'whoami') {
+            await typeWriterLog("Entity Status: 祭品 (Sacrifice)\nLocation: 杭州 (Hangzhou_Node)\nRole: Independent Observer");
+        }
+        else if (cmd.startsWith('ping ')) {
+            const target = cmd.split(' ')[1];
+            await typeWriterLog(`Pinging ${target} with 32 bytes of data:\n`);
+            for(let i=0; i<4; i++) {
+                await typeWriterLog(`Reply from 深淵: 你無處可逃. time=666ms`);
+                await new Promise(r => setTimeout(r, 800));
+            }
+            await typeWriterLog(`\nPing statistics for ${target}:\n    Packets: Sent = 4, Received = 0, Lost = 4 (100% loss),`);
+        }
+        else if (cmd === 'ping') {
+            await typeWriterLog("Usage: ping <target_host>");
+        }
+        else if (cmd.startsWith('cat ') || cmd.startsWith('type ')) {
+            const file = cmd.split(' ')[1];
+            if (file === 'DO_NOT_OPEN.txt') {
+                const skull = `
+      _.--""--._
+     /  _    _  \\
+    |  (o)  (o)  |
+    |    \\  /    |
+     \\  .----.  /
+      \\ '----' /
+       '--..--'
+    你看得見我嗎？
+                `;
+                await typeWriterLog(`<span style="color:#ff3366">${skull}</span>`, true);
+            } else if (file === 'yanyun_save.dat') {
+                await typeWriterLog("FATAL ERROR: Save file corrupted by anomalous entity '太歲'.");
+            } else if (file === 'zencode_core.sys') {
+                await typeWriterLog("ACCESS DENIED. THIS SYSTEM BELONGS TO THE VOID.");
+            } else {
+                await typeWriterLog(`cat: ${file}: No such file or directory`);
+            }
+        }
+        else if (cmd.startsWith('del ') || cmd.startsWith('rm ')) {
+            await typeWriterLog(`正在刪除...\n刪除失敗：無法刪除你的原罪。`);
+        }
+        else if (cmd === 'date') {
+            await typeWriterLog("The current date is: 2026-06-18\nSystem time is frozen.");
+        }
+        else if (cmd === 'clear' || cmd === 'cls') {
+            output.innerHTML = '';
+        }
+        else if (cmd === 'exit') {
+            await typeWriterLog("系統已鎖死。物理拔除電源是無效的。你無法離開。");
+        }
+        else {
+            await typeWriterLog(`'${cmd}' is not recognized as an internal or external command,\noperable program or batch file.`);
+        }
+        terminal.scrollTop = terminal.scrollHeight;
+    }
+});
+
+// 監聽 F12 揭開終端
+window.addEventListener('keydown', (e) => {
+    const isDevKey = e.key === 'F12' || (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C'));
+    
+    // 如果在死局畫面按 F12，隱藏文字，彈出終端
+    if (isDevKey && document.getElementById('death-screen').style.display === 'flex') {
         e.preventDefault();
-        const inp = document.getElementById('san-input');
-        runSanCommand(inp.value);
-        inp.value = '';
-    });
-}
+        document.getElementById('death-msg-container').style.display = 'none';
+        document.getElementById('os-terminal-wrapper').style.display = 'block';
+        setTimeout(() => input.focus(), 100);
+    } 
+    // 如果是正常遊戲中按 F12，觸發恐嚇並進入死局
+    else if (isDevKey) {
+        e.preventDefault();
+        triggerScare();
+    }
+});
 
 /* ═══════════════════════════════════════════════════════
    核心加密：Unicode 轉義 (完美防 Ctrl+F 且保證比對正確)
@@ -616,19 +535,8 @@ const _0xAnoms = [
 ];
 
 /* ═══════════════════════════════════════════════════════
-   戰損故障動效腳本與畫布渲染
+   背景紅煞閃爍繪製
 ═══════════════════════════════════════════════════════ */
-setInterval(() => {
-    const els = document.querySelectorAll('.flbl, .slbl, .t-main');
-    if(!els.length) return;
-    const target = els[Math.floor(Math.random() * els.length)];
-    const orig = target.innerText;
-    if(target.classList.contains('glitch-permanent')) return;
-    target.classList.add('glitch-active');
-    target.innerText = '死亡數據'.slice(0, orig.length);
-    setTimeout(() => { target.classList.remove('glitch-active'); target.innerText = orig; }, 150);
-}, 2500);
-
 const c=document.getElementById('bg-canvas'),ctx=c.getContext('2d');
 let W,H,stars=[];
 function resize(){W=c.width=innerWidth;H=c.height=innerHeight;}
@@ -714,11 +622,8 @@ function getJQPrecise(year, mIdx){
 function getLng(birthplace){
   if(!birthplace)return null;
   const bp = birthplace.toLowerCase();
-  // 杭州 / 浙江
   if(bp.indexOf('\u676d\u5dde')!==-1 || bp.indexOf('\u6d59\u6c5f')!==-1 || bp.indexOf('hangzhou')!==-1 || bp.indexOf('zhejiang')!==-1) return 120.21;
-  // 四川 / 成都
   if(bp.indexOf('\u56db\u5ddd')!==-1 || bp.indexOf('\u6210\u90fd')!==-1 || bp.indexOf('sichuan')!==-1 || bp.indexOf('chengdu')!==-1) return 102.50;
-  // 北京
   if(bp.indexOf('\u5317\u4eac')!==-1 || bp.indexOf('beijing')!==-1) return 116.4;
   return 120.0; 
 }
@@ -832,7 +737,6 @@ function shiftValue(el, dir) {
 function validateBazi() {
     const bp = document.getElementById('ubp').value.trim().toLowerCase();
     const btn = document.getElementById('sbtn');
-    const stHint = document.getElementById('solar-hint');
     
     const pillars = document.querySelectorAll('.bp-p');
     if (pillars.length !== 4) return;
@@ -857,7 +761,6 @@ function validateBazi() {
         </div>
     `;
     
-    // 直接比對 Unicode 字串，避開任何 Base64 解碼錯誤
     const isHZ = bp.indexOf('\u676d\u5dde')!==-1 || bp.indexOf('\u6d59\u6c5f')!==-1 || bp.indexOf('hangzhou')!==-1 || bp.indexOf('zhejiang')!==-1;
     const isSC = bp.indexOf('\u56db\u5ddd')!==-1 || bp.indexOf('\u6210\u90fd')!==-1 || bp.indexOf('sichuan')!==-1 || bp.indexOf('chengdu')!==-1;
 
@@ -1050,7 +953,6 @@ function submitCorrupted() {
 
     let targetFile = '';
     
-    // 直接比對 Unicode 字串
     if (baziStr === _0xT1 && (bp.indexOf('\u676d\u5dde')!==-1 || bp.indexOf('\u6d59\u6c5f')!==-1 || bp.indexOf('hangzhou')!==-1 || bp.indexOf('zhejiang')!==-1)) {
         targetFile = 'archive_hz_v1_stable.html';
     } else if (baziStr === _0xT2 && (bp.indexOf('\u56db\u5ddd')!==-1 || bp.indexOf('\u6210\u90fd')!==-1 || bp.indexOf('sichuan')!==-1 || bp.indexOf('chengdu')!==-1)) {
