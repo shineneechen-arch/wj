@@ -159,16 +159,35 @@ input::placeholder{color:rgba(255,255,255,.17)}
 
 /* ─── 恐怖覆盖层 ─── */
 #flesh-overlay{position:fixed;inset:0;background:radial-gradient(circle,rgba(255,0,0,0) 20%,rgba(100,0,0,.6) 60%,rgba(30,0,0,.98) 100%);pointer-events:none;z-index:9000;opacity:0;transition:opacity 10s ease-in;mix-blend-mode:multiply}
-
-/* 屏闪层 */
-#flash-overlay{position:fixed;inset:0;z-index:9100;background:#ff0000;opacity:0;pointer-events:none}
-
-/* 急速电梯层 */
+#flash-overlay{position:fixed;inset:0;z-index:9100;background:#ff0000;opacity:0;pointer-events:none; transition: background 0.5s ease;}
 #elevator-overlay{position:fixed;inset:0;z-index:9050;pointer-events:none;overflow:hidden;opacity:0}
 .elev-stripe{position:absolute;left:0;right:0;height:4px;background:linear-gradient(90deg,rgba(255,0,0,0) 0%,rgba(255,80,0,.8) 50%,rgba(255,0,0,0) 100%)}
-
-/* 巨型眼球文字 */
 #eye-caption{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:9300;color:#8b0000;font-family:'Ma Shan Zheng',cursive;font-size:3.5rem;text-shadow:0 0 40px #f00;opacity:0;pointer-events:none;transition:opacity 2s;text-align:center;letter-spacing:.2em}
+
+/* ─── 深渊凝视 (F12 防护) ─── */
+#void-overlay {
+    position: fixed; inset: 0; background: #000; z-index: 99999;
+    display: flex; justify-content: center; align-items: center;
+    opacity: 0; transition: opacity 3s ease-in;
+    cursor: none; pointer-events: all;
+}
+.void-text {
+    color: #1a0000; font-family: "STZhongsong", serif; font-size: 1.5rem; letter-spacing: 15px;
+    text-shadow: 0 0 10px rgba(100,0,0,0.5); font-weight: bold;
+    animation: pulse-dark 4s infinite alternate; text-align: center;
+}
+@keyframes pulse-dark {
+    0% { color: #1a0000; text-shadow: 0 0 5px rgba(50,0,0,0.2); }
+    100% { color: #5a0000; text-shadow: 0 0 20px rgba(255,0,0,0.6); }
+}
+
+@keyframes shake-brutal {
+    0% { transform: translate(2px, 1px) rotate(0deg); }
+    10% { transform: translate(-1px, -2px) rotate(-1deg); }
+    20% { transform: translate(-3px, 0px) rotate(1deg); }
+    30% { transform: translate(0px, 2px) rotate(0deg); }
+    100% { transform: translate(1px, -2px) rotate(-1deg); }
+}
 
 /* ─── 飞升弹窗 ─── */
 #ascension-popup{display:none;position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,.92);flex-direction:column;align-items:center;justify-content:center}
@@ -471,6 +490,65 @@ function playFlashSound() {
     src.start();
   } catch(e) {}
 }
+
+// ─── 深渊凝视 (F12 防护) ───
+let isDestinyBroken = false;
+function playVoidWhisper() {
+  try {
+      const ctx = getAudioCtx();
+      const osc1 = ctx.createOscillator();
+      const osc2 = ctx.createOscillator();
+      const gain = ctx.createGain();
+
+      osc1.type = 'sine'; osc2.type = 'sine';
+      osc1.frequency.setValueAtTime(40, ctx.currentTime); 
+      osc2.frequency.setValueAtTime(42, ctx.currentTime); 
+
+      gain.gain.setValueAtTime(0, ctx.currentTime);
+      gain.gain.linearRampToValueAtTime(0.8, ctx.currentTime + 10);
+
+      osc1.connect(gain); osc2.connect(gain); gain.connect(ctx.destination);
+      osc1.start(); osc2.start();
+  } catch (e) {}
+}
+
+function triggerKarmaBackfire() {
+    if (isDestinyBroken) return;
+    isDestinyBroken = true;
+
+    playVoidWhisper();
+
+    console.clear();
+    console.log("%c你在底層代碼裡，尋找自己的死局嗎？", "color: #555555; font-size: 14px; font-family: 'Courier New', monospace;");
+    setTimeout(() => console.log("%c星象陣列的物理保護已被你剝離。", "color: #880000; font-size: 16px; font-weight: bold;"), 2000);
+    setTimeout(() => console.log("%c星盤毀了... 因果出來了。", "color: #ff0000; font-size: 20px; font-weight: bold; text-shadow: 0 0 8px red;"), 4500);
+
+    const voidDiv = document.createElement('div');
+    voidDiv.id = 'void-overlay';
+    voidDiv.innerHTML = `<div class="void-text">窺探天機者<br><br><span style="font-size: 0.8rem; letter-spacing: 5px; color:#333;">必受其累</span></div>`;
+    document.body.appendChild(voidDiv);
+
+    setTimeout(() => {
+        voidDiv.style.opacity = '1';
+        setTimeout(() => {
+            document.body.innerHTML = '';
+            document.body.appendChild(voidDiv);
+        }, 3000);
+    }, 500);
+}
+
+document.addEventListener('contextmenu', e => { e.preventDefault(); triggerKarmaBackfire(); });
+document.addEventListener('keydown', e => {
+    if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && e.key === 'I') || (e.metaKey && e.altKey && e.key === 'i') || (e.ctrlKey && e.key === 'u') || (e.metaKey && e.altKey && e.key === 'u')) {
+        e.preventDefault(); triggerKarmaBackfire();
+    }
+});
+setInterval(function() {
+    const start = performance.now();
+    debugger; 
+    if (performance.now() - start > 100) triggerKarmaBackfire();
+}, 1000);
+
 
 // ─── Planet element data ───
 const PE = {
@@ -1016,27 +1094,23 @@ function buildVeins() {
   clearGroup(veinG);
   veinLines.length = 0;
   
-  // 排除木星，獲取所有即將被吸乾的祭品星體
   const bp = ['sun','moon','mercury','venus','earth','mars','saturn','uranus','neptune','pluto'];
   const colors = [0xff0000, 0xaa0000, 0x550000, 0xff3300, 0x880000];
   
-  // 獲取最終的孵化母體：木星
   const jupMesh = pMesh['jupiter'];
   if (!jupMesh) return;
 
-  // 讓所有的星體，都向木星伸出粗壯的血肉臍帶
   for(let i=0; i<bp.length; i++) {
       const srcMesh = pMesh[bp[i]] || (bp[i] === 'earth' ? earthMesh : null);
       if (!srcMesh) continue;
       
       let srcPos = bp[i] === 'earth' ? new THREE.Vector3(0,0,0) : srcMesh.position;
-      let dstPos = jupMesh.position; // 終點全部指向木星
+      let dstPos = jupMesh.position; 
 
-      const strands = 6 + Math.floor(Math.random() * 6); // 每顆星球被抽出 6-11 根血管
+      const strands = 6 + Math.floor(Math.random() * 6); 
       
       for(let s=0; s<strands; s++) {
         const mid = new THREE.Vector3().addVectors(srcPos, dstPos).multiplyScalar(0.5);
-        // 讓血管在宇宙空間中扭曲、蜿蜒
         mid.x += (Math.random()-0.5)*35;
         mid.y += (Math.random()-0.5)*35;
         mid.z += (Math.random()-0.5)*35;
@@ -1071,7 +1145,7 @@ function updateVeins(progress) {
     const drawCount = Math.max(2, Math.floor(localP * v.maxPts));
     for (let i=0; i<drawCount; i++) {
       const pt = v.allPts[Math.min(i, v.allPts.length-1)];
-      const jitter = (1-localP)*0.4 + 0.1; // 持續輕微抖動
+      const jitter = (1-localP)*0.4 + 0.1; 
       v.pa.setXYZ(i, pt.x+(Math.random()-.5)*jitter, pt.y+(Math.random()-.5)*jitter, pt.z+(Math.random()-.5)*jitter);
     }
     v.pa.needsUpdate = true;
@@ -1089,7 +1163,6 @@ function buildJupiterEye(jupPos) {
 
     const eyeScale = 4.5; 
 
-    // 1. 構建 3D 肉塊本體 (木星被取代後的肉球底座)
     const meatMat = new THREE.MeshStandardMaterial({ 
         color: 0x3a0000, 
         roughness: 0.7, 
@@ -1098,12 +1171,10 @@ function buildJupiterEye(jupPos) {
     });
     const meatSphere = new THREE.Mesh(new THREE.SphereGeometry(1.65 * eyeScale, 64, 64), meatMat);
     
-    // 2. 載入寫實眼球圖片
     const textureLoader = new THREE.TextureLoader();
     const eyeTex = textureLoader.load('flesh_eye.jpg');
     eyeTex.colorSpace = THREE.SRGBColorSpace;
 
-    // 3. 創建邊緣柔化遮罩 (Alpha Map)，讓圖片邊緣完美融進肉塊
     const maskCanvas = document.createElement('canvas');
     maskCanvas.width = 512; maskCanvas.height = 512;
     const mCtx = maskCanvas.getContext('2d');
@@ -1114,54 +1185,45 @@ function buildJupiterEye(jupPos) {
     mCtx.fillRect(0, 0, 512, 512);
     const alphaTex = new THREE.CanvasTexture(maskCanvas);
 
-    // 4. 核心：將 2D 平面用數學公式彎曲成 3D 弧面 (避免球面極點拉伸變形)
     const size = 3.8 * eyeScale; 
     const curveGeo = new THREE.PlaneGeometry(size, size, 64, 64);
     const pos = curveGeo.attributes.position;
-    const radius = 1.7 * eyeScale; // 弧面的曲率半徑，與肉球貼合
+    const radius = 1.7 * eyeScale; 
     
     for (let i = 0; i < pos.count; i++) {
         const x = pos.getX(i);
         const y = pos.getY(i);
         const distSq = x * x + y * y;
-        // 計算球面 Z 偏移：z = sqrt(R^2 - x^2 - y^2) - R
         if (radius * radius > distSq) {
             const z = Math.sqrt(radius * radius - distSq) - radius;
             pos.setZ(i, z);
         } else {
-            // 超出半徑的部分直接向後壓縮捨棄
             pos.setZ(i, -radius);
         }
     }
     curveGeo.computeVertexNormals();
 
-    // 賦予眼球高光與濕潤感
     const eyeMat = new THREE.MeshStandardMaterial({ 
         map: eyeTex,
         alphaMap: alphaTex,
         transparent: true,
-        roughness: 0.1,  // 0.1 代表非常光滑，看起來水潤
+        roughness: 0.1, 
         metalness: 0.3,
         depthWrite: false
     });
 
     const eyeCurve = new THREE.Mesh(curveGeo, eyeMat);
-    // 將彎曲的眼球推到肉球表面最前方
     eyeCurve.position.z = radius - 0.05;
     
-    // 5. 創建一個容器來包裹【肉球】和【眼球】，形成完整的 3D 實體
     const eyeContainer = new THREE.Group();
     eyeContainer.add(meatSphere);
     eyeContainer.add(eyeCurve);
     eyeContainer.position.copy(jupPos);
-    
-    // 讓眼球初始朝向相機
     eyeContainer.lookAt(camera.position);
 
     jupEyeG.add(eyeContainer);
-    jupEyeMeshes.push(eyeContainer); // 保存供動畫調用
+    jupEyeMeshes.push(eyeContainer);
 
-    // 6. 加入血霧特效增加立體感
     eyeMistG = new THREE.Group();
     const mistCanvas = document.createElement('canvas');
     mistCanvas.width = 128; mistCanvas.height = 128;
@@ -1268,19 +1330,16 @@ function triggerHorror() {
   HORROR.phase = 1;
   HORROR.t = 0;
   
-  // Phase 1: earth pulse hint
   horrorMsg('【 系統異常 】引力波激增 — 請放大觀察「地球」節點');
   if(document.getElementById('tb-sub')) document.getElementById('tb-sub').textContent = '異常熱訊號持續上升…滾動縮放接近地球…';
   startHeartbeat(0.2);
   
-  // Phase 2: jupiter hint
   horrorPhaseTimeout = setTimeout(() => {
     HORROR.phase = 2;
     horrorMsg('【 木星警報 】坐標偏移 — 鎖定「木星」座標 ♃');
     setHeartbeatVolume(0.5);
   }, 6000);
   
-  // Phase 3: All Orbits and Rings mutate wildly
   setTimeout(() => {
     HORROR.phase = 3;
     horrorMsg('【 維度崩潰 】全軌道觀測標記失效');
@@ -1290,7 +1349,6 @@ function triggerHorror() {
       el.style.pointerEvents='none';
     });
     
-    // Store original line positions for orbital jittering
     scene.traverse(child => {
       if((child.isLine || child.isLineSegments) && child.material && !child.userData.isVein) {
         child.material.color = new THREE.Color(0xaa0000);
@@ -1303,7 +1361,6 @@ function triggerHorror() {
     burstFlashes(6, 220);
   }, 12000);
   
-  // Phase 4: fur grows & Planets turn black/red
   setTimeout(() => {
     HORROR.phase = 4;
     horrorMsg('【 有機物入侵 】全星體表層異化');
@@ -1316,7 +1373,6 @@ function triggerHorror() {
     burstFlashes(10, 120);
   }, 18000);
   
-  // Phase 5: veins
   setTimeout(() => {
     HORROR.phase = 5;
     horrorMsg('【 血脈擴張 】維管束瘋狂生長中…');
@@ -1324,15 +1380,12 @@ function triggerHorror() {
     setHeartbeatVolume(1.2);
   }, 26000);
   
-  // Phase 6: jupiter becomes eye (第50秒触发)
   setTimeout(() => {
     HORROR.phase = 6;
     horrorMsg('【 眼球成形 】木星坐標突變');
     
-    // 隐藏其他干扰视线的星环和文字
     eclRingG.visible=false; eqRingG.visible=false; manG.visible=false; houseG.visible=false;
     
-    // 抹杀其他星体（被吸干了）
     PCONF.forEach(pc => {
       if(pc.id!=='jupiter') {
         if(pMesh[pc.id]) pMesh[pc.id].visible=false;
@@ -1341,7 +1394,6 @@ function triggerHorror() {
       }
     });
     
-    // 讓所有供養完畢的血管瞬間枯萎、發黑
     veinLines.forEach(v => {
         if(v.line && v.line.material) {
             v.line.material.color = new THREE.Color(0x110000); 
@@ -1349,19 +1401,16 @@ function triggerHorror() {
         }
     });
 
-    // 獻祭完成，載入 3D 巨型圖片眼球！
     const jupPos = pMesh['jupiter'] ? pMesh['jupiter'].position.clone() : new THREE.Vector3(26,0,0);
     buildJupiterEye(jupPos); 
     pMesh['jupiter'].visible=false; 
     jupEyeG.visible=true; 
     
-    // 屏幕中央浮现血字
     const cap = document.getElementById('eye-caption');
     if(cap){cap.textContent='它在看著你'; cap.style.opacity='1'; cap.style.top='55%';}
     setHeartbeatVolume(1.8);
   }, 50000);
   
-  // Phase 7: finale
   setTimeout(() => {
     HORROR.phase = 7;
     showAscensionPopup();
@@ -1403,13 +1452,43 @@ window.handleAscY = function() {
   }, 5000);
 };
 
+// ─── 拒绝飞升 -> "你已迷失" 恐怖结局 ───
 window.handleAscN = function() {
   document.removeEventListener('keydown', handleAscKeydown);
   const box = document.getElementById('asc-box');
-  if(box){ box.innerHTML='<div style="color:#f00;font-family:Ma Shan Zheng,cursive;font-size:3rem;text-shadow:0 0 40px #f00">拒絕飛升的代價…<br><span style="font-size:1.5rem;opacity:.7">維度正在收縮</span></div>'; }
-  document.body.style.filter='blur(0px)';
-  let blurVal=0;
-  const blurInterval=setInterval(()=>{ blurVal+=0.3; document.body.style.filter=`blur(${blurVal}px) brightness(${1-blurVal*0.05})`; if(blurVal>8)clearInterval(blurInterval); },100);
+  if (box) box.style.display = 'none';
+
+  try {
+      const ctx = getAudioCtx();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'square';
+      osc.frequency.setValueAtTime(60, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(10, ctx.currentTime + 3);
+      gain.gain.setValueAtTime(1.0, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 3);
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.start(); osc.stop(ctx.currentTime + 3);
+  } catch(e){}
+
+  const fl = document.getElementById('flash-overlay');
+  if (fl) {
+      fl.style.opacity = '1';
+      fl.style.transition = 'background 0.5s';
+      fl.style.background = '#300000';
+  }
+
+  setTimeout(() => {
+      document.body.innerHTML = '';
+      document.body.style.backgroundColor = '#000';
+      
+      const lostDiv = document.createElement('div');
+      lostDiv.style.cssText = 'position:fixed;inset:0;display:flex;justify-content:center;align-items:center;background:#000;color:#500;font-family:"SimHei","黑体",sans-serif;font-size:12vw;font-weight:900;letter-spacing:1vw;text-shadow:0 0 30px #f00, 3px 3px 0 #200;animation:shake-brutal 0.1s infinite;pointer-events:none;user-select:none;flex-direction:column;';
+      
+      lostDiv.innerHTML = '<div>你已迷失</div><div style="font-size:1.5rem;color:#300;letter-spacing:10px;margin-top:20px;font-family:monospace;animation:none;">ENTITY_LOST</div>';
+      
+      document.body.appendChild(lostDiv);
+  }, 1000);
 };
 
 // ─── Horror animation update ───
@@ -1458,7 +1537,6 @@ function updateHorror(dt, t) {
   if (phase >= 4) {
     HORROR.furProgress = Math.min(1, (HORROR.t - 18) / 8);
     
-    // 全行星黑暗化与脉动
     PCONF.forEach(pc => {
         const mesh = pMesh[pc.id];
         if(mesh && pc.id !== 'jupiter') {
@@ -1509,12 +1587,9 @@ function updateHorror(dt, t) {
   if (phase >= 6 && jupEyeG.visible) {
     jupEyeMeshes.forEach((m, idx) => {
       if (m.isLine) return;
-      
-      // 讓這顆 3D 巨眼在宇宙中緩慢、神經質地四處轉動掃視
       m.rotation.x = Math.sin(t * 1.2) * 0.15;
       m.rotation.y += dt * 0.15 + Math.sin(t * 3.5) * 0.005; 
       
-      // 呼吸般的肉塊蠕動與心跳收縮
       m.scale.set(
           1.0 + 0.03 * Math.sin(t * 6),
           0.97 + 0.03 * Math.cos(t * 5),
@@ -1523,13 +1598,12 @@ function updateHorror(dt, t) {
     });
 
     if (eyeMistG) {
-        eyeMistG.rotation.z += dt * 0.4; // 血霧緩緩旋轉
+        eyeMistG.rotation.z += dt * 0.4; 
     }
 
     const eyePulse = 1 + 0.15 * heartBeat;
     jupEyeG.scale.setScalar(eyePulse);
     
-    // 增強打在眼球表面的高光，凸顯濕潤感
     horrorPointLight.position.copy(camera.position); 
     horrorPointLight.intensity = 8 + 12 * heartBeat;
   }
@@ -1758,7 +1832,6 @@ function animate() {
   }
 
   PCONF.forEach(pc => {
-    // 恐怖模式下所有星體瘋狂自轉
     if(pMesh[pc.id]) pMesh[pc.id].rotateY(dt * (HORROR.active ? (2.0 + Math.random()*0.5) : 0.12));
   });
   if(earthMesh) earthMesh.rotateY(dt * (HORROR.active ? 2.5 : 0.18));
@@ -1807,7 +1880,6 @@ function initButtons() {
   const btnSpin=document.getElementById('cb-spin');
   if(btnSpin)btnSpin.addEventListener('click',()=>{S.spin=!S.spin;btnSpin.classList.toggle('on',S.spin);playingTime=S.spin;const tbPlay=document.getElementById('tb-play');if(tbPlay)tbPlay.textContent=playingTime?'⏸ 暫停':'▶ 播放';});
 
-  // Time Slider UI Logic - 直接掛載檢測函數
   const tRange = document.getElementById('time-range'), tLbl = document.getElementById('time-lbl');
   if(tRange) {
       tRange.addEventListener('input', () => {
@@ -1816,7 +1888,6 @@ function initButtons() {
         const offMs = parseInt(tRange.value) * 60 * 60 * 1000;
         const tgt = new Date(new Date(Date.UTC(userData.y, userData.m-1, userData.d, userData.h, userData.mn)).getTime() + offMs);
         if(tLbl) tLbl.textContent = `${tgt.getUTCFullYear()}.${String(tgt.getUTCMonth()+1).padStart(2,'0')}.${String(tgt.getUTCDate()).padStart(2,'0')} ${String(tgt.getUTCHours()).padStart(2,'0')}:${String(tgt.getUTCMinutes()).padStart(2,'0')}`;
-        // 無縫檢測：當拖動滑桿抵達對應日期，直接觸發恐怖事件
         checkHorrorEvent(tgt.getUTCFullYear(), tgt.getUTCMonth()+1, tgt.getUTCDate());
       });
   }
