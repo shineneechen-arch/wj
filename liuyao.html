@@ -394,8 +394,132 @@
 
     <a href="liuyao64.html" id="gua-dictionary-trigger" class="gua-dict-btn" data-t="六十四卦大全">六十四卦大全</a>
 
-    <!-- 整合全部 JS 逻辑 -->
     <script>
+        /* =========================================================================
+           【深渊凝视：玄学防作弊模块】 
+           不在于惊吓，而在于缓慢蔓延的压抑感与“窥视因果”的心理恐惧
+           ========================================================================= */
+        let isDestinyBroken = false;
+
+        function playVoidWhisper() {
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                
+                // 产生一种双耳心跳/极低频的耳鸣压抑感 (Binaural beating / Sub-bass)
+                const osc1 = ctx.createOscillator();
+                const osc2 = ctx.createOscillator();
+                const gain = ctx.createGain();
+
+                osc1.type = 'sine';
+                osc2.type = 'sine';
+                
+                osc1.frequency.setValueAtTime(40, ctx.currentTime); // 极低频
+                osc2.frequency.setValueAtTime(42, ctx.currentTime); // 产生2Hz的跳动感
+
+                // 随着时间推移，声音缓缓变大，给人喘不过气的压迫感
+                gain.gain.setValueAtTime(0, ctx.currentTime);
+                gain.gain.linearRampToValueAtTime(0.8, ctx.currentTime + 10);
+
+                osc1.connect(gain);
+                osc2.connect(gain);
+                gain.connect(ctx.destination);
+
+                osc1.start();
+                osc2.start();
+            } catch (e) {
+                // 静默失败，不影响视觉呈现
+            }
+        }
+
+        function triggerKarmaBackfire() {
+            if (isDestinyBroken) return;
+            isDestinyBroken = true;
+
+            playVoidWhisper();
+
+            // 1. 神秘而令人不安的控制台输出
+            console.clear();
+            console.log("%c你在底层代码里，寻找自己的死局吗？", "color: #555555; font-size: 14px; font-family: 'Courier New', monospace;");
+            
+            setTimeout(() => {
+                console.log("%c排盘阵列的物理保护已被你剥离。", "color: #880000; font-size: 16px; font-weight: bold;");
+            }, 2000);
+            
+            setTimeout(() => {
+                console.log("%c卦象毁了... 因果出来了。", "color: #ff0000; font-size: 20px; font-weight: bold; text-shadow: 0 0 8px red;");
+            }, 4500);
+
+            // 2. 视觉坍缩：缓慢且死寂
+            document.head.innerHTML += `
+                <style>
+                    #void-overlay {
+                        position: fixed; inset: 0; background: #000; z-index: 99999;
+                        display: flex; justify-content: center; align-items: center;
+                        opacity: 0; transition: opacity 3s ease-in;
+                        cursor: none; pointer-events: all;
+                    }
+                    .void-text {
+                        color: #1a0000; font-family: "STZhongsong", serif; font-size: 1.5rem; letter-spacing: 15px;
+                        text-shadow: 0 0 10px rgba(100,0,0,0.5); font-weight: bold;
+                        animation: pulse-dark 4s infinite alternate; text-align: center;
+                    }
+                    @keyframes pulse-dark {
+                        0% { color: #1a0000; text-shadow: 0 0 5px rgba(50,0,0,0.2); }
+                        100% { color: #5a0000; text-shadow: 0 0 20px rgba(255,0,0,0.6); }
+                    }
+                </style>
+            `;
+            
+            const voidDiv = document.createElement('div');
+            voidDiv.id = 'void-overlay';
+            voidDiv.innerHTML = `<div class="void-text">窥探天机者<br><br><span style="font-size: 0.8rem; letter-spacing: 5px; color:#333;">必受其累</span></div>`;
+            document.body.appendChild(voidDiv);
+
+            // 延迟触发全黑
+            setTimeout(() => {
+                voidDiv.style.opacity = '1';
+                // 彻底摧毁背后的DOM，防止玩家通过审查元素删掉遮罩
+                setTimeout(() => {
+                    document.body.innerHTML = '';
+                    document.body.appendChild(voidDiv);
+                }, 3000);
+            }, 500);
+        }
+
+        // 拦截右键菜单
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+            triggerKarmaBackfire();
+        });
+
+        // 拦截 F12 等快捷键
+        document.addEventListener('keydown', function(e) {
+            if (
+                e.key === 'F12' || 
+                (e.ctrlKey && e.shiftKey && e.key === 'I') || 
+                (e.metaKey && e.altKey && e.key === 'i') ||
+                (e.ctrlKey && e.key === 'u') ||
+                (e.metaKey && e.altKey && e.key === 'u')
+            ) {
+                e.preventDefault();
+                triggerKarmaBackfire();
+            }
+        });
+
+        // Debugger 陷阱 (防菜单栏开启)
+        setInterval(function() {
+            const start = performance.now();
+            debugger; 
+            if (performance.now() - start > 100) {
+                triggerKarmaBackfire();
+            }
+        }, 1000);
+
+
+        /* =========================================================================
+           以下为原有业务代码，保持完全一致
+           ========================================================================= */
+
         // --- 1. 背景动画 ---
         (function(){
             const c = document.getElementById('bg-canvas');
@@ -456,6 +580,7 @@
             for(let i = 0; i < NUM_PARTICLES; i++) particles.push(new Particle());
             
             function loop() {
+                if (isDestinyBroken) return; // 若因果破裂，停止动画渲染以节约性能并配合暗场
                 ctx.fillStyle = 'rgba(5, 5, 5, 0.25)'; 
                 ctx.fillRect(0, 0, W, H);
                 let glow = ctx.createRadialGradient(W/2, H/2, 0, W/2, H/2, Math.max(W,H)/2);
@@ -481,8 +606,7 @@
             }
         }
 
-        // --- 3. 核心排盘逻辑 (你原有的代码全盘接入) ---
-        // ================= 繁简翻译引擎 (字符级转换) =================
+        // --- 3. 核心排盘逻辑 ---
         const s2t_map = {
             "阴":"陰","阳":"陽","动":"動","变":"變","宫":"宮","财":"財","孙":"孫","龙":"龍","陈":"陳",
             "复":"復","师":"師","临":"臨","谦":"謙","归":"歸","丰":"豐","恒":"恆","济":"濟","随":"隨",
@@ -541,13 +665,11 @@
             });
         });
 
-        // ================= 数据初始化 =================
         let currentYaos = [];
         let currentDayTgIdx = 0; 
         let currentMonthZhiIdx = 0; 
         let manualYaos = [];     
 
-        // ================= 神煞计算算法 =================
         const DZ_ARR = ["子","丑","寅","卯","辰","巳","午","未","申","酉","戌","亥"];
         function getShensha(tgIdx, dzIdx) {
             let tg_ss = [];
@@ -604,7 +726,6 @@
             `;
         }
 
-        // ================= 五行旺相休囚死算法 =================
         function getWangXiang(monthZhiIdx, yaoWx) {
             let monthWx = "土";
             if ([0, 11].includes(monthZhiIdx)) monthWx = "水"; 
@@ -848,7 +969,6 @@
             renderFinalResult();
         }
 
-        // ================= 八宫纳甲核心算法 =================
         const DZ = ["子","丑","寅","卯","辰","巳","午","未","申","酉","戌","亥"];
         const DZ_WX = ["水","土","木","木","土","火","火","土","金","金","土","水"];
         const WX_IDX = {"木":0, "火":1, "土":2, "金":3, "水":4};
@@ -939,7 +1059,6 @@
             };
         }
 
-        // ================= 最终渲染 =================
         window.renderFinalResult = function() {
             showScreen('screen-result');
             
@@ -1024,7 +1143,6 @@
             }
         }
 
-        // ================= 导出图片功能 =================
         window.exportGuaImage = function() {
             if (typeof html2canvas === 'undefined') {
                 alert(t("截图引擎未加载完成，请稍后重试或检查网络。"));
