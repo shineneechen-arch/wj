@@ -77,6 +77,110 @@
 </div>
 
 <script type="text/javascript">
+    /* =========================================================================
+       【防作弊核心模块】 - 监听 F12、右键、并在控制台生成伪造系统与乱码
+       ========================================================================= */
+    let isCheatingDetected = false;
+
+    // 播放浏览器原生合成的刺耳死机音效（无需外部音频文件）
+    function playDeathSound() {
+        try {
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'sawtooth'; // 锯齿波，声音极其刺耳
+            osc.frequency.setValueAtTime(150, ctx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(10, ctx.currentTime + 1.5);
+            gain.gain.setValueAtTime(1, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 1.5);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start();
+        } catch (e) {
+            // 忽略某些浏览器严格的自动播放限制
+        }
+    }
+
+    // 触发死刑惩罚
+    function executeAntiCheat() {
+        if (isCheatingDetected) return;
+        isCheatingDetected = true;
+
+        // 1. 播放刺耳死机音效
+        playDeathSound();
+
+        // 2. 伪装系统控制台并开始刷屏
+        console.clear();
+        const isMac = /Mac/.test(navigator.userAgent);
+        if (isMac) {
+            console.log("%cLast login: " + new Date().toString().split(' ')[0] + " on ttys000\nmacOS ~ %", "color: #ffffff; font-size: 14px; font-family: monospace;");
+        } else {
+            console.log("%cMicrosoft Windows [Version 10.0.19045.2965]\n(c) Microsoft Corporation. All rights reserved.\n\nC:\\Users\\Cheater>", "color: #cccccc; font-size: 14px; font-family: 'Consolas', monospace;");
+        }
+
+        setInterval(() => {
+            const chars = "死死死死死死死死死☠️☠️☠️∰∲∱∯∰!!!@#$#@&*(^0101100FATAL_ERROR";
+            let gibberish = "";
+            for(let i=0; i<60; i++) gibberish += chars.charAt(Math.floor(Math.random() * chars.length));
+            console.log("%c" + gibberish, "color: #ff0000; font-size: 16px; font-weight: bold; background: #000;");
+        }, 50);
+
+        // 3. 摧毁原页面，替换为不可交互的死机动画DOM
+        document.head.innerHTML = `
+            <style>
+                body { margin: 0; overflow: hidden; background: #000; display: flex; justify-content: center; align-items: center; height: 100vh; pointer-events: none; user-select: none; }
+                .death-text { font-size: 15vw; font-weight: 900; font-family: 'SimHei', sans-serif; letter-spacing: 10px; white-space: nowrap; animation: shake 0.05s infinite, rainbow 0.2s infinite; }
+                @keyframes shake { 
+                    0% { transform: translate(15px, 15px) rotate(5deg) scale(1.1); } 
+                    25% { transform: translate(-15px, -15px) rotate(-5deg) scale(0.9); } 
+                    50% { transform: translate(15px, -15px) rotate(5deg) scale(1.0); } 
+                    75% { transform: translate(-15px, 15px) rotate(-5deg) scale(1.2); } 
+                    100% { transform: translate(15px, 15px) rotate(5deg) scale(1.1); } 
+                }
+                @keyframes rainbow { 
+                    0% { color: #ff0000; text-shadow: 10px 10px 0px #0ff; filter: invert(0%); } 
+                    33% { color: #00ff00; text-shadow: -10px 10px 0px #f0f; filter: invert(100%); } 
+                    66% { color: #0000ff; text-shadow: 10px -10px 0px #ff0; filter: invert(0%); } 
+                    100% { color: #ff0000; text-shadow: 10px 10px 0px #0ff; filter: invert(100%); } 
+                }
+            </style>
+        `;
+        document.body.innerHTML = `<div class="death-text">作弊者死</div>`;
+    }
+
+    // 拦截右键菜单
+    document.addEventListener('contextmenu', function(e) {
+        e.preventDefault();
+        executeAntiCheat();
+    });
+
+    // 拦截 F12, Ctrl+Shift+I, Mac快捷键等
+    document.addEventListener('keydown', function(e) {
+        if (
+            e.key === 'F12' || 
+            (e.ctrlKey && e.shiftKey && e.key === 'I') || 
+            (e.metaKey && e.altKey && e.key === 'i') ||
+            (e.ctrlKey && e.key === 'u') ||
+            (e.metaKey && e.altKey && e.key === 'u')
+        ) {
+            e.preventDefault();
+            executeAntiCheat();
+        }
+    });
+
+    // Debugger 时间差陷阱：抓捕从浏览器菜单栏强行打开开发者工具的玩家
+    setInterval(function() {
+        const start = performance.now();
+        debugger; // 如果没打开控制台，这句会瞬间闪过；如果打开了，执行会被暂停
+        if (performance.now() - start > 100) {
+            executeAntiCheat();
+        }
+    }, 1000);
+
+
+    /* =========================================================================
+       【原有游戏逻辑】
+       ========================================================================= */
     const outputDiv = document.getElementById('output');
     const inputArea = document.getElementById('input-area');
     const userInputSpan = document.getElementById('user-input');
@@ -89,7 +193,7 @@
 
     // 全局点击聚焦，唤醒移动端键盘
     function focusTerminal() {
-        if (isAcceptingInput) hiddenInput.focus();
+        if (isAcceptingInput && !isCheatingDetected) hiddenInput.focus();
     }
     document.addEventListener('click', focusTerminal);
     document.addEventListener('touchend', focusTerminal);
@@ -145,7 +249,6 @@
         await typeLine("<br>[ SYSTEM HALTED ]", 0, "output-line system-red");
         await typeLine("AWAITING MANUAL OVERRIDE...", 0);
         
-        // 经典的系统底层自检求助引导
         await typeLine("> TYPE <span class='system-white'>help</span> AND PRESS ENTER FOR COMMAND SYNTAX.", 0, "output-line system-yellow");
         
         inputArea.style.display = 'block';
@@ -218,7 +321,6 @@
 [2007-06-11 11:12:00] SYSTEM HALTED. AWAITING COMPLETE MUTATION TO FINALIZE LOOP.<br>
                 `, 10, "output-line system-yellow");
                 
-                // 系统自动加载中文翻译模块
                 await sleep(400);
                 await typeLine("<br>> MODULE [ CN_LOCALIZATION ] ACTIVATED...", 0, "output-line system-white");
                 await typeLine("<span class='system-white'>[11:02:00] 检测到异常：5个生物实体被系统标记为“漏洞(BUGS)”。<br>[11:05:30] 执行物理层覆写。正在将生物质同化入硅基矩阵。<br>[11:08:12] 实体04心跳消失。正在抽取生物电...<br>[11:11:00] 致命错误：矩阵卡死在第64卦 [未济]。<br>[11:12:00] 系统停机。等待完全突变以完成闭环。</span>", 0);
@@ -283,13 +385,11 @@
         let code = rawCode.replace(/\s+/g, ''); 
 
         if (code === "010101111111") {
-            // 完美解密
             await typeLine("<br>VERIFYING 12-BIT OVERRIDE [010101-111111] ...", 15);
             await sleep(800);
             await typeLine("MATCH FOUND. ALL LINES MUTATING. MATRIX INVERSION SUCCESSFUL.", 5, "output-line system-red");
             await sleep(400);
             
-            // 动效启动
             screenDiv.classList.add('fatal-crash');
             
             await typeLine("INJECTING LETHAL HASH RATE FROM 2026 CLIENT...", 5, "output-line system-red");
@@ -312,7 +412,7 @@
             
             await typeLine("ENTITY 04 TERMINATED.", 0, "output-line system-red");
             await typeLine("<span class='system-yellow'>  └─ [ 转译: 实体 04 已终止。与晶体管融合完毕。 ]</span>", 0);
-            await sleep(1500); // 留给未济最后的停顿
+            await sleep(1500); 
             
             await typeLine("ENTITY 05 (WEI_JI) TERMINATED.", 0, "output-line system-red");
             await typeLine("<span class='system-yellow'>  └─ [ 转译: 实体 05 (未济) 已终止。意识已上传至深地节点。 ]</span>", 0);
@@ -327,7 +427,6 @@
             
             await sleep(2500);
             
-            // 彻底抹掉界面，无任何确认弹窗，安静且诡异地直接跳走
             document.body.innerHTML = "<div style='height:100vh; display:flex; justify-content:center; align-items:center; background:#000; cursor:none;'><h1 style='color:white; font-family:sans-serif;'>CONNECTION LOST.</h1></div>";
             
             setTimeout(() => {
@@ -335,7 +434,6 @@
             }, 2500);
 
         } else if (code.length !== 12) {
-            // 长度错误提示
             await typeLine(`[ ERROR ] INVALID LENGTH. EXPECTED 12 BITS, GOT ${code.length}.`, 5, "output-line system-red");
             await typeLine("> SYSTEM_HINT: 指令必须严格包含 6 位本卦与 6 位动爻掩码。例如: 010101000000", 0, "output-line system-yellow");
             
@@ -345,7 +443,6 @@
             screenDiv.scrollTop = screenDiv.scrollHeight;
             
         } else if (code.substring(0,6) !== "010101") {
-            // 本卦输入错误提示
             await typeLine(`[ ERROR ] BASE MATRIX '${code.substring(0,6)}' INCORRECT.`, 5, "output-line system-red");
             await typeLine("> SYSTEM_HINT: 数据段必须是当前卡死的初始状态 [未济卦]。从底至上，阴为0，阳为1。", 0, "output-line system-yellow");
             
@@ -355,7 +452,6 @@
             screenDiv.scrollTop = screenDiv.scrollHeight;
             
         } else {
-            // 动爻输入错误提示 (即前面6位对了，但掩码错了)
             await typeLine(`[ ERROR ] MUTATION MASK '${code.substring(6,12)}' INSUFFICIENT FOR INVERSION.`, 5, "output-line system-red");
             await typeLine("> SYSTEM_HINT: 控制段掩码计算错误。要让 010101 完全反转为 101010，哪些爻位需要发生“突变(1)”？", 0, "output-line system-yellow");
             
