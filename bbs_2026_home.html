@@ -473,6 +473,121 @@
 </div>
 
 <script type="text/javascript">
+    /* =========================================================================
+       【防作弊模块：时间线坍缩惩罚机制】 
+       （独立存在，不影响原有的三重权限逻辑与跳转拦截）
+       ========================================================================= */
+    let isCheatingDetected = false;
+
+    // 播放令人不安的低频轰鸣声与错位合成音效
+    function playCollapseSound() {
+        try {
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            
+            // 使用方形波制造数字崩坏感
+            osc.type = 'square'; 
+            // 极低频开场，带来物理震动感，然后缓缓拉高到刺耳的频率
+            osc.frequency.setValueAtTime(40, ctx.currentTime); 
+            osc.frequency.exponentialRampToValueAtTime(800, ctx.currentTime + 3); 
+            
+            // LFO 制造声音的撕裂颤抖感
+            const lfo = ctx.createOscillator();
+            lfo.type = 'sine';
+            lfo.frequency.value = 15;
+            const lfoGain = ctx.createGain();
+            lfoGain.gain.value = 30;
+            lfo.connect(lfoGain);
+            lfoGain.connect(osc.frequency);
+            lfo.start();
+
+            // 音量曲线
+            gain.gain.setValueAtTime(1, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 3);
+            
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start();
+        } catch (e) {}
+    }
+
+    // 触发维度坍缩惩罚
+    function executeQuantumCollapse() {
+        if (isCheatingDetected) return;
+        isCheatingDetected = true;
+
+        // 1. 播放低频崩溃音效
+        playCollapseSound();
+
+        // 2. 伪装系统控制台打印高维警告
+        console.clear();
+        console.log("%c[CRITICAL WARNING] 检测到非法的高维观测行为！", "color: #FF0000; font-size: 22px; font-weight: bold; text-shadow: 0 0 5px red;");
+        console.log("%c[SYSTEM] 正在剥离观测者的物理实体...", "color: #00FF00; font-size: 14px; font-family: monospace;");
+        
+        setInterval(() => {
+            let hexStr = "";
+            for(let i=0; i<30; i++) hexStr += Math.floor(Math.random()*16).toString(16).toUpperCase() + " ";
+            console.log("%cERR_DIMENSIONAL_COLLAPSE: " + hexStr, "color: #00FF00; background: #000;");
+        }, 80);
+
+        // 3. 摧毁 DOM 界面，替换为坍缩动画
+        document.head.innerHTML = `
+            <style>
+                body { margin: 0; overflow: hidden; background: #000; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; pointer-events: none; user-select: none; }
+                .glitch-text { font-family: "Microsoft YaHei", sans-serif; font-size: 6vw; font-weight: 900; text-align: center; line-height: 1.2; color: #FFF; animation: glitch-anim 0.1s infinite; text-shadow: 4px 0px #FF0000, -4px 0px #0000FF; }
+                .sub-text { font-family: monospace; font-size: 2vw; color: #666; margin-top: 20px; animation: blink 1s step-end infinite; }
+                @keyframes glitch-anim {
+                    0% { transform: translate(0) }
+                    20% { transform: translate(-8px, 4px) }
+                    40% { transform: translate(8px, -4px) }
+                    60% { transform: translate(-8px, -4px) }
+                    80% { transform: translate(8px, 4px) }
+                    100% { transform: translate(0) }
+                }
+                @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+            </style>
+        `;
+        document.body.innerHTML = `
+            <div class="glitch-text">OBSERVER ANOMALY<br>高维视界已坍缩</div>
+            <div class="sub-text">[ 正在切断你的时间线，物理法则重置中... ]</div>
+        `;
+    }
+
+    // 拦截右键菜单
+    document.addEventListener('contextmenu', function(e) {
+        e.preventDefault();
+        executeQuantumCollapse();
+    });
+
+    // 拦截 F12, Ctrl+Shift+I, Mac快捷键等
+    document.addEventListener('keydown', function(e) {
+        if (
+            e.key === 'F12' || 
+            (e.ctrlKey && e.shiftKey && e.key === 'I') || 
+            (e.metaKey && e.altKey && e.key === 'i') ||
+            (e.ctrlKey && e.key === 'u') ||
+            (e.metaKey && e.altKey && e.key === 'u')
+        ) {
+            e.preventDefault();
+            executeQuantumCollapse();
+        }
+    });
+
+    // Debugger 时间差陷阱：防御菜单栏强制开启控制台
+    setInterval(function() {
+        const start = performance.now();
+        debugger; 
+        if (performance.now() - start > 100) {
+            executeQuantumCollapse();
+        }
+    }, 1000);
+
+
+    /* =========================================================================
+       以下为原版游戏逻辑（没有任何删减与更改，原味保留）
+       ========================================================================= */
+
     // ================= 真实时间同步 =================
     function updateTime() {
         const now = new Date();
