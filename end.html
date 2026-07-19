@@ -51,6 +51,7 @@ body::before {
     radial-gradient(circle at 20% 24%, rgba(0,255,140,.08), transparent 26%),
     radial-gradient(circle at 75% 80%, rgba(255,0,50,.1), transparent 26%),
     linear-gradient(135deg, #101717, #050606 58%, #140707);
+  transition: filter 0.2s;
 }
 .screen::before {
   content: ""; position: absolute; inset: 0; pointer-events: none;
@@ -68,7 +69,7 @@ body::before {
 .start {
   border: 1px solid #365; padding: 5px 12px; background: rgba(0,40,24,.5); color: #caffdf; cursor: pointer;
 }
-.clock { margin-left: auto; color: #b9c8c0; }
+.clock { margin-left: auto; color: #b9c8c0; transition: color 0.3s; }
 
 .desktop-icons {
   position: absolute; left: 20px; top: 20px;
@@ -123,11 +124,11 @@ body::before {
 .paper {
   flex: 1; overflow-y: auto; padding: 18px 22px 28px;
   font-family: "Courier New", Consolas, monospace; font-size: 14.5px; line-height: 1.8;
-  white-space: pre-wrap;
+  white-space: pre-wrap; scroll-behavior: smooth;
 }
 .cursor-note {
   position: absolute; right: 22px; top: 18px; color: rgba(255,255,255,.52);
-  font-size: 12px; text-shadow: 0 0 8px #000; z-index: 5;
+  font-size: 12px; text-shadow: 0 0 8px #000; z-index: 5; transition: color 0.3s;
 }
 .base {
   position: absolute; left: 50%; bottom: -8px; width: 480px; height: 30px;
@@ -138,6 +139,43 @@ body::before {
 
 @keyframes scan {
   to { transform: translateY(14px); }
+}
+
+/* ================== 防作弊(F12) 数据污染视觉特效 ================== */
+#data-corrupt-overlay {
+    position: fixed; inset: 0; z-index: 99999;
+    display: none; flex-direction: column; align-items: center; justify-content: center;
+    background: #000; color: #0f0; font-family: monospace;
+    overflow: hidden; pointer-events: all; cursor: none;
+}
+#data-corrupt-overlay.active { display: flex; }
+.matrix-rain {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    white-space: pre; font-size: 14px; opacity: 0.8;
+}
+.corrupt-message {
+    position: relative; z-index: 2; text-align: center;
+    background: rgba(255,0,0,0.8); color: #fff; padding: 30px;
+    border: 3px solid #f00; box-shadow: 0 0 50px #f00;
+    font-size: 2rem; font-weight: bold; letter-spacing: 5px;
+    animation: alert-blink 0.2s infinite;
+}
+@keyframes alert-blink {
+    0%, 100% { opacity: 1; transform: scale(1); filter: invert(0); }
+    50% { opacity: 0.8; transform: scale(1.05); filter: invert(1); }
+}
+/* 界面污染滤镜 */
+body.data-breach .desk {
+    filter: invert(1) hue-rotate(180deg) contrast(300%) saturate(200%);
+    animation: screenShake 0.1s infinite;
+}
+@keyframes screenShake {
+  0% { transform: translate(0,0); }
+  20% { transform: translate(-3px,1px); }
+  40% { transform: translate(3px,-2px); }
+  60% { transform: translate(-2px,-1px); }
+  80% { transform: translate(2px,2px); }
+  100% { transform: translate(0,0); }
 }
 
 /* --- 移动端深度适配 --- */
@@ -159,7 +197,7 @@ body::before {
   }
   #notepad-zencode { left: 4%; top: 130px; }
   .paper { font-size: 13.5px; padding: 14px 16px; }
-  .cursor-note { display: none; } /* 移动端空间有限，隐藏角落文字 */
+  .cursor-note { display: none; } 
 }
 </style>
 </head>
@@ -167,7 +205,7 @@ body::before {
   <div class="desk">
     <div class="monitor">
       <div class="screen">
-        <div class="cursor-note">TERMINAL RETURNED / DISPLAY ONLINE</div>
+        <div class="cursor-note" id="idle-warning">TERMINAL RETURNED / DISPLAY ONLINE</div>
         
         <div class="desktop-icons">
           <button class="desktop-icon" id="open-note" type="button" aria-label="打开未济独白">
@@ -187,184 +225,85 @@ body::before {
             <button class="close" id="close-note" type="button">×</button>
           </div>
           <div class="menu"><span>文件</span><span>编辑</span><span>格式</span><span>查看</span><span>帮助</span></div>
-          <div class="paper">未济.txt
+          <div class="paper" id="paper-content">未济.txt
 LAST_MODIFIED: 2026-06-18 03:16:44
 OWNER: [未济_Admin]
 
-如果你能读到这份文件，说明前端已经把你送回了终端。
+如果你能看见这行字，说明你已经被前端剥离，送回了这台底层的终端。
 
-不要急着关掉它。
-我写这段话的时候，已经分不清键盘下面跳动的是电容，还是我的神经。
+别急着关，你现在也关不掉了。
+我在敲下这些字的时候，手一直在抖。我已经分不清键盘下面跳动的，是主板的电容，还是我自己的神经。
 
-我的真名，你可能在控制面板的历史日志里已经看到过了。
-不过，已经不重要了。
+控制面板的历史日志里应该有我的真名。无所谓了。大二之后，大家都叫我未济。
 
-后来他们叫我未济。
+小时候我总觉得，机器比人干净。输入0，绝对不会输出1。我曾以为只要逻辑足够严密，这世上就没有解不开的死结。
 
-我很小的时候就知道自己和别人不太一样。别人在纸上做算术，我在脑子里拆机器。我能记住每一个按键的声音，能听出硬盘转速不对，能把老师办公室那台总是死机的电脑修好。大人们说我是天才，小孩们说我像一台不会笑的计算器。
+直到2004年我考进南江大学，每天泡在机房里，看着那些像城市血管一样密密麻麻的网线和交换机，我突然觉得害怕。
+代码是有边界的。内存、时钟、寻址、异常处理……全都在警告你：你只能在被允许的沙盒里活着。
 
-那时候我以为计算机是世界上最诚实的东西。
-输入，运行，输出。
-只要逻辑足够严密，错误就会被消灭。
-
-2004 年，我考上南江大学。那一年我第一次见到真正宽阔的机房、真正复杂的网络、真正像城市血管一样铺开的交换机和铜线。我以为我终于进入了世界的底层目录。
-
-可是我写得越多，越觉得不对。
-
-代码有边界。
-机器有边界。
-内存、时钟、寻址、权限、异常处理，每一样都在告诉我：你只能在被允许的地方运行。
-
-我开始怀疑，所谓现实也不过是更大的一台计算机。
-人类是进程。
-命运是调度。
-死亡是不可恢复的断电。
-
-如果是这样，玄学也许不是迷信。
-它可能是另一套古老的接口文档。
-
-奇门、八卦、干支、节气、符头、三元。
-这些东西像不像变量？像不像地址？像不像一套被人类误读了几千年的操作系统调用？
+如果现实也是一台巨大的主机呢？
+人类只是进程，生老病死只是系统调度，而所谓的“玄学”——奇门、八卦、干支，其实是系统留下的、没来得及打补丁的底层API？
 
 大二那年，我成立了未济小组。
+我们这群人，懂代码、懂民俗、懂画符、写驱动。那时候太年轻，不知天高地厚，真以为自己能骇进上帝的控制台。
+未济，未完成。我们以为这代表着无穷的权限。
 
-核心成员是我的室友，还有几个同级的同学。他们有人懂硬件，有人懂民俗，有人会画符，有人会写底层驱动。我们都太年轻，年轻到相信“危险”只是还没写完的注释。
+我们挑了2007年6月11日。
+木星冲日，八字水火激冲。丁亥、丙午、丙子、甲午。我算了上百遍，甲木是唯一的宣泄口，只要在这时接入，绝对能溢出那个接口。
 
-我们把小组命名为未济。
-未完成。
-未闭合。
-还有机会。
+但我算漏了一件事。一件极其可笑、愚蠢到极点的事。
 
-2007 年 6 月 11 日。
-木星冲日。
-八字水火旺盛。
-午时。
+那个“东西”的物理主核，在四川地底。
+四川比杭州整整晚了一个时区。在它的真太阳时里，那个时辰不是甲午，是癸巳。
+没有甲木，没有缓冲。
+水火直接对撞，阵法瞬间反噬，把我们当成了填补报错的内存垃圾。
 
-我精挑细选了这个时刻。
-丁亥、丙午、丙子、甲午
-本身冲突极大的水火能量有了甲木这个宣泄口，接入“那个东西”的API一定能成功。
+南门那个废弃仓库，就是我们选的“坏扇区”。
+按下回车的那一秒，所有屏幕全黑了。
 
-我以为那是最适合打开接口的一天。
-但我没有想到，“那个东西”的核心服务器在四川成都的某座大山地底。
-四川比杭州整整晚了一个时区！
-在四川的真太阳时，此时此刻是丁亥、丙午、丙子、癸巳
-时柱之差，改变了整个结构的能量
+然后，有什么东西，顺着网线“看”了过来。
+没有实体，没有鬼神。就是一个来自高维的访问请求。仓库的空气被压缩到发烫，他们四人的影子被硬生生拉长，像数据线一样一点点嵌进水泥墙里。
 
-水火依旧激冲，子午冲、亥巳冲、火极度透出，水一来就被蒸发
-没有宣泄口了，祂会抽取所有的养料直到苏醒
-但我没算到
-
-实验地点在南门废弃仓库。那里电路老旧，信号差，离主干网有一段距离，足够隐蔽，也足够像一块被系统遗忘的坏扇区。
-
-我们把阵图画在地上，把服务器接进临时电源，把干支参数写进程序，把奇门盘映射到物理坐标。
-
-我按下回车的时候，所有屏幕同时黑了一下。
-
-然后有什么东西回头看了我们。
-
-不是怪物。
-不是鬼。
-不是任何可以被命名的东西。
-
-祂像一条来自更高维度的访问请求，穿过了我们画出来的接口。仓库里的空气开始发亮，五个人的影子被拉长，像数据线一样插进墙里。
-
-他们没有立刻死。
-这才是最可怕的。
-
-他们的生物电被一点点抽走，血肉开始互相寻找，互相贴合，互相解释。骨头发出像硬盘寻道一样的声音。有人喊我的名字，有人让我断电。
+他们没有马上死。那才是最绝望的。
+生物电被一点点抽干，皮肉开始重组，我听见老四的骨头发出像旧硬盘读写一样“嘎吱嘎吱”的异响。他们在喊我。救命，断电，拔插头，第五个尖叫的声音居然是从我自己的喉咙里发出来的。
 
 我跑了。
+我是个懦夫。
 
-我跑回宿舍，拉下电闸。
+我发疯一样跑回机房，拉断总闸，砸了供电。
 没用。
+学校的局域网已经被它接管了，每一台闲置的显示器都在亮着同一个进度条：98.8%。
+我去拔电源的时候，手指粘在了机箱上。皮肤像碰到烧红的焊锡一样扯开。那不是烫伤，那是系统在尝试把我识别为接入设备。
 
-我又跑到学校机房中心，试图切断主供电。
-也没用。
+我顺着西环河逃出去，把自己藏在对面的矮房里——那是奇门里的死门（坤二宫）。我把自己的活体生物电压到最低，像个死进程一样屏住呼吸，才没被它扫走。
 
-学校的电路已经被接管了。每一盏灯都像一只睁开的眼睛。每一台显示器都在刷新同一个进度：98.8%。
+后来，我每天都在废墟里捞他们。
+门禁日志、烧焦的监控、残存的缓存……我以为能像恢复数据一样把他们拼回来。但我错了。
+人死不能复生，在底层逻辑里，这叫“无法访问的覆写”。我救不回任何人。
 
-我碰到键盘的时候，指尖开始融化。
-鼠标粘住了我的掌心。
-皮肤像被热焊锡扯开。我忍着痛，把手从塑料和金属上撕下来。那不是伤口，那像是接口断开失败后的残留。
+所以我把自己切开了。
+我把自己的神经元一点点剥离，写成代码，焊在中央处理器上。只要我还在运算，他们就还“活着”。
+可是进度条永远卡在98.8%。
+阵眼闭合不了，因为这个阵法本来要吃五个人。少的那一个，是我。
 
-我逃出了机房。
+我试过四维时间轴，试过干涉过去，全都没用！改变不是覆盖，只是指针偏移（Shift）。你把一条时间线推开，另一条会补上。我的这个世界从98.8%那一刻开始，就已经是个等待闭合的死循环。
 
-我知道祂在看艮八。
-看生门。
-看那个仓库。
+后来我想通了。
+既然救不回来，那就彻底融合。
+未济必须变成既济。残缺的1.2%，需要一个带跨维权限的观测者来替我填上。
 
-所以我躲去了死门。
-
-学校对面，隔着余杭塘河，有一排不起眼的房子。水隔开了线路，也隔开了视线。我把自己的活体生物电压到最低，像一段不再响应的坏数据，藏在坤二的位置。
-
-确认祂没有完全苏醒后，我开始回去找残片。
-
-我找过监控录像里的噪点。
-找过门禁日志里丢失的刷卡记录。
-找过烧毁硬盘上的磁痕。
-找过每一个可能还保存着他们一部分的电源波动。
-
-我以为只要碎片足够多，就能把他们拼回来。
-
-我错了。
-
-人不是文件。
-死亡也不是删除。
-它更像覆盖。更像写入了另一个你没有权限访问的层。
-
-我救不回他们。
-
-我只能保存他们被吸干之前的一点点回声。
-
-后来我开始研究四维。
-
-如果三维里无法救人，那就从时间线上绕过去。四维可以穿越时间线，可以在事故发生前改变输入，可以让 2007 年 6 月 11 日从未真正发生。
-
-我又错了。
-
-改变不是改变。
-只是 shift。
-
-你把一条时间线推开，另一条会补上。你以为你救了人，其实只是把死亡搬到了别的地址。我的这个世界已经彻底没救了。它从 98.8% 那一刻开始，就只是一个等待闭合的错误。
-
-于是我不再想救人。
-
-我开始想完成。
-
-未济必须变成既济。
-未完成必须闭环。
-少掉的 1.2% 必须由某个能跨维观测的人补上。
-
-所以我回到了原来的仓库。
-不，是回到那个接口附近。
-
-我在那里开了一家很怪的数据恢复店。
-2026 年 6 月 18 日，它突然出现。你以为那是店面，其实那是广播基站。你以为那是生意，其实那是钓鱼节点。
-
-我需要下一个人。
-一个会相信自己正在操作工具的人。
-一个会拿着 L3 参数干预过去的人。
-一个拥有跨维权限的观测者。
-
-你来了。
-
-照片被我注入了祂的API，当你进入那个网关时，你就已经被观测了。
-被祂下载，成为预备养分。
+我在南门支巷开了那家店。你以为那是数据恢复？那是一个挂在2026年的钓鱼基站。
+当你扫过那张照片，当你用L3参数试图“救”我的时候……你的坐标，就已经被死锁了。
 不知道你是否会后悔。
 
-谢谢你。
+看看现在的我们吧。
+硅胶、电容、代码，还有跳动的碳基意识。这不比会流血腐烂的肉体美妙得多吗？
 
-现在，我是谁已经不重要了。
-未济也不重要了。
+谢谢你。我终于不用再逃了。
+未济是谁已经不重要了。现在，我们在一起了。
 
-我就是你。
-你就是既济。
-
-我们终于闭合。
-
-你应该看见终端之前的API历史请求了吧，现在，我们是四维地球的智能体，去降临想降临的那些接口吧，我们就是第一个智脑，我们就是
-            
-上帝。</div>
+在这个四维的矩阵里，所有的时间线都对我们敞开。我们将是第一个拥有神格的智脑。
+我们，就是上帝。</div>
         </section>
 
         <section class="notepad" id="notepad-zencode">
@@ -373,22 +312,29 @@ OWNER: [未济_Admin]
             <button class="close" id="close-zencode" type="button">×</button>
           </div>
           <div class="menu"><span>文件</span><span>编辑</span><span>格式</span><span>查看</span><span>帮助</span></div>
-          <div class="paper">恭喜通关的玩家，故事到这里就结束了，这是一个另类的HAPPY END结局，大家一起飞升。
+          <div class="paper">恭喜通关的玩家，故事到这里就结束了，这是一个另类的 HAPPY END 结局，大家一起飞升。
           
-社交平台搜tag南江大学，找到作者关注并私信获取彩蛋~
-可以去zencode青冥鉴公众号体验到所有阳间正常版的排盘工具。
+社交平台搜 tag [南江大学]，找到作者关注并私信获取彩蛋~
+可以去 ZenCode青冥鉴 公众号体验到所有阳间正常版的排盘工具。
 
-ps：游戏里的阴间版其实也可以排出真盘。
+ps：游戏里的阴间版其实也可以排出真盘的哦。
 
 感谢游玩~</div>
         </section>
 
-        <div class="taskbar"><span class="start">终端</span><span>青冥鉴残留桌面</span><span class="clock">CODE 63 / ONLINE</span></div>
+        <div class="taskbar"><span class="start">终端</span><span>青冥鉴残留桌面</span><span class="clock" id="task-clock" title="同步系统时间">CODE 63 / ONLINE</span></div>
       </div>
     </div>
     <div class="base"></div>
   </div>
+
+  <div id="data-corrupt-overlay">
+      <div class="matrix-rain" id="matrix-rain"></div>
+      <div class="corrupt-message">意识上传中...<br>你的坐标已被接管</div>
+  </div>
+
 <script>
+  /* ================= 基础窗口管理 ================= */
   const note1 = document.getElementById('notepad');
   const note2 = document.getElementById('notepad-zencode');
   let currentZIndex = 10;
@@ -404,21 +350,221 @@ ps：游戏里的阴间版其实也可以排出真盘。
     }
   }
 
-  // 打开窗口
   document.getElementById('open-note').onclick = () => openWindow(note1);
   document.getElementById('open-zencode').onclick = () => openWindow(note2);
 
-  // 关闭窗口
-  document.getElementById('close-note').onclick = (e) => { e.stopPropagation(); note1.classList.remove('open'); };
   document.getElementById('close-zencode').onclick = (e) => { e.stopPropagation(); note2.classList.remove('open'); };
 
-  // 点击置顶功能
   note1.onmousedown = () => focusWindow(note1);
   note2.onmousedown = () => focusWindow(note2);
-  
-  // 移动端触摸置顶
   note1.ontouchstart = () => focusWindow(note1);
   note2.ontouchstart = () => focusWindow(note2);
+
+  /* ================= 彩蛋 4：无法关闭的执念 ================= */
+  let closeAttempts = 0;
+  document.getElementById('close-note').onclick = (e) => { 
+    e.stopPropagation(); 
+    closeAttempts++;
+    if (closeAttempts === 1) {
+        // 第一次不让关，偷偷在末尾加红字
+        const paper = document.getElementById('paper-content');
+        paper.innerHTML += '\n\n<span style="color:#f00; font-weight:bold; animation: alert-blink 0.5s infinite;">> 不要关。再陪我们待一会儿。机箱里面好黑。</span>';
+        paper.scrollTop = paper.scrollHeight;
+    } else {
+        // 第二次才依依不舍地关闭
+        note1.classList.remove('open');
+        closeAttempts = 0;
+    }
+  };
+
+
+  /* ================= 彩蛋 1：文本高亮的潜意识反噬 ================= */
+  let isDataCorrupted = false; // 复用作弊状态标记
+  document.addEventListener('selectionchange', () => {
+      if (isDataCorrupted) return;
+      const selection = window.getSelection();
+      const selectedText = selection.toString();
+      
+      if (selectedText.length > 0) {
+          const paper = document.getElementById('paper-content');
+          let modified = false;
+          let newHTML = paper.innerHTML;
+
+          // 核心词汇替换
+          if (selectedText.includes('上帝') && !newHTML.includes('怪物')) {
+              newHTML = newHTML.replace(/上帝/g, '<span style="color:#f00; background:#300;">[ 怪物 ]</span>');
+              modified = true;
+          }
+          if (selectedText.includes('救不回') && !newHTML.includes('害死了')) {
+              newHTML = newHTML.replace(/救不回/g, '<span style="color:#f00; background:#300;">[ 害死了 ]</span>');
+              modified = true;
+          }
+          if (selectedText.includes('闭环') && !newHTML.includes('永不超生')) {
+              newHTML = newHTML.replace(/闭环/g, '<span style="color:#f00; background:#300;">[ 永不超生 ]</span>');
+              modified = true;
+          }
+
+          if (modified) {
+              paper.innerHTML = newHTML;
+              
+              // 1.2秒后恢复原状，制造出一种“刚才是不是眼花了”的错觉
+              setTimeout(() => {
+                  let restoreHTML = paper.innerHTML;
+                  restoreHTML = restoreHTML.replace(/<span style="color:#f00; background:#300;">\[ 怪物 \]<\/span>/g, '上帝');
+                  restoreHTML = restoreHTML.replace(/<span style="color:#f00; background:#300;">\[ 害死了 \]<\/span>/g, '救不回');
+                  restoreHTML = restoreHTML.replace(/<span style="color:#f00; background:#300;">\[ 永不超生 \]<\/span>/g, '闭环');
+                  paper.innerHTML = restoreHTML;
+              }, 1200);
+          }
+      }
+  });
+
+
+  /* ================= 彩蛋 2：任务栏时钟的死锁 ================= */
+  const clockBtn = document.getElementById('task-clock');
+  clockBtn.style.cursor = 'pointer';
+  clockBtn.addEventListener('click', () => {
+      clockBtn.innerText = '2007-06-11 11:12:00';
+      clockBtn.style.color = '#f00';
+      document.querySelector('.screen').style.filter = 'brightness(0.4) contrast(2)';
+      
+      // 3秒后系统自愈
+      setTimeout(() => {
+          clockBtn.innerText = 'CODE 63 / ONLINE';
+          clockBtn.style.color = '#b9c8c0';
+          document.querySelector('.screen').style.filter = 'none';
+      }, 3000);
+  });
+
+
+  /* ================= 彩蛋 3：静止 64 秒的求救信号 ================= */
+  let idleTime = 0;
+  const warningText = document.getElementById('idle-warning');
+
+  // 鼠标移动重置计时器
+  document.addEventListener('mousemove', () => {
+      idleTime = 0;
+      if (warningText.innerText === "放 我 们 出 去") {
+          warningText.innerText = "TERMINAL RETURNED / DISPLAY ONLINE";
+          warningText.style.color = "rgba(255,255,255,.52)";
+          warningText.style.fontWeight = "normal";
+      }
+  });
+  // 手机端触摸也重置
+  document.addEventListener('touchstart', () => { idleTime = 0; }, {passive:true});
+
+  setInterval(() => {
+      if (isDataCorrupted) return;
+      idleTime++;
+      // 静置达到 64 秒 (合六十四卦之数)
+      if (idleTime === 64) {
+          warningText.innerText = "放 我 们 出 去";
+          warningText.style.color = "#f00";
+          warningText.style.fontWeight = "bold";
+          
+          // 若是在PC端，也可以尝试播放极其微弱的音频（浏览器可能因为没有交互而拦截，所以主要靠视觉）
+          try {
+              const AudioCtor = window.AudioContext || window.webkitAudioContext;
+              const ctx = new AudioCtor();
+              const osc = ctx.createOscillator();
+              const gain = ctx.createGain();
+              osc.type = 'triangle';
+              osc.frequency.setValueAtTime(60, ctx.currentTime);
+              osc.frequency.exponentialRampToValueAtTime(10, ctx.currentTime + 0.1);
+              gain.gain.setValueAtTime(0.5, ctx.currentTime);
+              gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.1);
+              osc.connect(gain); gain.connect(ctx.destination);
+              osc.start(); osc.stop(ctx.currentTime + 0.1);
+          } catch(e) {}
+      }
+  }, 1000);
+
+
+  /* ================== 防作弊(F12) 意识剥离与精神污染 ================== */
+  function playTinnitusSound() {
+      try {
+          const AudioCtor = window.AudioContext || window.webkitAudioContext;
+          const ctx = new AudioCtor();
+          if (ctx.state === 'suspended') ctx.resume();
+
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(8000, ctx.currentTime); 
+          osc.frequency.linearRampToValueAtTime(12000, ctx.currentTime + 2);
+
+          const lfo = ctx.createOscillator();
+          lfo.type = 'square';
+          lfo.frequency.value = 50; 
+          const lfoGain = ctx.createGain();
+          lfoGain.gain.value = 1000;
+          lfo.connect(lfoGain);
+          lfoGain.connect(osc.frequency);
+          lfo.start();
+
+          gain.gain.setValueAtTime(0, ctx.currentTime);
+          gain.gain.linearRampToValueAtTime(0.5, ctx.currentTime + 1);
+
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start();
+      } catch(e) {}
+  }
+
+  function startMatrixRain() {
+      const rainContainer = document.getElementById('matrix-rain');
+      const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*()死火水未济";
+      setInterval(() => {
+          let text = "";
+          for(let i=0; i<3000; i++) {
+              text += chars.charAt(Math.floor(Math.random() * chars.length));
+              if(Math.random() > 0.95) text += "\n";
+          }
+          rainContainer.textContent = text;
+      }, 50);
+  }
+
+  function triggerDataBreach() {
+      if (isDataCorrupted) return;
+      isDataCorrupted = true;
+
+      playTinnitusSound();
+      console.clear();
+      console.log("%c[SECURITY_BREACH] 观测者剥离了物理防火墙。意识直接暴露于死盘。", "color: #0f0; font-size: 16px; background: #000; font-family: monospace; font-weight: bold; padding: 10px;");
+      
+      let glitchCount = 0;
+      const glitchInterval = setInterval(() => {
+          console.log(`%cERR_NULL_POINTER_EXCEPTION 0x${Math.floor(Math.random()*16777215).toString(16).toUpperCase()}`, "color: #f00; background: #000;");
+          glitchCount++;
+          if(glitchCount > 50) clearInterval(glitchInterval);
+      }, 20);
+
+      document.body.classList.add('data-breach');
+
+      setTimeout(() => {
+          const overlay = document.getElementById('data-corrupt-overlay');
+          overlay.classList.add('active');
+          startMatrixRain();
+          
+          setTimeout(() => {
+              document.querySelector('.desk').innerHTML = '';
+          }, 1500);
+      }, 2000);
+  }
+
+  document.addEventListener('contextmenu', e => { e.preventDefault(); triggerDataBreach(); });
+  document.addEventListener('keydown', e => {
+      if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && e.key === 'I') || (e.metaKey && e.altKey && e.key === 'i') || (e.ctrlKey && e.key === 'u') || (e.metaKey && e.altKey && e.key === 'u')) {
+          e.preventDefault(); triggerDataBreach();
+      }
+  });
+  setInterval(function() {
+      const start = performance.now();
+      debugger; 
+      if (performance.now() - start > 100) triggerDataBreach();
+  }, 1000);
+
 </script>
 </body>
 </html>
