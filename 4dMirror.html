@@ -980,7 +980,14 @@ function triggerDataBreach() {
     }, 2000);
 }
 
-document.addEventListener('contextmenu', e => { e.preventDefault(); triggerDataBreach(); });
+// 取消了右键直接触发大恐吓的机制，允许主线正常使用右键
+document.addEventListener('contextmenu', e => { 
+    // 仅阻止系统默认右键菜单，不触发恐吓
+    if (!e.target.closest('.gong') && !e.target.closest('.leaflet-interactive')) {
+        e.preventDefault(); 
+    }
+});
+
 document.addEventListener('keydown', e => {
     if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && e.key === 'I') || (e.metaKey && e.altKey && e.key === 'i') || (e.ctrlKey && e.key === 'u') || (e.metaKey && e.altKey && e.key === 'u')) {
         e.preventDefault(); triggerDataBreach();
@@ -991,6 +998,53 @@ setInterval(function() {
     debugger; 
     if (performance.now() - start > 100) triggerDataBreach();
 }, 1000);
+
+// ================= 乱点小恐吓机制 =================
+let clickTimestamps = [];
+let isMinorScared = false;
+
+document.addEventListener('click', (e) => {
+    if (isDataCorrupted || isMinorScared) return;
+    const now = Date.now();
+    clickTimestamps.push(now);
+    clickTimestamps = clickTimestamps.filter(t => now - t < 1500); // 记录1.5秒内的点击
+    
+    if (clickTimestamps.length >= 8) { // 如果1.5秒内连点超过8次
+        triggerMinorScare();
+    }
+});
+
+function triggerMinorScare() {
+    isMinorScared = true;
+    
+    // 播放短促警报音效
+    try {
+        const AudioCtor = window.AudioContext || window.webkitAudioContext;
+        const ctx = new AudioCtor();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'square';
+        osc.frequency.setValueAtTime(150, ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(40, ctx.currentTime + 0.3);
+        gain.gain.setValueAtTime(1, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
+        osc.connect(gain); gain.connect(ctx.destination);
+        osc.start(); osc.stop(ctx.currentTime + 0.3);
+    } catch(e) {}
+
+    // 视觉小恐吓并卡退
+    document.body.innerHTML = `
+        <div style="height:100vh; width:100vw; background:#000; display:flex; flex-direction:column; justify-content:center; align-items:center; z-index:999999; position:fixed; inset:0;">
+            <div style="color:#f00; font-size:24px; font-weight:bold; letter-spacing:8px; animation: flicker 0.1s infinite;">[ 警告 ]</div>
+            <div style="color:#888; font-size:14px; margin-top:20px; letter-spacing:2px; font-family:monospace;">檢測到高頻無序衝擊。為防止精神熵增，系統強制踢出...</div>
+        </div>
+    `;
+    
+    // 卡退：跳转回论坛首页
+    setTimeout(() => {
+        window.location.replace('bbs_2026_home.html');
+    }, 1800);
+}
 
 
 // ================= 1. 真实视差高精星空背景 =================
@@ -2136,7 +2190,10 @@ function showGongDetail(pos){
 function bindGongEvents(layer, pos) {
   layer.on('click', () => showGongDetail(pos));
   layer.on('contextmenu', (event) => {
-    if(event && event.originalEvent) event.originalEvent.preventDefault();
+    if(event && event.originalEvent) {
+        event.originalEvent.preventDefault();
+        event.originalEvent.stopPropagation();
+    }
     attemptFocusSearch(pos);
   });
   bindMobileFocusSearch(layer, pos);
@@ -2548,6 +2605,8 @@ function updateL2L3() {
       dashArray: conflict ? null : '9 5',
       className: conflict ? 'fuyin-cell l2-dead-cell' : 'l2-dead-cell'
     }).addTo(l2Group);
+    
+    // 给生成的宫格绑定事件（且阻止向上冒泡）
     bindGongEvents(r2, pos);
 
     const boundsL3 = [[lat-SPAN/2+0.0001, lng-SPAN/2+0.0001], [lat+SPAN/2-0.0001, lng+SPAN/2-0.0001]];
@@ -2595,14 +2654,18 @@ function updateL2L3() {
     })}).addTo(l2Group);
     bindGongEvents(m, pos);
     
-    // 更新 HUD
+    // 更新 HUD 右侧面板的九宫格
     const el = document.getElementById('g'+pos);
     el.className = 'gong' + (conflict ? ' conflict' : '');
     el.querySelector('.gm').innerHTML = panReady
       ? (finalLock ? '死门<br>锁相' : (conflict ? '双盘<br>伏吟' : `<span style="color:var(--color-l2)">${dm}门</span><br><span style="color:${liveJuReady ? (liveJuCorrect ? 'var(--color-l3)' : '#ff8aa1') : 'var(--text-mute)'}">${liveJuReady ? (liveJuCorrect ? `${lm}门` : '漂移') : 'L3待定'}</span>`))
       : `<span style="color:var(--text-mute)">待校验</span>`;
     el.onclick = () => showGongDetail(pos);
-    el.oncontextmenu = (event) => { event.preventDefault(); attemptFocusSearch(pos); };
+    el.oncontextmenu = (event) => { 
+        event.preventDefault(); 
+        event.stopPropagation(); // 防止冒泡触发全局右键惩罚
+        attemptFocusSearch(pos); 
+    };
     if(el.dataset.mobileSearchBound !== '1') {
       bindDomMobileFocusSearch(el, pos);
       el.dataset.mobileSearchBound = '1';
